@@ -5,6 +5,7 @@
 
 import {
   DEFAULT_RUNTIME_MODE,
+  type LinkedIssue,
   type ModelSelection,
   type OrchestrationThreadPullRequest,
   type ProjectId,
@@ -39,6 +40,7 @@ interface ActiveThreadSnapshot {
   interactionMode: ProviderInteractionMode;
   envMode?: ThreadEnvironmentMode | undefined;
   lastKnownPr?: OrchestrationThreadPullRequest | null;
+  linkedIssue?: LinkedIssue | null;
 }
 
 export interface DraftReusePlanStored {
@@ -75,6 +77,7 @@ export interface TerminalThreadCreationState {
   envMode: DraftThreadEnvMode;
   interactionMode: ProviderInteractionMode;
   lastKnownPr: OrchestrationThreadPullRequest | null;
+  linkedIssue: LinkedIssue | null;
   modelSelection: ModelSelection;
   runtimeMode: RuntimeMode;
   worktreePath: string | null;
@@ -90,6 +93,7 @@ export function createActiveThreadSnapshot(
         runtimeMode: RuntimeMode;
         envMode?: ThreadEnvironmentMode | undefined;
         lastKnownPr?: OrchestrationThreadPullRequest | null;
+        linkedIssue?: LinkedIssue | null;
       }
     | null
     | undefined,
@@ -105,6 +109,7 @@ export function createActiveThreadSnapshot(
     interactionMode: activeThread.interactionMode,
     envMode: activeThread.envMode,
     lastKnownPr: activeThread.lastKnownPr ?? null,
+    linkedIssue: activeThread.linkedIssue ?? null,
   };
 }
 
@@ -125,6 +130,7 @@ export function createActiveDraftThreadSnapshot(
     branch: activeDraftThread.branch,
     worktreePath: activeDraftThread.worktreePath,
     lastKnownPr: activeDraftThread.lastKnownPr ?? null,
+    linkedIssue: activeDraftThread.linkedIssue ?? null,
     envMode: activeDraftThread.envMode,
     ...(activeDraftThread.isTemporary ? { isTemporary: true } : {}),
   };
@@ -281,6 +287,15 @@ export function resolveTerminalThreadCreationState(
         : null) ??
       (input.activeDraftThread?.projectId === input.projectId
         ? (input.activeDraftThread.lastKnownPr ?? null)
+        : null) ??
+      null,
+    linkedIssue:
+      input.draftThread?.linkedIssue ??
+      (input.activeThread?.projectId === input.projectId
+        ? (input.activeThread.linkedIssue ?? null)
+        : null) ??
+      (input.activeDraftThread?.projectId === input.projectId
+        ? (input.activeDraftThread.linkedIssue ?? null)
         : null) ??
       null,
     envMode: hasExplicitEnvModeOverride

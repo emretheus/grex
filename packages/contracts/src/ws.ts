@@ -63,6 +63,13 @@ import {
   ProjectSearchLocalEntriesInput,
   ProjectWriteFileInput,
 } from "./project";
+import {
+  IntegrationConnectInput,
+  IntegrationDisconnectInput,
+  IntegrationIssueContextInput,
+  IntegrationListIssuesInput,
+  IntegrationSearchIssuesInput,
+} from "./integrations";
 import { FilesystemBrowseInput } from "./filesystem";
 import { OpenInEditorInput } from "./editor";
 import {
@@ -99,6 +106,14 @@ export const WS_METHODS = {
   projectsSearchLocalEntries: "projects.searchLocalEntries",
   projectsWriteFile: "projects.writeFile",
   projectsReadFile: "projects.readFile",
+
+  // Integration (issue/task-tracker) methods
+  integrationsCheckConnections: "integrations.checkConnections",
+  integrationsConnect: "integrations.connect",
+  integrationsDisconnect: "integrations.disconnect",
+  integrationsListIssues: "integrations.listIssues",
+  integrationsSearchIssues: "integrations.searchIssues",
+  integrationsGetIssueContext: "integrations.getIssueContext",
 
   // Filesystem browse methods
   filesystemBrowse: "filesystem.browse",
@@ -221,6 +236,14 @@ const WebSocketRequestBody = Schema.Union([
   tagRequestBody(WS_METHODS.projectsSearchLocalEntries, ProjectSearchLocalEntriesInput),
   tagRequestBody(WS_METHODS.projectsWriteFile, ProjectWriteFileInput),
   tagRequestBody(WS_METHODS.projectsReadFile, ProjectReadFileInput),
+
+  // Integrations
+  tagRequestBody(WS_METHODS.integrationsCheckConnections, Schema.Struct({})),
+  tagRequestBody(WS_METHODS.integrationsConnect, IntegrationConnectInput),
+  tagRequestBody(WS_METHODS.integrationsDisconnect, IntegrationDisconnectInput),
+  tagRequestBody(WS_METHODS.integrationsListIssues, IntegrationListIssuesInput),
+  tagRequestBody(WS_METHODS.integrationsSearchIssues, IntegrationSearchIssuesInput),
+  tagRequestBody(WS_METHODS.integrationsGetIssueContext, IntegrationIssueContextInput),
 
   // Filesystem browse
   tagRequestBody(WS_METHODS.filesystemBrowse, FilesystemBrowseInput),

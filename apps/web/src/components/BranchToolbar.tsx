@@ -30,6 +30,7 @@ import {
   BranchToolbarBranchSelector,
   type BranchSelectorVariant,
 } from "./BranchToolbarBranchSelector";
+import { IssueLinkControl } from "./integrations/IssueLinkControl";
 import {
   RUNTIME_FULL_ACCESS_ACCENT_CLASS_NAME,
   COMPOSER_PICKER_TRIGGER_TEXT_CLASS_NAME,
@@ -231,6 +232,7 @@ export default function BranchToolbar({
     serverThread?.session?.provider ?? serverThread?.modelSelection.provider ?? null;
   const branchCwd = activeWorktreePath ?? activeProject?.cwd ?? null;
   const hasServerThread = serverThread !== undefined;
+  const activeLinkedIssue = serverThread?.linkedIssue ?? draftThread?.linkedIssue ?? null;
   const effectiveEnvMode = resolveEffectiveEnvMode({
     activeWorktreePath,
     hasServerThread,
@@ -498,6 +500,13 @@ export default function BranchToolbar({
           variant={variant}
           {...(onCheckoutPullRequestRequest ? { onCheckoutPullRequestRequest } : {})}
           {...(onComposerFocusRequest ? { onComposerFocusRequest } : {})}
+        />
+
+        <IssueLinkControl
+          threadId={threadId}
+          linkedIssue={activeLinkedIssue}
+          hasServerThread={hasServerThread}
+          {...(branchCwd ? { projectPath: branchCwd } : {})}
         />
       </div>
     </div>

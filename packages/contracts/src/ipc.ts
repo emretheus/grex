@@ -63,6 +63,18 @@ import type {
   ProjectReadFileInput,
   ProjectReadFileResult,
 } from "./project";
+import type {
+  IntegrationCheckConnectionsResult,
+  IntegrationConnectInput,
+  IntegrationConnectResult,
+  IntegrationDisconnectInput,
+  IntegrationDisconnectResult,
+  IntegrationIssueContextInput,
+  IntegrationListIssuesInput,
+  IntegrationSearchIssuesInput,
+  IssueContextResult,
+  IssueListResult,
+} from "./integrations";
 import type { FilesystemBrowseInput, FilesystemBrowseResult } from "./filesystem";
 import type {
   ServerConfig,
@@ -356,6 +368,14 @@ export interface NativeApi {
     ) => Promise<ProjectSearchLocalEntriesResult>;
     writeFile: (input: ProjectWriteFileInput) => Promise<ProjectWriteFileResult>;
     readFile: (input: ProjectReadFileInput) => Promise<ProjectReadFileResult>;
+  };
+  integrations: {
+    checkConnections: () => Promise<IntegrationCheckConnectionsResult>;
+    connect: (input: IntegrationConnectInput) => Promise<IntegrationConnectResult>;
+    disconnect: (input: IntegrationDisconnectInput) => Promise<IntegrationDisconnectResult>;
+    listIssues: (input: IntegrationListIssuesInput) => Promise<IssueListResult>;
+    searchIssues: (input: IntegrationSearchIssuesInput) => Promise<IssueListResult>;
+    getIssueContext: (input: IntegrationIssueContextInput) => Promise<IssueContextResult>;
   };
   filesystem: {
     browse: (input: FilesystemBrowseInput) => Promise<FilesystemBrowseResult>;

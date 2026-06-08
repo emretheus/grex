@@ -27,6 +27,7 @@ import { ServerSettingsLive } from "./serverSettings";
 import { WorkspaceLayerLive } from "./workspace/runtimeLayer";
 import { ProjectFaviconResolverLive } from "./project/Layers/ProjectFaviconResolver";
 import { ServerEnvironmentLive } from "./environment/Layers/ServerEnvironment";
+import { IntegrationsServiceLive } from "./integrations/Layers/IntegrationsService";
 
 export { makeServerProviderLayer } from "./provider/runtimeLayer";
 
@@ -86,6 +87,7 @@ export function makeServerRuntimeServicesLayer() {
     authControlPlaneLayer,
     serverAuthLayer,
   );
+  const integrationsLayer = IntegrationsServiceLive.pipe(Layer.provide(ServerSecretStoreLive));
 
   return Layer.mergeAll(
     orchestrationReactorLayer,
@@ -101,5 +103,6 @@ export function makeServerRuntimeServicesLayer() {
     ServerRuntimeStartupLive,
     WorkspaceLayerLive,
     ProjectFaviconResolverLive,
+    integrationsLayer,
   ).pipe(Layer.provideMerge(NodeServices.layer));
 }

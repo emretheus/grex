@@ -408,6 +408,7 @@ export const decideOrchestrationCommand = Effect.fn("decideOrchestrationCommand"
           subagentRole: command.subagentRole,
           forkSourceThreadId: null,
           lastKnownPr: command.lastKnownPr,
+          linkedIssue: command.linkedIssue,
           handoff: null,
           createdAt: command.createdAt,
           updatedAt: command.createdAt,
@@ -745,6 +746,7 @@ export const decideOrchestrationCommand = Effect.fn("decideOrchestrationCommand"
           ...(command.subagentRole !== undefined ? { subagentRole: command.subagentRole } : {}),
           ...(command.handoff !== undefined ? { handoff: command.handoff } : {}),
           ...(command.lastKnownPr !== undefined ? { lastKnownPr: command.lastKnownPr } : {}),
+          ...(command.linkedIssue !== undefined ? { linkedIssue: command.linkedIssue } : {}),
           ...(command.pinnedMessages !== undefined
             ? { pinnedMessages: command.pinnedMessages }
             : {}),

@@ -13,6 +13,7 @@ import {
   type GrokReasoningEffort,
   type ModelSlug,
   type PiThinkingLevel,
+  LinkedIssue,
   ModelSelection,
   OrchestrationThreadPullRequest,
   ProjectId,
@@ -291,6 +292,7 @@ const PersistedDraftThreadState = Schema.Struct({
   branch: Schema.NullOr(Schema.String),
   worktreePath: Schema.NullOr(Schema.String),
   lastKnownPr: Schema.optionalKey(Schema.NullOr(OrchestrationThreadPullRequest)),
+  linkedIssue: Schema.optionalKey(Schema.NullOr(LinkedIssue)),
   envMode: DraftThreadEnvModeSchema,
   isTemporary: Schema.optionalKey(Schema.Boolean),
   promotedTo: Schema.optionalKey(ThreadId),
@@ -338,6 +340,7 @@ export interface DraftThreadState {
   branch: string | null;
   worktreePath: string | null;
   lastKnownPr?: OrchestrationThreadPullRequest | null;
+  linkedIssue?: LinkedIssue | null;
   envMode: DraftThreadEnvMode;
   isTemporary?: boolean;
   promotedTo?: ThreadId;
@@ -365,6 +368,7 @@ export interface ComposerDraftStoreState {
       branch?: string | null;
       worktreePath?: string | null;
       lastKnownPr?: OrchestrationThreadPullRequest | null;
+      linkedIssue?: LinkedIssue | null;
       createdAt?: string;
       envMode?: DraftThreadEnvMode;
       runtimeMode?: RuntimeMode;
@@ -379,6 +383,7 @@ export interface ComposerDraftStoreState {
       branch?: string | null;
       worktreePath?: string | null;
       lastKnownPr?: OrchestrationThreadPullRequest | null;
+      linkedIssue?: LinkedIssue | null;
       projectId?: ProjectId;
       createdAt?: string;
       envMode?: DraftThreadEnvMode;
@@ -2317,6 +2322,10 @@ export const useComposerDraftStore = create<ComposerDraftStoreState>()(
               options?.lastKnownPr === undefined
                 ? (existingThread?.lastKnownPr ?? null)
                 : (options.lastKnownPr ?? null),
+            linkedIssue:
+              options?.linkedIssue === undefined
+                ? (existingThread?.linkedIssue ?? null)
+                : (options.linkedIssue ?? null),
             envMode:
               options?.envMode ??
               (nextWorktreePath ? "worktree" : (existingThread?.envMode ?? "local")),

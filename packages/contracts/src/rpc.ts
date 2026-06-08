@@ -84,6 +84,18 @@ import {
   ProjectReadFileResult,
 } from "./project";
 import {
+  IntegrationCheckConnectionsResult,
+  IntegrationConnectInput,
+  IntegrationConnectResult,
+  IntegrationDisconnectInput,
+  IntegrationDisconnectResult,
+  IntegrationIssueContextInput,
+  IntegrationListIssuesInput,
+  IntegrationSearchIssuesInput,
+  IssueContextResult,
+  IssueListResult,
+} from "./integrations";
+import {
   ServerConfig,
   ServerConfigStreamEvent,
   ServerDiagnosticsResult,
@@ -252,6 +264,42 @@ export const WsProjectsWriteFileRpc = Rpc.make(WS_METHODS.projectsWriteFile, {
 export const WsProjectsReadFileRpc = Rpc.make(WS_METHODS.projectsReadFile, {
   payload: ProjectReadFileInput,
   success: ProjectReadFileResult,
+  error: WsRpcError,
+});
+
+export const WsIntegrationsCheckConnectionsRpc = Rpc.make(WS_METHODS.integrationsCheckConnections, {
+  payload: Schema.Struct({}),
+  success: IntegrationCheckConnectionsResult,
+  error: WsRpcError,
+});
+
+export const WsIntegrationsConnectRpc = Rpc.make(WS_METHODS.integrationsConnect, {
+  payload: IntegrationConnectInput,
+  success: IntegrationConnectResult,
+  error: WsRpcError,
+});
+
+export const WsIntegrationsDisconnectRpc = Rpc.make(WS_METHODS.integrationsDisconnect, {
+  payload: IntegrationDisconnectInput,
+  success: IntegrationDisconnectResult,
+  error: WsRpcError,
+});
+
+export const WsIntegrationsListIssuesRpc = Rpc.make(WS_METHODS.integrationsListIssues, {
+  payload: IntegrationListIssuesInput,
+  success: IssueListResult,
+  error: WsRpcError,
+});
+
+export const WsIntegrationsSearchIssuesRpc = Rpc.make(WS_METHODS.integrationsSearchIssues, {
+  payload: IntegrationSearchIssuesInput,
+  success: IssueListResult,
+  error: WsRpcError,
+});
+
+export const WsIntegrationsGetIssueContextRpc = Rpc.make(WS_METHODS.integrationsGetIssueContext, {
+  payload: IntegrationIssueContextInput,
+  success: IssueContextResult,
   error: WsRpcError,
 });
 
@@ -625,6 +673,12 @@ export const WsRpcGroup = RpcGroup.make(
   WsProjectsSearchLocalEntriesRpc,
   WsProjectsWriteFileRpc,
   WsProjectsReadFileRpc,
+  WsIntegrationsCheckConnectionsRpc,
+  WsIntegrationsConnectRpc,
+  WsIntegrationsDisconnectRpc,
+  WsIntegrationsListIssuesRpc,
+  WsIntegrationsSearchIssuesRpc,
+  WsIntegrationsGetIssueContextRpc,
   WsFilesystemBrowseRpc,
   WsShellOpenInEditorRpc,
   WsGitGithubRepositoryRpc,
