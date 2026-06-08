@@ -29,7 +29,7 @@ const testLayer = ServerAuthLive.pipe(
   Layer.provide(ServerSecretStoreLive),
   Layer.provide(
     ServerConfig.layerTest(process.cwd(), {
-      prefix: "dpcode-auth-server-test-",
+      prefix: "codewit-auth-server-test-",
     }),
   ),
   Layer.provide(NodeServices.layer),

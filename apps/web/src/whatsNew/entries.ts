@@ -79,7 +79,7 @@ export const WHATS_NEW_ENTRIES: readonly WhatsNewEntry[] = [
         description:
           "External Claude shutdowns, terminal cleanup, websocket RPC errors, and provider session recovery picked up extra guards for reconnects and interrupted work.",
         details:
-          "Claude SIGTERM from outside Synara is treated as a benign suspend path, terminal process cleanup has stronger tests, and websocket RPC failure handling is less likely to leave the UI believing a request is still in flight.",
+          "Claude SIGTERM from outside Codewit is treated as a benign suspend path, terminal process cleanup has stronger tests, and websocket RPC failure handling is less likely to leave the UI believing a request is still in flight.",
       },
       {
         id: "migration-and-release-hardening",
@@ -105,7 +105,7 @@ export const WHATS_NEW_ENTRIES: readonly WhatsNewEntry[] = [
         id: "thread-recap-panel",
         title: "Long chats can be recapped in place",
         description:
-          "Synara can now generate and cache thread recaps, show current-state context in the chat environment, and reuse provider-backed recap generation without making the transcript harder to follow.",
+          "Codewit can now generate and cache thread recaps, show current-state context in the chat environment, and reuse provider-backed recap generation without making the transcript harder to follow.",
       },
       {
         id: "diff-totals-performance",
@@ -171,13 +171,13 @@ export const WHATS_NEW_ENTRIES: readonly WhatsNewEntry[] = [
         id: "stale-claude-resume-recovery",
         title: "Claude resumes recover from stale native sessions",
         description:
-          "When Claude reports a missing conversation id, Synara clears the stale resume cursor, recreates the provider session, and retries with transcript context instead of leaving the turn failed.",
+          "When Claude reports a missing conversation id, Codewit clears the stale resume cursor, recreates the provider session, and retries with transcript context instead of leaving the turn failed.",
       },
       {
         id: "desktop-update-manual-fallback",
         title: "Desktop updates now have a manual escape hatch",
         description:
-          "If an in-app install silently fails, Synara restarts the backend, resumes update polling, deduplicates error toasts, and points you at the exact GitHub release page for a manual download.",
+          "If an in-app install silently fails, Codewit restarts the backend, resumes update polling, deduplicates error toasts, and points you at the exact GitHub release page for a manual download.",
       },
       {
         id: "mac-desktop-chrome-alignment",
@@ -195,7 +195,7 @@ export const WHATS_NEW_ENTRIES: readonly WhatsNewEntry[] = [
         id: "agent-task-activity-rendering",
         title: "Agent task activity is easier to follow",
         description:
-          "OpenCode task child sessions and newer shell-step events now flow into Synara's activity timeline, while generic agent task rows keep their useful prompt and result text instead of disappearing or showing wrapper noise.",
+          "OpenCode task child sessions and newer shell-step events now flow into Codewit's activity timeline, while generic agent task rows keep their useful prompt and result text instead of disappearing or showing wrapper noise.",
       },
       {
         id: "transport-reconnect-events",
@@ -213,7 +213,7 @@ export const WHATS_NEW_ENTRIES: readonly WhatsNewEntry[] = [
         id: "opencode-provider-depth",
         title: "OpenCode support is much deeper",
         description:
-          "OpenCode startup, model discovery, command discovery, server connection options, and experimental WebSocket mode now flow through the same settings and runtime paths as the rest of Synara.",
+          "OpenCode startup, model discovery, command discovery, server connection options, and experimental WebSocket mode now flow through the same settings and runtime paths as the rest of Codewit.",
       },
       {
         id: "opencode-command-discovery-settings",
@@ -261,7 +261,7 @@ export const WHATS_NEW_ENTRIES: readonly WhatsNewEntry[] = [
         id: "legacy-database-repairs",
         title: "Imported legacy databases recover missing columns",
         description:
-          "Fresh repair migrations reconcile older imported migration trackers that skipped Synara's sidechat-source or pinned-thread columns, preventing startup crashes in those upgraded histories.",
+          "Fresh repair migrations reconcile older imported migration trackers that skipped Codewit's sidechat-source or pinned-thread columns, preventing startup crashes in those upgraded histories.",
       },
       {
         id: "opencode-visual-polish",
@@ -282,10 +282,10 @@ export const WHATS_NEW_ENTRIES: readonly WhatsNewEntry[] = [
     date: "Jun 3",
     features: [
       {
-        id: "synara-home-migration",
-        title: "Synara is now the default home",
+        id: "codewit-home-migration",
+        title: "Codewit is now the default home",
         description:
-          "The app now starts from `~/.synara`, carries the Synara environment variables through the desktop and server runtime, and safely imports existing `~/.dpcode` or `~/.t3` data on first launch.",
+          "The app now starts from `~/.codewit`, carries the Codewit environment variables through the desktop and server runtime, and safely imports existing `~/.codewit` or `~/.codewit` data on first launch.",
       },
       {
         id: "desktop-platform-polish",
@@ -326,7 +326,7 @@ export const WHATS_NEW_ENTRIES: readonly WhatsNewEntry[] = [
       {
         id: "claude-opus-4-8",
         title: "Claude Opus 4.8 is available",
-        description: "Synara now includes Claude Opus 4.8 in the Claude model picker.",
+        description: "Codewit now includes Claude Opus 4.8 in the Claude model picker.",
       },
     ],
   },
@@ -344,7 +344,7 @@ export const WHATS_NEW_ENTRIES: readonly WhatsNewEntry[] = [
         id: "provider-picker-readiness",
         title: "Provider choices wait for real readiness",
         description:
-          "The provider picker no longer treats unknown provider status as usable. Providers stay in a checking state until Synara has confirmed that the local runtime is available and authenticated.",
+          "The provider picker no longer treats unknown provider status as usable. Providers stay in a checking state until Codewit has confirmed that the local runtime is available and authenticated.",
       },
       {
         id: "desktop-shutdown-recovery",
@@ -372,7 +372,7 @@ export const WHATS_NEW_ENTRIES: readonly WhatsNewEntry[] = [
     features: [
       {
         id: "grok-provider-headline",
-        title: "Grok joins Synara",
+        title: "Grok joins Codewit",
         description:
           "Pick Grok as a first-class coding provider with ACP-backed sessions, model selection, approval handling, resume support, provider health checks, settings, icons, and handoff wired through the same app surfaces as the rest of your agents.",
       },
@@ -452,7 +452,7 @@ export const WHATS_NEW_ENTRIES: readonly WhatsNewEntry[] = [
         id: "kilo-code-provider",
         title: "Kilo Code joins the provider lineup",
         description:
-          "Synara can now launch and monitor Kilo Code sessions alongside Codex, Claude, Cursor, OpenCode, and Gemini, with health checks, settings, mentions, handoff, and model compatibility wired through the app.",
+          "Codewit can now launch and monitor Kilo Code sessions alongside Codex, Claude, Cursor, OpenCode, and Gemini, with health checks, settings, mentions, handoff, and model compatibility wired through the app.",
       },
       {
         id: "provider-ordering",
@@ -482,7 +482,7 @@ export const WHATS_NEW_ENTRIES: readonly WhatsNewEntry[] = [
         id: "opencode-latest-events",
         title: "OpenCode sessions understand the latest event stream",
         description:
-          "Synara now tracks the newer OpenCode SDK session events, keeps titles fresher, and has much deeper coverage around OpenCode startup, output, and recovery flows.",
+          "Codewit now tracks the newer OpenCode SDK session events, keeps titles fresher, and has much deeper coverage around OpenCode startup, output, and recovery flows.",
       },
       {
         id: "turn-recovery-stability",
@@ -524,7 +524,7 @@ export const WHATS_NEW_ENTRIES: readonly WhatsNewEntry[] = [
         id: "secure-local-image-route",
         title: "Generated images use a safer local route",
         description:
-          "Synara now serves generated files through a dedicated local-image endpoint with MIME checks, workspace-aware path resolution, and Codex generated_images allowlists for both the normal home and desktop overlay home.",
+          "Codewit now serves generated files through a dedicated local-image endpoint with MIME checks, workspace-aware path resolution, and Codex generated_images allowlists for both the normal home and desktop overlay home.",
       },
       {
         id: "provider-favorites",
@@ -552,9 +552,9 @@ export const WHATS_NEW_ENTRIES: readonly WhatsNewEntry[] = [
     features: [
       {
         id: "cursor-provider",
-        title: "Cursor is now a first-class Synara provider",
+        title: "Cursor is now a first-class Codewit provider",
         description:
-          "Run Cursor CLI sessions directly from Synara with ACP-backed startup, model discovery, existing-chat resume, handoff, and provider health checks alongside Codex and OpenCode.",
+          "Run Cursor CLI sessions directly from Codewit with ACP-backed startup, model discovery, existing-chat resume, handoff, and provider health checks alongside Codex and OpenCode.",
       },
       {
         id: "effect-acp-runtime",
@@ -602,7 +602,7 @@ export const WHATS_NEW_ENTRIES: readonly WhatsNewEntry[] = [
         id: "git-commit-push-action",
         title: "Git gained commit and push",
         description:
-          "The Git actions menu can now commit current work and push it from Synara, keeping the common release and handoff flow closer to the chat.",
+          "The Git actions menu can now commit current work and push it from Codewit, keeping the common release and handoff flow closer to the chat.",
       },
       {
         id: "task-and-approval-polish",
@@ -644,13 +644,13 @@ export const WHATS_NEW_ENTRIES: readonly WhatsNewEntry[] = [
         id: "git-branch-pr-flow",
         title: "Git flows are smoother",
         description:
-          "The Git menu now includes branch creation with Synara-style names, and PR creation can recover from GitHub duplicate-PR responses by reusing the existing open pull request.",
+          "The Git menu now includes branch creation with Codewit-style names, and PR creation can recover from GitHub duplicate-PR responses by reusing the existing open pull request.",
       },
       {
         id: "legacy-import-recovery",
         title: "Legacy T3 imports heal themselves",
         description:
-          "A new migration reconciles older imported T3 Code databases whose migration history skipped Synara schema changes, preventing missing-column crashes after import.",
+          "A new migration reconciles older imported T3 Code databases whose migration history skipped Codewit schema changes, preventing missing-column crashes after import.",
       },
       {
         id: "runtime-idle-cleanup",
@@ -692,7 +692,7 @@ export const WHATS_NEW_ENTRIES: readonly WhatsNewEntry[] = [
         id: "opencode-task-events",
         title: "OpenCode tasks show live progress",
         description:
-          "OpenCode todo events now flow into Synara as active task updates, with a compact banner option for keeping current work visible without taking over the chat.",
+          "OpenCode todo events now flow into Codewit as active task updates, with a compact banner option for keeping current work visible without taking over the chat.",
       },
       {
         id: "opencode-model-favourites",
@@ -704,7 +704,7 @@ export const WHATS_NEW_ENTRIES: readonly WhatsNewEntry[] = [
         id: "opencode-context-usage",
         title: "OpenCode context usage is tracked",
         description:
-          "OpenCode sessions now report context usage more consistently, giving Synara better runtime visibility as conversations grow.",
+          "OpenCode sessions now report context usage more consistently, giving Codewit better runtime visibility as conversations grow.",
       },
       {
         id: "production-debug-flags",
@@ -722,7 +722,7 @@ export const WHATS_NEW_ENTRIES: readonly WhatsNewEntry[] = [
         id: "cursor-provider",
         title: "Cursor CLI support landed",
         description:
-          "Cursor is now available as a provider, with ACP sessions, model discovery, existing chats, handoff, shortcuts, and git text generation wired into Synara.",
+          "Cursor is now available as a provider, with ACP sessions, model discovery, existing chats, handoff, shortcuts, and git text generation wired into Codewit.",
       },
       {
         id: "chatgpt-voice-transcription",
@@ -752,7 +752,7 @@ export const WHATS_NEW_ENTRIES: readonly WhatsNewEntry[] = [
         id: "toast-feature-flags",
         title: "Toast behavior can be feature-flagged",
         description:
-          "Toast notifications picked up feature-flag wiring, giving Synara a safer way to roll notification changes forward or back.",
+          "Toast notifications picked up feature-flag wiring, giving Codewit a safer way to roll notification changes forward or back.",
       },
       {
         id: "desktop-bridge-reconnects",
@@ -770,7 +770,7 @@ export const WHATS_NEW_ENTRIES: readonly WhatsNewEntry[] = [
         id: "branch-switch-recovery",
         title: "Branch switching is much safer",
         description:
-          "Synara now handles messy branch switches with clearer recovery actions, recreated stashes, unpublished branch publishing, and stronger checks around conflicts and local work.",
+          "Codewit now handles messy branch switches with clearer recovery actions, recreated stashes, unpublished branch publishing, and stronger checks around conflicts and local work.",
       },
       {
         id: "plan-mode-proposals",
@@ -782,7 +782,7 @@ export const WHATS_NEW_ENTRIES: readonly WhatsNewEntry[] = [
         id: "desktop-navigation-controls",
         title: "Desktop navigation controls landed",
         description:
-          "The desktop app now has app-level back and forward navigation controls, making it easier to move around Synara without losing your place.",
+          "The desktop app now has app-level back and forward navigation controls, making it easier to move around Codewit without losing your place.",
       },
       {
         id: "sidebar-sort-stability",
@@ -806,7 +806,7 @@ export const WHATS_NEW_ENTRIES: readonly WhatsNewEntry[] = [
         id: "gpt-5-5-available",
         title: "GPT-5.5 is available",
         description:
-          "GPT-5.5 is now in the model picker with the right default reasoning behavior, so you can move new Codex sessions onto the latest model directly from Synara.",
+          "GPT-5.5 is now in the model picker with the right default reasoning behavior, so you can move new Codex sessions onto the latest model directly from Codewit.",
       },
       {
         id: "opencode-provider",
@@ -860,7 +860,7 @@ export const WHATS_NEW_ENTRIES: readonly WhatsNewEntry[] = [
         id: "desktop-boot-splash-screen",
         title: "🚀 Desktop startup feels clearer",
         description:
-          "Synara now shows a proper splash screen while the desktop backend spins up, so launch feels intentional instead of looking briefly stalled.",
+          "Codewit now shows a proper splash screen while the desktop backend spins up, so launch feels intentional instead of looking briefly stalled.",
       },
       {
         id: "provider-capability-and-theme-polish",
@@ -884,7 +884,7 @@ export const WHATS_NEW_ENTRIES: readonly WhatsNewEntry[] = [
         id: "theme-pack-editor",
         title: "🎨 Theme packs are editable",
         description:
-          "The new theme pack editor lets you tune UI colors directly in Synara, with shared theme tokens keeping the sidebar, composer, transcript, and controls in sync.",
+          "The new theme pack editor lets you tune UI colors directly in Codewit, with shared theme tokens keeping the sidebar, composer, transcript, and controls in sync.",
       },
       {
         id: "sidebar-notifications",
@@ -962,7 +962,7 @@ export const WHATS_NEW_ENTRIES: readonly WhatsNewEntry[] = [
         id: "update-check-timeout-recovery",
         title: "🛟 No more stuck checking state",
         description:
-          "If the updater never answers, Synara now times out and recovers instead of hanging on a permanent Checking status.",
+          "If the updater never answers, Codewit now times out and recovers instead of hanging on a permanent Checking status.",
       },
     ],
   },
@@ -980,7 +980,7 @@ export const WHATS_NEW_ENTRIES: readonly WhatsNewEntry[] = [
         id: "custom-provider-binaries",
         title: "🛠️ Custom binary paths for every provider",
         description:
-          "Point Synara at your own Codex, Claude, or Gemini binary when your setup lives outside the default install path.",
+          "Point Codewit at your own Codex, Claude, or Gemini binary when your setup lives outside the default install path.",
       },
       {
         id: "assistant-selections-as-context",

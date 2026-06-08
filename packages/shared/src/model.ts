@@ -244,12 +244,12 @@ export function getGeminiThinkingModelAlias(
 
   const base = sanitizeGeminiAliasSegment(model);
   if (kind === "level" && nextOptions.thinkingLevel) {
-    return `synara-gemini-${base}-thinking-level-${nextOptions.thinkingLevel.toLowerCase()}`;
+    return `codewit-gemini-${base}-thinking-level-${nextOptions.thinkingLevel.toLowerCase()}`;
   }
   if (kind === "budget" && nextOptions.thinkingBudget !== undefined) {
     const budget =
       nextOptions.thinkingBudget === -1 ? "dynamic" : String(nextOptions.thinkingBudget);
-    return `synara-gemini-${base}-thinking-budget-${budget}`;
+    return `codewit-gemini-${base}-thinking-budget-${budget}`;
   }
   return null;
 }

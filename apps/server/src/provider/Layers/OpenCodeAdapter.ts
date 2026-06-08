@@ -2106,7 +2106,7 @@ export function makeOpenCodeAdapterLive(options?: OpenCodeAdapterLiveOptions) {
             yield* completeOpenCodeTurn(context, {
               turnId,
               raw: {
-                source: "dpcode.opencode.idle-after-tool-calls",
+                source: "codewit.opencode.idle-after-tool-calls",
                 event: raw,
               },
               errorMessage: message,
@@ -2124,7 +2124,7 @@ export function makeOpenCodeAdapterLive(options?: OpenCodeAdapterLiveOptions) {
                 threadId: context.session.threadId,
                 turnId,
                 raw: {
-                  source: "dpcode.opencode.idle-after-tool-calls",
+                  source: "codewit.opencode.idle-after-tool-calls",
                   event: raw,
                 },
               }),
@@ -2238,7 +2238,7 @@ export function makeOpenCodeAdapterLive(options?: OpenCodeAdapterLiveOptions) {
             turnId: input.turnId,
             assistantEntry,
             raw: {
-              source: "dpcode.opencode.prompt.recovery",
+              source: "codewit.opencode.prompt.recovery",
               message: assistantEntry,
             },
           });
@@ -2311,7 +2311,7 @@ export function makeOpenCodeAdapterLive(options?: OpenCodeAdapterLiveOptions) {
                 "OpenCode did not produce any activity for this prompt. The session may be stuck; try sending again or restart OpenCode.";
               yield* completeOpenCodeTurn(context, {
                 turnId: input.turnId,
-                raw: { source: "dpcode.opencode.prompt.watchdog" },
+                raw: { source: "codewit.opencode.prompt.watchdog" },
                 errorMessage: message,
               });
               updateProviderSession(
@@ -2326,7 +2326,7 @@ export function makeOpenCodeAdapterLive(options?: OpenCodeAdapterLiveOptions) {
                 ...buildEventBase({
                   threadId: context.session.threadId,
                   turnId: input.turnId,
-                  raw: { source: "dpcode.opencode.prompt.watchdog" },
+                  raw: { source: "codewit.opencode.prompt.watchdog" },
                 }),
                 type: "runtime.error",
                 payload: {
@@ -2378,7 +2378,7 @@ export function makeOpenCodeAdapterLive(options?: OpenCodeAdapterLiveOptions) {
                   turnId: input.turnId,
                   assistantEntry,
                   raw: {
-                    source: "dpcode.opencode.prompt.response",
+                    source: "codewit.opencode.prompt.response",
                     message: assistantEntry,
                   },
                 });
@@ -2882,7 +2882,7 @@ export function makeOpenCodeAdapterLive(options?: OpenCodeAdapterLiveOptions) {
           }
 
           // Newer OpenCode servers can emit session.next.* events for the active
-          // agent loop. Mirror them into Synara's canonical transcript stream.
+          // agent loop. Mirror them into Codewit's canonical transcript stream.
           case "session.next.text.delta": {
             if (!turnId || event.properties.delta.length === 0) {
               break;
@@ -3576,7 +3576,7 @@ export function makeOpenCodeAdapterLive(options?: OpenCodeAdapterLiveOptions) {
                           : {}),
                         ...(initialAgent ? { agent: initialAgent } : {}),
                         permission: buildOpenCodePermissionRules(input.runtimeMode),
-                        title: `Synara ${input.threadId}`,
+                        title: `Codewit ${input.threadId}`,
                       };
                       return client.session.create(
                         sessionCreateInput as unknown as Parameters<
@@ -3750,7 +3750,7 @@ export function makeOpenCodeAdapterLive(options?: OpenCodeAdapterLiveOptions) {
         context.activeTurnSawFinalAssistant = false;
         context.activeTurnToolCallIdleWatchdogStarted = false;
         context.activeInteractionMode = input.interactionMode === "plan" ? "plan" : "default";
-        // Always pin Synara's interaction mode to OpenCode's primary agent.
+        // Always pin Codewit's interaction mode to OpenCode's primary agent.
         // Otherwise a user config with default agent=plan can trap default turns in plan mode.
         context.activeAgent =
           agent ??

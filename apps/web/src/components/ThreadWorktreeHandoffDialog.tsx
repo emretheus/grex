@@ -85,7 +85,7 @@ export function ThreadWorktreeHandoffDialog({
                     onOpenChange(false);
                   }
                 }}
-                placeholder="synara/feature-name"
+                placeholder="codewit/feature-name"
               />
             </label>
           </form>

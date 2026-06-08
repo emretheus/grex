@@ -48,7 +48,7 @@ function cleanupStaleDevApps() {
     return;
   }
 
-  spawnSync("pkill", ["-f", "--", `--t3code-dev-root=${desktopDir}`], { stdio: "ignore" });
+  spawnSync("pkill", ["-f", "--", `--codewit-dev-root=${desktopDir}`], { stdio: "ignore" });
 }
 
 function listStaleComputerUsePids() {
@@ -56,7 +56,7 @@ function listStaleComputerUsePids() {
     return [];
   }
 
-  const result = spawnSync("pgrep", ["-fal", "Synara \\(Dev\\).*(computerUseMcp\\.mjs mcp)"], {
+  const result = spawnSync("pgrep", ["-fal", "Codewit \\(Dev\\).*(computerUseMcp\\.mjs mcp)"], {
     encoding: "utf8",
   });
   const output = typeof result.stdout === "string" ? result.stdout.trim() : "";
@@ -97,7 +97,7 @@ function cleanupStaleComputerUseApps() {
   }
 
   console.error(
-    `[desktop-dev] Cleaning up ${stalePids.length} stale Synara (Dev) Computer Use helper process${stalePids.length === 1 ? "" : "es"} from other worktrees.`,
+    `[desktop-dev] Cleaning up ${stalePids.length} stale Codewit (Dev) Computer Use helper process${stalePids.length === 1 ? "" : "es"} from other worktrees.`,
   );
 
   for (const pid of stalePids) {
@@ -116,16 +116,20 @@ function warnIfAlphaAppRunning() {
     return;
   }
 
-  const result = spawnSync("pgrep", ["-fal", "/Applications/Synara\\.app/Contents/MacOS/Synara"], {
-    encoding: "utf8",
-  });
+  const result = spawnSync(
+    "pgrep",
+    ["-fal", "/Applications/Codewit\\.app/Contents/MacOS/Codewit"],
+    {
+      encoding: "utf8",
+    },
+  );
   const output = typeof result.stdout === "string" ? result.stdout.trim() : "";
   if (!output) {
     return;
   }
 
   console.error(
-    "[desktop-dev] Synara is still running. Close it before testing voice in Synara (Dev), or you may be looking at the wrong app/runtime.",
+    "[desktop-dev] Codewit is still running. Close it before testing voice in Codewit (Dev), or you may be looking at the wrong app/runtime.",
   );
   console.error(output);
 }
@@ -137,7 +141,7 @@ function startApp() {
 
   const app = spawn(
     resolveElectronPath(),
-    [`--t3code-dev-root=${desktopDir}`, "dist-electron/main.js"],
+    [`--codewit-dev-root=${desktopDir}`, "dist-electron/main.js"],
     {
       cwd: desktopDir,
       env: {

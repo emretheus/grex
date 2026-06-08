@@ -83,20 +83,7 @@ type ThreadUserInputResponseRequestedEvent = Extract<
   { type: "thread.user-input-response-requested" }
 >;
 
-const PERSISTED_STATE_KEY = "synara:renderer-state:v8";
-const LEGACY_PERSISTED_STATE_KEYS = [
-  "dpcode:renderer-state:v8",
-  "t3code:renderer-state:v8",
-  "t3code:renderer-state:v7",
-  "t3code:renderer-state:v6",
-  "t3code:renderer-state:v5",
-  "t3code:renderer-state:v4",
-  "t3code:renderer-state:v3",
-  "codething:renderer-state:v4",
-  "codething:renderer-state:v3",
-  "codething:renderer-state:v2",
-  "codething:renderer-state:v1",
-] as const;
+const PERSISTED_STATE_KEY = "codewit:renderer-state:v8";
 const MAX_THREAD_MESSAGES = 2_000;
 const MAX_THREAD_ACTIVITIES = 500;
 // Stable empty reference for `threadIds` fallbacks. Consumers must read through
@@ -230,8 +217,6 @@ function readPersistedState(): AppState {
   }
 }
 
-let legacyKeysCleanedUp = false;
-
 function persistState(state: AppState): void {
   if (typeof window === "undefined") return;
   try {
@@ -247,12 +232,6 @@ function persistState(state: AppState): void {
         projectNamesByCwd: Object.fromEntries(persistedProjectNamesByCwd),
       }),
     );
-    if (!legacyKeysCleanedUp) {
-      legacyKeysCleanedUp = true;
-      for (const legacyKey of LEGACY_PERSISTED_STATE_KEYS) {
-        window.localStorage.removeItem(legacyKey);
-      }
-    }
   } catch {
     // Ignore quota/storage errors to avoid breaking chat UX.
   }

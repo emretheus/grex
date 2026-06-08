@@ -15,7 +15,7 @@ import { ApprovalRequestId, ThreadId } from "@t3tools/contracts";
 
 import {
   buildCodexProcessEnv,
-  disableDpCodeBrowserPluginInCodexConfig,
+  disableCodewitBrowserPluginInCodexConfig,
   resolveCodexBrowserUsePipePath,
 } from "./codexProcessEnv";
 import {
@@ -386,7 +386,7 @@ describe("buildCodexProcessEnv", () => {
         env: {
           SHELL: "/bin/zsh",
           PATH: "/usr/bin",
-          DPCODE_DISABLE_CODEX_DPCODE_BROWSER_PLUGIN: "0",
+          CODEWIT_DISABLE_CODEX_BROWSER_PLUGIN: "0",
         },
         homePath: tempDir,
         platform: "darwin",
@@ -415,7 +415,7 @@ describe("buildCodexProcessEnv", () => {
         PATH: "/usr/bin",
         CODEX_HOME: "/tmp/.codex",
         AZURE_OPENAI_API_KEY: "existing-secret",
-        DPCODE_DISABLE_CODEX_DPCODE_BROWSER_PLUGIN: "0",
+        CODEWIT_DISABLE_CODEX_BROWSER_PLUGIN: "0",
       },
       platform: "darwin",
       readEnvironment,
@@ -428,28 +428,28 @@ describe("buildCodexProcessEnv", () => {
   it("allows the configured desktop browser-use socket in the Codex sandbox", () => {
     const env = buildCodexProcessEnv({
       env: {
-        SYNARA_BROWSER_USE_PIPE_PATH: "/tmp/codex-browser-use/synara.sock",
+        CODEWIT_BROWSER_USE_PIPE_PATH: "/tmp/codex-browser-use/codewit.sock",
         NODE_REPL_SANDBOX_ALLOWED_UNIX_SOCKETS: "/tmp/existing.sock",
-        DPCODE_DISABLE_CODEX_DPCODE_BROWSER_PLUGIN: "0",
+        CODEWIT_DISABLE_CODEX_BROWSER_PLUGIN: "0",
       },
       platform: "darwin",
     });
 
     expect(env.NODE_REPL_SANDBOX_ALLOWED_UNIX_SOCKETS).toBe(
-      "/tmp/existing.sock,/tmp/codex-browser-use/synara.sock",
+      "/tmp/existing.sock,/tmp/codex-browser-use/codewit.sock",
     );
   });
 
   it("resolves the browser-use pipe path from desktop env aliases", () => {
     expect(
       resolveCodexBrowserUsePipePath({
-        env: { T3CODE_BROWSER_USE_PIPE_PATH: "/tmp/codex-browser-use/t3.sock" },
+        env: { CODEWIT_BROWSER_USE_PIPE_PATH: "/tmp/codex-browser-use/t3.sock" },
         platform: "darwin",
       }),
     ).toBe("/tmp/codex-browser-use/t3.sock");
   });
 
-  it("disables the local dpcode-browser plugin in Synara's Codex home overlay", () => {
+  it("disables the local codewit-browser plugin in Codewit's Codex home overlay", () => {
     const tempDir = mkdtempSync(path.join(os.tmpdir(), "t3-codex-env-"));
     const runtimeHome = mkdtempSync(path.join(os.tmpdir(), "t3-runtime-home-"));
     try {
@@ -459,14 +459,14 @@ describe("buildCodexProcessEnv", () => {
           '[plugins."github@openai-curated"]',
           "enabled = true",
           "",
-          '[plugins."dpcode-browser@local"]',
+          '[plugins."codewit-browser@local"]',
           "enabled = true",
         ].join("\n"),
         "utf8",
       );
 
       const env = buildCodexProcessEnv({
-        env: { SYNARA_HOME: runtimeHome },
+        env: { CODEWIT_HOME: runtimeHome },
         homePath: tempDir,
         platform: "darwin",
       });
@@ -477,7 +477,7 @@ describe("buildCodexProcessEnv", () => {
         throw new Error("Expected CODEX_HOME to be set.");
       }
       expect(readFileSync(path.join(codexHome, "config.toml"), "utf8")).toContain(
-        '[plugins."dpcode-browser@local"]\nenabled = false',
+        '[plugins."codewit-browser@local"]\nenabled = false',
       );
     } finally {
       rmSync(tempDir, { recursive: true, force: true });
@@ -485,7 +485,7 @@ describe("buildCodexProcessEnv", () => {
     }
   });
 
-  it("repairs stale real files in Synara's Codex home overlay", () => {
+  it("repairs stale real files in Codewit's Codex home overlay", () => {
     const tempDir = mkdtempSync(path.join(os.tmpdir(), "t3-codex-env-"));
     const runtimeHome = mkdtempSync(path.join(os.tmpdir(), "t3-runtime-home-"));
     try {
@@ -499,7 +499,7 @@ describe("buildCodexProcessEnv", () => {
       writeFileSync(overlayMemoryPath, "stale-overlay-db", "utf8");
 
       const env = buildCodexProcessEnv({
-        env: { SYNARA_HOME: runtimeHome },
+        env: { CODEWIT_HOME: runtimeHome },
         homePath: tempDir,
         platform: "darwin",
       });
@@ -513,7 +513,7 @@ describe("buildCodexProcessEnv", () => {
     }
   });
 
-  it("preserves real generated image directories in Synara's Codex home overlay", () => {
+  it("preserves real generated image directories in Codewit's Codex home overlay", () => {
     const tempDir = mkdtempSync(path.join(os.tmpdir(), "t3-codex-env-"));
     const runtimeHome = mkdtempSync(path.join(os.tmpdir(), "t3-runtime-home-"));
     try {
@@ -529,7 +529,7 @@ describe("buildCodexProcessEnv", () => {
       writeFileSync(overlayImagePath, "overlay-image", "utf8");
 
       const env = buildCodexProcessEnv({
-        env: { SYNARA_HOME: runtimeHome },
+        env: { CODEWIT_HOME: runtimeHome },
         homePath: tempDir,
         platform: "darwin",
       });
@@ -543,9 +543,9 @@ describe("buildCodexProcessEnv", () => {
     }
   });
 
-  it("adds a disabled dpcode-browser plugin section when Codex config does not contain one", () => {
-    expect(disableDpCodeBrowserPluginInCodexConfig('model = "gpt-5.5"')).toContain(
-      '[plugins."dpcode-browser@local"]\nenabled = false',
+  it("adds a disabled codewit-browser plugin section when Codex config does not contain one", () => {
+    expect(disableCodewitBrowserPluginInCodexConfig('model = "gpt-5.5"')).toContain(
+      '[plugins."codewit-browser@local"]\nenabled = false',
     );
   });
 });
@@ -673,8 +673,8 @@ describe("startSession", () => {
   it("enables Codex experimental api capabilities during initialize", () => {
     expect(buildCodexInitializeParams()).toEqual({
       clientInfo: {
-        name: "synara_desktop",
-        title: "Synara Desktop",
+        name: "codewit_desktop",
+        title: "Codewit Desktop",
         version: "0.1.0",
       },
       capabilities: {
@@ -685,7 +685,7 @@ describe("startSession", () => {
 
   it("uses an isolated scratch workspace path when no cwd is provided", () => {
     const cwd = ensureIsolatedScratchWorkspace(asThreadId("thread-1"));
-    expect(cwd).toContain(`${path.sep}synara-codex-workspaces${path.sep}thread-1`);
+    expect(cwd).toContain(`${path.sep}codewit-codex-workspaces${path.sep}thread-1`);
   });
 
   it("fails fast with an upgrade message when codex is below the minimum supported version", async () => {
@@ -712,7 +712,7 @@ describe("startSession", () => {
       )
       .mockImplementation(() => {
         throw new Error(
-          "Codex CLI v0.36.0 is too old for Synara. Upgrade to v0.37.0 or newer and restart Synara.",
+          "Codex CLI v0.36.0 is too old for Codewit. Upgrade to v0.37.0 or newer and restart Codewit.",
         );
       });
 
@@ -724,7 +724,7 @@ describe("startSession", () => {
           runtimeMode: "full-access",
         }),
       ).rejects.toThrow(
-        "Codex CLI v0.36.0 is too old for Synara. Upgrade to v0.37.0 or newer and restart Synara.",
+        "Codex CLI v0.36.0 is too old for Codewit. Upgrade to v0.37.0 or newer and restart Codewit.",
       );
       expect(versionCheck).toHaveBeenCalledTimes(1);
       expect(events).toEqual([
@@ -732,7 +732,7 @@ describe("startSession", () => {
           method: "session/startFailed",
           kind: "error",
           message:
-            "Codex CLI v0.36.0 is too old for Synara. Upgrade to v0.37.0 or newer and restart Synara.",
+            "Codex CLI v0.36.0 is too old for Codewit. Upgrade to v0.37.0 or newer and restart Codewit.",
         },
       ]);
     } finally {

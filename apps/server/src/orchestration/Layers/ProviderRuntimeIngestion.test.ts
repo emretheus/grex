@@ -2882,7 +2882,7 @@ describe("ProviderRuntimeIngestion", () => {
         ? (data.rawOutput as Record<string, unknown>)
         : {};
 
-    expect(data.__synaraTruncated).toBe(true);
+    expect(data.__codewitTruncated).toBe(true);
     expect(JSON.stringify(data).length).toBeLessThan(17_000);
     expect(rawInput.command).toBe("bun run something");
     expect(String(rawOutput.stdout ?? "").length).toBeLessThan(3_000);
@@ -2923,7 +2923,7 @@ describe("ProviderRuntimeIngestion", () => {
         ? (payload.data as Record<string, unknown>)
         : {};
 
-    expect(data.__synaraTruncated).toBe(true);
+    expect(data.__codewitTruncated).toBe(true);
     expect(typeof data.preview).toBe("string");
     expect(JSON.stringify(data).length).toBeLessThanOrEqual(16_000);
   });

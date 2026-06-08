@@ -27,16 +27,16 @@ This document covers how to run desktop releases from one tag, first without sig
   - The desktop UI shows a rocket update button while preparing and switches to an install action once the update is ready.
 - Provider: GitHub Releases (`provider: github`) configured at build time.
 - Repository slug source:
-  - `T3CODE_DESKTOP_UPDATE_REPOSITORY` (format `owner/repo`), if set.
+  - `CODEWIT_DESKTOP_UPDATE_REPOSITORY` (format `owner/repo`), if set.
   - otherwise `GITHUB_REPOSITORY` from GitHub Actions.
 - Temporary private-repo auth workaround:
-  - set `T3CODE_DESKTOP_UPDATE_GITHUB_TOKEN` (or `GH_TOKEN`) in the desktop app runtime environment.
+  - set `CODEWIT_DESKTOP_UPDATE_GITHUB_TOKEN` (or `GH_TOKEN`) in the desktop app runtime environment.
   - the app forwards it as an `Authorization: Bearer <token>` request header for updater HTTP calls.
 - Required release assets for updater:
   - platform installers (`.exe`, `.dmg`, `.AppImage`, plus macOS `.zip` for Squirrel.Mac update payloads)
   - `latest*.yml` metadata
   - `*.blockmap` files (used for differential downloads)
-- Production desktop builds omit web/server/desktop source maps by default to keep update payloads small. Set `SYNARA_WEB_SOURCEMAP=1`, `SYNARA_SERVER_SOURCEMAP=1`, or `SYNARA_DESKTOP_SOURCEMAP=1` only for a diagnostic release that needs them.
+- Production desktop builds omit web/server/desktop source maps by default to keep update payloads small. Set `CODEWIT_WEB_SOURCEMAP=1`, `CODEWIT_SERVER_SOURCEMAP=1`, or `CODEWIT_DESKTOP_SOURCEMAP=1` only for a diagnostic release that needs them.
 - macOS metadata note:
   - `electron-updater` reads `latest-mac.yml` for both Intel and Apple Silicon.
   - The workflow merges the per-arch mac manifests into one `latest-mac.yml` before publishing the GitHub Release.
@@ -60,15 +60,15 @@ Checklist:
    - build web + server
    - run `bun publish --access public`
 
-## Synara notes
+## Codewit notes
 
-- `Synara` keeps the same release architecture as upstream `T3Code`, but publishes desktop artifacts under the Synara branding.
+- `Codewit` uses its own release architecture, but publishes desktop artifacts under the Codewit branding.
 - The desktop updater expects the GitHub Release in this repository to include the generated updater metadata files, not just the installers.
-- The published release title should read `Synara vX.Y.Z`.
+- The published release title should read `Codewit vX.Y.Z`.
 - By default, the first-party desktop release path does not require CLI publish or post-release version-bump automation.
 - Optional jobs stay disabled unless repository variables enable them:
-  - `DPCODE_PUBLISH_CLI=1`
-  - `DPCODE_FINALIZE_RELEASE=1`
+  - `CODEWIT_PUBLISH_CLI=1`
+  - `CODEWIT_FINALIZE_RELEASE=1`
 
 ## 1) Dry-run release without signing
 

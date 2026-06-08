@@ -1,5 +1,5 @@
 // FILE: vite.config.ts
-// Purpose: Builds the Synara web client and controls diagnostic source maps.
+// Purpose: Builds the Codewit web client and controls diagnostic source maps.
 // Layer: Web build config
 // Depends on: Vite, Tailwind, React compiler, TanStack Router.
 
@@ -11,7 +11,7 @@ import { defineConfig } from "vite";
 import pkg from "./package.json" with { type: "json" };
 
 const port = Number(process.env.PORT ?? 5733);
-const sourcemapEnv = process.env.SYNARA_WEB_SOURCEMAP?.trim().toLowerCase();
+const sourcemapEnv = process.env.CODEWIT_WEB_SOURCEMAP?.trim().toLowerCase();
 
 const buildSourcemap =
   sourcemapEnv === "1" || sourcemapEnv === "true"
@@ -40,7 +40,13 @@ export default defineConfig({
       "@pierre/diffs/react",
       "@pierre/diffs/worker/worker.js",
       "react-icons/gr",
+      "monaco-editor",
     ],
+  },
+  worker: {
+    // Monaco's language workers are ES modules; emit workers in the same format so
+    // they load correctly inside Electron's BrowserWindow.
+    format: "es",
   },
   define: {
     // In dev mode, tell the web app where the WebSocket server lives

@@ -133,7 +133,7 @@ function createBaseServerConfig(): ServerConfig {
   return {
     cwd: "/repo/project",
     worktreesDir: "/repo/.codex/worktrees",
-    keybindingsConfigPath: "/repo/project/.t3code-keybindings.json",
+    keybindingsConfigPath: "/repo/project/.codewit-keybindings.json",
     keybindings: [],
     issues: [],
     providers: [
@@ -1836,7 +1836,7 @@ describe("ChatView timeline estimator parity (full app)", () => {
             threadId: THREAD_ID,
             cwd: "/repo/project",
             env: {
-              T3CODE_PROJECT_ROOT: "/repo/project",
+              CODEWIT_PROJECT_ROOT: "/repo/project",
             },
           });
         },
@@ -1915,8 +1915,8 @@ describe("ChatView timeline estimator parity (full app)", () => {
             threadId: THREAD_ID,
             cwd: "/repo/worktrees/feature-draft",
             env: {
-              T3CODE_PROJECT_ROOT: "/repo/project",
-              T3CODE_WORKTREE_PATH: "/repo/worktrees/feature-draft",
+              CODEWIT_PROJECT_ROOT: "/repo/project",
+              CODEWIT_WORKTREE_PATH: "/repo/worktrees/feature-draft",
             },
           });
         },
@@ -2660,7 +2660,7 @@ describe("ChatView timeline estimator parity (full app)", () => {
               typeof request.newBranch === "string",
           );
           expect(createWorktreeRequest).toBeTruthy();
-          expect(createWorktreeRequest?.newBranch).toMatch(/^synara\/[0-9a-f]{8}$/);
+          expect(createWorktreeRequest?.newBranch).toMatch(/^codewit\/[0-9a-f]{8}$/);
 
           const detachedRequest = wsRequests.find(
             (request) => request._tag === WS_METHODS.gitCreateDetachedWorktree,

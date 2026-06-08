@@ -100,10 +100,10 @@ const makeCheckpointStore = Effect.gen(function* () {
             const commitEnv: NodeJS.ProcessEnv = {
               ...process.env,
               GIT_INDEX_FILE: tempIndexPath,
-              GIT_AUTHOR_NAME: "Synara",
-              GIT_AUTHOR_EMAIL: "t3code@users.noreply.github.com",
-              GIT_COMMITTER_NAME: "Synara",
-              GIT_COMMITTER_EMAIL: "t3code@users.noreply.github.com",
+              GIT_AUTHOR_NAME: "Codewit",
+              GIT_AUTHOR_EMAIL: "codewit.noreply.github.com",
+              GIT_COMMITTER_NAME: "Codewit",
+              GIT_COMMITTER_EMAIL: "codewit.noreply.github.com",
             };
 
             const headExists = yield* hasHeadCommit(input.cwd);

@@ -13,11 +13,11 @@ build/
 .logs/
 release/
 .t3
-/.dpcode/electron-dev
-/.dpcode/backups
-/.dpcode-*/
-/.synara/
-/.synara-*/
+/.codewit/electron-dev
+/.codewit/backups
+/.codewit-*/
+/.codewit/
+/.codewit-*/
 .idea/
 apps/web/.playwright
 apps/web/playwright-report

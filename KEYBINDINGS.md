@@ -1,8 +1,8 @@
 # Keybindings
 
-Synara reads keybindings from:
+Codewit reads keybindings from:
 
-- `~/.dpcode/userdata/keybindings.json`
+- `~/.codewit/userdata/keybindings.json`
 
 The file must be a JSON array of rules:
 

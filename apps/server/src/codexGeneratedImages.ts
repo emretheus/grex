@@ -69,8 +69,8 @@ export const isSupportedLocalImagePath = isSupportedLocalImagePathShared;
 
 /**
  * Resolves the home directory the codex app-server child process actually
- * writes images under for the current process env. When Synara wraps Codex
- * with the dpcode-browser overlay (production default), this is the overlay
+ * writes images under for the current process env. When Codewit wraps Codex
+ * with the codewit-browser overlay (production default), this is the overlay
  * home — not the user's `~/.codex`.
  */
 export function resolveCodexHomePath(homePath?: string): string {
@@ -85,7 +85,7 @@ export function resolveCodexGeneratedImagesRoot(homePath?: string): string {
 /**
  * All generated-images directories the local-image route should treat as
  * legitimate. Includes both the source `~/.codex/generated_images` and the
- * overlay `<SYNARA_HOME>/codex-home-overlay/generated_images` so we serve
+ * overlay `<CODEWIT_HOME>/codex-home-overlay/generated_images` so we serve
  * images regardless of which home Codex wrote them under.
  */
 export function resolveCodexGeneratedImagesRoots(homePath?: string): readonly string[] {

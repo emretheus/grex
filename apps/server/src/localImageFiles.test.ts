@@ -22,7 +22,7 @@ afterEach(() => {
 
 describe("resolveAllowedLocalImageFile", () => {
   it("allows images inside the current workspace", async () => {
-    const workspace = makeTempDir("dpcode-image-workspace-");
+    const workspace = makeTempDir("codewit-image-workspace-");
     writeFileSync(path.join(workspace, ".git"), "gitdir: .git");
     const imagePath = path.join(workspace, "preview.png");
     writeFileSync(imagePath, Buffer.from([0x89, 0x50, 0x4e, 0x47]));
@@ -37,7 +37,7 @@ describe("resolveAllowedLocalImageFile", () => {
   });
 
   it("allows images inside Codex generated_images without a cwd", async () => {
-    const codexHome = makeTempDir("dpcode-codex-home-");
+    const codexHome = makeTempDir("codewit-codex-home-");
     const previousCodexHome = process.env.CODEX_HOME;
     process.env.CODEX_HOME = codexHome;
     try {
@@ -61,10 +61,10 @@ describe("resolveAllowedLocalImageFile", () => {
     }
   });
 
-  it("allows images written to the SYNARA_HOME codex-home-overlay generated_images root", async () => {
-    // Codex app-server is launched with CODEX_HOME pointing at a Synara overlay
-    // directory (see resolveDpCodeCodexHomeOverlayPath). Generated images therefore
-    // live under <SYNARA_HOME>/codex-home-overlay/generated_images/<thread>/<call>.png,
+  it("allows images written to the CODEWIT_HOME codex-home-overlay generated_images root", async () => {
+    // Codex app-server is launched with CODEX_HOME pointing at a Codewit overlay
+    // directory (see resolveCodewitCodexHomeOverlayPath). Generated images therefore
+    // live under <CODEWIT_HOME>/codex-home-overlay/generated_images/<thread>/<call>.png,
     // which sits outside both the user's `~/.codex` source home and any workspace
     // root. The allowlist must still serve them.
     //
@@ -73,9 +73,9 @@ describe("resolveAllowedLocalImageFile", () => {
     // way only the overlay candidate can satisfy the allowlist.
     const fakeRoot = path.join(process.cwd(), `.test-codex-overlay-${process.pid}-${Date.now()}`);
     const sourceHome = path.join(fakeRoot, "source", ".codex");
-    const synaraHome = path.join(fakeRoot, "synara", "runtime");
+    const codewitHome = path.join(fakeRoot, "codewit", "runtime");
     const overlayImageDir = path.join(
-      synaraHome,
+      codewitHome,
       "codex-home-overlay",
       "generated_images",
       "thread-overlay",
@@ -84,8 +84,8 @@ describe("resolveAllowedLocalImageFile", () => {
     mkdirSync(overlayImageDir, { recursive: true });
     writeFileSync(imagePath, Buffer.from([0x89, 0x50, 0x4e, 0x47]));
 
-    const previousSynaraHome = process.env.SYNARA_HOME;
-    process.env.SYNARA_HOME = synaraHome;
+    const previousCodewitHome = process.env.CODEWIT_HOME;
+    process.env.CODEWIT_HOME = codewitHome;
     try {
       const result = await resolveAllowedLocalImageFile({
         requestedPath: imagePath,
@@ -95,10 +95,10 @@ describe("resolveAllowedLocalImageFile", () => {
 
       assert.equal(result?.path, realpathSync(imagePath));
     } finally {
-      if (previousSynaraHome === undefined) {
-        delete process.env.SYNARA_HOME;
+      if (previousCodewitHome === undefined) {
+        delete process.env.CODEWIT_HOME;
       } else {
-        process.env.SYNARA_HOME = previousSynaraHome;
+        process.env.CODEWIT_HOME = previousCodewitHome;
       }
       rmSync(fakeRoot, { recursive: true, force: true });
     }

@@ -10,7 +10,7 @@ const makeLayer = () =>
   ServerSecretStoreLive.pipe(
     Layer.provide(
       ServerConfig.layerTest(process.cwd(), {
-        prefix: "dpcode-secret-store-test-",
+        prefix: "codewit-secret-store-test-",
       }),
     ),
     Layer.provide(NodeServices.layer),

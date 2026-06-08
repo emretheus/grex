@@ -13,7 +13,7 @@ const projectionThreadsColumnNames = (sql: SqlClient.SqlClient) =>
   `.pipe(Effect.map((rows) => rows.map((row) => row.name)));
 
 layer("039_ReconcileLegacyPinnedThreads", (it) => {
-  it.effect("heals legacy DBs whose tracker skipped Synara migration 36", () =>
+  it.effect("heals legacy DBs whose tracker skipped Codewit migration 36", () =>
     Effect.gen(function* () {
       const sql = yield* SqlClient.SqlClient;
 

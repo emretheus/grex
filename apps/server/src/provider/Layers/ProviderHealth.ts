@@ -2133,7 +2133,7 @@ export const ProviderHealthLive = Layer.effect(
             startedAt,
             finishedAt,
             message: stillOutdated
-              ? "Update command completed, but Synara still detects an outdated provider version."
+              ? "Update command completed, but Codewit still detects an outdated provider version."
               : "Provider updated.",
             output: output ? output.slice(0, UPDATE_OUTPUT_MAX_BYTES) : null,
           }),

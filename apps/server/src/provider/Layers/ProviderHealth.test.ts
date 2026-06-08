@@ -5,7 +5,7 @@ import { Effect, FileSystem, Layer, Path, Sink, Stream } from "effect";
 import * as PlatformError from "effect/PlatformError";
 import { ChildProcessSpawner } from "effect/unstable/process";
 
-import { DPCODE_CODEX_HOME_OVERLAY_DIR } from "../../codexHomePaths";
+import { CODEWIT_CODEX_HOME_OVERLAY_DIR } from "../../codexHomePaths";
 import {
   checkClaudeProviderStatus,
   checkCodexProviderStatus,
@@ -98,24 +98,24 @@ function withTempCodexHome(configContent?: string) {
     yield* Effect.acquireRelease(
       Effect.sync(() => {
         const originalCodexHome = process.env.CODEX_HOME;
-        const originalDpCodeHome = process.env.DPCODE_HOME;
+        const originalCodewitHome = process.env.CODEWIT_HOME;
         const originalPortkeyApiKey = process.env.PORTKEY_API_KEY;
         process.env.CODEX_HOME = tmpDir;
-        process.env.DPCODE_HOME = runtimeDir;
+        process.env.CODEWIT_HOME = runtimeDir;
         process.env.PORTKEY_API_KEY ??= "test-portkey-key";
-        return { originalCodexHome, originalDpCodeHome, originalPortkeyApiKey };
+        return { originalCodexHome, originalCodewitHome, originalPortkeyApiKey };
       }),
-      ({ originalCodexHome, originalDpCodeHome, originalPortkeyApiKey }) =>
+      ({ originalCodexHome, originalCodewitHome, originalPortkeyApiKey }) =>
         Effect.sync(() => {
           if (originalCodexHome !== undefined) {
             process.env.CODEX_HOME = originalCodexHome;
           } else {
             delete process.env.CODEX_HOME;
           }
-          if (originalDpCodeHome !== undefined) {
-            process.env.DPCODE_HOME = originalDpCodeHome;
+          if (originalCodewitHome !== undefined) {
+            process.env.CODEWIT_HOME = originalCodewitHome;
           } else {
-            delete process.env.DPCODE_HOME;
+            delete process.env.CODEWIT_HOME;
           }
           if (originalPortkeyApiKey !== undefined) {
             process.env.PORTKEY_API_KEY = originalPortkeyApiKey;
@@ -318,7 +318,7 @@ it.layer(NodeServices.layer)("ProviderHealth", (it) => {
           path.join(configuredHome, "config.toml"),
           'model_provider = "openai"\n',
         );
-        expectedCodexHome = path.join(runtimeDir, DPCODE_CODEX_HOME_OVERLAY_DIR);
+        expectedCodexHome = path.join(runtimeDir, CODEWIT_CODEX_HOME_OVERLAY_DIR);
 
         const status = yield* makeCheckCodexProviderStatus("codex", configuredHome);
         assert.strictEqual(status.status, "ready");
@@ -363,7 +363,7 @@ it.layer(NodeServices.layer)("ProviderHealth", (it) => {
         assert.strictEqual(status.authStatus, "unknown");
         assert.strictEqual(
           status.message,
-          "Codex CLI v0.36.0 is too old for Synara. Upgrade to v0.37.0 or newer and restart Synara.",
+          "Codex CLI v0.36.0 is too old for Codewit. Upgrade to v0.37.0 or newer and restart Codewit.",
         );
       }).pipe(
         Effect.provide(

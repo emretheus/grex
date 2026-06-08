@@ -40,10 +40,10 @@ const serverStart = Effect.acquireRelease(
   () => Effect.sync(() => stop()),
 );
 const findAvailablePort = vi.fn((preferred: number) => Effect.succeed(preferred));
-let defaultSynaraHome = "";
+let defaultCodewitHome = "";
 const tempHomes = new Set<string>();
 
-function makeTempHome(prefix = "synara-main-test-"): string {
+function makeTempHome(prefix = "codewit-main-test-"): string {
   const directory = fs.mkdtempSync(path.join(os.tmpdir(), prefix));
   tempHomes.add(directory);
   return directory;
@@ -81,8 +81,8 @@ const runCli = (args: ReadonlyArray<string>, env: Record<string, string> = {}) =
       ConfigProvider.layer(
         ConfigProvider.fromEnv({
           env: {
-            SYNARA_HOME: defaultSynaraHome,
-            T3CODE_NO_BROWSER: "true",
+            CODEWIT_HOME: defaultCodewitHome,
+            CODEWIT_NO_BROWSER: "true",
             ...env,
           },
         }),
@@ -94,7 +94,7 @@ const runCli = (args: ReadonlyArray<string>, env: Record<string, string> = {}) =
 
 beforeEach(() => {
   vi.clearAllMocks();
-  defaultSynaraHome = makeTempHome();
+  defaultCodewitHome = makeTempHome();
   resolvedConfig = null;
   start.mockImplementation(() => undefined);
   stop.mockImplementation(() => undefined);
@@ -111,7 +111,7 @@ afterEach(() => {
 it.layer(testLayer)("server CLI command", (it) => {
   it.effect("parses all CLI flags and wires scoped start/stop", () =>
     Effect.gen(function* () {
-      const flagHome = makeTempHome("synara-main-flag-");
+      const flagHome = makeTempHome("codewit-main-flag-");
 
       yield* runCli([
         "--mode",
@@ -156,16 +156,16 @@ it.layer(testLayer)("server CLI command", (it) => {
 
   it.effect("uses env fallbacks when flags are not provided", () =>
     Effect.gen(function* () {
-      const envHome = makeTempHome("synara-main-env-");
+      const envHome = makeTempHome("codewit-main-env-");
 
       yield* runCli([], {
-        T3CODE_MODE: "desktop",
-        T3CODE_PORT: "4999",
-        T3CODE_HOST: "100.88.10.4",
-        SYNARA_HOME: envHome,
+        CODEWIT_MODE: "desktop",
+        CODEWIT_PORT: "4999",
+        CODEWIT_HOST: "100.88.10.4",
+        CODEWIT_HOME: envHome,
         VITE_DEV_SERVER_URL: "http://localhost:5173",
-        T3CODE_NO_BROWSER: "true",
-        T3CODE_AUTH_TOKEN: "env-token",
+        CODEWIT_NO_BROWSER: "true",
+        CODEWIT_AUTH_TOKEN: "env-token",
       });
 
       assert.equal(start.mock.calls.length, 1);
@@ -184,12 +184,12 @@ it.layer(testLayer)("server CLI command", (it) => {
     }),
   );
 
-  it.effect("prefers --mode over T3CODE_MODE", () =>
+  it.effect("prefers --mode over CODEWIT_MODE", () =>
     Effect.gen(function* () {
       findAvailablePort.mockImplementation((_preferred: number) => Effect.succeed(4666));
       yield* runCli(["--mode", "web"], {
-        T3CODE_MODE: "desktop",
-        T3CODE_NO_BROWSER: "true",
+        CODEWIT_MODE: "desktop",
+        CODEWIT_NO_BROWSER: "true",
       });
 
       assert.deepStrictEqual(findAvailablePort.mock.calls, [[3773]]);
@@ -200,10 +200,10 @@ it.layer(testLayer)("server CLI command", (it) => {
     }),
   );
 
-  it.effect("prefers --no-browser over T3CODE_NO_BROWSER", () =>
+  it.effect("prefers --no-browser over CODEWIT_NO_BROWSER", () =>
     Effect.gen(function* () {
       yield* runCli(["--no-browser"], {
-        T3CODE_NO_BROWSER: "false",
+        CODEWIT_NO_BROWSER: "false",
       });
 
       assert.equal(start.mock.calls.length, 1);
@@ -226,8 +226,8 @@ it.layer(testLayer)("server CLI command", (it) => {
   it.effect("uses fixed localhost defaults in desktop mode", () =>
     Effect.gen(function* () {
       yield* runCli([], {
-        T3CODE_MODE: "desktop",
-        T3CODE_NO_BROWSER: "true",
+        CODEWIT_MODE: "desktop",
+        CODEWIT_NO_BROWSER: "true",
       });
 
       assert.equal(findAvailablePort.mock.calls.length, 0);
@@ -241,8 +241,8 @@ it.layer(testLayer)("server CLI command", (it) => {
   it.effect("allows overriding desktop host with --host", () =>
     Effect.gen(function* () {
       yield* runCli(["--host", "0.0.0.0"], {
-        T3CODE_MODE: "desktop",
-        T3CODE_NO_BROWSER: "true",
+        CODEWIT_MODE: "desktop",
+        CODEWIT_NO_BROWSER: "true",
       });
 
       assert.equal(start.mock.calls.length, 1);
@@ -254,11 +254,11 @@ it.layer(testLayer)("server CLI command", (it) => {
   it.effect("supports CLI and env for bootstrap/provider-log/websocket toggles", () =>
     Effect.gen(function* () {
       yield* runCli(["--auto-bootstrap-project-from-cwd"], {
-        T3CODE_MODE: "desktop",
-        T3CODE_LOG_PROVIDER_EVENTS: "true",
-        T3CODE_LOG_WS_EVENTS: "false",
-        T3CODE_AUTO_BOOTSTRAP_PROJECT_FROM_CWD: "false",
-        T3CODE_NO_BROWSER: "true",
+        CODEWIT_MODE: "desktop",
+        CODEWIT_LOG_PROVIDER_EVENTS: "true",
+        CODEWIT_LOG_WS_EVENTS: "false",
+        CODEWIT_AUTO_BOOTSTRAP_PROJECT_FROM_CWD: "false",
+        CODEWIT_NO_BROWSER: "true",
       });
 
       assert.equal(start.mock.calls.length, 1);

@@ -33,13 +33,13 @@ import { ensureNativeApi } from "./nativeApi";
 import { providerDiscoveryQueryKeys } from "./lib/providerDiscoveryReactQuery";
 import { serverQueryKeys, serverSettingsQueryOptions } from "./lib/serverReactQuery";
 
-const APP_SETTINGS_STORAGE_KEY = "synara:app-settings:v1";
-const SERVER_SETTINGS_MIGRATION_STORAGE_KEY = "t3code:server-settings-migrated:v1";
+const APP_SETTINGS_STORAGE_KEY = "codewit:app-settings:v1";
+const SERVER_SETTINGS_MIGRATION_STORAGE_KEY = "codewit:server-settings-migrated:v1";
 const MAX_CUSTOM_MODEL_COUNT = 32;
 export const MAX_CUSTOM_MODEL_LENGTH = 256;
 export const MIN_CHAT_FONT_SIZE_PX = 11;
-export const MAX_CHAT_FONT_SIZE_PX = 18;
-export const DEFAULT_CHAT_FONT_SIZE_PX = 12;
+export const MAX_CHAT_FONT_SIZE_PX = 20;
+export const DEFAULT_CHAT_FONT_SIZE_PX = 14;
 export const MIN_TERMINAL_FONT_SIZE_PX = 10;
 export const MAX_TERMINAL_FONT_SIZE_PX = 22;
 export const DEFAULT_TERMINAL_FONT_SIZE_PX = 12;

@@ -302,7 +302,7 @@ describe("when: branch is clean, up to date, and has no open PR", () => {
   it("resolveQuickAction keeps disabled commit when the branch tracks the default branch", () => {
     const quick = resolveQuickAction(
       status({
-        branch: "dpcode/pi-cleanup",
+        branch: "codewit/pi-cleanup",
         upstreamBranch: "main",
         aheadCount: 0,
         behindCount: 0,
@@ -326,7 +326,7 @@ describe("when: branch is clean, up to date, and has no open PR", () => {
   it("resolveCreatePrActionAvailability blocks stale create-pr calls for default upstream", () => {
     const availability = resolveCreatePrActionAvailability({
       gitStatus: status({
-        branch: "dpcode/pi-cleanup",
+        branch: "codewit/pi-cleanup",
         upstreamBranch: "main",
         aheadCount: 0,
         behindCount: 0,
@@ -362,7 +362,7 @@ describe("when: branch is clean, up to date, and has no open PR", () => {
   it("buildMenuItems disables create PR when the branch tracks the default branch", () => {
     const items = buildMenuItems(
       status({
-        branch: "dpcode/pi-cleanup",
+        branch: "codewit/pi-cleanup",
         upstreamBranch: "main",
         aheadCount: 0,
         behindCount: 0,
@@ -1370,32 +1370,27 @@ describe("resolveAutoFeatureBranchName", () => {
 });
 
 describe("resolveDefaultCreateBranchName", () => {
-  it("uses Synara as the default namespace", () => {
+  it("uses Codewit as the default namespace", () => {
     const branch = resolveDefaultCreateBranchName(["main"], "fix toast copy");
-    assert.equal(branch, "synara/fix-toast-copy");
+    assert.equal(branch, "codewit/fix-toast-copy");
   });
 
-  it("normalizes an existing legacy dpcode namespace", () => {
-    const branch = resolveDefaultCreateBranchName(["main"], "dpcode/refine-toolbar-actions");
-    assert.equal(branch, "synara/refine-toolbar-actions");
-  });
-
-  it("preserves nested namespaces under Synara", () => {
+  it("preserves nested namespaces under Codewit", () => {
     const branch = resolveDefaultCreateBranchName(["main"], "feature/refine-toolbar-actions");
-    assert.equal(branch, "synara/feature/refine-toolbar-actions");
+    assert.equal(branch, "codewit/feature/refine-toolbar-actions");
   });
 
-  it("increments suffix when the Synara branch already exists", () => {
+  it("increments suffix when the Codewit branch already exists", () => {
     const branch = resolveDefaultCreateBranchName(
-      ["main", "synara/fix-toast-copy", "synara/fix-toast-copy-2"],
+      ["main", "codewit/fix-toast-copy", "codewit/fix-toast-copy-2"],
       "fix toast copy",
     );
-    assert.equal(branch, "synara/fix-toast-copy-3");
+    assert.equal(branch, "codewit/fix-toast-copy-3");
   });
 
-  it("falls back to synara/update when no preferred name is provided", () => {
+  it("falls back to codewit/update when no preferred name is provided", () => {
     const branch = resolveDefaultCreateBranchName(["main"]);
-    assert.equal(branch, "synara/update");
+    assert.equal(branch, "codewit/update");
   });
 });
 
@@ -1403,7 +1398,7 @@ describe("resolveLiveThreadBranchUpdate", () => {
   it("does not regress a semantic thread branch back to a temporary worktree branch", () => {
     const update = resolveLiveThreadBranchUpdate({
       threadBranch: "feature/semantic-branch",
-      gitStatus: status({ branch: "synara/deadbeef" }),
+      gitStatus: status({ branch: "codewit/deadbeef" }),
     });
 
     assert.equal(update, null);
@@ -1420,7 +1415,7 @@ describe("resolveLiveThreadBranchUpdate", () => {
 });
 
 describe("shouldOfferCreateBranchPrompt", () => {
-  const temporaryBranch = "synara/deadbeef";
+  const temporaryBranch = "codewit/deadbeef";
 
   it("shows the create-branch prompt for temporary worktree branches without upstream", () => {
     assert.isTrue(
