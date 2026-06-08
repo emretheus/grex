@@ -5,6 +5,7 @@
 // Layer: Chat right-dock UI
 // Depends on: projects.listDirectories RPC, editorStore, rightDockStore.
 
+import { useQuery } from "@tanstack/react-query";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import type { ProjectFileSystemEntry, ProjectId, ThreadId } from "@t3tools/contracts";
@@ -13,6 +14,13 @@ import { createProjectSelector, createThreadSelector } from "~/storeSelectors";
 import { useStore as useAppStore } from "~/store";
 import { useEditorStore } from "~/editorStore";
 import { useRightDockStore } from "~/rightDockStore";
+import { gitWorkingTreeDiffQueryOptions } from "~/lib/gitReactQuery";
+import {
+  buildGitFileStatusMap,
+  gitFileStatusBadge,
+  gitFileStatusColorClass,
+  type GitFileStatus,
+} from "~/lib/gitFileStatus";
 import {
   ChevronDownIcon,
   ChevronRightIcon,
@@ -37,6 +45,16 @@ export function DockFilesPane({ hostThreadId, projectId }: DockFilesPaneProps) {
 
   const openFile = useEditorStore((s) => s.openFile);
   const openPane = useRightDockStore((s) => s.openPane);
+
+  // Per-file git status (added/modified/deleted/renamed) for tinting tree rows,
+  // derived from the same working-tree patch the diff panel uses.
+  const workingTreeDiffQuery = useQuery(
+    gitWorkingTreeDiffQueryOptions({ cwd, scope: "workingTree" }),
+  );
+  const statusByPath = useMemo(
+    () => buildGitFileStatusMap(workingTreeDiffQuery.data?.patch),
+    [workingTreeDiffQuery.data?.patch],
+  );
 
   // Per-parent-path children, expanded set, loading set.
   const [childrenByParent, setChildrenByParent] = useState<
@@ -134,6 +152,7 @@ export function DockFilesPane({ hostThreadId, projectId }: DockFilesPaneProps) {
             expanded={expanded}
             loading={loading}
             childrenByParent={childrenByParent}
+            statusByPath={statusByPath}
             onToggleDirectory={toggleDirectory}
             onFileClick={handleFileClick}
           />
@@ -149,6 +168,7 @@ interface FileTreeLevelProps {
   readonly expanded: Set<string>;
   readonly loading: Set<string>;
   readonly childrenByParent: Record<string, readonly ProjectFileSystemEntry[]>;
+  readonly statusByPath: ReadonlyMap<string, GitFileStatus>;
   readonly onToggleDirectory: (path: string) => void;
   readonly onFileClick: (path: string) => void;
 }
@@ -159,6 +179,7 @@ function FileTreeLevel({
   expanded,
   loading,
   childrenByParent,
+  statusByPath,
   onToggleDirectory,
   onFileClick,
 }: FileTreeLevelProps) {
@@ -169,6 +190,9 @@ function FileTreeLevel({
         const isDir = entry.kind === "directory";
         const isExpanded = isDir && expanded.has(entry.path);
         const children = childrenByParent[entry.path];
+        const status = isDir ? undefined : statusByPath.get(entry.path);
+        const statusColor = gitFileStatusColorClass(status);
+        const statusBadge = gitFileStatusBadge(status);
         return (
           <div key={entry.path}>
             <button
@@ -197,9 +221,26 @@ function FileTreeLevel({
                   <FolderIcon className="size-4 shrink-0 text-[var(--color-text-foreground-secondary)]" />
                 )
               ) : (
-                <FileIcon className="size-4 shrink-0 text-[var(--color-text-foreground-tertiary,var(--color-text-foreground-secondary))]" />
+                <FileIcon
+                  className={cn(
+                    "size-4 shrink-0",
+                    statusColor ??
+                      "text-[var(--color-text-foreground-tertiary,var(--color-text-foreground-secondary))]",
+                  )}
+                />
               )}
-              <span className="truncate">{entry.name}</span>
+              <span className={cn("truncate", statusColor)}>{entry.name}</span>
+              {statusBadge ? (
+                <span
+                  className={cn(
+                    "ml-auto shrink-0 pl-1 font-mono text-[10px] font-semibold tabular-nums",
+                    statusColor,
+                  )}
+                  aria-hidden="true"
+                >
+                  {statusBadge}
+                </span>
+              ) : null}
             </button>
             {isDir && isExpanded ? (
               loading.has(entry.path) && children === undefined ? (
@@ -216,6 +257,7 @@ function FileTreeLevel({
                   expanded={expanded}
                   loading={loading}
                   childrenByParent={childrenByParent}
+                  statusByPath={statusByPath}
                   onToggleDirectory={onToggleDirectory}
                   onFileClick={onFileClick}
                 />
@@ -230,7 +272,7 @@ function FileTreeLevel({
 
 // Directories first, then files; each alphabetical (case-insensitive).
 function sortEntries(entries: readonly ProjectFileSystemEntry[]): ProjectFileSystemEntry[] {
-  return [...entries].sort((a, b) => {
+  return entries.toSorted((a, b) => {
     if (a.kind !== b.kind) return a.kind === "directory" ? -1 : 1;
     return a.name.localeCompare(b.name, undefined, { sensitivity: "base" });
   });
