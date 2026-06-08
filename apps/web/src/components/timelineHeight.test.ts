@@ -15,7 +15,7 @@ describe("estimateTimelineMessageHeight", () => {
         role: "assistant",
         text: "a".repeat(144),
       }),
-    ).toBe(114);
+    ).toBe(123);
   });
 
   it("uses assistant sizing rules for system messages", () => {
@@ -24,7 +24,7 @@ describe("estimateTimelineMessageHeight", () => {
         role: "system",
         text: "a".repeat(144),
       }),
-    ).toBe(114);
+    ).toBe(123);
   });
 
   it("adds one attachment row for one or two user attachments", () => {
@@ -34,7 +34,7 @@ describe("estimateTimelineMessageHeight", () => {
         text: "hello",
         attachments: [{ id: "1", type: "image" }],
       }),
-    ).toBe(179);
+    ).toBe(183);
 
     expect(
       estimateTimelineMessageHeight({
@@ -45,7 +45,7 @@ describe("estimateTimelineMessageHeight", () => {
           { id: "2", type: "image" },
         ],
       }),
-    ).toBe(179);
+    ).toBe(183);
   });
 
   it("keeps up to four user image attachments on one row", () => {
@@ -59,7 +59,7 @@ describe("estimateTimelineMessageHeight", () => {
           { id: "3", type: "image" },
         ],
       }),
-    ).toBe(179);
+    ).toBe(183);
 
     expect(
       estimateTimelineMessageHeight({
@@ -72,7 +72,7 @@ describe("estimateTimelineMessageHeight", () => {
           { id: "4", type: "image" },
         ],
       }),
-    ).toBe(179);
+    ).toBe(183);
   });
 
   it("adds a second attachment row for five user image attachments", () => {
@@ -88,7 +88,7 @@ describe("estimateTimelineMessageHeight", () => {
           { id: "5", type: "image" },
         ],
       }),
-    ).toBe(247);
+    ).toBe(251);
   });
 
   it("caps long user message estimates to the collapsed preview", () => {
@@ -97,7 +97,7 @@ describe("estimateTimelineMessageHeight", () => {
         role: "user",
         text: "a".repeat(56 * 120),
       }),
-    ).toBe(315);
+    ).toBe(363);
   });
 
   it("counts explicit newlines for user message estimates", () => {
@@ -106,7 +106,7 @@ describe("estimateTimelineMessageHeight", () => {
         role: "user",
         text: "first\nsecond\nthird",
       }),
-    ).toBe(151);
+    ).toBe(164);
   });
 
   it("adds terminal context chrome without counting the hidden block as message text", () => {
@@ -144,8 +144,8 @@ describe("estimateTimelineMessageHeight", () => {
       text: "a".repeat(52),
     };
 
-    expect(estimateTimelineMessageHeight(message, { timelineWidthPx: 320 })).toBe(133);
-    expect(estimateTimelineMessageHeight(message, { timelineWidthPx: 768 })).toBe(115);
+    expect(estimateTimelineMessageHeight(message, { timelineWidthPx: 320 })).toBe(142);
+    expect(estimateTimelineMessageHeight(message, { timelineWidthPx: 768 })).toBe(119);
   });
 
   it("does not clamp user wrapping too aggressively on very narrow layouts", () => {
@@ -154,8 +154,8 @@ describe("estimateTimelineMessageHeight", () => {
       text: "a".repeat(20),
     };
 
-    expect(estimateTimelineMessageHeight(message, { timelineWidthPx: 100 })).toBe(151);
-    expect(estimateTimelineMessageHeight(message, { timelineWidthPx: 320 })).toBe(115);
+    expect(estimateTimelineMessageHeight(message, { timelineWidthPx: 100 })).toBe(164);
+    expect(estimateTimelineMessageHeight(message, { timelineWidthPx: 320 })).toBe(119);
   });
 
   it("uses narrower width to increase assistant line wrapping", () => {
@@ -164,8 +164,8 @@ describe("estimateTimelineMessageHeight", () => {
       text: "a".repeat(200),
     };
 
-    expect(estimateTimelineMessageHeight(message, { timelineWidthPx: 320 })).toBe(150);
-    expect(estimateTimelineMessageHeight(message, { timelineWidthPx: 768 })).toBe(114);
+    expect(estimateTimelineMessageHeight(message, { timelineWidthPx: 320 })).toBe(190);
+    expect(estimateTimelineMessageHeight(message, { timelineWidthPx: 768 })).toBe(123);
   });
 
   it("adds diff summary chrome to assistant message estimates", () => {
@@ -178,7 +178,7 @@ describe("estimateTimelineMessageHeight", () => {
         },
         { timelineWidthPx: 768 },
       ),
-    ).toBe(222);
+    ).toBe(226);
   });
 
   it("accounts for inline code spans that wrap wider than plain text", () => {

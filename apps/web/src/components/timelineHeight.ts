@@ -273,11 +273,11 @@ export function estimateTimelineMessageHeight(
         maxVisibleEntries: 4,
       },
     );
-    return (
+    return Math.round(
       ASSISTANT_BASE_HEIGHT_PX +
-      estimatedLines * lineHeightPx +
-      changedFilesHeight +
-      inlineToolPreviewHeight
+        estimatedLines * lineHeightPx +
+        changedFilesHeight +
+        inlineToolPreviewHeight,
     );
   }
 
@@ -323,12 +323,12 @@ export function estimateTimelineMessageHeight(
             : USER_DISPATCH_CHIP_MARGIN_BOTTOM_PX)
         : 0;
     const toggleHeight = userMessagePreview.collapsible ? USER_MESSAGE_TOGGLE_HEIGHT_PX : 0;
-    return (
+    return Math.round(
       USER_BASE_HEIGHT_PX +
-      estimatedLines * lineHeightPx +
-      attachmentHeight +
-      dispatchChipHeight +
-      toggleHeight
+        estimatedLines * lineHeightPx +
+        attachmentHeight +
+        dispatchChipHeight +
+        toggleHeight,
     );
   }
 
@@ -339,5 +339,5 @@ export function estimateTimelineMessageHeight(
     expandAssistantInlineCodeForEstimate(message.text),
     charsPerLine,
   );
-  return ASSISTANT_BASE_HEIGHT_PX + estimatedLines * lineHeightPx;
+  return Math.round(ASSISTANT_BASE_HEIGHT_PX + estimatedLines * lineHeightPx);
 }
