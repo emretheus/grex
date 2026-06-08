@@ -39,6 +39,16 @@ function emptyState(): ThreadEditorState {
   return { openFiles: [], activePath: null };
 }
 
+// A single stable empty value so the selector returns the SAME reference for
+// threads with no editor state yet. Returning a fresh object would make the
+// zustand `useSyncExternalStore` snapshot change on every render and trigger an
+// infinite "Maximum update depth exceeded" loop.
+const EMPTY_OPEN_FILES: readonly EditorOpenFile[] = [];
+const EMPTY_THREAD_EDITOR_STATE: ThreadEditorState = {
+  openFiles: EMPTY_OPEN_FILES as EditorOpenFile[],
+  activePath: null,
+};
+
 export const useEditorStore = create<EditorStoreState>()(
   persist(
     (set) => ({
@@ -126,6 +136,6 @@ export function selectThreadEditorState(
   state: EditorStoreState,
   threadId: ThreadId | null | undefined,
 ): ThreadEditorState {
-  if (!threadId) return emptyState();
-  return state.byThreadId[threadId] ?? emptyState();
+  if (!threadId) return EMPTY_THREAD_EDITOR_STATE;
+  return state.byThreadId[threadId] ?? EMPTY_THREAD_EDITOR_STATE;
 }
