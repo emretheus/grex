@@ -110,7 +110,7 @@ larger changes.
 
 [MIT](./LICENSE)
 
-## Origins
+## Lineage
 
 Codewit began as a fork of [Synara](https://github.com/Emanuele-web04/synara), which
 itself started as a fork of [T3Code](https://github.com/pingdotgg/t3code). It has since
