@@ -2,7 +2,6 @@ import type { IntegrationCredentials, LinkedIssue } from "@t3tools/contracts";
 
 import { restRequest, toErrorMessage } from "./http";
 import {
-  type AdapterContextOpts,
   type AdapterListOpts,
   type AdapterSearchOpts,
   type IssueListResult,

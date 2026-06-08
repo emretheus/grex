@@ -468,6 +468,14 @@ export function createWsNativeApi(): NativeApi {
       writeFile: (input) => transport.request(WS_METHODS.projectsWriteFile, input),
       readFile: (input) => transport.request(WS_METHODS.projectsReadFile, input),
     },
+    integrations: {
+      checkConnections: () => transport.request(WS_METHODS.integrationsCheckConnections, {}),
+      connect: (input) => transport.request(WS_METHODS.integrationsConnect, input),
+      disconnect: (input) => transport.request(WS_METHODS.integrationsDisconnect, input),
+      listIssues: (input) => transport.request(WS_METHODS.integrationsListIssues, input),
+      searchIssues: (input) => transport.request(WS_METHODS.integrationsSearchIssues, input),
+      getIssueContext: (input) => transport.request(WS_METHODS.integrationsGetIssueContext, input),
+    },
     filesystem: {
       browse: (input) => transport.request(WS_METHODS.filesystemBrowse, input),
     },

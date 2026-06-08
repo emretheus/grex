@@ -50,6 +50,7 @@ import {
 import { APP_VERSION } from "../branding";
 import { useDesktopTopBarTrafficLightGutterClassName } from "../hooks/useDesktopTopBarGutter";
 import { ProviderOptionLabel } from "../components/ProviderIcon";
+import { IntegrationsSettingsPanel } from "../components/integrations/IntegrationsSettingsPanel";
 import {
   Autocomplete,
   AutocompleteEmpty,
@@ -3004,6 +3005,8 @@ function SettingsRouteView() {
         return renderModelsPanel();
       case "providers":
         return renderProvidersPanel();
+      case "integrations":
+        return <IntegrationsSettingsPanel />;
       case "advanced":
         return renderAdvancedPanel();
       default:
