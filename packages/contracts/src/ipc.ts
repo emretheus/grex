@@ -48,6 +48,8 @@ import type {
   GitStatusResult,
   GitSummarizeDiffInput,
   GitSummarizeDiffResult,
+  GitDiscardFilesInput,
+  GitDiscardFilesResult,
   GitUnstageFilesInput,
   GitUnstageFilesResult,
 } from "./git";
@@ -403,6 +405,7 @@ export interface NativeApi {
     init: (input: GitInitInput) => Promise<void>;
     stageFiles: (input: GitStageFilesInput) => Promise<GitStageFilesResult>;
     unstageFiles: (input: GitUnstageFilesInput) => Promise<GitUnstageFilesResult>;
+    discardFiles: (input: GitDiscardFilesInput) => Promise<GitDiscardFilesResult>;
     handoffThread: (input: GitHandoffThreadInput) => Promise<GitHandoffThreadResult>;
     resolvePullRequest: (input: GitPullRequestRefInput) => Promise<GitResolvePullRequestResult>;
     preparePullRequestThread: (

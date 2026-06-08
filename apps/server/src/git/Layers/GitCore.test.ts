@@ -1531,6 +1531,35 @@ it.layer(TestLayer)("git integration", (it) => {
       }),
     );
 
+    it.effect("discards tracked modifications and removes untracked files", () =>
+      Effect.gen(function* () {
+        const tmp = yield* makeTmpDir();
+        yield* initRepoWithCommit(tmp);
+        const core = yield* GitCore;
+        const fileSystem = yield* FileSystem.FileSystem;
+
+        // Modify a tracked file (and stage it) + add an untracked file.
+        yield* writeTextFile(path.join(tmp, "README.md"), "# changed\n");
+        yield* git(tmp, ["add", "README.md"]);
+        yield* writeTextFile(path.join(tmp, "untracked.ts"), "scratch\n");
+
+        const dirty = yield* core.status({ cwd: tmp });
+        expect(dirty.hasWorkingTreeChanges).toBe(true);
+
+        yield* core.discardFiles(tmp, ["README.md", "untracked.ts"]);
+
+        // Tracked file is back to its committed contents…
+        const restored = yield* fileSystem.readFileString(path.join(tmp, "README.md"));
+        expect(restored).toBe("# test\n");
+        // …the untracked file is deleted…
+        const untrackedExists = yield* fileSystem.exists(path.join(tmp, "untracked.ts"));
+        expect(untrackedExists).toBe(false);
+        // …and the working tree is clean.
+        const clean = yield* core.status({ cwd: tmp });
+        expect(clean.hasWorkingTreeChanges).toBe(false);
+      }),
+    );
+
     it.effect("uses rename-aware totals when deleted files move into untracked directories", () =>
       Effect.gen(function* () {
         const tmp = yield* makeTmpDir();

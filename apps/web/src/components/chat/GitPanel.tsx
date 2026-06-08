@@ -23,13 +23,15 @@ import {
   summarizeFileDiffStats,
 } from "~/lib/diffRendering";
 import {
+  gitDiscardFilesMutationOptions,
   gitQueryKeys,
   gitStageFilesMutationOptions,
   gitUnstageFilesMutationOptions,
   gitWorkingTreeDiffQueryOptions,
 } from "~/lib/gitReactQuery";
-import { PlusIcon, RefreshCwIcon, RotateCcwIcon } from "~/lib/icons";
+import { PlusIcon, RefreshCwIcon, RotateCcwIcon, Trash2 } from "~/lib/icons";
 import { cn } from "~/lib/utils";
+import { showConfirmDialogFallback } from "~/confirmDialogFallback";
 import { useStore } from "~/store";
 import { createProjectSelector, createThreadSelector } from "~/storeSelectors";
 import { Alert } from "../ui/alert";
@@ -72,6 +74,7 @@ const GitFileRow = memo(function GitFileRow(props: {
   actionDisabled: boolean;
   onSelect: (file: FileDiffMetadata) => void;
   onAction: (paths: string[]) => void;
+  onDiscard?: ((paths: string[]) => void) | undefined;
 }) {
   const filePath = resolveFileDiffPath(props.fileDiff);
   const { dir, name } = splitRepoRelativePath(filePath);
@@ -100,6 +103,19 @@ const GitFileRow = memo(function GitFileRow(props: {
         deletions={stat.deletions}
         className="shrink-0 text-[11px]"
       />
+      {props.onDiscard ? (
+        <IconButton
+          size="icon-xs"
+          variant="ghost"
+          className="shrink-0 text-muted-foreground opacity-0 group-hover:opacity-100 hover:text-rose-500 data-[disabled]:opacity-40"
+          label="Discard file changes"
+          tooltip="Discard file changes"
+          disabled={props.actionDisabled}
+          onClick={() => props.onDiscard?.([filePath])}
+        >
+          <Trash2 className="size-3.5" />
+        </IconButton>
+      ) : null}
       <IconButton
         size="icon-xs"
         variant="ghost"
@@ -132,6 +148,7 @@ function GitFileSection(props: {
   actionDisabled: boolean;
   onSelect: (file: FileDiffMetadata) => void;
   onAction: (paths: string[]) => void;
+  onDiscard?: ((paths: string[]) => void) | undefined;
 }) {
   const stat = useMemo(() => summarizeFileDiffStats(props.files), [props.files]);
   const allPaths = useMemo(
@@ -149,16 +166,29 @@ function GitFileSection(props: {
         </span>
         <DiffStat additions={stat.additions} deletions={stat.deletions} className="text-[10px]" />
         {props.files.length > 0 ? (
-          <Button
-            type="button"
-            variant="ghost"
-            size="xs"
-            className="ml-auto shrink-0"
-            disabled={props.actionDisabled}
-            onClick={() => props.onAction(allPaths)}
-          >
-            {props.actionAllLabel}
-          </Button>
+          <div className="ml-auto flex shrink-0 items-center gap-0.5">
+            {props.onDiscard ? (
+              <Button
+                type="button"
+                variant="ghost"
+                size="xs"
+                className="text-muted-foreground hover:text-rose-500"
+                disabled={props.actionDisabled}
+                onClick={() => props.onDiscard?.(allPaths)}
+              >
+                Discard all
+              </Button>
+            ) : null}
+            <Button
+              type="button"
+              variant="ghost"
+              size="xs"
+              disabled={props.actionDisabled}
+              onClick={() => props.onAction(allPaths)}
+            >
+              {props.actionAllLabel}
+            </Button>
+          </div>
         ) : null}
       </header>
       {props.files.length === 0 ? (
@@ -179,6 +209,7 @@ function GitFileSection(props: {
                 actionDisabled={props.actionDisabled}
                 onSelect={props.onSelect}
                 onAction={props.onAction}
+                onDiscard={props.onDiscard}
               />
             );
           })}
@@ -239,7 +270,9 @@ export function GitPanel(props: {
 
   const stageMutation = useMutation(gitStageFilesMutationOptions({ cwd, queryClient }));
   const unstageMutation = useMutation(gitUnstageFilesMutationOptions({ cwd, queryClient }));
-  const mutating = stageMutation.isPending || unstageMutation.isPending;
+  const discardMutation = useMutation(gitDiscardFilesMutationOptions({ cwd, queryClient }));
+  const mutating =
+    stageMutation.isPending || unstageMutation.isPending || discardMutation.isPending;
 
   const stage = useCallback(
     (paths: string[]) => {
@@ -254,6 +287,19 @@ export function GitPanel(props: {
       unstageMutation.mutate(paths);
     },
     [cwd, unstageMutation],
+  );
+  const discard = useCallback(
+    (paths: string[]) => {
+      if (!cwd || paths.length === 0) return;
+      const count = paths.length;
+      const target = count === 1 ? `“${paths[0]}”` : `${count} files`;
+      void showConfirmDialogFallback(
+        `Discard changes to ${target}?\nThis permanently reverts uncommitted changes and cannot be undone.`,
+      ).then((confirmed) => {
+        if (confirmed) discardMutation.mutate(paths);
+      });
+    },
+    [cwd, discardMutation],
   );
 
   const selectStaged = useCallback((file: FileDiffMetadata) => {
@@ -367,6 +413,7 @@ export function GitPanel(props: {
               actionDisabled={mutating}
               onSelect={selectUnstaged}
               onAction={stage}
+              onDiscard={discard}
             />
           </>
         ) : null}

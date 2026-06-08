@@ -235,6 +235,15 @@ export const GitUnstageFilesInput = Schema.Struct({
 });
 export type GitUnstageFilesInput = typeof GitUnstageFilesInput.Type;
 
+// Discard working-tree changes for the given paths: tracked files are reverted
+// to HEAD/index; untracked files are deleted. This is destructive and cannot be
+// undone, so the UI confirms first.
+export const GitDiscardFilesInput = Schema.Struct({
+  cwd: TrimmedNonEmptyStringSchema,
+  paths: Schema.Array(TrimmedNonEmptyStringSchema).check(Schema.isMinLength(1)),
+});
+export type GitDiscardFilesInput = typeof GitDiscardFilesInput.Type;
+
 // RPC Results
 
 const GitStatusPr = Schema.Struct({
@@ -321,6 +330,9 @@ export type GitStageFilesResult = typeof GitStageFilesResult.Type;
 
 export const GitUnstageFilesResult = GitStageFilesResult;
 export type GitUnstageFilesResult = GitStageFilesResult;
+
+export const GitDiscardFilesResult = GitStageFilesResult;
+export type GitDiscardFilesResult = GitStageFilesResult;
 
 export const GitListBranchesResult = Schema.Struct({
   branches: Schema.Array(GitBranch),

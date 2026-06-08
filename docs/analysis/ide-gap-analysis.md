@@ -9,7 +9,7 @@ emdash does that we don't, ranked by impact.
 Codewit already has a **solid foundation**: Monaco editor with tabs + save +
 syntax highlighting, a lazy file tree, side-by-side **and** inline diffs (working
 tree / staged / unstaged / turn), stage/unstage/commit/push, branch switcher +
-create, worktrees. The git *plumbing* is strong.
+create, worktrees. The git _plumbing_ is strong.
 
 emdash is ahead mostly on **IDE-grade polish and a more complete git/PR panel**.
 The gaps cluster into five themes below.
@@ -19,22 +19,25 @@ The gaps cluster into five themes below.
 ## Gap themes (ranked by impact)
 
 ### 1. Split / multi-pane editor — the headline feature in the screenshot
+
 **emdash:** Freeform N-column editor split (`react-resizable-panels`), drag a tab
 to the edge to split, per-pane tab groups, a bottom terminal drawer, all
 resizable and persisted. One tab strip can hold **mixed content** (agent chat +
 file + diff) side by side.
 
-**Codewit:** The editor is a *single* Monaco instance in one dock pane. Our split
+**Codewit:** The editor is a _single_ Monaco instance in one dock pane. Our split
 view (`splitViewStore`) splits **chat threads**, not the editor/dock. You cannot
 put a file diff next to an editor next to a terminal in one resizable workspace.
 
 **Gap:** No editor/dock split. This is the single biggest visual/UX difference.
 
 ### 2. Git panel completeness — the right-hand commit panel
+
 **emdash:** A dedicated, always-visible git panel with:
+
 - `Commit message` **+ separate `Description`** field → combined into the commit body.
-- A **`Commit & Push` split-button** with variants: *Commit*, *Commit & Push*,
-  *Commit & Create PR*.
+- A **`Commit & Push` split-button** with variants: _Commit_, _Commit & Push_,
+  _Commit & Create PR_.
 - **Discard / Discard-all** with confirmation (per file + global).
 - **Create PR / Create draft PR** directly from the panel (split button) + a
   create-PR modal (title auto-filled, description, **base-branch selector**,
@@ -45,9 +48,10 @@ put a file diff next to an editor next to a terminal in one resizable workspace.
 
 **Codewit:** We have stage/unstage/commit/push (via the stacked-action RPC) and a
 branch switcher, but:
-- Commit is a single message field (no separate description). — *minor*
+
+- Commit is a single message field (no separate description). — _minor_
 - **Discard / discard-all is NOT exposed in the UI** (RPC may exist; no button).
-- **Full PR creation is MISSING** — we only *open an existing PR* by reference
+- **Full PR creation is MISSING** — we only _open an existing PR_ by reference
   via `PullRequestThreadDialog`. No "create PR from this branch", no draft PR, no
   base-branch picker, no PR list.
 - No explicit Fetch/Pull/Push buttons with ahead/behind in a panel (we have
@@ -58,6 +62,7 @@ branch switcher, but:
 sync/commit panel layout.
 
 ### 3. Diff tabs as first-class, openable + transitioning
+
 **emdash:** A changed file opens as a **diff tab** in the editor tab strip,
 labeled by source: `(Working Tree)`, `(Index)`, `(Git)`, `(PR)`. The tab
 **transitions in place** when a file moves unstaged→staged (label flips
@@ -74,6 +79,7 @@ four scopes (working tree / staged / unstaged / turn) which is good.
 in-place staged↔unstaged transitions.
 
 ### 4. File explorer richness
+
 **emdash:** Git-status colors per file, file-type icons (devicon), context menu
 (copy path/relative/content), **virtualized** tree, file watcher → live tree,
 drag-drop import, reveal-in-tree after commit, optimistic insert.
@@ -85,6 +91,7 @@ virtualization, live file-watcher updates.
 **Gap:** Git-status colors (cheap, high value), context menu, search, live watch.
 
 ### 5. Live updates via a real file watcher
+
 **emdash:** A `@parcel/watcher` on the worktree + `.git` dir drives **live**
 updates: the tree, the open diffs, and the git status all refresh on disk/index
 changes (debounced 100–500ms), with Monaco disk-model invalidation.
@@ -98,6 +105,7 @@ as a deferred MVP follow-up; it isn't wired yet.
 ---
 
 ## What we already match or lead on (don't rebuild)
+
 - Side-by-side **and** inline diff with a toggle — ✅ (both have it).
 - Working-tree / staged / unstaged / **turn (checkpoint)** diffs — ✅ (turn diffs
   are a Codewit strength emdash lacks).
@@ -112,6 +120,7 @@ as a deferred MVP follow-up; it isn't wired yet.
 ## Recommended roadmap (impact × effort)
 
 ### Quick wins (high value, low effort)
+
 1. **Git-status colors in the file tree** — reuse the changed-file list we already
    fetch; tint tree rows M/A/D. (1 file, big perceived-quality jump.)
 2. **Discard / discard-all buttons** in the git panel — the RPC story likely
@@ -120,21 +129,24 @@ as a deferred MVP follow-up; it isn't wired yet.
 4. **File-tree context menu** — copy path / copy relative path / reveal. Cheap.
 
 ### Medium (high value, medium effort)
+
 5. **Full PR creation from the panel** — "Create PR / Create draft PR" + a modal
    (title, body, base-branch selector) using the GitHub plumbing we already have
    (`resolveGitHubRepository`, the new integrations GitHub adapter). Closes the
-   biggest *functional* git gap.
+   biggest _functional_ git gap.
 6. **Diff-as-tab + edit-in-diff** — let a changed file open as a diff tab in the
    editor strip with an editable modified side (Monaco diff editor), Cmd+S to save.
 7. **Live file-watch channel** — wire the deferred file-change channel so tree +
    diff + status update without polling. Foundational for everything above.
 
 ### Larger (headline, higher effort)
+
 8. **Split / multi-pane editor workspace** — `react-resizable-panels`-style
    resizable regions so editor + diff + terminal live side by side, drag-to-split,
    per-pane tab groups, mixed content tabs. This is the marquee emdash feature.
 
 ### Potential differentiators (neither app has — we could lead)
+
 9. **Commit history / log viewer** + **blame** — greenfield; pairs naturally with
    our checkpoint/turn-diff timeline (a Codewit strength).
 10. **Hunk / line staging** (`git add -p`-style) — neither app has it; a real
