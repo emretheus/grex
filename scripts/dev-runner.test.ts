@@ -13,12 +13,12 @@ import {
 
 it.layer(NodeServices.layer)("dev-runner", (it) => {
   describe("resolveOffset", () => {
-    it.effect("uses explicit T3CODE_PORT_OFFSET when provided", () =>
+    it.effect("uses explicit CODEWIT_PORT_OFFSET when provided", () =>
       Effect.sync(() => {
         const result = resolveOffset({ portOffset: 12, devInstance: undefined });
         assert.deepStrictEqual(result, {
           offset: 12,
-          source: "T3CODE_PORT_OFFSET=12",
+          source: "CODEWIT_PORT_OFFSET=12",
         });
       }),
     );
@@ -40,20 +40,20 @@ it.layer(NodeServices.layer)("dev-runner", (it) => {
           }),
         );
 
-        assert.ok(error.includes("Invalid T3CODE_PORT_OFFSET"));
+        assert.ok(error.includes("Invalid CODEWIT_PORT_OFFSET"));
       }),
     );
   });
 
   describe("createDevRunnerEnv", () => {
-    it.effect("defaults SYNARA_HOME to ~/.synara when not provided", () =>
+    it.effect("defaults CODEWIT_HOME to ~/.codewit when not provided", () =>
       Effect.gen(function* () {
         const env = yield* createDevRunnerEnv({
           mode: "dev",
           baseEnv: {},
           serverOffset: 0,
           webOffset: 0,
-          t3Home: undefined,
+          homeDir: undefined,
           authToken: undefined,
           noBrowser: undefined,
           autoBootstrapProjectFromCwd: undefined,
@@ -63,8 +63,8 @@ it.layer(NodeServices.layer)("dev-runner", (it) => {
           devUrl: undefined,
         });
 
-        assert.equal(env.SYNARA_HOME, resolve(homedir(), ".synara"));
-        assert.equal(env.T3CODE_HOME, resolve(homedir(), ".synara"));
+        assert.equal(env.CODEWIT_HOME, resolve(homedir(), ".codewit"));
+        assert.equal(env.CODEWIT_HOME, resolve(homedir(), ".codewit"));
       }),
     );
 
@@ -75,7 +75,7 @@ it.layer(NodeServices.layer)("dev-runner", (it) => {
           baseEnv: {},
           serverOffset: 0,
           webOffset: 0,
-          t3Home: "/tmp/custom-t3",
+          homeDir: "/tmp/custom-t3",
           authToken: "secret",
           noBrowser: true,
           autoBootstrapProjectFromCwd: false,
@@ -85,14 +85,14 @@ it.layer(NodeServices.layer)("dev-runner", (it) => {
           devUrl: new URL("http://localhost:7331"),
         });
 
-        assert.equal(env.T3CODE_HOME, resolve("/tmp/custom-t3"));
-        assert.equal(env.SYNARA_HOME, resolve("/tmp/custom-t3"));
-        assert.equal(env.T3CODE_PORT, "4222");
+        assert.equal(env.CODEWIT_HOME, resolve("/tmp/custom-t3"));
+        assert.equal(env.CODEWIT_HOME, resolve("/tmp/custom-t3"));
+        assert.equal(env.CODEWIT_PORT, "4222");
         assert.equal(env.VITE_WS_URL, "ws://[::1]:4222");
-        assert.equal(env.T3CODE_NO_BROWSER, "1");
-        assert.equal(env.T3CODE_AUTO_BOOTSTRAP_PROJECT_FROM_CWD, "0");
-        assert.equal(env.T3CODE_LOG_WS_EVENTS, "1");
-        assert.equal(env.T3CODE_HOST, "0.0.0.0");
+        assert.equal(env.CODEWIT_NO_BROWSER, "1");
+        assert.equal(env.CODEWIT_AUTO_BOOTSTRAP_PROJECT_FROM_CWD, "0");
+        assert.equal(env.CODEWIT_LOG_WS_EVENTS, "1");
+        assert.equal(env.CODEWIT_HOST, "0.0.0.0");
         assert.equal(env.VITE_DEV_SERVER_URL, "http://localhost:7331/");
       }),
     );
@@ -102,11 +102,11 @@ it.layer(NodeServices.layer)("dev-runner", (it) => {
         const env = yield* createDevRunnerEnv({
           mode: "dev",
           baseEnv: {
-            T3CODE_LOG_WS_EVENTS: "keep-me-out",
+            CODEWIT_LOG_WS_EVENTS: "keep-me-out",
           },
           serverOffset: 0,
           webOffset: 0,
-          t3Home: undefined,
+          homeDir: undefined,
           authToken: undefined,
           noBrowser: undefined,
           autoBootstrapProjectFromCwd: undefined,
@@ -116,8 +116,8 @@ it.layer(NodeServices.layer)("dev-runner", (it) => {
           devUrl: undefined,
         });
 
-        assert.equal(env.T3CODE_MODE, "web");
-        assert.equal(env.T3CODE_LOG_WS_EVENTS, undefined);
+        assert.equal(env.CODEWIT_MODE, "web");
+        assert.equal(env.CODEWIT_LOG_WS_EVENTS, undefined);
       }),
     );
 
@@ -128,7 +128,7 @@ it.layer(NodeServices.layer)("dev-runner", (it) => {
           baseEnv: {},
           serverOffset: 0,
           webOffset: 0,
-          t3Home: undefined,
+          homeDir: undefined,
           authToken: undefined,
           noBrowser: undefined,
           autoBootstrapProjectFromCwd: undefined,
@@ -138,18 +138,18 @@ it.layer(NodeServices.layer)("dev-runner", (it) => {
           devUrl: undefined,
         });
 
-        assert.equal(env.T3CODE_LOG_WS_EVENTS, "0");
+        assert.equal(env.CODEWIT_LOG_WS_EVENTS, "0");
       }),
     );
 
-    it.effect("uses custom t3Home when provided", () =>
+    it.effect("uses custom homeDir when provided", () =>
       Effect.gen(function* () {
         const env = yield* createDevRunnerEnv({
           mode: "dev",
           baseEnv: {},
           serverOffset: 0,
           webOffset: 0,
-          t3Home: "/tmp/my-t3",
+          homeDir: "/tmp/my-t3",
           authToken: undefined,
           noBrowser: undefined,
           autoBootstrapProjectFromCwd: undefined,
@@ -159,9 +159,9 @@ it.layer(NodeServices.layer)("dev-runner", (it) => {
           devUrl: undefined,
         });
 
-        assert.equal(env.T3CODE_HOME, resolve("/tmp/my-t3"));
-        assert.equal(env.DPCODE_HOME, resolve("/tmp/my-t3"));
-        assert.equal(env.SYNARA_HOME, resolve("/tmp/my-t3"));
+        assert.equal(env.CODEWIT_HOME, resolve("/tmp/my-t3"));
+        assert.equal(env.CODEWIT_HOME, resolve("/tmp/my-t3"));
+        assert.equal(env.CODEWIT_HOME, resolve("/tmp/my-t3"));
       }),
     );
   });

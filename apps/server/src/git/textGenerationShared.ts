@@ -334,7 +334,7 @@ export function buildThreadRecapPrompt(input: {
 }) {
   return {
     prompt: [
-      "You are writing a compact live recap for Synara's chat side panel.",
+      "You are writing a compact live recap for Codewit's chat side panel.",
       "Return a JSON object with key: recap.",
       "Respond with only the JSON object, no prose and no code fences.",
       "Goal:",

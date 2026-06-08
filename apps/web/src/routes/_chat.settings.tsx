@@ -1119,7 +1119,7 @@ function SettingsRouteView() {
       return;
     }
 
-    const notification = new Notification(title, { body, tag: "synara:test-notification" });
+    const notification = new Notification(title, { body, tag: "codewit:test-notification" });
     notification.addEventListener("click", () => {
       window.focus();
     });
@@ -1564,7 +1564,7 @@ function SettingsRouteView() {
         <SettingsCard>
           <SettingsRow
             title="Theme"
-            description="Choose how Synara looks across the app."
+            description="Choose how Codewit looks across the app."
             resetAction={
               theme !== "system" ? (
                 <SettingResetButton label="theme" onClick={() => setTheme("system")} />
@@ -2381,7 +2381,7 @@ function SettingsRouteView() {
       <SettingsSection title="Updates">
         <SettingsRow
           title="Provider updates"
-          description="Update installed provider tools that Synara can safely update."
+          description="Update installed provider tools that Codewit can safely update."
           status={
             outdatedProviderCount > 0
               ? `${outdatedProviderCount} update${outdatedProviderCount === 1 ? "" : "s"} available`
@@ -2651,7 +2651,7 @@ function SettingsRouteView() {
                                     </code>
                                   </>
                                 ) : (
-                                  "A newer version is available, but Synara could not identify a safe one-click update command for this installation."
+                                  "A newer version is available, but Codewit could not identify a safe one-click update command for this installation."
                                 )}
                               </div>
                             ) : null}

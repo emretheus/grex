@@ -16,7 +16,7 @@ export const SETTINGS_SECTION_IDS = [
 ] as const;
 
 export type SettingsSectionId = (typeof SETTINGS_SECTION_IDS)[number];
-export type SettingsNavGroupId = "app" | "synara";
+export type SettingsNavGroupId = "app" | "codewit";
 
 export type SettingsNavItem = {
   id: SettingsSectionId;
@@ -33,7 +33,7 @@ export const SETTINGS_NAV_GROUPS: ReadonlyArray<{
   label: string;
 }> = [
   { id: "app", label: "App" },
-  { id: "synara", label: "Synara" },
+  { id: "codewit", label: "Codewit" },
 ] as const;
 
 export const SETTINGS_NAV_ITEMS: readonly SettingsNavItem[] = [
@@ -73,7 +73,7 @@ export const SETTINGS_NAV_ITEMS: readonly SettingsNavItem[] = [
     id: "worktrees",
     group: "app",
     label: "Worktrees",
-    description: "Review and clean up the worktrees created by Synara.",
+    description: "Review and clean up the worktrees created by Codewit.",
     icon: "branch-simple",
     eyebrow: "Workspace management",
   },
@@ -87,7 +87,7 @@ export const SETTINGS_NAV_ITEMS: readonly SettingsNavItem[] = [
   },
   {
     id: "models",
-    group: "synara",
+    group: "codewit",
     label: "Models",
     description: "Git writing defaults and custom model slugs.",
     icon: "brain",
@@ -95,7 +95,7 @@ export const SETTINGS_NAV_ITEMS: readonly SettingsNavItem[] = [
   },
   {
     id: "providers",
-    group: "synara",
+    group: "codewit",
     label: "Providers",
     description: "Choose visible providers, review CLI installs, and update provider tools.",
     icon: "puzzle",
@@ -103,7 +103,7 @@ export const SETTINGS_NAV_ITEMS: readonly SettingsNavItem[] = [
   },
   {
     id: "advanced",
-    group: "synara",
+    group: "codewit",
     label: "Advanced",
     description: "Keybindings, recovery, and version info.",
     icon: "toolbox",

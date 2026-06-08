@@ -38,7 +38,7 @@
 - `bun run test` (109 test files passed, 1 skipped; 1068 tests passed, 6 skipped; 6m13s)
 - `bun install` after version bump to update `bun.lock`
 - `bun run test src/whatsNew/logic.test.ts` from `apps/web` after release-note edits (12 tests passed)
-- `npm run build` in `/Users/emanueledipietro/Developer/dpcode-website`
+- `npm run build` in `the marketing website`
 
 ## 0.1.3 - 2026-06-05
 

@@ -192,7 +192,7 @@ export function deriveTerminalAssistantMessageIds(
 }
 
 // Derives transcript rows from timeline entries while preserving the current
-// t3code behavior of attaching trailing work groups to the adjacent assistant reply.
+// codewit behavior of attaching trailing work groups to the adjacent assistant reply.
 export function deriveMessagesTimelineRows(input: {
   timelineEntries: ReadonlyArray<TimelineEntry>;
   isWorking: boolean;

@@ -26,6 +26,9 @@ const DEFERRED_RUNTIME_PANE_KINDS: ReadonlySet<RightDockPaneKind> = new Set<Righ
 // tab switches instant and flicker-free while preserving scrollback/runtime.
 const KEEP_MOUNTED_PANE_KINDS: ReadonlySet<RightDockPaneKind> = new Set<RightDockPaneKind>([
   "terminal",
+  // Keep the editor mounted so the Monaco instance + open models survive tab
+  // switches (re-creating Monaco each switch causes lag and loses cursor state).
+  "editor",
 ]);
 
 export function dockPaneActivationKey(input: {

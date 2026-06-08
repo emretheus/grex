@@ -31,7 +31,7 @@ function makeTempDir(prefix: string): string {
 }
 
 function makeServerConfig(overrides: Partial<ServerConfigShape> = {}): ServerConfigShape {
-  const baseDir = makeTempDir("dpcode-effect-route-");
+  const baseDir = makeTempDir("codewit-effect-route-");
   return {
     mode: "web",
     port: 0,
@@ -150,7 +150,7 @@ async function withEffectServer(
 
 describe("localImageEffectRouteLayer", () => {
   it("serves an allowlisted workspace image and signals downloads via Content-Disposition", async () => {
-    const workspace = makeTempDir("dpcode-effect-image-workspace-");
+    const workspace = makeTempDir("codewit-effect-image-workspace-");
     writeFileSync(path.join(workspace, ".git"), "gitdir: .git");
     const imagePath = path.join(workspace, "hero.png");
     writeFileSync(imagePath, Buffer.from([0x89, 0x50, 0x4e, 0x47]));
@@ -171,7 +171,7 @@ describe("localImageEffectRouteLayer", () => {
   });
 
   it("returns 404 when the requested path has an unsupported extension", async () => {
-    const workspace = makeTempDir("dpcode-effect-image-bad-ext-");
+    const workspace = makeTempDir("codewit-effect-image-bad-ext-");
     writeFileSync(path.join(workspace, ".git"), "gitdir: .git");
     const docPath = path.join(workspace, "notes.txt");
     writeFileSync(docPath, "hello");
@@ -185,7 +185,7 @@ describe("localImageEffectRouteLayer", () => {
   });
 
   it("returns 404 for missing files", async () => {
-    const workspace = makeTempDir("dpcode-effect-image-missing-");
+    const workspace = makeTempDir("codewit-effect-image-missing-");
     writeFileSync(path.join(workspace, ".git"), "gitdir: .git");
     const ghostPath = path.join(workspace, "does-not-exist.png");
     const config = makeServerConfig({ cwd: workspace });

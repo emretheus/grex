@@ -10,9 +10,8 @@
 import { homedir } from "node:os";
 import path from "node:path";
 
-export const DPCODE_CODEX_HOME_OVERLAY_DIR = "codex-home-overlay";
-export const DPCODE_DISABLE_CODEX_DPCODE_BROWSER_PLUGIN_ENV =
-  "DPCODE_DISABLE_CODEX_DPCODE_BROWSER_PLUGIN";
+export const CODEWIT_CODEX_HOME_OVERLAY_DIR = "codex-home-overlay";
+export const CODEWIT_DISABLE_CODEX_BROWSER_PLUGIN_ENV = "CODEWIT_DISABLE_CODEX_BROWSER_PLUGIN";
 
 export interface CodexHomePathsInput {
   readonly env?: NodeJS.ProcessEnv;
@@ -26,33 +25,33 @@ export function resolveBaseCodexHomePath(
   return explicitHomePath?.trim() || env.CODEX_HOME?.trim() || path.join(homedir(), ".codex");
 }
 
-export function shouldDisableDpCodeBrowserPlugin(env: NodeJS.ProcessEnv): boolean {
+export function shouldDisableCodexBrowserPlugin(env: NodeJS.ProcessEnv): boolean {
   // The plugin is disabled by default; the only way to opt out is the explicit "0" sentinel.
-  return env[DPCODE_DISABLE_CODEX_DPCODE_BROWSER_PLUGIN_ENV] !== "0";
+  return env[CODEWIT_DISABLE_CODEX_BROWSER_PLUGIN_ENV] !== "0";
 }
 
-export function resolveDpCodeCodexHomeOverlayPath(
+export function resolveCodewitCodexHomeOverlayPath(
   env: NodeJS.ProcessEnv,
   sourceHomePath: string,
 ): string {
-  const runtimeHome = env.SYNARA_HOME?.trim() || env.DPCODE_HOME?.trim() || env.T3CODE_HOME?.trim();
-  const overlayRoot = runtimeHome || path.join(path.dirname(sourceHomePath), ".synara", "runtime");
-  return path.join(overlayRoot, DPCODE_CODEX_HOME_OVERLAY_DIR);
+  const runtimeHome = env.CODEWIT_HOME?.trim();
+  const overlayRoot = runtimeHome || path.join(path.dirname(sourceHomePath), ".codewit", "runtime");
+  return path.join(overlayRoot, CODEWIT_CODEX_HOME_OVERLAY_DIR);
 }
 
 /**
  * Returns the home directory that the codex app-server child process actually
- * writes under. This is the overlay home when Synara wraps Codex with the
- * dpcode-browser plugin disabled (the production default), otherwise the
+ * writes under. This is the overlay home when Codewit wraps Codex with the
+ * codex-browser plugin disabled (the production default), otherwise the
  * caller-supplied or env-provided home.
  */
 export function resolveActiveCodexHomeWritePath(input: CodexHomePathsInput = {}): string {
   const env = input.env ?? process.env;
   const source = resolveBaseCodexHomePath(env, input.homePath);
-  if (!shouldDisableDpCodeBrowserPlugin(env)) {
+  if (!shouldDisableCodexBrowserPlugin(env)) {
     return source;
   }
-  const overlay = resolveDpCodeCodexHomeOverlayPath(env, source);
+  const overlay = resolveCodewitCodexHomeOverlayPath(env, source);
   return path.resolve(source) === path.resolve(overlay) ? source : overlay;
 }
 
@@ -70,7 +69,7 @@ export function resolveCodexHomeAllowlistCandidates(
 ): readonly string[] {
   const env = input.env ?? process.env;
   const source = resolveBaseCodexHomePath(env, input.homePath);
-  const overlay = resolveDpCodeCodexHomeOverlayPath(env, source);
+  const overlay = resolveCodewitCodexHomeOverlayPath(env, source);
   const sourceResolved = path.resolve(source);
   const overlayResolved = path.resolve(overlay);
   return sourceResolved === overlayResolved ? [source] : [source, overlay];

@@ -1,5 +1,5 @@
 // FILE: codexProcessEnv.ts
-// Purpose: Builds the exact environment used when Synara launches Codex subprocesses.
+// Purpose: Builds the exact environment used when Codewit launches Codex subprocesses.
 // Layer: Server runtime utility
 // Exports: Codex process env builder and browser-plugin overlay helpers.
 // Depends on: Codex home path helpers, shared Codex config parsing, login-shell env reader.
@@ -26,13 +26,13 @@ import {
 
 import {
   resolveBaseCodexHomePath,
-  resolveDpCodeCodexHomeOverlayPath,
-  shouldDisableDpCodeBrowserPlugin,
+  resolveCodewitCodexHomeOverlayPath,
+  shouldDisableCodexBrowserPlugin,
 } from "./codexHomePaths.ts";
 
 const CODEX_PROCESS_SHELL_ENV_NAMES = ["PATH", "SSH_AUTH_SOCK"] as const;
 const NODE_REPL_SANDBOX_ALLOWED_UNIX_SOCKETS = "NODE_REPL_SANDBOX_ALLOWED_UNIX_SOCKETS";
-const DPCODE_BROWSER_PLUGIN_CONFIG_HEADER = '[plugins."dpcode-browser@local"]';
+const CODEWIT_BROWSER_PLUGIN_CONFIG_HEADER = '[plugins."codewit-browser@local"]';
 
 export function resolveCodexBrowserUsePipePath(
   input: {
@@ -41,10 +41,7 @@ export function resolveCodexBrowserUsePipePath(
   } = {},
 ): string {
   const env = input.env ?? process.env;
-  const configured =
-    env.SYNARA_BROWSER_USE_PIPE_PATH?.trim() ||
-    env.DPCODE_BROWSER_USE_PIPE_PATH?.trim() ||
-    env.T3CODE_BROWSER_USE_PIPE_PATH?.trim();
+  const configured = env.CODEWIT_BROWSER_USE_PIPE_PATH?.trim();
   if (configured) {
     return configured;
   }
@@ -53,7 +50,7 @@ export function resolveCodexBrowserUsePipePath(
     : "/tmp/codex-browser-use.sock";
 }
 
-export function disableDpCodeBrowserPluginInCodexConfig(config: string): string {
+export function disableCodewitBrowserPluginInCodexConfig(config: string): string {
   const lines = config.split(/\r?\n/);
   const output: string[] = [];
   let inTargetSection = false;
@@ -70,7 +67,7 @@ export function disableDpCodeBrowserPluginInCodexConfig(config: string): string 
     const trimmed = line.trim();
     if (trimmed.startsWith("[") && trimmed.endsWith("]")) {
       closeTargetSection();
-      inTargetSection = trimmed === DPCODE_BROWSER_PLUGIN_CONFIG_HEADER;
+      inTargetSection = trimmed === CODEWIT_BROWSER_PLUGIN_CONFIG_HEADER;
       sawTargetSection ||= inTargetSection;
       targetSectionHasEnabled = false;
       output.push(line);
@@ -92,7 +89,7 @@ export function disableDpCodeBrowserPluginInCodexConfig(config: string): string 
     if (output.length > 0 && output.at(-1)?.trim()) {
       output.push("");
     }
-    output.push(DPCODE_BROWSER_PLUGIN_CONFIG_HEADER, "enabled = false");
+    output.push(CODEWIT_BROWSER_PLUGIN_CONFIG_HEADER, "enabled = false");
   }
 
   return output.join("\n");
@@ -131,12 +128,12 @@ function ensureCodexOverlaySymlink(input: {
   symlinkSync(input.sourcePath, input.targetPath, input.type);
 }
 
-function prepareDpCodeCodexHomeOverlay(input: {
+function prepareCodewitCodexHomeOverlay(input: {
   readonly env: NodeJS.ProcessEnv;
   readonly homePath?: string;
 }): string | undefined {
   const sourceHomePath = resolveBaseCodexHomePath(input.env, input.homePath);
-  const overlayHomePath = resolveDpCodeCodexHomeOverlayPath(input.env, sourceHomePath);
+  const overlayHomePath = resolveCodewitCodexHomeOverlayPath(input.env, sourceHomePath);
   if (path.resolve(sourceHomePath) === path.resolve(overlayHomePath)) {
     return undefined;
   }
@@ -167,7 +164,7 @@ function prepareDpCodeCodexHomeOverlay(input: {
   const sourceConfig = existsSync(sourceConfigPath) ? readFileSync(sourceConfigPath, "utf8") : "";
   writeFileSync(
     path.join(overlayHomePath, "config.toml"),
-    disableDpCodeBrowserPluginInCodexConfig(sourceConfig),
+    disableCodewitBrowserPluginInCodexConfig(sourceConfig),
     "utf8",
   );
 
@@ -183,8 +180,8 @@ export function buildCodexProcessEnv(
   } = {},
 ): NodeJS.ProcessEnv {
   const baseEnv = { ...(input.env ?? process.env) };
-  const overlayHomePath = shouldDisableDpCodeBrowserPlugin(baseEnv)
-    ? prepareDpCodeCodexHomeOverlay({
+  const overlayHomePath = shouldDisableCodexBrowserPlugin(baseEnv)
+    ? prepareCodewitCodexHomeOverlay({
         env: baseEnv,
         ...(input.homePath ? { homePath: input.homePath } : {}),
       })

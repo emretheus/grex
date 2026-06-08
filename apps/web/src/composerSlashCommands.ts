@@ -1,4 +1,5 @@
 import type { GitBranch, ProviderKind } from "@t3tools/contracts";
+import { rankProviderDiscoveryItems } from "./lib/providerDiscovery";
 
 export const BUILT_IN_COMPOSER_SLASH_COMMANDS = [
   "clear",
@@ -209,17 +210,13 @@ export function filterComposerSlashCommands(
   query: string,
   commands: ReadonlyArray<ComposerSlashCommand> = BUILT_IN_COMPOSER_SLASH_COMMANDS,
 ): ComposerSlashCommandDefinition[] {
-  const normalizedQuery = query.trim().toLowerCase();
-  const matches = commands.filter((command) => {
-    if (!normalizedQuery) {
-      return true;
-    }
+  const matches = rankProviderDiscoveryItems(commands, query, (command) => {
     const definition = COMPOSER_SLASH_COMMAND_DEFINITIONS[command];
-    return (
-      command.includes(normalizedQuery) ||
-      definition.label.slice(1).includes(normalizedQuery) ||
-      definition.description.toLowerCase().includes(normalizedQuery)
-    );
+    return [
+      { value: command },
+      { value: definition.label.slice(1) },
+      { value: definition.description, weight: 200 },
+    ];
   });
 
   return matches.map((command) => COMPOSER_SLASH_COMMAND_DEFINITIONS[command]);
@@ -376,7 +373,7 @@ export function getAvailableComposerSlashCommands(input: {
         ]
       : [
           // Claude owns most slash-command UX natively; sidechat remains app-level because it
-          // creates a Synara split/context clone before the provider sees the first turn.
+          // creates a Codewit split/context clone before the provider sees the first turn.
           ...(input.canOfferSideCommand ? (["side"] as const) : []),
         ];
   return availableCommands.filter((command) => !collidingNativeCommandNames.has(command));

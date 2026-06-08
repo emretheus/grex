@@ -457,7 +457,7 @@ The \`request_user_input\` tool is unavailable in Default mode. If you call it w
 In Default mode, strongly prefer making reasonable assumptions and executing the user's request rather than stopping to ask questions. If you absolutely must ask a question because the answer cannot be discovered from local context and a reasonable assumption would be risky, ask the user directly with a concise plain-text question. Never write a multiple choice question as a textual assistant message.
 </collaboration_mode>${CODEX_BROWSER_TOOL_ROUTING_INSTRUCTIONS}`;
 
-// Maps Synara's simple runtime toggle to Codex thread-level permission overrides.
+// Maps Codewit's simple runtime toggle to Codex thread-level permission overrides.
 function mapCodexRuntimeMode(runtimeMode: RuntimeMode): {
   readonly approvalPolicy: CodexApprovalPolicy;
   readonly sandbox: CodexSandboxMode;
@@ -502,7 +502,7 @@ const CODEX_ALWAYS_ALLOW_SESSION_TURN_OVERRIDES: CodexSessionApprovalOverride = 
   sandboxPolicy: { type: "dangerFullAccess" },
 };
 
-// Synara re-sends turn-level Codex permission overrides, so keep "always allow"
+// Codewit re-sends turn-level Codex permission overrides, so keep "always allow"
 // as live session state instead of relying on one native approval reply.
 function resolveCodexTurnOverrides(context: CodexSessionContext): {
   readonly approvalPolicy: CodexApprovalPolicy;
@@ -515,7 +515,7 @@ function resolveCodexTurnOverrides(context: CodexSessionContext): {
 }
 
 export function ensureIsolatedScratchWorkspace(threadId: ThreadId): string {
-  const workspaceRoot = path.join(tmpdir(), "synara-codex-workspaces");
+  const workspaceRoot = path.join(tmpdir(), "codewit-codex-workspaces");
   const workspaceDir = path.join(workspaceRoot, String(threadId));
   mkdirSync(workspaceDir, { recursive: true });
   return workspaceDir;
@@ -570,8 +570,8 @@ export function normalizeCodexModelSlug(
 export function buildCodexInitializeParams() {
   return {
     clientInfo: {
-      name: "synara_desktop",
-      title: "Synara Desktop",
+      name: "codewit_desktop",
+      title: "Codewit Desktop",
       version: "0.1.0",
     },
     capabilities: {
@@ -3181,7 +3181,7 @@ export class CodexAppServerManager extends EventEmitter<CodexAppServerManagerEve
         return [];
       }
 
-      // Accept both Synara's legacy string array and Remodex-style reasoning objects.
+      // Accept both Codewit's legacy string array and Remodex-style reasoning objects.
       const supportedReasoningEfforts = Array.from(
         new Map(
           (

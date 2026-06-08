@@ -7,7 +7,7 @@
     "bun.lock",
     "*.tsbuildinfo",
     "**/routeTree.gen.ts",
-    ".dpcode-*"
+    ".codewit-*"
   ],
   "plugins": ["eslint", "oxc", "react", "unicorn", "typescript"],
   "categories": {

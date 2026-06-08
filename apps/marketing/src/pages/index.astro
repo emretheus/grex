@@ -1,27 +1,322 @@
 ---
 import Layout from "../layouts/Layout.astro";
+import TuxIcon from "../components/TuxIcon.astro";
 import { RELEASES_URL } from "../lib/releases";
+
+const appleSvg =
+  "M788.1 340.9c-5.8 4.5-108.2 62.2-108.2 190.5 0 148.4 130.3 200.9 134.2 202.2-.6 3.2-20.7 71.9-68.7 141.9-42.8 61.6-87.5 123.1-155.5 123.1s-85.5-39.5-164-39.5c-76.5 0-103.7 40.8-165.9 40.8s-105.6-57-155.5-127C46.7 790.7 0 663 0 541.8c0-194.4 126.4-297.5 250.8-297.5 66.1 0 121.2 43.4 162.7 43.4 39.5 0 101.1-46 176.3-46 28.5 0 130.9 2.6 198.3 99.2zm-234-181.5c31.1-36.9 53.1-88.1 53.1-139.3 0-7.1-.6-14.3-1.9-20.1-50.6 1.9-110.8 33.7-147.1 75.8-28.5 32.4-55.1 83.6-55.1 135.5 0 7.8 1.3 15.6 1.9 18.1 3.2.6 8.4 1.3 13.6 1.3 45.4 0 102.5-30.4 135.5-71.3z";
+const windowsSvg =
+  "m0 12.402 35.687-4.86.016 34.423-35.67.203zm35.67 33.529.028 34.453L.028 75.48.026 45.7zm4.326-39.025L87.314 0v41.527l-47.318.376zm47.329 39.349-.011 41.34-47.318-6.678-.066-34.739z";
+
+const providers = [
+  { name: "Claude Code", by: "Anthropic", logo: "/harnesses/claude-ai-icon.svg" },
+  { name: "Codex", by: "OpenAI", logo: "/harnesses/openai_dark.svg" },
+  { name: "Cursor", by: "Cursor", logo: "/harnesses/cursor_light.svg" },
+  { name: "OpenCode", by: "OpenCode", logo: "/harnesses/opencode-dark.svg" },
+];
+const moreProviders = ["Gemini", "Grok", "Kilo Code", "Pi"];
 ---
 
 <Layout>
-  <h1 class="tagline">Synara is the best way to code with AI.</h1>
+  <!-- ════ HERO ════ -->
+  <header class="hero">
+    <div class="hero-glow" aria-hidden="true"></div>
+    <div class="shell hero-shell">
+      <h1 class="hero-h1">
+        Every coding agent.<br />
+        <span class="grad">One&nbsp;</span><span class="word-cycle" aria-label="app"><span class="word-cycle-track"><span class="word grad">app.</span><span class="word grad">window.</span><span class="word grad">surface.</span><span class="word grad">workspace.</span><span class="word grad">app.</span></span></span>
+      </h1>
 
-  <a
-    id="download-btn"
-    href={RELEASES_URL}
-    class="hero-button"
-  >
-    <svg class="hero-button-icon hero-button-icon--apple" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 814 1000" aria-hidden="true"><path fill="currentColor" d="M788.1 340.9c-5.8 4.5-108.2 62.2-108.2 190.5 0 148.4 130.3 200.9 134.2 202.2-.6 3.2-20.7 71.9-68.7 141.9-42.8 61.6-87.5 123.1-155.5 123.1s-85.5-39.5-164-39.5c-76.5 0-103.7 40.8-165.9 40.8s-105.6-57-155.5-127C46.7 790.7 0 663 0 541.8c0-194.4 126.4-297.5 250.8-297.5 66.1 0 121.2 43.4 162.7 43.4 39.5 0 101.1-46 176.3-46 28.5 0 130.9 2.6 198.3 99.2zm-234-181.5c31.1-36.9 53.1-88.1 53.1-139.3 0-7.1-.6-14.3-1.9-20.1-50.6 1.9-110.8 33.7-147.1 75.8-28.5 32.4-55.1 83.6-55.1 135.5 0 7.8 1.3 15.6 1.9 18.1 3.2.6 8.4 1.3 13.6 1.3 45.4 0 102.5-30.4 135.5-71.3z"/></svg>
-    <svg class="hero-button-icon hero-button-icon--windows" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 88 88" aria-hidden="true"><path fill="currentColor" d="m0 12.402 35.687-4.86.016 34.423-35.67.203zm35.67 33.529.028 34.453L.028 75.48.026 45.7zm4.326-39.025L87.314 0v41.527l-47.318.376zm47.329 39.349-.011 41.34-47.318-6.678-.066-34.739z"/></svg>
-    <svg class="hero-button-icon hero-button-icon--linux" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 295" aria-hidden="true"><defs><linearGradient id="lt0" x1="48.548%" x2="51.047%" y1="115.276%" y2="41.364%"><stop offset="0%" stop-color="#FFEED7"/><stop offset="100%" stop-color="#BDBFC2"/></linearGradient><linearGradient id="lt6" x1="49.984%" x2="49.984%" y1="89.845%" y2="40.632%"><stop offset="0%" stop-color="#FFEED7"/><stop offset="100%" stop-color="#BDBFC2"/></linearGradient><linearGradient id="lt8" x1="49.841%" x2="50.241%" y1="13.229%" y2="94.673%"><stop offset="0%" stop-color="#FFF" stop-opacity=".8"/><stop offset="100%" stop-color="#FFF" stop-opacity="0"/></linearGradient><linearGradient id="ltc" x1="53.467%" x2="38.949%" y1="48.921%" y2="98.1%"><stop offset="0%" stop-color="#FFA63F"/><stop offset="100%" stop-color="#FF0"/></linearGradient><linearGradient id="lte" x1="30.581%" x2="65.887%" y1="34.024%" y2="89.175%"><stop offset="0%" stop-color="#FFA63F"/><stop offset="100%" stop-color="#FF0"/></linearGradient><linearGradient id="lti" x1="49.733%" x2="50.558%" y1="17.609%" y2="99.385%"><stop offset="0%" stop-color="#FFA63F"/><stop offset="100%" stop-color="#FF0"/></linearGradient></defs><g fill="none"><path fill="#000" d="M63.213 215.474c-11.387-16.346-13.591-69.606 12.947-102.39C89.292 97.383 92.69 86.455 93.7 71.67c.734-16.805-11.846-66.851 35.537-70.616 48.027-3.857 45.364 43.526 45.088 68.596-.183 21.12 15.52 33.15 26.355 49.68 19.927 30.303 18.274 82.461-3.765 110.745-27.916 35.354-51.791 20.018-67.678 21.304-29.752 1.745-30.762 17.54-66.024-35.905"/><path fill="url(#lt6)" d="M81.027 145.684c6.52-14.785 20.386-40.772 20.662-60.883 0-15.978 47.843-19.835 51.7-3.856 3.856 15.978 13.59 39.853 19.834 51.424 6.245 11.478 24.335 48.118 5.051 80.074-17.356 28.284-69.973 50.69-98.073-3.856-9.55-18.917-7.806-42.333.826-62.903"/><path fill="url(#lt8)" d="M166.428 151.285c0 16.162-15.519 37.1-42.15 36.916-27.456.183-39.118-20.754-39.118-36.916 0-16.161 18.182-29.293 40.588-29.293 22.498.092 40.68 13.132 40.68 29.293"/><path fill="#000" stroke="#000" stroke-width=".977" d="M176.805 117.86c13.59 11.02 38.292 49.587 2.204 74.748-11.846 7.806 10.468 32.508 23.049 19.927 43.618-43.894-1.102-94.308-16.53-111.664-13.774-15.151-25.987 3.49-8.723 16.989z"/><path fill="#000" stroke="#000" stroke-width="1.25" d="M79.925 122.727c-8.907 14.509-30.211 48.669-1.652 66.484 38.384 23.6 27.548 47.108-7.53 25.895-49.404-29.568-5.97-89.257 13.774-112.03 22.59-25.529 4.316 4.683-4.592 19.65z"/><path fill="url(#ltc)" stroke="#E68C3F" stroke-width="6.25" d="M51.835 258.542c-20.57-10.928-50.414 2.112-39.578-27.457 2.204-6.704-3.214-16.805.275-23.325 4.133-7.989 13.04-6.244 18.366-11.57 5.234-5.51 8.54-15.06 18.366-13.59 9.734 1.468 16.254 13.406 23.049 28.099 5.05 10.468 22.865 25.253 21.672 37.007-1.47 17.998-21.948 21.396-42.15 10.836z" transform="translate(10)"/><path fill="url(#lte)" stroke="#E68C3F" stroke-width="6.251" d="M194.445 253.49c15.06-18.273 48.578-14.508 25.988-39.577-4.775-5.418-3.306-16.989-9.183-21.947-6.887-6.061-14.509-1.102-21.488-4.224-6.979-3.398-14.325-9.918-22.865-5.327-8.54 4.684-9.459 16.805-10.285 32.783-.735 11.479-11.203 30.671-5.602 41.231 8.081 16.346 29.11 14.142 43.435-2.938z" transform="translate(10)"/><path fill="url(#lti)" stroke="#E68C3F" stroke-width="3.75" d="M97.107 66.344c3.673-3.398 12.58-13.774 29.477-2.939 3.122 2.02 5.693 2.204 11.662 4.775 12.03 4.96 6.336 16.897-6.52 20.937-5.51 1.745-10.468 8.449-20.386 7.806-8.54-.46-10.744-6.06-15.978-9.091-9.275-5.234-10.652-12.305-5.602-16.07 5.051-3.765 6.98-5.143 7.347-5.418z" transform="translate(10)"/><path fill="#000" d="M133.186 57.712c-.092 5.234 2.48 9.458 5.877 9.458 3.306 0 6.153-4.224 6.245-9.366.091-5.234-2.48-9.459-5.878-9.459-3.397 0-6.152 4.225-6.244 9.367m-21.212.092c.459 4.316-1.194 7.989-3.582 8.356-2.387.276-4.683-2.938-5.142-7.254-.46-4.316 1.194-7.99 3.581-8.357 2.388-.275 4.684 2.939 5.143 7.255"/></g></svg>
-    <span id="download-label">Download now</span>
-  </a>
+      <p class="hero-lead">
+        Codewit runs Claude Code, Codex, Cursor, Gemini, Grok, Kilo&nbsp;Code, OpenCode and
+        Pi from a single desktop app — with chat, diffs, a real file editor and terminals.
+        Bring your own subscription.
+      </p>
 
-  <a href="/download" class="other-platforms">Other platforms</a>
+      <div class="hero-cta">
+        <a id="download-btn" href={RELEASES_URL} class="btn btn-primary btn-lg">
+          <svg class="dl-icon dl-icon--apple" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 814 1000" aria-hidden="true"><path fill="currentColor" d={appleSvg}></path></svg>
+          <svg class="dl-icon dl-icon--windows" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 88 88" aria-hidden="true"><path fill="currentColor" d={windowsSvg}></path></svg>
+          <TuxIcon class="dl-icon dl-icon--linux" idPrefix="hero-linux-" />
+          <span id="download-label">Download for macOS</span>
+          <span class="btn-chevron">&gt;</span>
+        </a>
+        <a href={RELEASES_URL} target="_blank" rel="noopener noreferrer" class="btn btn-ghost btn-lg">
+          Star on GitHub
+        </a>
+      </div>
 
-  <div class="screenshot-wrap">
-    <img src="/screenshot.jpeg" alt="Synara" class="screenshot" />
-  </div>
+      <div class="hero-provrow" aria-hidden="true">
+        <span class="hero-provrow-label">Drives</span>
+        {providers.map((p) => (
+          <span class="hero-prov"><img src={p.logo} alt={p.name} title={p.name} /></span>
+        ))}
+        <span class="hero-provrow-more">+4</span>
+      </div>
+    </div>
+
+    <div class="shell">
+      <figure class="shot">
+        <div class="shot-bar" aria-hidden="true">
+          <span></span><span></span><span></span>
+        </div>
+        <img
+          class="shot-img shot-img--light"
+          src="/screenshot.jpeg"
+          alt="Codewit running multiple coding-agent threads in one workspace"
+          loading="eager"
+          decoding="async"
+        />
+        <img
+          class="shot-img shot-img--dark"
+          src="/screenshot-dark.jpeg"
+          alt=""
+          aria-hidden="true"
+          loading="eager"
+          decoding="async"
+        />
+      </figure>
+    </div>
+  </header>
+
+  <!-- ════ PROVIDERS ════ -->
+  <section id="providers" class="band reveal">
+    <div class="shell">
+      <div class="band-head">
+        <h2 class="band-title"><span class="chevron">&gt;</span> Bring the agents you already use.</h2>
+        <p class="band-sub">
+          Codewit doesn't resell tokens or cap your quota. It auto-detects the provider CLIs
+          on your machine and drives them directly.
+        </p>
+      </div>
+
+      <div class="prov-rail">
+        {providers.map((p) => (
+          <div class="prov-card">
+            <span class="prov-logo"><img src={p.logo} alt="" /></span>
+            <div>
+              <div class="prov-name">{p.name}</div>
+              <div class="prov-by">{p.by}</div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div class="prov-more">
+        <span class="prov-more-label">Also</span>
+        {moreProviders.map((m) => <span class="pill">{m}</span>)}
+        <span class="pill pill-soft">+ more shipping weekly</span>
+      </div>
+
+      <ul class="band-facts">
+        <li><span class="chevron">&gt;</span> No keys resold. No quota caps.</li>
+        <li><span class="chevron">&gt;</span> Switch models mid-thread.</li>
+        <li><span class="chevron">&gt;</span> Nothing leaves your machine.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ════ IDE BUILT-IN ════ -->
+  <section id="ide" class="band reveal">
+    <div class="shell">
+      <div class="band-head ide-head">
+        <p class="kicker kicker-dark"><span class="kicker-dot"></span> A full IDE, built in</p>
+        <h2 class="band-title">Stop alt-tabbing to another&nbsp;editor.</h2>
+        <p class="band-sub">
+          Codewit ships a real file explorer and an editable code editor — powered by Monaco,
+          the same engine as VS Code. Browse the worktree, open files, edit and save without
+          ever leaving the app.
+        </p>
+      </div>
+
+      <div class="ide-frame" role="img" aria-label="Codewit IDE: file explorer and code editor">
+        <div class="ide-titlebar" aria-hidden="true">
+          <span class="ide-dot"></span>
+          <span class="ide-dot"></span>
+          <span class="ide-dot"></span>
+        </div>
+        <div class="ide">
+          <!-- File explorer -->
+        <div class="ide-tree" aria-hidden="true">
+          <div class="ide-tree-head">EXPLORER</div>
+          <div class="ide-row ide-row--dir is-open"><i class="tw">▾</i> apps</div>
+          <div class="ide-row ide-row--dir is-open" style="padding-left:1.4rem"><i class="tw">▾</i> web</div>
+          <div class="ide-row ide-file is-active" style="padding-left:2.2rem">DockEditorPane.tsx<em class="g-add">M</em></div>
+          <div class="ide-row ide-file" style="padding-left:2.2rem">DockFilesPane.tsx<em class="g-add">M</em></div>
+          <div class="ide-row ide-file" style="padding-left:2.2rem">editorStore.ts<em class="g-new">U</em></div>
+          <div class="ide-row ide-row--dir" style="padding-left:1.4rem"><i class="tw">▸</i> server</div>
+          <div class="ide-row ide-row--dir" style="padding-left:1.4rem"><i class="tw">▸</i> desktop</div>
+          <div class="ide-row ide-row--dir"><i class="tw">▸</i> packages</div>
+          <div class="ide-row ide-file">README.md</div>
+          <div class="ide-row ide-file">package.json</div>
+        </div>
+
+        <!-- Editor -->
+        <div class="ide-main">
+          <div class="ide-tabs" aria-hidden="true">
+            <span class="ide-tab is-active">DockEditorPane.tsx<b class="ide-tab-dot"></b></span>
+            <span class="ide-tab">modelRegistry.ts</span>
+          </div>
+          <pre class="ide-code"><code><span class="ln"> 1</span><span class="k">import</span> &#123; useEffect, useRef &#125; <span class="k">from</span> <span class="s">"react"</span>;
+<span class="ln"> 2</span><span class="k">import</span> &#123; ensureMonacoSetup &#125; <span class="k">from</span> <span class="s">"~/lib/monaco"</span>;
+<span class="ln"> 3</span>
+<span class="ln"> 4</span><span class="k">export function</span> <span class="fn">DockEditorPane</span>(&#123; cwd &#125;) &#123;
+<span class="ln"> 5</span>  <span class="k">const</span> ref = <span class="fn">useRef</span>&lt;HTMLDivElement&gt;(<span class="kw">null</span>);
+<span class="ln"> 6</span>
+<span class="ln"> 7</span>  <span class="fn">useEffect</span>(() =&gt; &#123;
+<span class="ln"> 8</span>    <span class="k">const</span> m = <span class="fn">ensureMonacoSetup</span>();
+<span class="ln"> 9</span>    <span class="k">const</span> editor = m.editor.<span class="fn">create</span>(ref.current!, &#123;
+<span class="ln">10</span>      automaticLayout: <span class="kw">true</span>,
+<span class="ln">11</span>      minimap: &#123; enabled: <span class="kw">false</span> &#125;,
+<span class="ln">12</span>    &#125;);<span class="cur"></span>
+<span class="ln">13</span>    <span class="k">return</span> () =&gt; editor.<span class="fn">dispose</span>();
+<span class="ln">14</span>  &#125;, []);
+<span class="ln">15</span>&#125;</code></pre>
+          <div class="ide-status" aria-hidden="true">
+            <span class="g-st">&gt; codewit/file-editor</span>
+            <span>TypeScript React</span>
+            <span class="g-saved">● Saved</span>
+          </div>
+        </div>
+      </div>
+      </div>
+
+      <ul class="band-facts ide-facts">
+        <li><span class="chevron">&gt;</span> Click a file in the tree to open it instantly</li>
+        <li><span class="chevron">&gt;</span> Edit + ⌘S to save — the agent sees your changes</li>
+        <li><span class="chevron">&gt;</span> Syntax highlighting for 40+ languages</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ════ EDITOR / REVIEW ════ -->
+  <section id="editor" class="band reveal">
+    <div class="shell split">
+      <div class="split-copy">
+        <p class="kicker kicker-dark"><span class="kicker-dot"></span> Never leave the app</p>
+        <h2 class="band-title">See and edit the code, right here.</h2>
+        <p class="band-sub">
+          Browse the worktree, open files in a real editor, read per-turn diffs, then commit
+          or open a PR — without flipping to another IDE.
+        </p>
+        <ul class="ticks">
+          <li><span class="chevron">&gt;</span> File explorer + editable Monaco editor</li>
+          <li><span class="chevron">&gt;</span> Per-turn &amp; working-tree diffs</li>
+          <li><span class="chevron">&gt;</span> Commit, branch &amp; open PRs</li>
+          <li><span class="chevron">&gt;</span> Isolate parallel work in git worktrees</li>
+        </ul>
+      </div>
+
+      <div class="split-visual">
+        <div class="pr">
+          <div class="pr-top">
+            <span class="pr-dot"></span>
+            <span class="pr-name">Add file explorer + editor</span>
+            <span class="pr-badge">Ready</span>
+          </div>
+          <div class="pr-sub">codewit/file-editor → main · +274 −32 · 3 files</div>
+          <div class="pr-files">
+            <div><code>DockEditorPane.tsx</code><span>+177</span></div>
+            <div><code>modelRegistry.ts</code><span>+74</span></div>
+            <div><code>readFile.ts</code><span>+23</span></div>
+          </div>
+          <button class="pr-action">
+            Commit &amp; push <span class="pr-kbd">⌘⏎</span>
+          </button>
+        </div>
+        <div class="pr-glow" aria-hidden="true"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════ FAQ ════ -->
+  <section id="faq" class="band reveal">
+    <div class="shell faq-grid">
+      <div class="faq-intro">
+        <p class="kicker kicker-dark"><span class="kicker-dot"></span> FAQ</p>
+        <h2 class="band-title">The practical bits,<br />answered.</h2>
+        <p class="band-sub">
+          A quick pass over setup, providers, parallel work, and how much control you keep
+          while agents are running.
+        </p>
+      </div>
+
+      <div class="faq-list">
+        <details class="faq-item">
+          <summary>What is Codewit?<span class="faq-plus" aria-hidden="true"></span></summary>
+          <div class="faq-answer">
+            A single desktop app for driving AI coding agents. Instead of a separate tool per
+            provider, Codewit runs Claude Code, Codex, Cursor, Gemini, Grok, Kilo Code,
+            OpenCode and Pi behind one interface — with chat, diffs, a real file editor, and
+            terminals. It's open source and local-first.
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary>Do I need a new AI subscription?<span class="faq-plus" aria-hidden="true"></span></summary>
+          <div class="faq-answer">
+            No. Codewit drives the provider CLIs you already have. Bring your own
+            subscription — it doesn't resell tokens or add a quota on top. Authenticate the
+            agent once and Codewit uses it directly.
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary>What do I need installed before using it?<span class="faq-plus" aria-hidden="true"></span></summary>
+          <div class="faq-answer">
+            At least one coding-agent CLI for the provider you want — for example the Codex CLI
+            or Claude Code. Codewit auto-detects the CLIs on your machine and lets you switch
+            between them per task.
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary>Can I run multiple tasks at the same time?<span class="faq-plus" aria-hidden="true"></span></summary>
+          <div class="faq-answer">
+            Yes. Each thread can run its own agent, and you can isolate parallel work in git
+            worktrees so changes never collide. Switch between threads while they're running.
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary>Does it fit into a normal Git workflow?<span class="faq-plus" aria-hidden="true"></span></summary>
+          <div class="faq-answer">
+            Completely. Review per-turn and working-tree diffs, edit files in the built-in
+            editor, then commit, branch, or open a pull request — all from inside the app. No
+            separate IDE required.
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary>Does Codewit upload my code somewhere?<span class="faq-plus" aria-hidden="true"></span></summary>
+          <div class="faq-answer">
+            No. Codewit is local-first — your code and chats stay on your machine in a local
+            database. The only thing leaving your computer is whatever the agent provider you
+            chose sends to its own model, exactly as their CLI would on its own.
+          </div>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════ FINAL CTA ════ -->
+  <section id="download" class="cta reveal">
+    <div class="cta-band" aria-hidden="true"></div>
+    <div class="shell cta-inner">
+      <h2 class="cta-h2">Code with every agent.<span class="chevron">&gt;</span></h2>
+      <p class="cta-lead">Free and open source. macOS, Windows &amp; Linux.</p>
+      <div class="hero-cta">
+        <a id="cta-download-btn" href={RELEASES_URL} class="btn btn-primary btn-lg">
+          <svg class="dl-icon dl-icon--apple" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 814 1000" aria-hidden="true"><path fill="currentColor" d={appleSvg}></path></svg>
+          <svg class="dl-icon dl-icon--windows" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 88 88" aria-hidden="true"><path fill="currentColor" d={windowsSvg}></path></svg>
+          <TuxIcon class="dl-icon dl-icon--linux" idPrefix="cta-linux-" />
+          <span id="cta-download-label">Download for macOS</span>
+          <span class="btn-chevron">&gt;</span>
+        </a>
+        <a class="btn btn-ghost btn-lg" href="/download">Windows · Linux · other</a>
+      </div>
+    </div>
+  </section>
 </Layout>
 
 <script>
@@ -32,36 +327,22 @@ import { RELEASES_URL } from "../lib/releases";
   function detectPlatform(): Platform | null {
     const ua = navigator.userAgent;
     if (/Win/i.test(ua)) return { os: "win", label: "Download for Windows" };
-    if (/Mac/i.test(ua)) {
-      return {
-        os: "mac",
-        label: `Download for macOS`,
-        arch: "arm64",
-      };
-    }
+    if (/Mac/i.test(ua)) return { os: "mac", label: "Download for macOS", arch: "arm64" };
     if (/Linux/i.test(ua)) return { os: "linux", label: "Download for Linux" };
     return null;
   }
 
   function pickAsset(assets: ReleaseAsset[], platform: Platform): string | null {
     if (platform.os === "win") {
-      return (
-        assets.find((a) => a.name.endsWith("-x64.exe"))
-          ?.browser_download_url ?? null
-      );
+      return assets.find((a) => a.name.endsWith("-x64.exe"))?.browser_download_url ?? null;
     }
     if (platform.os === "mac") {
-      const preferred = assets.find((a) =>
-        a.name.endsWith(`-${platform.arch}.dmg`),
-      );
+      const preferred = assets.find((a) => a.name.endsWith(`-${platform.arch}.dmg`));
       const fallback = assets.find((a) => a.name.endsWith(".dmg"));
       return (preferred ?? fallback)?.browser_download_url ?? null;
     }
     if (platform.os === "linux") {
-      return (
-        assets.find((a) => a.name.endsWith(".AppImage"))
-          ?.browser_download_url ?? null
-      );
+      return assets.find((a) => a.name.endsWith(".AppImage"))?.browser_download_url ?? null;
     }
     return null;
   }
@@ -69,170 +350,1004 @@ import { RELEASES_URL } from "../lib/releases";
   async function init() {
     const btn = document.getElementById("download-btn") as HTMLAnchorElement | null;
     const label = document.getElementById("download-label");
-    if (!btn || !label) return;
+    const ctaBtn = document.getElementById("cta-download-btn") as HTMLAnchorElement | null;
+    const ctaLabel = document.getElementById("cta-download-label");
 
     const platform = detectPlatform();
     if (!platform) return;
-
     document.documentElement.dataset.platform = platform.os;
-    label.textContent = platform.label;
+    if (label) label.textContent = platform.label;
+    if (ctaLabel) ctaLabel.textContent = platform.label;
 
     try {
       const release = await fetchLatestRelease();
       const url = pickAsset(release.assets ?? [], platform);
       if (url) {
-        btn.href = url;
-        btn.removeAttribute("target");
-        btn.removeAttribute("rel");
+        for (const el of [btn, ctaBtn]) {
+          if (el) {
+            el.href = url;
+            el.removeAttribute("target");
+            el.removeAttribute("rel");
+          }
+        }
       }
     } catch {
-      btn.href = RELEASES_URL;
+      if (btn) btn.href = RELEASES_URL;
+      if (ctaBtn) ctaBtn.href = RELEASES_URL;
     }
+  }
+
+  function initReveal() {
+    const els = document.querySelectorAll<HTMLElement>(".reveal");
+    if (!("IntersectionObserver" in window) || els.length === 0) {
+      els.forEach((el) => el.classList.add("in"));
+      return;
+    }
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) {
+          if (e.isIntersecting) {
+            e.target.classList.add("in");
+            io.unobserve(e.target);
+          }
+        }
+      },
+      { rootMargin: "0px 0px -12% 0px", threshold: 0.08 },
+    );
+    els.forEach((el) => io.observe(el));
+  }
+
+  // Floating brand mark appears once the hero scrolls past.
+  function initFloatingBrand() {
+    const brand = document.getElementById("floating-brand");
+    const hero = document.querySelector(".hero");
+    if (!brand || !hero || !("IntersectionObserver" in window)) return;
+    const io = new IntersectionObserver(
+      ([entry]) => brand.classList.toggle("show", !entry.isIntersecting),
+      { threshold: 0 },
+    );
+    io.observe(hero);
   }
 
   init();
+  initReveal();
+  initFloatingBrand();
 </script>
 
 <style>
-  .main {
-    padding-top: 10vh;
+  /* ════ HERO ════ */
+  .hero {
+    position: relative;
+    /* Pull the hero up under the sticky nav so its glow paints behind the bar.
+       The nav itself is transparent at the top, so the colour flows through. */
+    margin-top: -68px;
+    padding: calc(68px + clamp(40px, 8vw, 96px)) 0 0;
+    /* Clip only horizontally so the glow can still rise behind the nav. */
+    overflow-x: clip;
+  }
+  /* Diffuse blue→green glow that rises from behind the nav — the signature,
+     replacing T3's grid pattern. */
+  .hero-glow {
+    position: absolute;
+    top: -180px;
+    left: -10%;
+    width: 80vw;
+    height: 80vw;
+    max-width: 1040px;
+    max-height: 1040px;
+    background: radial-gradient(
+      circle at 38% 34%,
+      oklch(56% 0.22 258 / 0.22),
+      oklch(74% 0.16 168 / 0.12) 40%,
+      transparent 66%
+    );
+    filter: blur(10px);
+    pointer-events: none;
+  }
+  .hero-shell {
+    position: relative;
   }
 
-  /* ── Tagline ── */
-
-  .tagline {
-    font-weight: 500;
-    font-size: clamp(2rem, 5vw, 3.5rem);
-    letter-spacing: -0.035em;
-    line-height: 1.15;
-    text-align: center;
-    margin: 0 0 6vh;
-    opacity: 0;
-    animation: fade-in 1s ease-out forwards;
-  }
-
-  /* ── Hero button ── */
-
-  .hero-button {
+  .kicker {
     display: inline-flex;
     align-items: center;
     gap: 0.55rem;
-    background: #fafafa;
-    color: #09090b;
-    padding: 0.75rem 2rem;
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    letter-spacing: 0.02em;
+    color: var(--ink-soft);
+    padding: 0.4rem 0.85rem 0.4rem 0.7rem;
+    border: 1px solid var(--line);
     border-radius: 999px;
-    font-weight: 600;
-    font-size: 0.9rem;
-    margin-bottom: 1.25rem;
-    opacity: 0;
-    animation: fade-in 1s ease-out 0.15s forwards;
-    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    background: var(--paper);
+    margin-bottom: 1.8rem;
+  }
+  .kicker-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 999px;
+    background: var(--brand-gradient);
+    box-shadow: 0 0 0 3px oklch(74% 0.16 168 / 0.18);
+  }
+  .kicker-dark {
+    background: transparent;
+    border: 0;
+    padding-left: 0;
+    margin-bottom: 1.1rem;
   }
 
-  .hero-button:hover {
-    transform: scale(1.03);
-    box-shadow: 0 0 24px rgba(255, 255, 255, 0.08);
+  .hero-h1 {
+    font-size: clamp(44px, 8.5vw, 104px);
+    font-weight: 700;
+    letter-spacing: -0.045em;
+    line-height: 1.05;
+    max-width: 14ch;
+  }
+  /* Cycling word: a vertical track slides through the variants, masked to one
+     line so only the current word shows. */
+  .word-cycle {
+    display: inline-flex;
+    flex-direction: column;
+    height: 1.05em; /* matches hero-h1 line-height */
+    line-height: 1.05;
+    overflow: hidden;
+    vertical-align: top;
+  }
+  .word-cycle-track {
+    display: flex;
+    flex-direction: column;
+    animation: wordCycle 9s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+  }
+  .word-cycle .word {
+    display: block;
+    height: 1.05em;
+    line-height: 1.05;
+    white-space: nowrap;
+  }
+  /* 5 frames (last = first) → 4 visible words, each held then slid up. */
+  @keyframes wordCycle {
+    0%,
+    18% {
+      transform: translateY(0);
+    }
+    25%,
+    43% {
+      transform: translateY(-1.05em);
+    }
+    50%,
+    68% {
+      transform: translateY(-2.1em);
+    }
+    75%,
+    93% {
+      transform: translateY(-3.15em);
+    }
+    100% {
+      transform: translateY(-4.2em);
+    }
   }
 
-  .hero-button:active {
-    transform: scale(0.98);
+  .hero-lead {
+    margin: 1.6rem 0 2.2rem;
+    font-size: clamp(17px, 1.5vw, 20px);
+    line-height: 1.6;
+    color: var(--ink-soft);
+    max-width: 56ch;
   }
 
-  .hero-button-icon {
+  .hero-cta {
+    display: flex;
+    gap: 0.7rem;
+    flex-wrap: wrap;
+  }
+
+  .dl-icon {
     display: none;
-    width: 1em;
-    height: 1em;
+    width: 15px;
+    height: 15px;
     flex-shrink: 0;
   }
-
-  :global([data-platform="mac"]) .hero-button-icon--apple {
+  :global([data-platform="mac"]) .dl-icon--apple,
+  :global(:not([data-platform])) .dl-icon--apple {
+    display: block;
+  }
+  :global([data-platform="win"]) .dl-icon--windows {
+    display: block;
+  }
+  :global([data-platform="linux"]) .dl-icon--linux {
     display: block;
   }
 
-  :global([data-platform="win"]) .hero-button-icon--windows {
-    display: block;
+  .hero-provrow {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    margin-top: 2.6rem;
   }
-
-  :global([data-platform="linux"]) .hero-button-icon--linux {
-    display: block;
+  .hero-provrow-label {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--ink-faint);
   }
-
-  /* ── Other platforms link ── */
-
-  .other-platforms {
-    font-size: 0.825rem;
-    color: var(--fg-dim);
-    margin-bottom: 5vh;
-    opacity: 0;
-    animation: fade-in 1s ease-out 0.3s forwards;
-    transition: color 0.3s ease;
-    text-decoration: underline;
-    text-decoration-color: rgba(113, 113, 122, 0.4);
-    text-underline-offset: 3px;
+  .hero-prov {
+    width: 38px;
+    height: 38px;
+    display: grid;
+    place-items: center;
+    border-radius: 10px;
+    background: var(--paper);
+    border: 1px solid var(--line);
   }
-
-  .other-platforms:hover {
-    color: var(--fg-muted);
-    text-decoration-color: var(--fg-muted);
+  .hero-prov img {
+    width: 21px;
+    height: 21px;
+    object-fit: contain;
+  }
+  .hero-provrow-more {
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    color: var(--ink-faint);
   }
 
   /* ── Screenshot ── */
-
-  .screenshot-wrap {
-    margin: 0 auto;
-    width: min(95vw, 1400px);
-    opacity: 0;
-    transform: scale(0.98);
-    animation: screenshot-in 1s ease-out 0.15s forwards;
+  .shot {
+    margin-top: clamp(40px, 6vw, 76px);
+    border-radius: 18px;
+    overflow: hidden;
+    border: 1px solid var(--line);
+    background: var(--paper-2);
+    box-shadow:
+      0 1px 0 oklch(100% 0 0 / 0.6) inset,
+      0 40px 80px -40px oklch(56% 0.22 258 / 0.3);
   }
-
-  .screenshot {
+  .shot-bar {
+    display: flex;
+    gap: 7px;
+    align-items: center;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--line-soft);
+    background: var(--paper);
+  }
+  .shot-bar span {
+    width: 11px;
+    height: 11px;
+    border-radius: 999px;
+    background: var(--paper-3);
+    border: 1px solid var(--line);
+  }
+  .shot-img {
     width: 100%;
     display: block;
-    border-radius: 16px;
-    border: 1px solid rgba(255, 255, 255, 0.06);
-    mask-image: linear-gradient(to bottom, black 80%, transparent 100%);
-    -webkit-mask-image: linear-gradient(to bottom, black 80%, transparent 100%);
+  }
+  /* Swap the hero screenshot to match the active theme. */
+  .shot-img--dark {
+    display: none;
+  }
+  :global(html[data-theme="dark"]) .shot-img--light {
+    display: none;
+  }
+  :global(html[data-theme="dark"]) .shot-img--dark {
+    display: block;
   }
 
-  .screenshot-wrap::after {
+  /* ════ BANDS (sections) ════ */
+  .band {
+    padding: clamp(64px, 10vw, 128px) 0;
+  }
+  .band-tint {
+    background: var(--paper-2);
+    border-block: 1px solid var(--line-soft);
+  }
+  .band-head {
+    max-width: 60ch;
+    margin-bottom: clamp(36px, 5vw, 60px);
+  }
+  .band-title {
+    font-size: clamp(30px, 4.2vw, 52px);
+    letter-spacing: -0.035em;
+  }
+  .band-title .chevron {
+    margin-right: 0.15em;
+  }
+  .band-sub {
+    margin-top: 1.1rem;
+    font-size: clamp(16px, 1.4vw, 19px);
+    line-height: 1.6;
+    color: var(--ink-soft);
+    max-width: 58ch;
+  }
+
+  /* ── Provider rail (asymmetric, not a card grid) ── */
+  .prov-rail {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.9rem;
+  }
+  .prov-card {
+    flex: 1 1 220px;
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    padding: 1.15rem 1.25rem;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: var(--paper);
+    transition:
+      transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1),
+      border-color 0.25s ease,
+      box-shadow 0.25s ease;
+  }
+  .prov-card:hover {
+    transform: translateY(-3px);
+    border-color: transparent;
+    box-shadow:
+      0 0 0 1.5px var(--blue),
+      0 18px 30px -18px oklch(56% 0.22 258 / 0.4);
+  }
+  .prov-logo {
+    width: 42px;
+    height: 42px;
+    display: grid;
+    place-items: center;
+    border-radius: 11px;
+    background: var(--paper-3);
+    flex-shrink: 0;
+  }
+
+  /* Provider logos are dark-on-transparent, so keep their badge light in dark
+     mode (a common pattern) instead of letting them vanish on a dark surface. */
+  :global(html[data-theme="dark"]) .hero-prov,
+  :global(html[data-theme="dark"]) .prov-logo {
+    background: oklch(96% 0.005 255);
+    border-color: transparent;
+  }
+  .prov-logo img {
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+  }
+  .prov-name {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1rem;
+  }
+  .prov-by {
+    font-size: 0.82rem;
+    color: var(--ink-faint);
+  }
+
+  .prov-more {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.55rem;
+    margin-top: 1.4rem;
+  }
+  .prov-more-label {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--ink-faint);
+    margin-right: 0.2rem;
+  }
+  .pill {
+    font-family: var(--font-display);
+    font-size: 0.88rem;
+    font-weight: 500;
+    padding: 0.4rem 0.95rem;
+    border-radius: 999px;
+    border: 1px solid var(--line);
+    background: var(--paper);
+    transition: border-color 0.2s ease, color 0.2s ease;
+  }
+  .pill:hover {
+    border-color: var(--green);
+    color: oklch(58% 0.16 168);
+  }
+  .pill-soft {
+    color: var(--ink-faint);
+  }
+
+  .band-facts {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.6rem;
+    margin-top: 2.6rem;
+    padding-top: 2rem;
+    border-top: 1px dashed var(--line);
+    font-size: 0.95rem;
+    color: var(--ink-soft);
+  }
+  .band-facts li {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  /* ── Split layouts ── */
+  .split {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(36px, 6vw, 88px);
+    align-items: center;
+  }
+  .split-rev .split-copy {
+    order: 2;
+  }
+  .ticks {
+    margin-top: 1.6rem;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+  }
+  .ticks li {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    font-size: 1rem;
+    color: var(--ink-soft);
+  }
+
+  /* PR card */
+  .split-visual {
+    position: relative;
+  }
+  .pr {
+    position: relative;
+    z-index: 2;
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    background: var(--paper);
+    padding: 1.5rem;
+    box-shadow: 0 30px 60px -34px oklch(56% 0.22 258 / 0.35);
+  }
+  .pr-glow {
+    position: absolute;
+    inset: 12% -8% -18% 14%;
+    border-radius: 28px;
+    background: var(--brand-gradient);
+    opacity: 0.14;
+    filter: blur(34px);
+    z-index: 1;
+  }
+  .pr-top {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    margin-bottom: 0.7rem;
+  }
+  .pr-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 999px;
+    background: var(--ok);
+    box-shadow: 0 0 0 3px oklch(62% 0.15 162 / 0.18);
+  }
+  .pr-name {
+    font-family: var(--font-display);
+    font-weight: 600;
+    flex: 1;
+  }
+  .pr-badge {
+    font-family: var(--font-mono);
+    font-size: 0.62rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ok);
+    padding: 0.18rem 0.55rem;
+    border: 1px solid color-mix(in srgb, var(--ok) 45%, transparent);
+    border-radius: 999px;
+  }
+  .pr-sub {
+    font-family: var(--font-mono);
+    font-size: 0.74rem;
+    color: var(--ink-faint);
+    margin-bottom: 1rem;
+  }
+  .pr-files {
+    border: 1px solid var(--line);
+    border-radius: 11px;
+    overflow: hidden;
+    margin-bottom: 1.2rem;
+  }
+  .pr-files div {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.6rem 0.85rem;
+    font-family: var(--font-mono);
+    font-size: 0.74rem;
+    color: var(--ink-soft);
+    border-top: 1px solid var(--line-soft);
+  }
+  .pr-files div:first-child {
+    border-top: 0;
+  }
+  .pr-files span {
+    color: var(--ok);
+  }
+  .pr-action {
+    width: 100%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    padding: 0.85rem;
+    border: 0;
+    border-radius: 12px;
+    background: var(--ink);
+    color: var(--paper);
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+  }
+  .pr-kbd {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    background: oklch(100% 0 0 / 0.16);
+    padding: 0.12rem 0.4rem;
+    border-radius: 5px;
+  }
+
+  /* ════ FAQ ════ */
+  .faq-grid {
+    display: grid;
+    grid-template-columns: 0.85fr 1.15fr;
+    gap: clamp(36px, 6vw, 88px);
+    align-items: start;
+  }
+  .faq-intro {
+    position: sticky;
+    top: 96px;
+  }
+  .faq-intro .band-title {
+    margin-bottom: 1rem;
+  }
+
+  .faq-list {
+    display: flex;
+    flex-direction: column;
+  }
+  .faq-item {
+    border-top: 1px solid var(--line);
+  }
+  .faq-item:last-child {
+    border-bottom: 1px solid var(--line);
+  }
+  .faq-item summary {
+    list-style: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1.3rem 0.25rem;
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: clamp(1rem, 1.4vw, 1.15rem);
+    color: var(--ink);
+    transition: color 0.2s ease;
+  }
+  .faq-item summary::-webkit-details-marker {
+    display: none;
+  }
+  .faq-item summary:hover {
+    color: var(--blue);
+  }
+
+  /* The +/× toggle, drawn with two bars that rotate on open. */
+  .faq-plus {
+    position: relative;
+    flex-shrink: 0;
+    width: 22px;
+    height: 22px;
+    border-radius: 999px;
+    border: 1px solid var(--line);
+    transition:
+      border-color 0.25s ease,
+      background 0.25s ease;
+  }
+  .faq-plus::before,
+  .faq-plus::after {
     content: "";
-    display: block;
-    width: 100%;
-    height: 120px;
-    background: inherit;
-    margin-top: -1px;
-    opacity: 0.04;
-    transform: scaleY(-1);
-    mask-image: linear-gradient(to bottom, black 0%, transparent 60%);
-    -webkit-mask-image: linear-gradient(to bottom, black 0%, transparent 60%);
-    pointer-events: none;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 10px;
+    height: 1.6px;
+    background: var(--ink-soft);
+    transform: translate(-50%, -50%);
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .faq-plus::after {
+    transform: translate(-50%, -50%) rotate(90deg);
+  }
+  .faq-item[open] .faq-plus {
+    background: var(--brand-gradient);
+    border-color: transparent;
+  }
+  .faq-item[open] .faq-plus::before,
+  .faq-item[open] .faq-plus::after {
+    background: #fff;
+  }
+  .faq-item[open] .faq-plus::after {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+  .faq-item[open] summary {
+    color: var(--blue);
   }
 
-  @keyframes screenshot-in {
+  .faq-answer {
+    padding: 0 0.25rem 1.4rem;
+    max-width: 56ch;
+    color: var(--ink-soft);
+    font-size: 0.98rem;
+    line-height: 1.65;
+    animation: faqReveal 0.35s ease-out;
+  }
+  @keyframes faqReveal {
     from {
       opacity: 0;
-      transform: scale(0.98);
-    }
-    to {
-      opacity: 1;
-      transform: scale(1);
+      transform: translateY(-4px);
     }
   }
 
-  /* ── Mobile ── */
+  /* ════ IDE MOCKUP ════ */
+  .ide-head {
+    max-width: 60ch;
+  }
+  /* Window frame with a macOS title bar (matches the hero screenshot). */
+  .ide-frame {
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    overflow: hidden;
+    background: var(--paper);
+    box-shadow:
+      0 1px 0 oklch(100% 0 0 / 0.6) inset,
+      0 44px 90px -44px oklch(56% 0.22 258 / 0.32);
+  }
+  .ide-titlebar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 13px 16px;
+    border-bottom: 1px solid var(--line-soft);
+    background: var(--paper-2);
+  }
+  .ide-dot {
+    width: 11px;
+    height: 11px;
+    border-radius: 999px;
+    background: var(--paper-3);
+    border: 1px solid var(--line);
+  }
+  .ide {
+    display: grid;
+    grid-template-columns: 244px 1fr;
+    min-height: 560px;
+    background: var(--paper);
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+  }
 
-  @media (max-width: 640px) {
-    .main {
-      padding-top: 7vh;
-    }
+  /* File explorer */
+  .ide-tree {
+    border-right: 1px solid var(--line);
+    background: var(--paper-2);
+    padding: 0.6rem 0;
+    overflow: hidden;
+  }
+  .ide-tree-head {
+    font-size: 0.62rem;
+    letter-spacing: 0.16em;
+    color: var(--ink-faint);
+    padding: 0.4rem 1rem 0.7rem;
+  }
+  .ide-row {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.28rem 1rem;
+    color: var(--ink-soft);
+    cursor: default;
+    white-space: nowrap;
+  }
+  .ide-row .tw {
+    font-style: normal;
+    color: var(--ink-faint);
+    width: 0.8em;
+  }
+  .ide-row--dir {
+    color: var(--ink);
+    font-weight: 500;
+  }
+  .ide-file {
+    position: relative;
+  }
+  .ide-file.is-active {
+    background: color-mix(in srgb, var(--blue) 12%, transparent);
+    color: var(--ink);
+    box-shadow: inset 2px 0 0 var(--blue);
+  }
+  .ide-file em {
+    margin-left: auto;
+    font-style: normal;
+    font-size: 0.68rem;
+    font-weight: 700;
+  }
+  .g-add {
+    color: oklch(60% 0.13 80);
+  }
+  .g-new {
+    color: var(--ok);
+  }
 
-    .tagline {
-      margin-bottom: 4vh;
-    }
+  /* Editor */
+  .ide-main {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    background: var(--paper);
+  }
+  .ide-tabs {
+    display: flex;
+    border-bottom: 1px solid var(--line);
+    background: var(--paper-2);
+  }
+  .ide-tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.7rem 1rem;
+    color: var(--ink-faint);
+    border-right: 1px solid var(--line-soft);
+  }
+  .ide-tab.is-active {
+    color: var(--ink);
+    background: var(--paper);
+    box-shadow: inset 0 2px 0 var(--blue);
+  }
+  .ide-tab-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 999px;
+    background: var(--ink-soft);
+  }
+  .ide-code {
+    flex: 1;
+    margin: 0;
+    padding: 1rem 1.1rem;
+    line-height: 1.75;
+    color: var(--ink);
+    overflow: hidden;
+    white-space: pre;
+  }
+  .ide-code .ln {
+    display: inline-block;
+    width: 2.2em;
+    margin-right: 1rem;
+    text-align: right;
+    color: var(--ink-faint);
+    opacity: 0.55;
+    user-select: none;
+  }
+  .ide-code .k {
+    color: var(--blue);
+  }
+  .ide-code .s {
+    color: oklch(58% 0.16 168);
+  }
+  .ide-code .fn {
+    color: oklch(52% 0.18 300);
+  }
+  .ide-code .kw {
+    color: oklch(60% 0.18 30);
+  }
+  .ide-code .cur {
+    display: inline-block;
+    width: 7px;
+    height: 1.05em;
+    background: var(--blue);
+    margin-left: 1px;
+    vertical-align: text-bottom;
+    animation: blink 1.1s steps(2) infinite;
+  }
+  .ide-status {
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+    padding: 0.5rem 1.1rem;
+    border-top: 1px solid var(--line);
+    background: var(--paper-2);
+    font-size: 0.7rem;
+    color: var(--ink-faint);
+  }
+  .ide-status .g-st {
+    color: var(--blue);
+    font-weight: 500;
+  }
+  .ide-status .g-saved {
+    margin-left: auto;
+    color: var(--ok);
+  }
+  .ide-facts {
+    justify-content: flex-start;
+  }
 
-    .screenshot-wrap {
-      width: 95vw;
+  /* ════ FINAL CTA ════ */
+  .cta {
+    position: relative;
+    text-align: center;
+    padding: clamp(80px, 12vw, 150px) 0;
+    overflow: hidden;
+  }
+  .cta-band {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+      ellipse 60% 80% at 50% 120%,
+      oklch(56% 0.22 258 / 0.16),
+      oklch(74% 0.16 168 / 0.1) 45%,
+      transparent 70%
+    );
+    pointer-events: none;
+  }
+  .cta-inner {
+    position: relative;
+  }
+  .cta-h2 {
+    font-size: clamp(38px, 6.5vw, 86px);
+    font-weight: 700;
+    letter-spacing: -0.045em;
+  }
+  .cta-h2 .chevron {
+    margin-left: 0.05em;
+  }
+  .cta-lead {
+    margin: 1.3rem auto 2.2rem;
+    font-size: clamp(16px, 1.4vw, 19px);
+    color: var(--ink-soft);
+  }
+  .cta .hero-cta {
+    justify-content: center;
+  }
+
+  /* ════ Reveal ════ */
+  .reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition:
+      opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+      transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .reveal.in {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* ════ Floating brand (appears after hero) ════ */
+  :global(#floating-brand.show) {
+    display: grid !important;
+    position: fixed;
+    place-items: center;
+    bottom: 22px;
+    right: 22px;
+    width: 52px;
+    height: 52px;
+    border-radius: 15px;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    box-shadow: 0 14px 30px -14px oklch(56% 0.22 258 / 0.45);
+    z-index: 60;
+    animation: pop 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+  :global(#floating-brand img) {
+    width: 30px;
+    height: 30px;
+    border-radius: 9px;
+  }
+  @keyframes pop {
+    from {
+      opacity: 0;
+      transform: scale(0.8) translateY(8px);
     }
+  }
+
+  /* ════ Responsive ════ */
+  @media (max-width: 860px) {
+    .split {
+      grid-template-columns: 1fr;
+    }
+    .split-rev .split-copy {
+      order: 0;
+    }
+    .ide {
+      grid-template-columns: 200px 1fr;
+      min-height: 480px;
+      font-size: 11.5px;
+    }
+    .faq-grid {
+      grid-template-columns: 1fr;
+    }
+    .faq-intro {
+      position: static;
+    }
+  }
+  @media (max-width: 560px) {
+    /* Stack the IDE: tree above the editor, horizontal scroll on code. */
+    .ide {
+      grid-template-columns: 1fr;
+      min-height: 0;
+    }
+    .ide-tree {
+      display: flex;
+      gap: 0.3rem;
+      overflow-x: auto;
+      border-right: 0;
+      border-bottom: 1px solid var(--line);
+      padding: 0.5rem 0.6rem;
+    }
+    .ide-tree-head,
+    .ide-row--dir {
+      display: none;
+    }
+    .ide-row {
+      padding: 0.3rem 0.6rem;
+    }
+    .ide-row[style] {
+      padding-left: 0.6rem !important;
+    }
+    .ide-code {
+      overflow-x: auto;
+    }
+    .band-facts {
+      gap: 0.9rem;
+      flex-direction: column;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .reveal {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+    .faq-answer {
+      animation: none;
+    }
+    .word-cycle-track {
+      animation: none;
+    }
+    :global(#floating-brand.show) {
+      animation: none;
+    }
+  }
+
+  /* ════ Dark mode — calmer, enterprise-grade ════
+     On dark, coloured glows and heavy shadows read as noise. Depth comes from
+     surface contrast and hairline borders instead. Light mode is unchanged. */
+  :global(html[data-theme="dark"]) .shot,
+  :global(html[data-theme="dark"]) .ide-frame {
+    box-shadow: 0 24px 60px -32px oklch(0% 0 0 / 0.7);
+  }
+  :global(html[data-theme="dark"]) .pr {
+    box-shadow: 0 20px 48px -30px oklch(0% 0 0 / 0.6);
+  }
+  :global(html[data-theme="dark"]) .prov-card:hover {
+    box-shadow: 0 0 0 1px var(--blue);
+  }
+  :global(html[data-theme="dark"]) .hero-glow {
+    opacity: 0.4;
+  }
+  :global(html[data-theme="dark"]) .cta-band,
+  :global(html[data-theme="dark"]) .pr-glow {
+    opacity: 0.35;
+  }
+  :global(html[data-theme="dark"]) :global(#floating-brand.show) {
+    box-shadow: 0 12px 30px -16px oklch(0% 0 0 / 0.6);
   }
 </style>

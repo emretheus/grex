@@ -6,8 +6,8 @@ import {
   resolveActiveCodexHomeWritePath,
   resolveBaseCodexHomePath,
   resolveCodexHomeAllowlistCandidates,
-  resolveDpCodeCodexHomeOverlayPath,
-  shouldDisableDpCodeBrowserPlugin,
+  resolveCodewitCodexHomeOverlayPath,
+  shouldDisableCodexBrowserPlugin,
 } from "./codexHomePaths.ts";
 
 describe("resolveBaseCodexHomePath", () => {
@@ -28,44 +28,30 @@ describe("resolveBaseCodexHomePath", () => {
   });
 });
 
-describe("resolveDpCodeCodexHomeOverlayPath", () => {
-  it("anchors the overlay under SYNARA_HOME when set", () => {
+describe("resolveCodewitCodexHomeOverlayPath", () => {
+  it("anchors the overlay under CODEWIT_HOME when set", () => {
     assert.equal(
-      resolveDpCodeCodexHomeOverlayPath({ SYNARA_HOME: "/synara/runtime" }, "/users/me/.codex"),
-      path.join("/synara/runtime", "codex-home-overlay"),
-    );
-  });
-
-  it("honours the legacy DPCODE_HOME variable", () => {
-    assert.equal(
-      resolveDpCodeCodexHomeOverlayPath({ DPCODE_HOME: "/dp/runtime" }, "/users/me/.codex"),
-      path.join("/dp/runtime", "codex-home-overlay"),
-    );
-  });
-
-  it("honours the legacy T3CODE_HOME variable", () => {
-    assert.equal(
-      resolveDpCodeCodexHomeOverlayPath({ T3CODE_HOME: "/t3/runtime" }, "/users/me/.codex"),
-      path.join("/t3/runtime", "codex-home-overlay"),
+      resolveCodewitCodexHomeOverlayPath({ CODEWIT_HOME: "/codewit/runtime" }, "/users/me/.codex"),
+      path.join("/codewit/runtime", "codex-home-overlay"),
     );
   });
 
   it("derives a default overlay sibling of the source home", () => {
     assert.equal(
-      resolveDpCodeCodexHomeOverlayPath({}, "/users/me/.codex"),
-      path.join("/users/me", ".synara", "runtime", "codex-home-overlay"),
+      resolveCodewitCodexHomeOverlayPath({}, "/users/me/.codex"),
+      path.join("/users/me", ".codewit", "runtime", "codex-home-overlay"),
     );
   });
 });
 
-describe("shouldDisableDpCodeBrowserPlugin", () => {
+describe("shouldDisableCodexBrowserPlugin", () => {
   it("disables the plugin (overlay active) by default", () => {
-    assert.equal(shouldDisableDpCodeBrowserPlugin({}), true);
+    assert.equal(shouldDisableCodexBrowserPlugin({}), true);
   });
 
   it("respects the explicit '0' opt-out", () => {
     assert.equal(
-      shouldDisableDpCodeBrowserPlugin({ DPCODE_DISABLE_CODEX_DPCODE_BROWSER_PLUGIN: "0" }),
+      shouldDisableCodexBrowserPlugin({ CODEWIT_DISABLE_CODEX_BROWSER_PLUGIN: "0" }),
       false,
     );
   });
@@ -75,10 +61,10 @@ describe("resolveActiveCodexHomeWritePath", () => {
   it("returns the overlay home when the plugin is disabled (default)", () => {
     assert.equal(
       resolveActiveCodexHomeWritePath({
-        env: { SYNARA_HOME: "/synara/runtime" },
+        env: { CODEWIT_HOME: "/codewit/runtime" },
         homePath: "/users/me/.codex",
       }),
-      path.join("/synara/runtime", "codex-home-overlay"),
+      path.join("/codewit/runtime", "codex-home-overlay"),
     );
   });
 
@@ -86,8 +72,8 @@ describe("resolveActiveCodexHomeWritePath", () => {
     assert.equal(
       resolveActiveCodexHomeWritePath({
         env: {
-          DPCODE_HOME: "/dp/runtime",
-          DPCODE_DISABLE_CODEX_DPCODE_BROWSER_PLUGIN: "0",
+          CODEWIT_HOME: "/dp/runtime",
+          CODEWIT_DISABLE_CODEX_BROWSER_PLUGIN: "0",
         },
         homePath: "/users/me/.codex",
       }),
@@ -99,18 +85,18 @@ describe("resolveActiveCodexHomeWritePath", () => {
 describe("resolveCodexHomeAllowlistCandidates", () => {
   it("includes both source and overlay homes when distinct", () => {
     const candidates = resolveCodexHomeAllowlistCandidates({
-      env: { SYNARA_HOME: "/synara/runtime" },
+      env: { CODEWIT_HOME: "/codewit/runtime" },
       homePath: "/users/me/.codex",
     });
     assert.deepEqual(candidates, [
       "/users/me/.codex",
-      path.join("/synara/runtime", "codex-home-overlay"),
+      path.join("/codewit/runtime", "codex-home-overlay"),
     ]);
   });
 
   it("returns just the source when overlay equals source", () => {
     const candidates = resolveCodexHomeAllowlistCandidates({
-      env: { DPCODE_HOME: "/users/me" },
+      env: { CODEWIT_HOME: "/users/me" },
       homePath: path.join("/users/me", "codex-home-overlay"),
     });
     assert.deepEqual(candidates, [path.join("/users/me", "codex-home-overlay")]);

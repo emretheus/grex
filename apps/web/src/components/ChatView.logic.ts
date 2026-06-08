@@ -10,7 +10,7 @@ import {
   type ThreadId as ThreadIdType,
 } from "@t3tools/contracts";
 import { normalizeModelSlug } from "@t3tools/shared/model";
-import { buildSynaraBranchName } from "@t3tools/shared/git";
+import { buildCodewitBranchName } from "@t3tools/shared/git";
 import { isGenericChatThreadTitle } from "@t3tools/shared/chatThreads";
 import { isGenericTerminalThreadTitle } from "@t3tools/shared/terminalThreads";
 import {
@@ -35,8 +35,8 @@ import { hasLiveTurnTailWork, type WorkLogEntry } from "../session-logic";
 import { localSubagentThreadId } from "./ChatView.selectors";
 import type { ProviderModelOption } from "../providerModelOptions";
 
-export const LAST_INVOKED_SCRIPT_BY_PROJECT_KEY = "synara:last-invoked-script-by-project";
-export const DISMISSED_PROVIDER_HEALTH_BANNERS_KEY = "synara:dismissed-provider-health-banners";
+export const LAST_INVOKED_SCRIPT_BY_PROJECT_KEY = "codewit:last-invoked-script-by-project";
+export const DISMISSED_PROVIDER_HEALTH_BANNERS_KEY = "codewit:dismissed-provider-health-banners";
 
 export const LastInvokedScriptByProjectSchema = Schema.Record(ProjectId, Schema.String);
 export const DismissedProviderHealthBannersSchema = Schema.Array(Schema.String);
@@ -65,6 +65,22 @@ export function shouldRenderProviderHealthBanner(input: {
   terminalWorkspaceTerminalTabActive: boolean;
 }): boolean {
   return input.threadEntryPoint === "chat" && !input.terminalWorkspaceTerminalTabActive;
+}
+
+export function buildComposerMenuSelectionKey(input: {
+  menuOpen: boolean;
+  picker: string | null;
+  triggerKind: string | null;
+  triggerQuery: string;
+  items: readonly { id: string }[];
+}): string | null {
+  if (!input.menuOpen) {
+    return null;
+  }
+  const sourceKey = input.picker
+    ? `picker:${input.picker}`
+    : `trigger:${input.triggerKind ?? "none"}:${input.triggerQuery}`;
+  return `${sourceKey}\u001f${input.items.map((item) => item.id).join("\u001e")}`;
 }
 
 // Default-open policy for the Environment panel; render-time visibility is resolved separately.
@@ -222,7 +238,7 @@ export function describeVoiceRecordingStartError(error: unknown): string {
   const errorName = typeof error.name === "string" ? error.name : "";
 
   if (errorName === "NotAllowedError" || errorName === "PermissionDeniedError") {
-    return "Microphone access was denied. Enable it in macOS Privacy & Security > Microphone for Synara, then try again.";
+    return "Microphone access was denied. Enable it in macOS Privacy & Security > Microphone for Codewit, then try again.";
   }
   if (errorName === "NotFoundError" || errorName === "DevicesNotFoundError") {
     return "No microphone was found. Connect one and try again.";
@@ -442,7 +458,7 @@ export function buildSuggestedWorktreeName(input: {
   associatedWorktreeBranch?: string | null;
   title?: string | null;
 }): string {
-  return buildSynaraBranchName(input.associatedWorktreeBranch ?? input.title);
+  return buildCodewitBranchName(input.associatedWorktreeBranch ?? input.title);
 }
 
 export function cloneComposerImageForRetry(

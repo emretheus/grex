@@ -15,7 +15,7 @@ describe("resolveDraftEnvModeAfterBranchChange", () => {
     expect(
       resolveDraftEnvModeAfterBranchChange({
         nextWorktreePath: null,
-        currentWorktreePath: "/repo/.dpcode/worktrees/feature-a",
+        currentWorktreePath: "/repo/.codewit/worktrees/feature-a",
         effectiveEnvMode: "worktree",
       }),
     ).toBe("local");
@@ -34,7 +34,7 @@ describe("resolveDraftEnvModeAfterBranchChange", () => {
   it("uses worktree mode when selecting a branch already attached to a worktree", () => {
     expect(
       resolveDraftEnvModeAfterBranchChange({
-        nextWorktreePath: "/repo/.dpcode/worktrees/feature-a",
+        nextWorktreePath: "/repo/.codewit/worktrees/feature-a",
         currentWorktreePath: null,
         effectiveEnvMode: "local",
       }),
@@ -93,7 +93,7 @@ describe("shouldSyncLocalThreadBranch", () => {
       shouldSyncLocalThreadBranch({
         envMode: "local",
         activeWorktreePath: null,
-        activeThreadBranch: "dpcode/pi",
+        activeThreadBranch: "codewit/pi",
         currentGitBranch: "main",
         isBranchActionPending: false,
       }),
@@ -105,7 +105,7 @@ describe("shouldSyncLocalThreadBranch", () => {
       shouldSyncLocalThreadBranch({
         envMode: "local",
         activeWorktreePath: null,
-        activeThreadBranch: "dpcode/pi",
+        activeThreadBranch: "codewit/pi",
         currentGitBranch: "main",
         isBranchActionPending: true,
       }),
@@ -131,14 +131,14 @@ describe("resolveAssociatedWorktreeMetadataAfterWorkspacePatch", () => {
       resolveAssociatedWorktreeMetadataAfterWorkspacePatch({
         branch: "main",
         worktreePath: null,
-        existingAssociatedWorktreePath: "/repo/.worktrees/dpcode-pi",
-        existingAssociatedWorktreeBranch: "dpcode/pi",
-        existingAssociatedWorktreeRef: "dpcode/pi",
+        existingAssociatedWorktreePath: "/repo/.worktrees/codewit-pi",
+        existingAssociatedWorktreeBranch: "codewit/pi",
+        existingAssociatedWorktreeRef: "codewit/pi",
       }),
     ).toEqual({
-      associatedWorktreePath: "/repo/.worktrees/dpcode-pi",
-      associatedWorktreeBranch: "dpcode/pi",
-      associatedWorktreeRef: "dpcode/pi",
+      associatedWorktreePath: "/repo/.worktrees/codewit-pi",
+      associatedWorktreeBranch: "codewit/pi",
+      associatedWorktreeRef: "codewit/pi",
     });
   });
 
@@ -163,13 +163,13 @@ describe("resolveAssociatedWorktreeMetadataAfterWorkspacePatch", () => {
       resolveAssociatedWorktreeMetadataAfterWorkspacePatch({
         branch: "main",
         worktreePath: null,
-        existingAssociatedWorktreePath: "/repo/.worktrees/dpcode-pi",
-        existingAssociatedWorktreeBranch: "dpcode/pi",
-        existingAssociatedWorktreeRef: "dpcode/pi",
+        existingAssociatedWorktreePath: "/repo/.worktrees/codewit-pi",
+        existingAssociatedWorktreeBranch: "codewit/pi",
+        existingAssociatedWorktreeRef: "codewit/pi",
         patchAssociatedWorktreeBranch: "feature/new-pair",
       }),
     ).toEqual({
-      associatedWorktreePath: "/repo/.worktrees/dpcode-pi",
+      associatedWorktreePath: "/repo/.worktrees/codewit-pi",
       associatedWorktreeBranch: "feature/new-pair",
       associatedWorktreeRef: "feature/new-pair",
     });
@@ -304,15 +304,15 @@ describe("resolveBranchSelectionTarget", () => {
     expect(
       resolveBranchSelectionTarget({
         activeProjectCwd: "/repo",
-        activeWorktreePath: "/repo/.dpcode/worktrees/feature-a",
+        activeWorktreePath: "/repo/.codewit/worktrees/feature-a",
         branch: {
           isDefault: false,
-          worktreePath: "/repo/.dpcode/worktrees/feature-b",
+          worktreePath: "/repo/.codewit/worktrees/feature-b",
         },
       }),
     ).toEqual({
-      checkoutCwd: "/repo/.dpcode/worktrees/feature-b",
-      nextWorktreePath: "/repo/.dpcode/worktrees/feature-b",
+      checkoutCwd: "/repo/.codewit/worktrees/feature-b",
+      nextWorktreePath: "/repo/.codewit/worktrees/feature-b",
       reuseExistingWorktree: true,
     });
   });
@@ -321,7 +321,7 @@ describe("resolveBranchSelectionTarget", () => {
     expect(
       resolveBranchSelectionTarget({
         activeProjectCwd: "/repo",
-        activeWorktreePath: "/repo/.dpcode/worktrees/feature-a",
+        activeWorktreePath: "/repo/.codewit/worktrees/feature-a",
         branch: {
           isDefault: true,
           worktreePath: "/repo",
@@ -338,7 +338,7 @@ describe("resolveBranchSelectionTarget", () => {
     expect(
       resolveBranchSelectionTarget({
         activeProjectCwd: "/repo",
-        activeWorktreePath: "/repo/.dpcode/worktrees/feature-a",
+        activeWorktreePath: "/repo/.codewit/worktrees/feature-a",
         branch: {
           isDefault: true,
           worktreePath: null,
@@ -355,15 +355,15 @@ describe("resolveBranchSelectionTarget", () => {
     expect(
       resolveBranchSelectionTarget({
         activeProjectCwd: "/repo",
-        activeWorktreePath: "/repo/.dpcode/worktrees/feature-a",
+        activeWorktreePath: "/repo/.codewit/worktrees/feature-a",
         branch: {
           isDefault: false,
           worktreePath: null,
         },
       }),
     ).toEqual({
-      checkoutCwd: "/repo/.dpcode/worktrees/feature-a",
-      nextWorktreePath: "/repo/.dpcode/worktrees/feature-a",
+      checkoutCwd: "/repo/.codewit/worktrees/feature-a",
+      nextWorktreePath: "/repo/.codewit/worktrees/feature-a",
       reuseExistingWorktree: false,
     });
   });

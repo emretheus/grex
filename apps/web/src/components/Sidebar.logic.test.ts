@@ -326,7 +326,7 @@ describe("add-project error helpers", () => {
 
   it("explains root-absolute add-project paths that probably missed the home directory", () => {
     expect(
-      describeAddProjectError("Failed to create project directory: /Developer/Testing/t3code"),
+      describeAddProjectError("Failed to create project directory: /Developer/Testing/codewit"),
     ).toContain("/Users/<name>/Developer");
   });
 

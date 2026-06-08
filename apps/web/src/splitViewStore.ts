@@ -112,11 +112,9 @@ interface SplitViewStore {
   setHasHydrated: (hasHydrated: boolean) => void;
 }
 
-// Keep the v1 suffix stable while using the Synara namespace; legacy
-// `t3code:*` and `dpcode:*` keys are copied over by
-// `storageKeyMigration` before this store hydrates, so older payloads still
-// flow through the v1 -> v2 schema migration below.
-const SPLIT_VIEW_STORAGE_KEY = "synara:split-view-state:v1";
+// Keep the v1 key suffix stable: older persisted payloads still flow through the
+// v1 -> v2 schema migration below.
+const SPLIT_VIEW_STORAGE_KEY = "codewit:split-view-state:v1";
 const SPLIT_VIEW_STORAGE_VERSION = 2;
 const DEFAULT_RATIO = 0.5;
 const MIN_RATIO = 0.25;

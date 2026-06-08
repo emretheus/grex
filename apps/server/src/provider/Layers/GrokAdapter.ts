@@ -88,8 +88,8 @@ const GROK_RESUME_VERSION = 1 as const;
 const GROK_MODEL_DISCOVERY_TIMEOUT_MS = 15_000;
 const GROK_ACP_TRANSPORT_DEBUG_MARKER = "grok-acp-meta-stripper-v2";
 const GROK_ACP_LOG_PAYLOAD_LIMIT = 4_000;
-const GROK_ACP_DEBUG_ENV = "SYNARA_GROK_ACP_DEBUG";
-const DPCODE_GROK_ACP_DEBUG_ENV = "DPCODE_GROK_ACP_DEBUG";
+const GROK_ACP_DEBUG_ENV = "CODEWIT_GROK_ACP_DEBUG";
+const CODEWIT_GROK_ACP_DEBUG_ENV = "CODEWIT_GROK_ACP_DEBUG";
 const LEGACY_GROK_ACP_DEBUG_ENV = "DP_GROK_ACP_DEBUG";
 const GROK_RESUME_REPLAY_QUIET_MS = 350;
 const GROK_RESUME_REPLAY_MAX_WAIT_MS = 3_000;
@@ -98,7 +98,7 @@ const ACP_PLAN_MODE_ALIASES = ["plan"];
 const ACP_IMPLEMENT_MODE_ALIASES = ["code", "agent", "default", "chat", "implement"];
 const ACP_APPROVAL_MODE_ALIASES = ["ask"];
 const GROK_PLAN_MODE_PROMPT_PREFIX = [
-  "Synara Grok plan mode is active.",
+  "Codewit Grok plan mode is active.",
   "Do not implement or mutate files in this turn.",
   "Do not ask follow-up questions or wait for confirmation; if scope is ambiguous, choose a reasonable default and state the assumption in the plan.",
   "When ready, create the final implementation plan.",
@@ -138,7 +138,7 @@ function summarizeGrokAcpRequestPayload(method: string, payload: unknown): unkno
 function isGrokAcpDebugEnabled(): boolean {
   return (
     process.env[GROK_ACP_DEBUG_ENV] === "1" ||
-    process.env[DPCODE_GROK_ACP_DEBUG_ENV] === "1" ||
+    process.env[CODEWIT_GROK_ACP_DEBUG_ENV] === "1" ||
     process.env[LEGACY_GROK_ACP_DEBUG_ENV] === "1"
   );
 }
@@ -935,7 +935,7 @@ export function makeGrokAdapter(
             childProcessSpawner,
             cwd,
             ...(resumeSessionId ? { resumeSessionId } : {}),
-            clientInfo: { name: "Synara", version: "0.0.0" },
+            clientInfo: { name: "Codewit", version: "0.0.0" },
             ...acpRuntimeLoggers,
           }).pipe(
             Effect.provideService(Scope.Scope, sessionScope),

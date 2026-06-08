@@ -11,20 +11,18 @@ import {
 } from "./desktopUserDataProfile";
 
 describe("desktopUserDataProfile", () => {
-  it("resolves Synara profile names without reusing legacy profile paths", () => {
+  it("resolves Codewit profile names without reusing legacy profile paths", () => {
     const appDataBase = "/Users/tester/Library/Application Support";
 
     expect(resolveDesktopUserDataPath({ appDataBase, isDevelopment: true })).toBe(
-      "/Users/tester/Library/Application Support/synara-dev",
+      "/Users/tester/Library/Application Support/codewit-dev",
     );
     expect(resolveDesktopUserDataPath({ appDataBase, isDevelopment: false })).toBe(
-      "/Users/tester/Library/Application Support/synara",
+      "/Users/tester/Library/Application Support/codewit",
     );
-    expect(resolveLegacyDesktopUserDataPaths({ appDataBase, isDevelopment: true })).toEqual([
-      "/Users/tester/Library/Application Support/dpcode-dev",
-      "/Users/tester/Library/Application Support/t3code-dev",
-      "/Users/tester/Library/Application Support/DP Code (Dev)",
-    ]);
+    // Codewit is a fresh product with no prior installs to seed from.
+    expect(resolveLegacyDesktopUserDataPaths({ appDataBase, isDevelopment: true })).toEqual([]);
+    expect(resolveLegacyDesktopUserDataPaths({ appDataBase, isDevelopment: false })).toEqual([]);
   });
 
   it("uses XDG_CONFIG_HOME on Linux when available", () => {
@@ -37,15 +35,15 @@ describe("desktopUserDataProfile", () => {
     ).toBe("/tmp/xdg");
   });
 
-  it("seeds local persistent renderer data into the new Synara profile once", () => {
-    const tempDir = FS.mkdtempSync(Path.join(OS.tmpdir(), "synara-userdata-profile-"));
+  it("seeds local persistent renderer data into the new Codewit profile once", () => {
+    const tempDir = FS.mkdtempSync(Path.join(OS.tmpdir(), "codewit-userdata-profile-"));
     try {
-      const legacyPath = Path.join(tempDir, "t3code-dev");
-      const targetPath = Path.join(tempDir, "synara-dev");
+      const legacyPath = Path.join(tempDir, "legacy-profile");
+      const targetPath = Path.join(tempDir, "codewit-dev");
       FS.mkdirSync(Path.join(legacyPath, "Local Storage", "leveldb"), { recursive: true });
       FS.writeFileSync(
         Path.join(legacyPath, "Local Storage", "leveldb", "000003.log"),
-        "t3code:pinned-threads:v1",
+        "codewit:pinned-threads:v1",
       );
 
       const result = seedDesktopUserDataProfileFromLegacy({
@@ -56,7 +54,7 @@ describe("desktopUserDataProfile", () => {
       expect(result.status).toBe("seeded");
       expect(
         FS.readFileSync(Path.join(targetPath, "Local Storage", "leveldb", "000003.log"), "utf8"),
-      ).toBe("t3code:pinned-threads:v1");
+      ).toBe("codewit:pinned-threads:v1");
 
       const secondResult = seedDesktopUserDataProfileFromLegacy({
         targetPath,

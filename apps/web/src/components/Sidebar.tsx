@@ -359,10 +359,8 @@ function ProjectContextMenuIcon({ icon: Icon }: { icon: LucideIcon }) {
 }
 
 type DebugFeatureFlagsWindow = Window & {
-  synaraShowFeatureFlags?: () => void;
-  synaraHideFeatureFlags?: () => void;
-  dpcodeShowFeatureFlags?: () => void;
-  dpcodeHideFeatureFlags?: () => void;
+  codewitShowFeatureFlags?: () => void;
+  codewitHideFeatureFlags?: () => void;
 };
 
 function readDebugFeatureFlagsMenuVisibility(): boolean {
@@ -1276,26 +1274,18 @@ export default function Sidebar() {
       updateVisibility();
     };
 
-    debugWindow.synaraShowFeatureFlags = showFeatureFlags;
-    debugWindow.synaraHideFeatureFlags = hideFeatureFlags;
-    debugWindow.dpcodeShowFeatureFlags = showFeatureFlags;
-    debugWindow.dpcodeHideFeatureFlags = hideFeatureFlags;
+    debugWindow.codewitShowFeatureFlags = showFeatureFlags;
+    debugWindow.codewitHideFeatureFlags = hideFeatureFlags;
     window.addEventListener("storage", updateVisibility);
     updateVisibility();
 
     return () => {
       window.removeEventListener("storage", updateVisibility);
-      if (debugWindow.synaraShowFeatureFlags === showFeatureFlags) {
-        delete debugWindow.synaraShowFeatureFlags;
+      if (debugWindow.codewitShowFeatureFlags === showFeatureFlags) {
+        delete debugWindow.codewitShowFeatureFlags;
       }
-      if (debugWindow.synaraHideFeatureFlags === hideFeatureFlags) {
-        delete debugWindow.synaraHideFeatureFlags;
-      }
-      if (debugWindow.dpcodeShowFeatureFlags === showFeatureFlags) {
-        delete debugWindow.dpcodeShowFeatureFlags;
-      }
-      if (debugWindow.dpcodeHideFeatureFlags === hideFeatureFlags) {
-        delete debugWindow.dpcodeHideFeatureFlags;
+      if (debugWindow.codewitHideFeatureFlags === hideFeatureFlags) {
+        delete debugWindow.codewitHideFeatureFlags;
       }
     };
   }, []);
@@ -5573,7 +5563,7 @@ export default function Sidebar() {
             toastManager.add({
               type: "info",
               title: "Preparing update",
-              description: `Synara is preparing version ${nextState.availableVersion ?? "available"} in the background.`,
+              description: `Codewit is preparing version ${nextState.availableVersion ?? "available"} in the background.`,
             });
             return;
           }
@@ -5582,7 +5572,7 @@ export default function Sidebar() {
             toastManager.add({
               type: "info",
               title: "Preparing update",
-              description: "Synara is downloading the update in the background.",
+              description: "Codewit is downloading the update in the background.",
             });
             return;
           }
@@ -5600,7 +5590,7 @@ export default function Sidebar() {
             toastManager.add({
               type: "info",
               title: "You're up to date",
-              description: `Synara ${nextState.currentVersion} is already the newest version.`,
+              description: `Codewit ${nextState.currentVersion} is already the newest version.`,
             });
             return;
           }

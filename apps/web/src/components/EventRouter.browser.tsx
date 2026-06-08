@@ -64,7 +64,7 @@ function createBaseServerConfig(): ServerConfig {
   return {
     cwd: "/repo/project",
     worktreesDir: "/repo/.codex/worktrees",
-    keybindingsConfigPath: "/repo/project/.t3code-keybindings.json",
+    keybindingsConfigPath: "/repo/project/.codewit-keybindings.json",
     keybindings: [],
     issues: [],
     providers: [

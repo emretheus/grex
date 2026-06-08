@@ -98,3 +98,20 @@ export const ProjectWriteFileResult = Schema.Struct({
   relativePath: TrimmedNonEmptyString,
 });
 export type ProjectWriteFileResult = typeof ProjectWriteFileResult.Type;
+
+export const ProjectReadFileInput = Schema.Struct({
+  cwd: TrimmedNonEmptyString,
+  relativePath: TrimmedNonEmptyString.check(Schema.isMaxLength(PROJECT_WRITE_FILE_PATH_MAX_LENGTH)),
+});
+export type ProjectReadFileInput = typeof ProjectReadFileInput.Type;
+
+export const ProjectReadFileResult = Schema.Struct({
+  relativePath: TrimmedNonEmptyString,
+  // Empty when the file exceeds the editor load limit (see `truncated`).
+  contents: Schema.String,
+  // True when the file is larger than the editor load limit and `contents` is omitted.
+  truncated: Schema.Boolean,
+  // Total on-disk size in bytes, so the UI can show "file too large" affordances.
+  totalSize: Schema.Number,
+});
+export type ProjectReadFileResult = typeof ProjectReadFileResult.Type;

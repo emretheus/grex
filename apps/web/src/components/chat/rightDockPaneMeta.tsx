@@ -6,6 +6,8 @@
 import type { LucideIcon } from "~/lib/icons";
 import {
   DiffIcon,
+  FileCodeIcon,
+  FolderIcon,
   GitCommitIcon,
   GlobeIcon,
   InfoIcon,
@@ -29,6 +31,8 @@ export const RIGHT_DOCK_PANE_META: Record<RightDockPaneKind, RightDockPaneMeta> 
   terminal: { label: "Terminal", Icon: TerminalIcon },
   sidechat: { label: "Side chat", Icon: MessageCircleIcon },
   git: { label: "Git", Icon: GitCommitIcon },
+  files: { label: "Files", Icon: FolderIcon },
+  editor: { label: "Editor", Icon: FileCodeIcon },
 };
 
 // Neutral fallback for any pane kind we no longer recognize (e.g. stale

@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   appendVoiceTranscriptToPrompt,
+  buildComposerMenuSelectionKey,
   filterSidechatTranscriptMessages,
   type LocalDispatchSnapshot,
   deriveComposerSendState,
@@ -750,5 +751,59 @@ describe("resolveRuntimeModeAfterApprovalDecision", () => {
   it("leaves runtime mode untouched for one-off accept and decline decisions", () => {
     expect(resolveRuntimeModeAfterApprovalDecision("approval-required", "accept")).toBeNull();
     expect(resolveRuntimeModeAfterApprovalDecision("approval-required", "decline")).toBeNull();
+  });
+});
+
+describe("composer menu selection", () => {
+  const items = [{ id: "skill:check-code" }, { id: "skill:sanity-check" }] as const;
+
+  it("builds a stable key from query and displayed item order", () => {
+    const baseKey = buildComposerMenuSelectionKey({
+      menuOpen: true,
+      picker: null,
+      triggerKind: "slash-command",
+      triggerQuery: "check",
+      items,
+    });
+
+    expect(
+      buildComposerMenuSelectionKey({
+        menuOpen: true,
+        picker: null,
+        triggerKind: "slash-command",
+        triggerQuery: "check",
+        items: [...items],
+      }),
+    ).toBe(baseKey);
+    expect(
+      buildComposerMenuSelectionKey({
+        menuOpen: true,
+        picker: null,
+        triggerKind: "slash-command",
+        triggerQuery: "chec",
+        items,
+      }),
+    ).not.toBe(baseKey);
+    expect(
+      buildComposerMenuSelectionKey({
+        menuOpen: true,
+        picker: null,
+        triggerKind: "slash-command",
+        triggerQuery: "check",
+        items: [...items].reverse(),
+      }),
+    ).not.toBe(baseKey);
+  });
+
+  it("returns null while the menu is closed", () => {
+    expect(
+      buildComposerMenuSelectionKey({
+        menuOpen: false,
+        picker: null,
+        triggerKind: "slash-command",
+        triggerQuery: "check",
+        items,
+      }),
+    ).toBeNull();
   });
 });

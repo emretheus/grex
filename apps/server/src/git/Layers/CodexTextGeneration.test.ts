@@ -11,7 +11,7 @@ import { TextGeneration } from "../Services/TextGeneration.ts";
 const CodexTextGenerationTestLayer = CodexTextGenerationLive.pipe(
   Layer.provideMerge(
     ServerConfig.layerTest(process.cwd(), {
-      prefix: "t3code-codex-text-generation-test-",
+      prefix: "codewit-codex-text-generation-test-",
     }),
   ),
   Layer.provideMerge(NodeServices.layer),
@@ -149,7 +149,7 @@ function withFakeCodexEnv<A, E, R>(
     Effect.gen(function* () {
       const releaseLock = yield* acquireCodexEnvLock();
       const fs = yield* FileSystem.FileSystem;
-      const tempDir = yield* fs.makeTempDirectoryScoped({ prefix: "t3code-codex-text-" });
+      const tempDir = yield* fs.makeTempDirectoryScoped({ prefix: "codewit-codex-text-" });
       const binDir = yield* makeFakeCodexBinary(tempDir);
       const previousPath = process.env.PATH;
       const previousOutput = process.env.T3_FAKE_CODEX_OUTPUT_B64;
@@ -166,12 +166,12 @@ function withFakeCodexEnv<A, E, R>(
         process.env.T3_FAKE_CODEX_CODEX_HOME_CONFIG_MUST_CONTAIN;
       const previousCodexHomeConfigMustNotContain =
         process.env.T3_FAKE_CODEX_CODEX_HOME_CONFIG_MUST_NOT_CONTAIN;
-      const previousDisableBrowserPlugin = process.env.DPCODE_DISABLE_CODEX_DPCODE_BROWSER_PLUGIN;
+      const previousDisableBrowserPlugin = process.env.CODEWIT_DISABLE_CODEX_BROWSER_PLUGIN;
 
       yield* Effect.sync(() => {
         process.env.PATH = `${binDir}:${previousPath ?? ""}`;
         process.env.T3_FAKE_CODEX_OUTPUT_B64 = Buffer.from(input.output, "utf8").toString("base64");
-        process.env.DPCODE_DISABLE_CODEX_DPCODE_BROWSER_PLUGIN = "0";
+        process.env.CODEWIT_DISABLE_CODEX_BROWSER_PLUGIN = "0";
 
         if (input.exitCode !== undefined) {
           process.env.T3_FAKE_CODEX_EXIT_CODE = String(input.exitCode);
@@ -341,10 +341,9 @@ function withFakeCodexEnv<A, E, R>(
         }
 
         if (previous.previousDisableBrowserPlugin === undefined) {
-          delete process.env.DPCODE_DISABLE_CODEX_DPCODE_BROWSER_PLUGIN;
+          delete process.env.CODEWIT_DISABLE_CODEX_BROWSER_PLUGIN;
         } else {
-          process.env.DPCODE_DISABLE_CODEX_DPCODE_BROWSER_PLUGIN =
-            previous.previousDisableBrowserPlugin;
+          process.env.CODEWIT_DISABLE_CODEX_BROWSER_PLUGIN = previous.previousDisableBrowserPlugin;
         }
 
         previous.releaseLock();
@@ -716,9 +715,11 @@ it.layer(CodexTextGenerationTestLayer)("CodexTextGenerationLive", (it) => {
       Effect.gen(function* () {
         const fs = yield* FileSystem.FileSystem;
         const path = yield* Path.Path;
-        const wrongCodexHome = yield* fs.makeTempDirectoryScoped({ prefix: "t3code-wrong-codex-" });
+        const wrongCodexHome = yield* fs.makeTempDirectoryScoped({
+          prefix: "codewit-wrong-codex-",
+        });
         const customCodexHome = yield* fs.makeTempDirectoryScoped({
-          prefix: "t3code-custom-codex-",
+          prefix: "codewit-custom-codex-",
         });
         const previousCodexHome = process.env.CODEX_HOME;
         const previousAzureApiKey = process.env.AZURE_OPENAI_API_KEY;

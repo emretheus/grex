@@ -3,7 +3,7 @@ import type {
   GitStackedAction,
   GitStatusResult,
 } from "@t3tools/contracts";
-import { isTemporaryWorktreeBranch, resolveUniqueSynaraBranchName } from "@t3tools/shared/git";
+import { isTemporaryWorktreeBranch, resolveUniqueCodewitBranchName } from "@t3tools/shared/git";
 
 export type GitActionIconName = "commit" | "push" | "pr";
 
@@ -69,7 +69,7 @@ export function resolveDefaultCreateBranchName(
   existingBranchNames: readonly string[],
   preferredBranch?: string,
 ): string {
-  return resolveUniqueSynaraBranchName(existingBranchNames, preferredBranch);
+  return resolveUniqueCodewitBranchName(existingBranchNames, preferredBranch);
 }
 
 export function buildGitActionProgressStages(input: {

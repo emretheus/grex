@@ -70,10 +70,10 @@ interface BrowserPanelProps {
 
 const BROWSER_BOUNDS_SYNC_BURST_FRAMES = 30;
 const BROWSER_BOUNDS_SYNC_STABLE_FRAME_TARGET = 2;
-const BROWSER_WEBVIEW_PARTITION = "persist:synara-browser";
+const BROWSER_WEBVIEW_PARTITION = "persist:codewit-browser";
 const BROWSER_BLANK_URL = "about:blank";
 const BROWSER_PERF_SAMPLE_INTERVAL_MS = 5_000;
-const SYNARA_BROWSER_LABEL = "Synara browser";
+const CODEWIT_BROWSER_LABEL = "Codewit browser";
 const IMAGE_SIZE_LIMIT_LABEL = `${Math.round(PROVIDER_SEND_TURN_MAX_IMAGE_BYTES / (1024 * 1024))}MB`;
 const BROWSER_ACTION_MENU_PANEL_CLASS_NAME = "w-52 min-w-52";
 const BROWSER_ACTION_MENU_ITEM_CLASS_NAME =
@@ -307,11 +307,7 @@ function isBrowserPerfLoggingEnabled(): boolean {
   }
 
   try {
-    return (
-      window.localStorage.getItem("synara:browser-perf") === "1" ||
-      window.localStorage.getItem("dpcode:browser-perf") === "1" ||
-      window.localStorage.getItem("t3code:browser-perf") === "1"
-    );
+    return window.localStorage.getItem("codewit:browser-perf") === "1";
   } catch {
     return false;
   }
@@ -620,7 +616,7 @@ export function BrowserPanel({
     }
 
     const intervalId = window.setInterval(() => {
-      console.info(`[${SYNARA_BROWSER_LABEL} panel perf]`, {
+      console.info(`[${CODEWIT_BROWSER_LABEL} panel perf]`, {
         threadId,
         ...perfCountersRef.current,
       });
