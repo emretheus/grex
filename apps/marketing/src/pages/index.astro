@@ -55,7 +55,8 @@ const moreProviders = ["Gemini", "Grok", "Kilo Code", "Pi"];
       </div>
     </div>
 
-    <div class="shell">
+    <div class="shell shot-stage">
+      <div class="shot-aura" aria-hidden="true"></div>
       <figure class="shot">
         <div class="shot-bar" aria-hidden="true">
           <span></span><span></span><span></span>
@@ -592,15 +593,33 @@ const moreProviders = ["Gemini", "Grok", "Kilo Code", "Pi"];
   }
 
   /* ── Screenshot ── */
-  .shot {
+  /* Stage that grounds the screenshot with a soft brand aura behind it. */
+  .shot-stage {
+    position: relative;
     margin-top: clamp(40px, 6vw, 76px);
+  }
+  .shot-aura {
+    position: absolute;
+    inset: -6% -4% -12%;
+    border-radius: 40px;
+    background:
+      radial-gradient(60% 60% at 30% 20%, oklch(56% 0.22 258 / 0.22), transparent 70%),
+      radial-gradient(55% 60% at 80% 30%, oklch(74% 0.16 168 / 0.18), transparent 72%),
+      radial-gradient(80% 70% at 50% 100%, oklch(56% 0.22 258 / 0.14), transparent 70%);
+    filter: blur(28px);
+    pointer-events: none;
+    z-index: 0;
+  }
+  .shot {
+    position: relative;
+    z-index: 1;
     border-radius: 18px;
     overflow: hidden;
     border: 1px solid var(--line);
     background: var(--paper-2);
     box-shadow:
       0 1px 0 oklch(100% 0 0 / 0.6) inset,
-      0 40px 80px -40px oklch(56% 0.22 258 / 0.3);
+      0 30px 70px -36px oklch(22% 0.03 260 / 0.4);
   }
   .shot-bar {
     display: flex;
@@ -614,8 +633,15 @@ const moreProviders = ["Gemini", "Grok", "Kilo Code", "Pi"];
     width: 11px;
     height: 11px;
     border-radius: 999px;
-    background: var(--paper-3);
-    border: 1px solid var(--line);
+  }
+  .shot-bar span:nth-child(1) {
+    background: #ff5f57;
+  }
+  .shot-bar span:nth-child(2) {
+    background: #febc2e;
+  }
+  .shot-bar span:nth-child(3) {
+    background: #28c840;
   }
   .shot-img {
     width: 100%;
@@ -1023,8 +1049,15 @@ const moreProviders = ["Gemini", "Grok", "Kilo Code", "Pi"];
     width: 11px;
     height: 11px;
     border-radius: 999px;
-    background: var(--paper-3);
-    border: 1px solid var(--line);
+  }
+  .ide-dot:nth-child(1) {
+    background: #ff5f57;
+  }
+  .ide-dot:nth-child(2) {
+    background: #febc2e;
+  }
+  .ide-dot:nth-child(3) {
+    background: #28c840;
   }
   .ide {
     display: grid;
@@ -1333,6 +1366,9 @@ const moreProviders = ["Gemini", "Grok", "Kilo Code", "Pi"];
   :global(html[data-theme="dark"]) .shot,
   :global(html[data-theme="dark"]) .ide-frame {
     box-shadow: 0 24px 60px -32px oklch(0% 0 0 / 0.7);
+  }
+  :global(html[data-theme="dark"]) .shot-aura {
+    opacity: 0.55;
   }
   :global(html[data-theme="dark"]) .pr {
     box-shadow: 0 20px 48px -30px oklch(0% 0 0 / 0.6);
