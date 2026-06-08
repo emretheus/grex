@@ -8,6 +8,7 @@
  */
 import {
   IsoDateTime,
+  LinkedIssue,
   ModelSelection,
   NonNegativeInt,
   OrchestrationThreadPullRequest,
@@ -48,6 +49,9 @@ export const ProjectionThread = Schema.Struct({
   forkSourceThreadId: Schema.optional(Schema.NullOr(ThreadId)),
   sidechatSourceThreadId: Schema.optional(Schema.NullOr(ThreadId)),
   lastKnownPr: Schema.NullOr(OrchestrationThreadPullRequest),
+  linkedIssue: Schema.optional(Schema.NullOr(LinkedIssue)).pipe(
+    Schema.withDecodingDefault(() => null),
+  ),
   latestTurnId: Schema.NullOr(TurnId),
   handoff: Schema.NullOr(ThreadHandoff),
   pinnedMessages: Schema.NullOr(ThreadPinnedMessages),

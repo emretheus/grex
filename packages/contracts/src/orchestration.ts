@@ -10,6 +10,7 @@ import {
 } from "./model";
 import { ProviderMentionReference, ProviderSkillReference } from "./providerDiscovery";
 import { ProjectKind } from "./project";
+import { LinkedIssue } from "./integrations";
 import {
   ApprovalRequestId,
   CheckpointRef,
@@ -566,6 +567,9 @@ export const OrchestrationThread = Schema.Struct({
   lastKnownPr: Schema.optional(Schema.NullOr(OrchestrationThreadPullRequest)).pipe(
     Schema.withDecodingDefault(() => null),
   ),
+  linkedIssue: Schema.optional(Schema.NullOr(LinkedIssue)).pipe(
+    Schema.withDecodingDefault(() => null),
+  ),
   latestTurn: Schema.NullOr(OrchestrationLatestTurn),
   latestUserMessageAt: Schema.optional(Schema.NullOr(IsoDateTime)),
   hasPendingApprovals: Schema.optional(Schema.Boolean),
@@ -630,6 +634,9 @@ export const OrchestrationThreadShell = Schema.Struct({
   ),
   sidechatSourceThreadId: SidechatSourceThreadId,
   lastKnownPr: Schema.optional(Schema.NullOr(OrchestrationThreadPullRequest)).pipe(
+    Schema.withDecodingDefault(() => null),
+  ),
+  linkedIssue: Schema.optional(Schema.NullOr(LinkedIssue)).pipe(
     Schema.withDecodingDefault(() => null),
   ),
   latestTurn: Schema.NullOr(OrchestrationLatestTurn),
@@ -765,6 +772,9 @@ const ThreadCreateCommand = Schema.Struct({
   lastKnownPr: Schema.optional(Schema.NullOr(OrchestrationThreadPullRequest)).pipe(
     Schema.withDecodingDefault(() => null),
   ),
+  linkedIssue: Schema.optional(Schema.NullOr(LinkedIssue)).pipe(
+    Schema.withDecodingDefault(() => null),
+  ),
   createdAt: IsoDateTime,
 });
 
@@ -867,6 +877,7 @@ const ThreadMetaUpdateCommand = Schema.Struct({
   subagentRole: Schema.optional(Schema.NullOr(TrimmedNonEmptyString)),
   handoff: Schema.optional(Schema.NullOr(ThreadHandoff)),
   lastKnownPr: Schema.optional(Schema.NullOr(OrchestrationThreadPullRequest)),
+  linkedIssue: Schema.optional(Schema.NullOr(LinkedIssue)),
   pinnedMessages: Schema.optional(ThreadPinnedMessages),
   notes: Schema.optional(ThreadNotes),
 });
@@ -1326,6 +1337,9 @@ export const ThreadCreatedPayload = Schema.Struct({
   lastKnownPr: Schema.optional(Schema.NullOr(OrchestrationThreadPullRequest)).pipe(
     Schema.withDecodingDefault(() => null),
   ),
+  linkedIssue: Schema.optional(Schema.NullOr(LinkedIssue)).pipe(
+    Schema.withDecodingDefault(() => null),
+  ),
   handoff: Schema.NullOr(ThreadHandoff).pipe(Schema.withDecodingDefault(() => null)),
   createdAt: IsoDateTime,
   updatedAt: IsoDateTime,
@@ -1369,6 +1383,7 @@ export const ThreadMetaUpdatedPayload = Schema.Struct({
   subagentRole: Schema.optional(Schema.NullOr(TrimmedNonEmptyString)),
   handoff: Schema.optional(Schema.NullOr(ThreadHandoff)),
   lastKnownPr: Schema.optional(Schema.NullOr(OrchestrationThreadPullRequest)),
+  linkedIssue: Schema.optional(Schema.NullOr(LinkedIssue)),
   pinnedMessages: Schema.optional(ThreadPinnedMessages),
   notes: Schema.optional(ThreadNotes),
   updatedAt: IsoDateTime,

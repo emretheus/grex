@@ -324,6 +324,7 @@ export function projectEvent(
             forkSourceThreadId: payload.forkSourceThreadId,
             sidechatSourceThreadId: payload.sidechatSourceThreadId,
             lastKnownPr: payload.lastKnownPr ?? null,
+            linkedIssue: payload.linkedIssue ?? null,
             latestTurn: null,
             createdAt: payload.createdAt,
             updatedAt: payload.updatedAt,
@@ -433,6 +434,7 @@ export function projectEvent(
                 : {}),
               ...(payload.subagentRole !== undefined ? { subagentRole: payload.subagentRole } : {}),
               ...(payload.lastKnownPr !== undefined ? { lastKnownPr: payload.lastKnownPr } : {}),
+              ...(payload.linkedIssue !== undefined ? { linkedIssue: payload.linkedIssue } : {}),
               ...(payload.handoff !== undefined ? { handoff: payload.handoff } : {}),
               ...(payload.pinnedMessages !== undefined
                 ? { pinnedMessages: payload.pinnedMessages }
