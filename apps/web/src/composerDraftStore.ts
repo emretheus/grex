@@ -491,7 +491,7 @@ function deriveEffectiveComposerModelOptions(input: {
   }
 
   const result: Partial<Record<ProviderKind, ProviderModelOptions[ProviderKind]>> = {
-    ...(baseOptions ?? {}),
+    ...baseOptions,
   };
   for (const [provider, selection] of Object.entries(draftSelections) as Array<
     [ProviderKind, ModelSelection | undefined]
