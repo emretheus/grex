@@ -419,6 +419,7 @@ function toThreadShell(thread: Thread): ThreadShell {
     forkSourceThreadId: thread.forkSourceThreadId ?? null,
     sidechatSourceThreadId: thread.sidechatSourceThreadId ?? null,
     lastKnownPr: thread.lastKnownPr ?? null,
+    linkedIssue: thread.linkedIssue ?? null,
     handoff: thread.handoff ?? null,
     ...(thread.pinnedMessages !== undefined ? { pinnedMessages: thread.pinnedMessages } : {}),
     ...(thread.notes !== undefined ? { notes: thread.notes } : {}),
@@ -2116,6 +2117,7 @@ function buildSidebarThreadSummary(
     forkSourceThreadId: thread.forkSourceThreadId ?? null,
     sidechatSourceThreadId: thread.sidechatSourceThreadId ?? null,
     lastKnownPr: thread.lastKnownPr ?? null,
+    linkedIssue: thread.linkedIssue ?? null,
     handoff: thread.handoff ?? null,
   };
   if (previous && sidebarThreadSummariesEqual(previous, nextSummary)) {
@@ -3161,6 +3163,9 @@ function applyOrchestrationEvent(
               : {}),
             ...(event.payload.lastKnownPr !== undefined
               ? { lastKnownPr: event.payload.lastKnownPr }
+              : {}),
+            ...(event.payload.linkedIssue !== undefined
+              ? { linkedIssue: event.payload.linkedIssue }
               : {}),
             ...(event.payload.handoff !== undefined ? { handoff: event.payload.handoff } : {}),
             ...(event.payload.pinnedMessages !== undefined
