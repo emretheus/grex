@@ -109,3 +109,12 @@ larger changes.
 ## License
 
 [MIT](./LICENSE)
+
+## Origins
+
+Codewit began as a fork of [Synara](https://github.com/Emanuele-web04/synara), which
+itself started as a fork of [T3Code](https://github.com/pingdotgg/t3code). It has since
+become a substantially different product with its own branding, packaging, release
+system, provider orchestration, desktop app behavior, and product direction. Codewit is
+developed and maintained independently. We're grateful to the upstream projects, whose
+MIT-licensed work made this possible.
