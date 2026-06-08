@@ -46,6 +46,7 @@ import { ServerLifecycleEvents } from "./serverLifecycleEvents";
 import { ServerRuntimeStartup } from "./serverRuntimeStartup";
 import { ServerSettingsService } from "./serverSettings";
 import { TerminalManager } from "./terminal/Services/Manager";
+import { IntegrationsService } from "./integrations/Services/IntegrationsService";
 import { WorkspaceEntries } from "./workspace/Services/WorkspaceEntries";
 import { WorkspaceFileSystem } from "./workspace/Services/WorkspaceFileSystem";
 
@@ -291,6 +292,7 @@ export const makeWsRpcLayer = () =>
       const git = yield* GitCore;
       const gitManager = yield* GitManager;
       const gitStatusBroadcaster = yield* GitStatusBroadcaster;
+      const integrationsService = yield* IntegrationsService;
       const keybindings = yield* Keybindings;
       const open = yield* Open;
       const orchestrationEngine = yield* OrchestrationEngineService;
@@ -556,6 +558,26 @@ export const makeWsRpcLayer = () =>
           rpcEffect(workspaceFileSystem.writeFile(input), "Failed to write workspace file"),
         [WS_METHODS.projectsReadFile]: (input) =>
           rpcEffect(workspaceFileSystem.readFile(input), "Failed to read workspace file"),
+
+        [WS_METHODS.integrationsCheckConnections]: () =>
+          rpcEffect(
+            integrationsService.checkConnections(),
+            "Failed to check integration connections",
+          ),
+        [WS_METHODS.integrationsConnect]: (input) =>
+          rpcEffect(integrationsService.connect(input), "Failed to connect integration"),
+        [WS_METHODS.integrationsDisconnect]: (input) =>
+          rpcEffect(integrationsService.disconnect(input), "Failed to disconnect integration"),
+        [WS_METHODS.integrationsListIssues]: (input) =>
+          rpcEffect(integrationsService.listIssues(input), "Failed to list integration issues"),
+        [WS_METHODS.integrationsSearchIssues]: (input) =>
+          rpcEffect(integrationsService.searchIssues(input), "Failed to search integration issues"),
+        [WS_METHODS.integrationsGetIssueContext]: (input) =>
+          rpcEffect(
+            integrationsService.getIssueContext(input),
+            "Failed to load integration issue context",
+          ),
+
         [WS_METHODS.filesystemBrowse]: (input) =>
           rpcEffect(workspaceEntries.browse(input), "Failed to browse filesystem"),
         [WS_METHODS.shellOpenInEditor]: (input) =>

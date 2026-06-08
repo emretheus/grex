@@ -57,19 +57,19 @@ Codewit is **not** Electron-IPC + Drizzle. It is **Effect-TS server + WebSocket 
 monorepo + React/Zustand/React Query**. The layering survives almost 1:1; the substrate
 changes:
 
-| emdash | Codewit equivalent |
-| --- | --- |
-| `IssueProvider` interface (main) | same interface, lives in `packages/shared/src/integrations` (pure, no Effect) so it can be unit-tested in isolation |
-| `ConnectionService` per provider (main) | folded into the server `IntegrationsService` (Effect Layer); per-provider logic = a `ProviderAdapter` module |
-| `safeStorage` + `app_secrets` table | **`ServerSecretStore`** (`apps/server/src/auth/…`) — already an encrypted file-based KV. Key scheme: `integration:<provider>:token` (+ `:config` for non-secret) |
-| `kv` table for configs | a small JSON file via `ServerSecretStore` or a sibling config store; non-secret so plain file is fine |
-| IPC controllers | **WS RPC** methods (`integrations.*`) via the 4-file contracts flow |
-| `rpc.issues.*` / `rpc.<provider>.*` | `integrations.checkAllConnections`, `integrations.listIssues`, `integrations.searchIssues`, `integrations.connect`, `integrations.disconnect` |
-| `LinkedIssue` zod schema | effect/Schema in `packages/contracts/src/integrations.ts` |
-| Drizzle `tasks.linkedIssue` column | a `linkedIssue` field on our thread/session record (where thread metadata persists) |
-| `IntegrationsProvider` context | a Zustand store (`codewit:integrations:v1`) + React Query, matching our store idiom |
-| BaseUI-less modal | our **BaseUI `Dialog`** primitive (`apps/web/src/components/ui/dialog.tsx`) |
-| `IntegrationsCard` (shadcn) | our **Settings primitives** (`SettingsSection`/`SettingsRow`/`SettingsCard`) |
+| emdash                                  | Codewit equivalent                                                                                                                                               |
+| --------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `IssueProvider` interface (main)        | same interface, lives in `packages/shared/src/integrations` (pure, no Effect) so it can be unit-tested in isolation                                              |
+| `ConnectionService` per provider (main) | folded into the server `IntegrationsService` (Effect Layer); per-provider logic = a `ProviderAdapter` module                                                     |
+| `safeStorage` + `app_secrets` table     | **`ServerSecretStore`** (`apps/server/src/auth/…`) — already an encrypted file-based KV. Key scheme: `integration:<provider>:token` (+ `:config` for non-secret) |
+| `kv` table for configs                  | a small JSON file via `ServerSecretStore` or a sibling config store; non-secret so plain file is fine                                                            |
+| IPC controllers                         | **WS RPC** methods (`integrations.*`) via the 4-file contracts flow                                                                                              |
+| `rpc.issues.*` / `rpc.<provider>.*`     | `integrations.checkAllConnections`, `integrations.listIssues`, `integrations.searchIssues`, `integrations.connect`, `integrations.disconnect`                    |
+| `LinkedIssue` zod schema                | effect/Schema in `packages/contracts/src/integrations.ts`                                                                                                        |
+| Drizzle `tasks.linkedIssue` column      | a `linkedIssue` field on our thread/session record (where thread metadata persists)                                                                              |
+| `IntegrationsProvider` context          | a Zustand store (`codewit:integrations:v1`) + React Query, matching our store idiom                                                                              |
+| BaseUI-less modal                       | our **BaseUI `Dialog`** primitive (`apps/web/src/components/ui/dialog.tsx`)                                                                                      |
+| `IntegrationsCard` (shadcn)             | our **Settings primitives** (`SettingsSection`/`SettingsRow`/`SettingsCard`)                                                                                     |
 
 **Key simplification vs emdash:** emdash spreads one `ConnectionService` + one
 `controller` per provider across ~40 files. We collapse the server side to **one
@@ -82,6 +82,7 @@ instead of 11 controllers.
 ## Architecture (Codewit)
 
 ### Shared (`packages/shared/src/integrations/`)
+
 Pure, runtime-agnostic — the provider contract + the registry, no Effect, no React.
 
 - `types.ts` — `IssueProviderType`, `IssueProviderCapabilities`, `IssueQueryOpts`,
@@ -92,7 +93,7 @@ Pure, runtime-agnostic — the provider contract + the registry, no Effect, no R
   interface ProviderAdapter {
     readonly type: IssueProviderType;
     readonly capabilities: IssueProviderCapabilities;
-    readonly auth: AuthSpec;            // describes the credential fields (see below)
+    readonly auth: AuthSpec; // describes the credential fields (see below)
     checkConnection(creds: Credentials): Promise<ConnectionStatus>;
     listIssues(creds: Credentials, opts: IssueQueryOpts): Promise<IssueListResult>;
     searchIssues(creds: Credentials, opts: IssueSearchOpts): Promise<IssueListResult>;
@@ -104,7 +105,13 @@ Pure, runtime-agnostic — the provider contract + the registry, no Effect, no R
 - `auth-spec.ts` — declarative credential schema per provider so the **UI form is generated
   from data**, removing emdash's 10 hand-written `*SetupForm.tsx`:
   ```ts
-  type AuthField = { key: string; label: string; type: 'text'|'password'; placeholder: string; optional?: boolean };
+  type AuthField = {
+    key: string;
+    label: string;
+    type: "text" | "password";
+    placeholder: string;
+    optional?: boolean;
+  };
   type AuthSpec = { fields: AuthField[]; helpUrl?: string; helpSteps?: string[] };
   ```
   e.g. Linear = `[{key:'token', type:'password', …}]`; Jira =
@@ -120,7 +127,9 @@ Pure, runtime-agnostic — the provider contract + the registry, no Effect, no R
 > `Record<type, ProviderMeta>`; the server holds `Record<type, ProviderAdapter>` keyed the same.
 
 ### Contracts (`packages/contracts/src/integrations.ts`)
+
 effect/Schema mirrors of the shared types + RPC payloads/results:
+
 - `IssueProviderType` (`Schema.Literals([...10...])`)
 - `LinkedIssue` (provider, identifier, title, url, description?, status?, assignees?,
   project?, branchName?, updatedAt?, fetchedAt?) — versioned for evolution
@@ -132,6 +141,7 @@ effect/Schema mirrors of the shared types + RPC payloads/results:
 - `IntegrationDisconnectInput` ({ provider })
 
 ### Server (`apps/server/src/integrations/`)
+
 - `Services/IntegrationsService.ts` — `ServiceMap.Service` interface:
   `checkAllConnections`, `checkConnection`, `connect`, `disconnect`, `listIssues`,
   `searchIssues`, `getIssueContext`.
@@ -147,6 +157,7 @@ effect/Schema mirrors of the shared types + RPC payloads/results:
 - Wire RPC handlers in `apps/server/src/wsRpc.ts` (`integrations.*` → `rpcEffect(...)`).
 
 ### Web (`apps/web/src/integrations/`)
+
 - `integrationsStore.ts` — Zustand (`codewit:integrations:v1`) for last-known connection
   status + selected-provider-per-thread; React Query for live `checkAllConnections`
   (30s stale, refetch on focus). Mirrors emdash's provider but in our store idiom.
@@ -167,7 +178,7 @@ effect/Schema mirrors of the shared types + RPC payloads/results:
 1. **Shared contract + 1 provider end-to-end (Linear).** `packages/shared/src/integrations`
    types + auth-spec + meta; `packages/contracts/src/integrations.ts`; server
    `IntegrationsService` + `adapters/linear.ts`; RPC `integrations.{connect,disconnect,
-   checkAllConnections,listIssues,searchIssues}`. **Verify:** connect Linear with a PAT,
+checkAllConnections,listIssues,searchIssues}`. **Verify:** connect Linear with a PAT,
    `checkAllConnections` reports connected, `listIssues` returns issues. No UI yet — test via
    a temporary script or the RPC directly.
 2. **Settings UI + setup dialog (Linear only).** `IntegrationsSettingsSection` +
@@ -187,24 +198,29 @@ effect/Schema mirrors of the shared types + RPC payloads/results:
    capability gating in the selector, icons, empty/placeholder states.
 
 ## Dependencies to add
+
 `@linear/sdk`, `@octokit/rest`, `@octokit/auth-oauth-device`, `@gitbeaker/rest`,
 `@llamaduck/forgejo-ts`, `@team-plain/graphql`. Jira/Asana/Monday/Trello/Featurebase use
 `fetch` (no dep). Add incrementally per step 4 tier, not all upfront.
 
 ## Credential storage (decision)
+
 Reuse **`ServerSecretStore`** (already encrypted, file-perms 0600). Two key namespaces:
+
 - `integration:<provider>:token` — the secret (string; for multi-field providers, a JSON blob).
 - `integration:<provider>:config` — non-secret config (instance URL, board IDs) — could be a
   plain config file, but routing through `ServerSecretStore` keeps one mechanism. Decide at
   step 1.
 
 ## Out of scope (future)
+
 OAuth web flows (we start with PAT/API-token entry like emdash's forms; GitHub device-flow
 optional later), PR linking (`PrComboboxField`) beyond issue linking, webhook/live issue
 sync, writing back to the tracker (comments/status), multi-account per provider (GitHub
 accounts), issue-context auto-injection into the agent prompt.
 
 ## Verification (per CLAUDE.md)
+
 One final pass: `bun fmt && bun lint && bun typecheck`; tests via `bun run test` (NEVER
 `bun test`). Each adapter ships with a unit test (mock fetch/SDK) mirroring emdash's
 `*-issue-provider.test.ts`. End-to-end: connect each provider with a real token in a dev

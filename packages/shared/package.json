@@ -103,6 +103,10 @@
     "./localImage": {
       "types": "./src/localImage.ts",
       "import": "./src/localImage.ts"
+    },
+    "./integrations": {
+      "types": "./src/integrations.ts",
+      "import": "./src/integrations.ts"
     }
   },
   "scripts": {
