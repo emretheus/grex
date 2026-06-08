@@ -10,7 +10,15 @@ import {
 
 describe("RIGHT_DOCK_PANE_KINDS (single source of truth)", () => {
   it("lists every supported kind", () => {
-    expect([...RIGHT_DOCK_PANE_KINDS]).toEqual(["browser", "diff", "terminal", "sidechat", "git"]);
+    expect([...RIGHT_DOCK_PANE_KINDS]).toEqual([
+      "browser",
+      "diff",
+      "terminal",
+      "sidechat",
+      "git",
+      "files",
+      "editor",
+    ]);
   });
 
   it("derives singletons as every kind except sidechat", () => {
@@ -23,7 +31,7 @@ describe("RIGHT_DOCK_PANE_KINDS (single source of truth)", () => {
 
 describe("isRightDockPaneKind", () => {
   it("accepts the known pane kinds", () => {
-    for (const kind of ["browser", "diff", "terminal", "sidechat", "git"]) {
+    for (const kind of ["browser", "diff", "terminal", "sidechat", "git", "files", "editor"]) {
       expect(isRightDockPaneKind(kind)).toBe(true);
     }
   });
