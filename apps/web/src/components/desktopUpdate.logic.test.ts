@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import type { DesktopUpdateActionResult, DesktopUpdateState } from "@t3tools/contracts";
 
 import {
+  desktopUpdateOfferedVersion,
   getArm64IntelBuildWarningDescription,
   getDesktopUpdateActionError,
   getDesktopUpdateAlreadyCurrentNotice,
@@ -14,6 +15,7 @@ import {
   shouldHighlightDesktopUpdateError,
   shouldShowArm64IntelBuildWarning,
   shouldShowDesktopUpdateButton,
+  shouldShowDesktopUpdatePopout,
   shouldToastDesktopUpdateActionResult,
 } from "./desktopUpdate.logic";
 
@@ -441,5 +443,49 @@ describe("desktop update UI helpers", () => {
     };
 
     expect(getArm64IntelBuildWarningDescription(state)).toContain("preparing");
+  });
+});
+
+describe("desktop update popout visibility", () => {
+  const available: DesktopUpdateState = {
+    ...baseState,
+    status: "available",
+    availableVersion: "1.1.0",
+  };
+  const downloaded: DesktopUpdateState = {
+    ...baseState,
+    status: "downloaded",
+    availableVersion: "1.1.0",
+    downloadedVersion: "1.1.0",
+  };
+
+  it("offers the downloaded version, falling back to the available one", () => {
+    expect(desktopUpdateOfferedVersion(available)).toBe("1.1.0");
+    expect(desktopUpdateOfferedVersion(downloaded)).toBe("1.1.0");
+    expect(desktopUpdateOfferedVersion(baseState)).toBeNull();
+    expect(desktopUpdateOfferedVersion(null)).toBeNull();
+  });
+
+  it("shows for available and downloaded states", () => {
+    expect(shouldShowDesktopUpdatePopout(available, null)).toBe(true);
+    expect(shouldShowDesktopUpdatePopout(downloaded, null)).toBe(true);
+  });
+
+  it("stays hidden for non-actionable or disabled states", () => {
+    expect(shouldShowDesktopUpdatePopout(baseState, null)).toBe(false);
+    expect(shouldShowDesktopUpdatePopout({ ...available, status: "checking" }, null)).toBe(false);
+    expect(shouldShowDesktopUpdatePopout({ ...available, status: "downloading" }, null)).toBe(
+      false,
+    );
+    expect(shouldShowDesktopUpdatePopout({ ...available, enabled: false }, null)).toBe(false);
+    expect(shouldShowDesktopUpdatePopout(null, null)).toBe(false);
+  });
+
+  it("hides a version the user dismissed but returns for a newer one", () => {
+    expect(shouldShowDesktopUpdatePopout(available, "1.1.0")).toBe(false);
+    expect(shouldShowDesktopUpdatePopout(available, "1.0.5")).toBe(true);
+    expect(
+      shouldShowDesktopUpdatePopout({ ...available, availableVersion: "1.2.0" }, "1.1.0"),
+    ).toBe(true);
   });
 });

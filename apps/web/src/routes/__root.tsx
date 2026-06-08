@@ -26,6 +26,8 @@ import ShortcutsDialog from "../components/ShortcutsDialog";
 import WhatsNewDialog from "../components/WhatsNewDialog";
 import { useWhatsNew } from "../whatsNew/useWhatsNew";
 import { WhatsNewPopoutCard } from "../whatsNew/WhatsNewPopoutCard";
+import { DesktopUpdatePopoutCard } from "../components/desktopUpdate/DesktopUpdatePopoutCard";
+import { useDesktopUpdatePopout } from "../components/desktopUpdate/useDesktopUpdatePopout";
 import { shouldRenderTerminalWorkspace } from "../components/ChatView.logic";
 import { Button, dialogActionButtonClassName } from "../components/ui/button";
 import { AnchoredToastProvider, ToastProvider, toastManager } from "../components/ui/toast";
@@ -166,6 +168,7 @@ function RootRouteView() {
         <EventRouter />
         <GlobalShortcutsDialog />
         <GlobalWhatsNewSurface />
+        <GlobalDesktopUpdateSurface />
         <TaskCompletionNotifications />
         <ProviderUpdateNotifications />
         <DesktopProjectBootstrap />
@@ -478,6 +481,27 @@ function GlobalShortcutsDialog() {
         terminalOpen,
         terminalWorkspaceOpen,
       }}
+    />
+  );
+}
+
+function GlobalDesktopUpdateSurface() {
+  // Pre-update sibling of the What's New surface: a polished bottom-left card
+  // when a new Codewit version is available or downloaded. Renders nothing in
+  // the browser build or when there's no actionable update.
+  const { state, isVisible, action, isBusy, download, install, dismiss } = useDesktopUpdatePopout();
+
+  if (!state || !isVisible) {
+    return null;
+  }
+
+  return (
+    <DesktopUpdatePopoutCard
+      state={state}
+      action={action}
+      isBusy={isBusy}
+      onAction={action === "install" ? install : download}
+      onDismiss={dismiss}
     />
   );
 }
