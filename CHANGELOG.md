@@ -1,5 +1,30 @@
 # Changelog
 
+## 0.2.0 - 2026-06-08
+
+### Added
+
+- Added an issue/task-tracker integrations subsystem spanning ten providers — Linear, GitHub, Jira, GitLab, Forgejo, Asana, Monday.com, Trello, Featurebase, and Plain — built on a single stateless `ProviderAdapter` contract and a runtime registry so a new provider is one adapter plus a shared metadata entry.
+- Added a server `IntegrationsService` that validates credentials against each provider's live API and persists them through the existing encrypted secret store, exposed over `integrations.*` WebSocket RPCs (connection status, connect/disconnect, list/search/issue-context).
+- Added a Settings → Integrations section that lists every provider with connect/disconnect controls and live connection status, plus a data-driven connect dialog rendered from each provider's shared auth-spec.
+- Added the ability to link an external issue to a thread: an issue selector with provider switching and debounced search, a compact "Link issue" control in the branch toolbar, and a `linkedIssue` snapshot persisted with the thread end to end.
+- Added fetch-mocked unit tests for all ten adapters and a migration test for the new `projection_threads.linked_issue_json` column.
+
+### Changed
+
+- Threaded a `linkedIssue` snapshot through the orchestration read model (thread create/meta-update commands and events, the thread and shell read models) mirroring the existing `lastKnownPr` field, including projection-repository and snapshot-query read/write wiring.
+
+### Fixed
+
+- Fixed CI so the quality job (format, lint, typecheck, test, build) runs on a hosted runner instead of an inaccessible managed runner, and added a concurrency group so superseded runs cancel cleanly.
+
+### Verification
+
+- `bun run fmt:check`
+- `bun run lint` (passes with existing warnings, 0 errors)
+- `bun run typecheck` (8/8 packages)
+- `bun run test` (server suite green, including the ten adapter test files and the new migration test)
+
 ## 0.1.4 - 2026-06-07
 
 ### Added
