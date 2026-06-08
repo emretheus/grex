@@ -20,7 +20,7 @@ const {
   image = "/screenshot.jpeg",
 } = Astro.props;
 
-const siteOrigin = (Astro.site ?? new URL("https://codewit.app")).origin;
+const siteOrigin = (Astro.site ?? new URL("https://codewit.xyz")).origin;
 const canonicalUrl = new URL(Astro.url.pathname, siteOrigin).href;
 const ogImageUrl = new URL(image, siteOrigin).href;
 const fullTitle = title === "Codewit" ? "Codewit — every coding agent, one app" : title;
