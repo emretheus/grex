@@ -1,6 +1,8 @@
 ---
 // FILE: Layout.astro
-// Purpose: Wraps the marketing pages with shared metadata, nav, and footer links.
+// Purpose: Codewit marketing shell — distinctive light design system, nav, footer, SEO.
+//          Design language: Space Grotesk display type, an OKLCH blue→green accent used
+//          sparingly, and the ">" prompt-chevron from the brand mark as a signature motif.
 // Layer: Marketing layout
 // Depends on: release repo metadata from ../lib/releases.
 
@@ -9,70 +11,144 @@ import { REPO_URL } from "../lib/releases";
 interface Props {
   title?: string;
   description?: string;
+  image?: string;
 }
 
 const {
-  title = "Synara",
-  description = "Synara — The best way to code with AI.",
+  title = "Codewit",
+  description = "Codewit — one minimal desktop app for every AI coding agent. Run Claude Code, Codex, Cursor, Gemini, Grok, Kilo Code, OpenCode and Pi from a single local-first interface.",
+  image = "/screenshot.jpeg",
 } = Astro.props;
+
+const siteOrigin = (Astro.site ?? new URL("https://codewit.app")).origin;
+const canonicalUrl = new URL(Astro.url.pathname, siteOrigin).href;
+const ogImageUrl = new URL(image, siteOrigin).href;
+const fullTitle = title === "Codewit" ? "Codewit — every coding agent, one app" : title;
+
+const structuredData = {
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  name: "Codewit",
+  applicationCategory: "DeveloperApplication",
+  operatingSystem: "macOS, Windows, Linux",
+  description,
+  url: siteOrigin,
+  offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+};
 ---
 
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{fullTitle}</title>
     <meta name="description" content={description} />
+    <link rel="canonical" href={canonicalUrl} />
+    <meta name="theme-color" content="#fbfcfe" />
+    <meta name="color-scheme" content="light" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Codewit" />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:image" content={ogImageUrl} />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={fullTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImageUrl} />
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
       rel="stylesheet"
     />
     <link rel="icon" href="/favicon.ico" sizes="48x48" />
     <link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32" />
     <link rel="icon" type="image/png" href="/favicon-16x16.png" sizes="16x16" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-    <title>{title}</title>
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(structuredData)} />
   </head>
   <body>
-    <div class="page">
-      <nav class="nav">
-        <a href="/" class="nav-brand">
-          <img src="/icon.png" alt="Synara" class="nav-icon" />
-        </a>
-        <a
-          href={REPO_URL}
-          target="_blank"
-          rel="noopener noreferrer"
-          class="nav-github"
-        >
-          GitHub
-          <span class="nav-github-arrow" aria-hidden="true">&#8599;</span>
-        </a>
-      </nav>
+    <a href="/" class="nav-brand" aria-label="Codewit home" id="floating-brand">
+      <img src="/icon.png" alt="" class="nav-brand-mark" />
+    </a>
 
-      <main class="main">
-        <slot />
-      </main>
+    <nav class="nav">
+      <div class="nav-inner shell">
+        <a href="/" class="nav-wordmark" aria-label="Codewit home">
+          <img src="/icon.png" alt="" />
+          <span>codewit<b class="nav-chevron">&gt;</b></span>
+        </a>
+        <div class="nav-right">
+          <a class="nav-gh" href={REPO_URL} target="_blank" rel="noopener noreferrer">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path
+                d="M12 .5C5.65.5.5 5.65.5 12a11.5 11.5 0 007.86 10.93c.58.1.79-.25.79-.56v-2c-3.2.69-3.88-1.37-3.88-1.37-.52-1.33-1.27-1.69-1.27-1.69-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.02 1.76 2.68 1.25 3.33.96.1-.75.4-1.25.72-1.54-2.55-.29-5.24-1.27-5.24-5.67 0-1.25.45-2.28 1.18-3.08-.12-.29-.51-1.45.11-3.02 0 0 .96-.31 3.15 1.18a10.96 10.96 0 015.74 0c2.19-1.49 3.15-1.18 3.15-1.18.62 1.57.23 2.73.11 3.02.74.8 1.18 1.83 1.18 3.08 0 4.41-2.7 5.38-5.27 5.66.41.36.78 1.06.78 2.13v3.16c0 .31.21.67.8.56A11.5 11.5 0 0023.5 12C23.5 5.65 18.35.5 12 .5z"
+              ></path>
+            </svg>
+          </a>
+          <a class="btn btn-primary" href="/#download">Download<span class="btn-chevron">&gt;</span></a>
+        </div>
+      </div>
+    </nav>
 
-      <footer class="footer">
-        <span class="footer-copy">&copy; {new Date().getFullYear()} T3 Tools Inc</span>
+    <main>
+      <slot />
+    </main>
+
+    <footer class="footer">
+      <div class="shell footer-inner">
+        <div class="footer-brand">
+          <span class="footer-mark">codewit<b>&gt;</b></span>
+          <span class="footer-copy">&copy; {new Date().getFullYear()} · MIT licensed · made for developers</span>
+        </div>
         <div class="footer-links">
           <a href={REPO_URL} target="_blank" rel="noopener noreferrer">GitHub</a>
-          <a href="https://discord.gg/jn4EGJjrvv" target="_blank" rel="noopener noreferrer">Discord</a>
+          <a href="/download">Download</a>
         </div>
-      </footer>
-    </div>
+      </div>
+    </footer>
+
+    <script>
+      const nav = document.querySelector(".nav");
+      const onScroll = () => {
+        if (!nav) return;
+        nav.classList.toggle("is-scrolled", window.scrollY > 8);
+      };
+      window.addEventListener("scroll", onScroll, { passive: true });
+      onScroll();
+    </script>
   </body>
 </html>
 
 <style is:global>
   :root {
-    --bg: #09090b;
-    --fg: #fafafa;
-    --fg-muted: #a1a1aa;
-    --fg-dim: #71717a;
-    --border: rgba(255, 255, 255, 0.08);
+    /* ── Brand ── blue → green, expressed in OKLCH for clean gradients */
+    --blue: oklch(56% 0.22 258); /* #0158FD-ish */
+    --green: oklch(74% 0.16 168); /* #01CCA4-ish */
+    --brand-gradient: linear-gradient(100deg, var(--blue), var(--green));
+
+    /* ── Tinted neutrals (cool, toward the brand blue) ── */
+    --paper: oklch(99% 0.004 255);
+    --paper-2: oklch(97% 0.006 255);
+    --paper-3: oklch(94.5% 0.008 255);
+    --ink: oklch(22% 0.03 260);
+    --ink-soft: oklch(40% 0.025 260);
+    --ink-faint: oklch(56% 0.02 260);
+    --line: oklch(22% 0.03 260 / 0.12);
+    --line-soft: oklch(22% 0.03 260 / 0.07);
+
+    --ok: oklch(62% 0.15 162);
+
+    --font-display: "Space Grotesk", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+    --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+    --shell: min(92vw, 1160px);
+    --radius: 16px;
   }
 
   * {
@@ -82,142 +158,258 @@ const {
   }
 
   html {
-    color-scheme: dark;
+    color-scheme: light;
+    scroll-behavior: smooth;
   }
 
   body {
-    background: var(--bg);
-    color: var(--fg);
-    font-family: "DM Sans", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--font-body);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     min-height: 100vh;
     overflow-x: hidden;
+    line-height: 1.6;
   }
 
   a {
     color: inherit;
     text-decoration: none;
   }
-
   img {
     display: block;
     max-width: 100%;
   }
 
-  @keyframes fade-in {
-    from {
-      opacity: 0;
-      transform: translateY(8px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
+  .shell {
+    width: var(--shell);
+    margin-inline: auto;
+  }
+
+  /* Display headings use Space Grotesk, tight + bold */
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    letter-spacing: -0.03em;
+    line-height: 1.02;
+  }
+
+  /* Brand gradient text — used sparingly, only on key words */
+  .grad {
+    background: var(--brand-gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  /* The signature ">" chevron, recurring across the site */
+  .chevron {
+    font-family: var(--font-display);
+    font-weight: 700;
+    background: var(--brand-gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  /* ── Buttons ── */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: 15px;
+    padding: 11px 20px;
+    border-radius: 12px;
+    transition:
+      transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1),
+      box-shadow 0.2s ease,
+      background 0.2s ease,
+      border-color 0.2s ease,
+      color 0.2s ease;
+    white-space: nowrap;
+    cursor: pointer;
+    border: 0;
+  }
+
+  .btn-chevron,
+  .nav-chevron {
+    font-weight: 700;
+    color: var(--green);
+  }
+
+  .btn-primary {
+    color: #fff;
+    background: var(--ink);
+    position: relative;
+  }
+  .btn-primary .btn-chevron {
+    color: var(--green);
+  }
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 14px 28px -12px oklch(56% 0.22 258 / 0.5);
+    background: var(--blue);
+  }
+  .btn-primary:hover .btn-chevron {
+    color: #cffff2;
+  }
+  .btn-primary:active {
+    transform: translateY(0);
+  }
+
+  .btn-ghost {
+    color: var(--ink-soft);
+    background: transparent;
+    border: 1.5px solid var(--line);
+  }
+  .btn-ghost:hover {
+    color: var(--ink);
+    border-color: var(--blue);
+    transform: translateY(-2px);
+  }
+
+  .btn-lg {
+    padding: 15px 26px;
+    font-size: 16px;
+    border-radius: 14px;
+  }
+
+  :focus-visible {
+    outline: 2.5px solid var(--blue);
+    outline-offset: 3px;
+    border-radius: 4px;
   }
 </style>
 
 <style>
-  /* ── Page ── */
-
-  .page {
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    overflow-x: hidden;
+  /* ── Floating corner brand mark (signature) ── */
+  #floating-brand {
+    display: none;
   }
 
-  /* ── Navbar ── */
-
+  /* ── Nav ── */
   .nav {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    /* At the top the bar is barely there — only a light blur — so the hero's
+       blue→green glow flows through it and the nav reads as part of the colour
+       story rather than a white slab cutting across it. */
+    background: transparent;
+    backdrop-filter: saturate(150%) blur(6px);
+    -webkit-backdrop-filter: saturate(150%) blur(6px);
+    border-bottom: 1px solid transparent;
+    transition:
+      background 0.3s ease,
+      border-color 0.3s ease,
+      box-shadow 0.3s ease;
+  }
+  .nav.is-scrolled {
+    /* Once past the hero, settle onto an opaque shelf for readability. */
+    background: color-mix(in srgb, var(--paper) 90%, transparent);
+    backdrop-filter: saturate(180%) blur(14px);
+    -webkit-backdrop-filter: saturate(180%) blur(14px);
+    border-bottom-color: var(--line);
+    box-shadow: 0 10px 30px -22px oklch(56% 0.22 258 / 0.35);
+  }
+  .nav-inner {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 1.5rem 2.5rem;
-    opacity: 0.5;
-    transition: opacity 0.4s ease;
+    height: 68px;
   }
-
-  .nav:hover {
-    opacity: 1;
-  }
-
-  .nav-brand {
-    display: flex;
+  .nav-wordmark {
+    display: inline-flex;
     align-items: center;
+    gap: 0.5rem;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1.18rem;
+    letter-spacing: -0.04em;
   }
-
-  .nav-icon {
+  .nav-wordmark img {
     width: 28px;
     height: 28px;
-    border-radius: 6px;
+    border-radius: 8px;
   }
-
-  .nav-github {
+  .nav-right {
     display: flex;
     align-items: center;
-    gap: 0.35rem;
-    color: var(--fg-muted);
-    font-size: 0.875rem;
-    transition: color 0.3s ease;
+    gap: 0.65rem;
+  }
+  .nav-gh {
+    display: inline-grid;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    color: var(--ink-soft);
+    transition: background 0.2s ease, color 0.2s ease;
+  }
+  .nav-gh:hover {
+    background: var(--paper-3);
+    color: var(--ink);
   }
 
-  .nav-github:hover {
-    color: var(--fg);
-  }
-
-  .nav-github-arrow {
-    display: inline-block;
-    transition: transform 0.3s ease;
-  }
-
-  .nav-github:hover .nav-github-arrow {
-    transform: translateX(2px) translateY(-1px);
-  }
-
-  /* ── Main content ── */
-
-  .main {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+  main {
+    min-height: 60vh;
   }
 
   /* ── Footer ── */
-
   .footer {
+    border-top: 1px solid var(--line);
+    margin-top: 40px;
+    padding: 40px 0;
+    background: var(--paper-2);
+  }
+  .footer-inner {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 1.5rem 2.5rem;
-    font-size: 0.8rem;
-    color: var(--fg-dim);
+    gap: 1.5rem;
+    flex-wrap: wrap;
   }
-
+  .footer-brand {
+    display: flex;
+    align-items: baseline;
+    gap: 0.9rem;
+    flex-wrap: wrap;
+  }
+  .footer-mark {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1.05rem;
+    letter-spacing: -0.04em;
+  }
+  .footer-mark b {
+    color: var(--green);
+  }
+  .footer-copy {
+    font-size: 0.85rem;
+    color: var(--ink-faint);
+  }
   .footer-links {
     display: flex;
-    gap: 1.25rem;
+    gap: 1.4rem;
+    font-size: 0.9rem;
   }
-
   .footer-links a {
-    color: var(--fg-dim);
-    transition: color 0.3s ease;
+    color: var(--ink-soft);
+    transition: color 0.2s ease;
   }
-
   .footer-links a:hover {
-    color: var(--fg);
+    color: var(--blue);
   }
 
-  /* ── Mobile ── */
-
-  @media (max-width: 640px) {
-    .nav {
-      padding: 1.25rem;
-    }
-
-    .footer {
-      padding: 1.25rem;
+  @media (max-width: 600px) {
+    .footer-inner {
+      flex-direction: column;
+      align-items: flex-start;
     }
   }
 </style>
