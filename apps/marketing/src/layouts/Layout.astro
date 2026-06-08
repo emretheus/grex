@@ -41,11 +41,19 @@ const structuredData = {
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    {/* Resolve the theme before first paint to avoid a flash of the wrong theme. */}
+    <script is:inline>
+      (() => {
+        const stored = localStorage.getItem("codewit-theme");
+        const theme =
+          stored ?? (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+        document.documentElement.dataset.theme = theme;
+      })();
+    </script>
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonicalUrl} />
-    <meta name="theme-color" content="#fbfcfe" />
-    <meta name="color-scheme" content="light" />
+    <meta name="color-scheme" content="light dark" />
 
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Codewit" />
@@ -83,7 +91,22 @@ const structuredData = {
           <span>codewit<b class="nav-chevron">&gt;</b></span>
         </a>
         <div class="nav-right">
-          <a class="nav-gh" href={REPO_URL} target="_blank" rel="noopener noreferrer">
+          <button
+            class="nav-theme"
+            id="theme-toggle"
+            type="button"
+            aria-label="Toggle dark mode"
+            title="Toggle theme"
+          >
+            <svg class="icon-sun" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="4"></circle>
+              <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path>
+            </svg>
+            <svg class="icon-moon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+            </svg>
+          </button>
+          <a class="nav-gh" href={REPO_URL} target="_blank" rel="noopener noreferrer" aria-label="GitHub">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
               <path
                 d="M12 .5C5.65.5.5 5.65.5 12a11.5 11.5 0 007.86 10.93c.58.1.79-.25.79-.56v-2c-3.2.69-3.88-1.37-3.88-1.37-.52-1.33-1.27-1.69-1.27-1.69-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.02 1.76 2.68 1.25 3.33.96.1-.75.4-1.25.72-1.54-2.55-.29-5.24-1.27-5.24-5.67 0-1.25.45-2.28 1.18-3.08-.12-.29-.51-1.45.11-3.02 0 0 .96-.31 3.15 1.18a10.96 10.96 0 015.74 0c2.19-1.49 3.15-1.18 3.15-1.18.62 1.57.23 2.73.11 3.02.74.8 1.18 1.83 1.18 3.08 0 4.41-2.7 5.38-5.27 5.66.41.36.78 1.06.78 2.13v3.16c0 .31.21.67.8.56A11.5 11.5 0 0023.5 12C23.5 5.65 18.35.5 12 .5z"
@@ -120,6 +143,15 @@ const structuredData = {
       };
       window.addEventListener("scroll", onScroll, { passive: true });
       onScroll();
+
+      // Theme toggle. The initial theme is set by the inline head script; here we
+      // only flip and persist it on click.
+      const toggle = document.getElementById("theme-toggle");
+      toggle?.addEventListener("click", () => {
+        const next = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
+        document.documentElement.dataset.theme = next;
+        localStorage.setItem("codewit-theme", next);
+      });
     </script>
   </body>
 </html>
@@ -149,6 +181,28 @@ const structuredData = {
 
     --shell: min(92vw, 1160px);
     --radius: 16px;
+
+    color-scheme: light;
+  }
+
+  /* Dark theme — surfaces get lighter for elevation (no shadows), text softens,
+     and the brand accents desaturate slightly so they don't glare on dark. */
+  html[data-theme="dark"] {
+    --blue: oklch(66% 0.18 258);
+    --green: oklch(78% 0.14 168);
+
+    --paper: oklch(17% 0.02 260);
+    --paper-2: oklch(20.5% 0.022 260);
+    --paper-3: oklch(25% 0.024 260);
+    --ink: oklch(96% 0.01 260);
+    --ink-soft: oklch(76% 0.018 260);
+    --ink-faint: oklch(60% 0.02 260);
+    --line: oklch(96% 0.01 260 / 0.12);
+    --line-soft: oklch(96% 0.01 260 / 0.07);
+
+    --ok: oklch(72% 0.15 162);
+
+    color-scheme: dark;
   }
 
   * {
@@ -243,7 +297,7 @@ const structuredData = {
   }
 
   .btn-primary {
-    color: #fff;
+    color: var(--paper);
     background: var(--ink);
     position: relative;
   }
@@ -333,16 +387,17 @@ const structuredData = {
     letter-spacing: -0.04em;
   }
   .nav-wordmark img {
-    width: 28px;
-    height: 28px;
-    border-radius: 8px;
+    width: 34px;
+    height: 34px;
+    border-radius: 9px;
   }
   .nav-right {
     display: flex;
     align-items: center;
     gap: 0.65rem;
   }
-  .nav-gh {
+  .nav-gh,
+  .nav-theme {
     display: inline-grid;
     place-items: center;
     width: 38px;
@@ -350,6 +405,28 @@ const structuredData = {
     border-radius: 10px;
     color: var(--ink-soft);
     transition: background 0.2s ease, color 0.2s ease;
+  }
+  .nav-theme {
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+  }
+  .nav-theme:hover {
+    background: var(--paper-3);
+    color: var(--ink);
+  }
+  /* Light mode shows a moon (click → dark); dark mode shows a sun (click → light). */
+  .nav-theme .icon-sun {
+    display: none;
+  }
+  .nav-theme .icon-moon {
+    display: block;
+  }
+  html[data-theme="dark"] .nav-theme .icon-moon {
+    display: none;
+  }
+  html[data-theme="dark"] .nav-theme .icon-sun {
+    display: block;
   }
   .nav-gh:hover {
     background: var(--paper-3);
@@ -363,7 +440,6 @@ const structuredData = {
   /* ── Footer ── */
   .footer {
     border-top: 1px solid var(--line);
-    margin-top: 40px;
     padding: 40px 0;
     background: var(--paper-2);
   }
@@ -411,5 +487,15 @@ const structuredData = {
       flex-direction: column;
       align-items: flex-start;
     }
+  }
+
+  /* Dark mode: drop the coloured glow on the nav and primary button so the
+     chrome reads calm and enterprise-grade. */
+  html[data-theme="dark"] .nav.is-scrolled {
+    box-shadow: none;
+    border-bottom-color: var(--line);
+  }
+  html[data-theme="dark"] .btn-primary:hover {
+    box-shadow: 0 10px 24px -14px oklch(0% 0 0 / 0.6);
   }
 </style>
