@@ -57,6 +57,27 @@ export function useDesktopUpdatePopout(): DesktopUpdatePopout {
 
   // Subscribe to updater state pushed from the Electron main process.
   useEffect(() => {
+    // Dev-only: seed a fake "available" update so the card can be previewed
+    // without a real release. Enabled via VITE_PREVIEW_UPDATE_CARD=1.
+    if (import.meta.env.DEV && import.meta.env.VITE_PREVIEW_UPDATE_CARD === "1") {
+      setState({
+        enabled: true,
+        status: "available",
+        currentVersion: "0.2.0",
+        hostArch: "arm64",
+        appArch: "arm64",
+        runningUnderArm64Translation: false,
+        availableVersion: "0.2.1",
+        downloadedVersion: null,
+        downloadPercent: null,
+        checkedAt: new Date().toISOString(),
+        message: null,
+        errorContext: null,
+        canRetry: false,
+        releaseUrl: "https://github.com/emretheus/codewit/releases/latest",
+      });
+      return;
+    }
     const bridge = window.desktopBridge;
     if (!bridge?.onUpdateState) return;
     let disposed = false;
