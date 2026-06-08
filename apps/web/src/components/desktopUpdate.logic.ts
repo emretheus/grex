@@ -59,6 +59,29 @@ export function shouldShowArm64IntelBuildWarning(state: DesktopUpdateState | nul
   return state?.hostArch === "arm64" && state.appArch === "x64";
 }
 
+/** The version an update is offering — the dismiss key for the popout card. */
+export function desktopUpdateOfferedVersion(state: DesktopUpdateState | null): string | null {
+  return state?.downloadedVersion ?? state?.availableVersion ?? null;
+}
+
+/**
+ * Whether the bottom-left update popout card should be visible. Shown only for
+ * the two calm, actionable states — a new version is available to download, or a
+ * downloaded one is ready to install — and never for a version the user already
+ * dismissed. Checking/downloading/error states stay off the card (errors keep
+ * their toast + manual-download fallback).
+ */
+export function shouldShowDesktopUpdatePopout(
+  state: DesktopUpdateState | null,
+  dismissedVersion: string | null,
+): boolean {
+  if (!state?.enabled) return false;
+  if (state.status !== "available" && state.status !== "downloaded") return false;
+  const version = desktopUpdateOfferedVersion(state);
+  if (version !== null && version === dismissedVersion) return false;
+  return true;
+}
+
 export function isDesktopUpdateButtonDisabled(state: DesktopUpdateState | null): boolean {
   return (
     state?.status === "downloading" ||
