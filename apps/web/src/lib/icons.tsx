@@ -35,6 +35,7 @@ import {
   IconExternalLink,
   IconEye,
   IconFile,
+  IconFileCode,
   IconFlag,
   IconFlask2,
   IconFolder,
@@ -145,6 +146,7 @@ export const AdjustmentsIcon = adaptIcon(IconAdjustments);
 export const ArchiveIcon = adaptIcon(IconArchive);
 export const BrainIcon = adaptIcon(IconBrain);
 export const FileIcon = adaptIcon(IconFile);
+export const FileCodeIcon = adaptIcon(IconFileCode);
 export const FlagIcon = adaptIcon(IconFlag);
 export const FlaskConicalIcon = adaptIcon(IconFlask2);
 export const FolderClosedIcon = adaptIcon(IconFolder);

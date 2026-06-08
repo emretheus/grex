@@ -80,6 +80,8 @@ import {
   ProjectSearchLocalEntriesResult,
   ProjectWriteFileInput,
   ProjectWriteFileResult,
+  ProjectReadFileInput,
+  ProjectReadFileResult,
 } from "./project";
 import {
   ServerConfig,
@@ -244,6 +246,12 @@ export const WsProjectsSearchLocalEntriesRpc = Rpc.make(WS_METHODS.projectsSearc
 export const WsProjectsWriteFileRpc = Rpc.make(WS_METHODS.projectsWriteFile, {
   payload: ProjectWriteFileInput,
   success: ProjectWriteFileResult,
+  error: WsRpcError,
+});
+
+export const WsProjectsReadFileRpc = Rpc.make(WS_METHODS.projectsReadFile, {
+  payload: ProjectReadFileInput,
+  success: ProjectReadFileResult,
   error: WsRpcError,
 });
 
@@ -616,6 +624,7 @@ export const WsRpcGroup = RpcGroup.make(
   WsProjectsSearchEntriesRpc,
   WsProjectsSearchLocalEntriesRpc,
   WsProjectsWriteFileRpc,
+  WsProjectsReadFileRpc,
   WsFilesystemBrowseRpc,
   WsShellOpenInEditorRpc,
   WsGitGithubRepositoryRpc,

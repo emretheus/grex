@@ -71,6 +71,8 @@ import {
 } from "../rightDockStore.logic";
 import { RightDock } from "../components/chat/RightDock";
 import { DockTerminalPane } from "../components/chat/DockTerminalPane";
+import { DockFilesPane } from "../components/chat/DockFilesPane";
+import { DockEditorPane } from "../components/chat/DockEditorPane";
 import { CHAT_SURFACE_HEADER_ROW_CLASS_NAME } from "../components/chat/chatHeaderControls";
 import { GitPanel } from "../components/chat/GitPanel";
 import { PanelStateMessage } from "../components/chat/PanelStateMessage";
@@ -1640,6 +1642,16 @@ function SingleChatSurface(props: {
               hostThreadId={props.threadId}
               projectId={props.projectId}
               onClose={() => closePane(props.threadId, pane.id)}
+            />
+          );
+        case "files":
+          return <DockFilesPane hostThreadId={props.threadId} projectId={props.projectId} />;
+        case "editor":
+          return (
+            <DockEditorPane
+              hostThreadId={props.threadId}
+              projectId={props.projectId}
+              isActive={context.isActive && dockState.open}
             />
           );
         case "sidechat":
