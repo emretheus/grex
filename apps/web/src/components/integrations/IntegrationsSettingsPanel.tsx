@@ -4,52 +4,118 @@ import { ISSUE_PROVIDER_META, ISSUE_PROVIDER_ORDER } from "@t3tools/shared/integ
 import { useState } from "react";
 
 import { CheckIcon, PlusIcon } from "~/lib/icons";
-
 import {
   integrationConnectionsQueryOptions,
   integrationDisconnectMutationOptions,
   invalidateIntegrationConnections,
 } from "~/lib/integrationsReactQuery";
-import { SettingsRow, SettingsSection } from "../settings/SettingsPanelPrimitives";
-import { Button } from "../ui/button";
+import { cn } from "~/lib/utils";
+import { SETTINGS_SECTION_LABEL_CLASS_NAME } from "~/settingsPanelStyles";
 import { Spinner } from "../ui/spinner";
 import { IntegrationConnectDialog } from "./IntegrationConnectDialog";
 import { ProviderIcon } from "./provider-icons";
 
 const PROVIDER_DESCRIPTIONS: Record<IssueProviderType, string> = {
-  linear: "Link Linear issues to your threads.",
-  github: "Link GitHub issues to your threads.",
-  jira: "Link Jira issues to your threads.",
-  gitlab: "Link GitLab issues to your threads.",
-  forgejo: "Link Forgejo issues to your threads.",
-  asana: "Link Asana tasks to your threads.",
-  monday: "Link Monday.com items to your threads.",
-  trello: "Link Trello cards to your threads.",
-  featurebase: "Link Featurebase posts to your threads.",
-  plain: "Link Plain threads to your threads.",
+  linear: "Work on Linear issues",
+  github: "Work on GitHub issues",
+  jira: "Work on Jira tickets",
+  gitlab: "Work on GitLab issues",
+  forgejo: "Work on Forgejo issues",
+  asana: "Work on Asana tasks",
+  monday: "Work on Monday.com items",
+  trello: "Work on Trello cards",
+  featurebase: "Work on Featurebase posts",
+  plain: "Work on Plain threads",
 };
 
-function DisconnectButton({ provider }: { provider: IssueProviderType }) {
+const actionButtonClassName = cn(
+  "inline-flex size-8 shrink-0 items-center justify-center rounded-lg border",
+  "border-[color:var(--color-border)] text-muted-foreground transition-colors",
+  "hover:bg-[var(--sidebar-accent)] hover:text-foreground",
+  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60",
+  "disabled:pointer-events-none disabled:opacity-60",
+);
+
+function ProviderCard({
+  provider,
+  connected,
+  displayName,
+  isLoading,
+  onConnect,
+}: {
+  provider: IssueProviderType;
+  connected: boolean;
+  displayName: string | undefined;
+  isLoading: boolean;
+  onConnect: () => void;
+}) {
   const queryClient = useQueryClient();
   const disconnectMutation = useMutation({
     ...integrationDisconnectMutationOptions(provider),
     onSettled: () => invalidateIntegrationConnections(queryClient),
   });
 
+  const meta = ISSUE_PROVIDER_META[provider];
+  const subtitle = connected
+    ? displayName
+      ? `Connected · ${displayName}`
+      : "Connected"
+    : PROVIDER_DESCRIPTIONS[provider];
+
   return (
-    <Button
-      variant="outline"
-      size="sm"
-      disabled={disconnectMutation.isPending}
-      onClick={() => disconnectMutation.mutate({ provider })}
-    >
-      {disconnectMutation.isPending ? (
-        <Spinner className="size-4" />
-      ) : (
-        <CheckIcon className="text-emerald-500" />
+    <div
+      className={cn(
+        "flex items-center gap-3 rounded-xl border p-3.5",
+        "border-[color:var(--color-border)] bg-[var(--color-surface,transparent)]",
       )}
-      Connected
-    </Button>
+    >
+      <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-[var(--sidebar-accent)]/60">
+        <ProviderIcon provider={provider} size={20} />
+      </span>
+
+      <div className="min-w-0 flex-1">
+        <p className="truncate text-sm font-medium text-foreground">{meta.displayName}</p>
+        <p
+          className={cn(
+            "truncate text-xs",
+            connected ? "text-emerald-500" : "text-muted-foreground",
+          )}
+        >
+          {subtitle}
+        </p>
+      </div>
+
+      {isLoading ? (
+        <span className="inline-flex size-8 items-center justify-center">
+          <Spinner className="size-4" />
+        </span>
+      ) : connected ? (
+        <button
+          type="button"
+          aria-label={`Disconnect ${meta.displayName}`}
+          title={`Disconnect ${meta.displayName}`}
+          disabled={disconnectMutation.isPending}
+          onClick={() => disconnectMutation.mutate({ provider })}
+          className={cn(actionButtonClassName, "text-emerald-500 hover:text-emerald-400")}
+        >
+          {disconnectMutation.isPending ? (
+            <Spinner className="size-4" />
+          ) : (
+            <CheckIcon className="size-4" />
+          )}
+        </button>
+      ) : (
+        <button
+          type="button"
+          aria-label={`Connect ${meta.displayName}`}
+          title={`Connect ${meta.displayName}`}
+          onClick={onConnect}
+          className={actionButtonClassName}
+        >
+          <PlusIcon className="size-4" />
+        </button>
+      )}
+    </div>
   );
 }
 
@@ -66,44 +132,29 @@ export function IntegrationsSettingsPanel() {
   };
 
   return (
-    <>
-      <SettingsSection title="Issue trackers">
+    <section className="flex flex-col gap-1.5 not-first:mt-4">
+      <h2 className={SETTINGS_SECTION_LABEL_CLASS_NAME}>Issue trackers</h2>
+      <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
         {ISSUE_PROVIDER_ORDER.map((provider) => {
           const status = statuses?.[provider];
-          const connected = status?.connected ?? false;
           return (
-            <SettingsRow
+            <ProviderCard
               key={provider}
-              title={ISSUE_PROVIDER_META[provider].displayName}
-              description={PROVIDER_DESCRIPTIONS[provider]}
-              status={
-                connected && status?.displayName ? `Connected as ${status.displayName}` : undefined
-              }
-              control={
-                <div className="flex items-center gap-2">
-                  <ProviderIcon provider={provider} className="size-5 opacity-80" />
-                  {connectionsQuery.isLoading ? (
-                    <Spinner className="size-4" />
-                  ) : connected ? (
-                    <DisconnectButton provider={provider} />
-                  ) : (
-                    <Button variant="outline" size="sm" onClick={() => openConnect(provider)}>
-                      <PlusIcon />
-                      Connect
-                    </Button>
-                  )}
-                </div>
-              }
+              provider={provider}
+              connected={status?.connected ?? false}
+              displayName={status?.displayName}
+              isLoading={connectionsQuery.isLoading}
+              onConnect={() => openConnect(provider)}
             />
           );
         })}
-      </SettingsSection>
+      </div>
 
       <IntegrationConnectDialog
         provider={dialogProvider}
         open={dialogOpen}
         onOpenChange={setDialogOpen}
       />
-    </>
+    </section>
   );
 }
