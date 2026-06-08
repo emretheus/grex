@@ -22,6 +22,28 @@ import type { WhatsNewEntry } from "./logic";
 
 export const WHATS_NEW_ENTRIES: readonly WhatsNewEntry[] = [
   {
+    version: "0.2.0",
+    date: "Jun 8",
+    features: [
+      {
+        id: "issue-tracker-integrations",
+        title: "Connect your issue tracker",
+        description:
+          "Codewit now connects to ten issue and task trackers — Linear, GitHub, Jira, GitLab, Forgejo, Asana, Monday.com, Trello, Featurebase, and Plain — so the work you're tracking elsewhere is one click away.",
+        details:
+          "Each provider has a built-in connection form under Settings → Integrations. Credentials are validated against the live API and stored on the server, never in the browser. Adding a provider is a single adapter behind a shared contract, so the lineup is easy to extend.",
+      },
+      {
+        id: "link-issues-to-threads",
+        title: "Link an issue to a thread",
+        description:
+          "Once a tracker is connected, link an external issue straight from the branch toolbar. Search across your connected providers, pick an issue, and it rides along with the thread.",
+        details:
+          "The linked issue is captured as a snapshot at link time and persisted with the thread, so a tracker outage never breaks your workspace. You can switch providers in the picker and unlink at any time.",
+      },
+    ],
+  },
+  {
     version: "0.1.4",
     date: "Jun 7",
     features: [
