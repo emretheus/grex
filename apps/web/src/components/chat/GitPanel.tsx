@@ -12,6 +12,7 @@ import { type FileDiffMetadata } from "@pierre/diffs/react";
 import { type ProjectId, type ThreadId } from "@t3tools/contracts";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { lazy, memo, Suspense, useCallback, useMemo, useState } from "react";
+import { buildHunkPatch } from "~/lib/patchManipulation";
 
 import { useTheme } from "~/hooks/useTheme";
 import { useWorkspaceFileWatch } from "~/hooks/useWorkspaceFileWatch";
@@ -26,6 +27,7 @@ import {
   summarizeFileDiffStats,
 } from "~/lib/diffRendering";
 import {
+  gitApplyPatchMutationOptions,
   gitDiscardFilesMutationOptions,
   gitQueryKeys,
   gitStageFilesMutationOptions,
@@ -238,6 +240,95 @@ const SelectedFileDiff = memo(function SelectedFileDiff(props: {
   );
 });
 
+// ── Hunk actions panel ────────────────────────────────────────────────────────
+// Rendered between the file list and the diff viewer. Shows per-hunk action
+// buttons (Stage/Unstage/Discard hunk) for the currently selected file.
+
+const HunkActionsPanel = memo(function HunkActionsPanel(props: {
+  file: FileDiffMetadata;
+  section: GitPanelSection;
+  disabled: boolean;
+  onStageHunk: (file: FileDiffMetadata, hunkIndex: number) => void;
+  onUnstageHunk: (file: FileDiffMetadata, hunkIndex: number) => void;
+  onDiscardHunk: (file: FileDiffMetadata, hunkIndex: number) => void;
+}) {
+  const { file, section, disabled } = props;
+  if (file.hunks.length === 0) return null;
+
+  return (
+    <div className="shrink-0 border-b border-border/70 px-1.5 py-1.5">
+      <div className="mb-1 flex items-center gap-1.5 px-0.5">
+        <span className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground/70">
+          Hunks
+        </span>
+        <span className="rounded-full bg-muted px-1.5 text-[10px] font-medium text-muted-foreground">
+          {file.hunks.length}
+        </span>
+      </div>
+      <div className="flex flex-col gap-0.5">
+        {file.hunks.map((hunk, i) => {
+          const addCount = hunk.additionLines;
+          const delCount = hunk.deletionLines;
+          const hdrText = hunk.hunkSpecs ?? `@@ -${hunk.deletionStart} +${hunk.additionStart} @@`;
+          return (
+            <div
+              key={i}
+              className="group flex items-center gap-1.5 rounded-md px-1.5 py-0.5 hover:bg-sidebar-accent/40"
+            >
+              <span className="min-w-0 flex-1 truncate font-mono text-[10px] text-muted-foreground">
+                {hdrText}
+              </span>
+              <DiffStat
+                additions={addCount}
+                deletions={delCount}
+                className="shrink-0 text-[10px]"
+              />
+              <div className="flex shrink-0 items-center gap-0.5 opacity-0 group-hover:opacity-100">
+                {section === "unstaged" ? (
+                  <>
+                    <IconButton
+                      size="icon-xs"
+                      variant="ghost"
+                      label="Stage hunk"
+                      tooltip="Stage hunk"
+                      disabled={disabled}
+                      onClick={() => props.onStageHunk(file, i)}
+                    >
+                      <PlusIcon className="size-3" />
+                    </IconButton>
+                    <IconButton
+                      size="icon-xs"
+                      variant="ghost"
+                      label="Discard hunk"
+                      tooltip="Discard hunk"
+                      disabled={disabled}
+                      className="hover:text-rose-500"
+                      onClick={() => props.onDiscardHunk(file, i)}
+                    >
+                      <Trash2 className="size-3" />
+                    </IconButton>
+                  </>
+                ) : (
+                  <IconButton
+                    size="icon-xs"
+                    variant="ghost"
+                    label="Unstage hunk"
+                    tooltip="Unstage hunk"
+                    disabled={disabled}
+                    onClick={() => props.onUnstageHunk(file, i)}
+                  >
+                    <RotateCcwIcon className="size-3" />
+                  </IconButton>
+                )}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+});
+
 type GitPanelTab = "changes" | "history";
 
 function TabSwitcher(props: { active: GitPanelTab; onChange: (tab: GitPanelTab) => void }) {
@@ -305,8 +396,12 @@ export function GitPanel(props: {
   const stageMutation = useMutation(gitStageFilesMutationOptions({ cwd, queryClient }));
   const unstageMutation = useMutation(gitUnstageFilesMutationOptions({ cwd, queryClient }));
   const discardMutation = useMutation(gitDiscardFilesMutationOptions({ cwd, queryClient }));
+  const applyPatchMutation = useMutation(gitApplyPatchMutationOptions({ cwd, queryClient }));
   const mutating =
-    stageMutation.isPending || unstageMutation.isPending || discardMutation.isPending;
+    stageMutation.isPending ||
+    unstageMutation.isPending ||
+    discardMutation.isPending ||
+    applyPatchMutation.isPending;
 
   const stage = useCallback(
     (paths: string[]) => {
@@ -334,6 +429,42 @@ export function GitPanel(props: {
       });
     },
     [cwd, discardMutation],
+  );
+
+  const stageHunk = useCallback(
+    (file: FileDiffMetadata, hunkIndex: number) => {
+      if (!cwd) return;
+      applyPatchMutation.mutate({ patch: buildHunkPatch(file, hunkIndex), cached: true });
+    },
+    [cwd, applyPatchMutation],
+  );
+  const unstageHunk = useCallback(
+    (file: FileDiffMetadata, hunkIndex: number) => {
+      if (!cwd) return;
+      // file comes from staged scope (index vs HEAD); reverse-apply to index to unstage it
+      applyPatchMutation.mutate({
+        patch: buildHunkPatch(file, hunkIndex),
+        cached: true,
+        reverse: true,
+      });
+    },
+    [cwd, applyPatchMutation],
+  );
+  const discardHunk = useCallback(
+    (file: FileDiffMetadata, hunkIndex: number) => {
+      if (!cwd) return;
+      void showConfirmDialogFallback(
+        `Discard this hunk in "${file.name}"?\nThis permanently reverts these lines and cannot be undone.`,
+      ).then((confirmed) => {
+        if (confirmed) {
+          applyPatchMutation.mutate({
+            patch: buildHunkPatch(file, hunkIndex),
+            reverse: true,
+          });
+        }
+      });
+    },
+    [cwd, applyPatchMutation],
   );
 
   const selectStaged = useCallback((file: FileDiffMetadata) => {
@@ -478,9 +609,21 @@ export function GitPanel(props: {
         ) : null}
       </div>
 
-      <div className="diff-panel-viewport min-h-0 min-w-0 flex-1 overflow-hidden border-t border-border/70">
-        {selectedFileDiff ? (
-          <SelectedFileDiff fileDiff={selectedFileDiff} theme={theme} />
+      <div className="diff-panel-viewport flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden border-t border-border/70">
+        {selectedFileDiff && selectedResolved ? (
+          <>
+            <HunkActionsPanel
+              file={selectedFileDiff}
+              section={selectedResolved.section}
+              disabled={mutating}
+              onStageHunk={stageHunk}
+              onUnstageHunk={unstageHunk}
+              onDiscardHunk={discardHunk}
+            />
+            <div className="min-h-0 flex-1 overflow-hidden">
+              <SelectedFileDiff fileDiff={selectedFileDiff} theme={theme} />
+            </div>
+          </>
         ) : (
           <PanelStateMessage density="compact">Select a file to view its diff.</PanelStateMessage>
         )}

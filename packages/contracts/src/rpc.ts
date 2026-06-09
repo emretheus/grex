@@ -46,6 +46,8 @@ import {
   GitDiscardFilesResult,
   GitUnstageFilesInput,
   GitUnstageFilesResult,
+  GitApplyPatchInput,
+  GitApplyPatchResult,
 } from "./git";
 import { KeybindingRule } from "./keybindings";
 import {
@@ -460,6 +462,12 @@ export const WsGitLogRpc = Rpc.make(WS_METHODS.gitLog, {
   error: WsRpcError,
 });
 
+export const WsGitApplyPatchRpc = Rpc.make(WS_METHODS.gitApplyPatch, {
+  payload: GitApplyPatchInput,
+  success: GitApplyPatchResult,
+  error: WsRpcError,
+});
+
 export const WsGitHandoffThreadRpc = Rpc.make(WS_METHODS.gitHandoffThread, {
   payload: GitHandoffThreadInput,
   success: GitHandoffThreadResult,
@@ -741,6 +749,7 @@ export const WsRpcGroup = RpcGroup.make(
   WsGitUnstageFilesRpc,
   WsGitDiscardFilesRpc,
   WsGitLogRpc,
+  WsGitApplyPatchRpc,
   WsGitHandoffThreadRpc,
   WsTerminalOpenRpc,
   WsTerminalWriteRpc,

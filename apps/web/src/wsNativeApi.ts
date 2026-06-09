@@ -572,6 +572,7 @@ export function createWsNativeApi(): NativeApi {
       unstageFiles: (input) => transport.request(WS_METHODS.gitUnstageFiles, input),
       discardFiles: (input) => transport.request(WS_METHODS.gitDiscardFiles, input),
       log: (input) => transport.request(WS_METHODS.gitLog, input),
+      applyPatch: (input) => transport.request(WS_METHODS.gitApplyPatch, input),
       handoffThread: (input) => transport.request(WS_METHODS.gitHandoffThread, input),
       resolvePullRequest: (input) => transport.request(WS_METHODS.gitResolvePullRequest, input),
       preparePullRequestThread: (input) =>

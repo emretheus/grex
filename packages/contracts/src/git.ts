@@ -244,6 +244,15 @@ export const GitDiscardFilesInput = Schema.Struct({
 });
 export type GitDiscardFilesInput = typeof GitDiscardFilesInput.Type;
 
+// patch must NOT be trimmed — leading/trailing characters are significant in unified diffs
+export const GitApplyPatchInput = Schema.Struct({
+  cwd: TrimmedNonEmptyStringSchema,
+  patch: Schema.String,
+  reverse: Schema.optional(Schema.Boolean),
+  cached: Schema.optional(Schema.Boolean),
+});
+export type GitApplyPatchInput = typeof GitApplyPatchInput.Type;
+
 // RPC Results
 
 const GitStatusPr = Schema.Struct({
@@ -333,6 +342,12 @@ export type GitUnstageFilesResult = GitStageFilesResult;
 
 export const GitDiscardFilesResult = GitStageFilesResult;
 export type GitDiscardFilesResult = GitStageFilesResult;
+
+export const GitApplyPatchResult = Schema.Struct({
+  ok: Schema.Boolean,
+  error: Schema.NullOr(Schema.String),
+});
+export type GitApplyPatchResult = typeof GitApplyPatchResult.Type;
 
 export const GitListBranchesResult = Schema.Struct({
   branches: Schema.Array(GitBranch),

@@ -80,6 +80,7 @@ interface ExecuteGitOptions {
   fallbackErrorMessage?: string | undefined;
   env?: NodeJS.ProcessEnv | undefined;
   progress?: ExecuteGitProgress | undefined;
+  stdin?: string | undefined;
 }
 
 type WorkingTreeFileStat = { path: string; insertions: number; deletions: number };
@@ -720,6 +721,9 @@ export const makeGitCore = (options?: { executeOverride?: GitCoreShape["execute"
                   ...input.env,
                   ...trace2Monitor.env,
                 },
+                ...(input.stdin !== undefined
+                  ? { stdin: Stream.fromArray([new TextEncoder().encode(input.stdin)]) }
+                  : {}),
               }),
             )
             .pipe(Effect.mapError(toGitCommandError(commandInput, "failed to spawn.")));
@@ -798,6 +802,7 @@ export const makeGitCore = (options?: { executeOverride?: GitCoreShape["execute"
         ...(options.timeoutMs !== undefined ? { timeoutMs: options.timeoutMs } : {}),
         ...(options.env ? { env: options.env } : {}),
         ...(options.progress ? { progress: options.progress } : {}),
+        ...(options.stdin !== undefined ? { stdin: options.stdin } : {}),
       }).pipe(
         Effect.flatMap((result) => {
           if (options.allowNonZeroExit || result.code === 0) {
@@ -2718,6 +2723,20 @@ export const makeGitCore = (options?: { executeOverride?: GitCoreShape["execute"
         return { commits };
       });
 
+    const applyPatch: GitCoreShape["applyPatch"] = ({ cwd, patch, reverse, cached }) =>
+      executeGit(
+        "GitCore.applyPatch",
+        cwd,
+        ["apply", ...(cached ? ["--cached"] : []), ...(reverse ? ["--reverse"] : []), "-"],
+        { allowNonZeroExit: true, stdin: patch },
+      ).pipe(
+        Effect.map((r) =>
+          r.code === 0
+            ? { ok: true, error: null }
+            : { ok: false, error: r.stderr.trim() || "git apply failed" },
+        ),
+      );
+
     return {
       execute,
       status,
@@ -2754,6 +2773,7 @@ export const makeGitCore = (options?: { executeOverride?: GitCoreShape["execute"
       unstageFiles,
       discardFiles,
       readLog,
+      applyPatch,
     } satisfies GitCoreShape;
   });
 

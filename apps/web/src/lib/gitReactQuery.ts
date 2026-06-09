@@ -60,6 +60,7 @@ export const gitMutationKeys = {
   stageFiles: (cwd: string | null) => ["git", "mutation", "stage-files", cwd] as const,
   unstageFiles: (cwd: string | null) => ["git", "mutation", "unstage-files", cwd] as const,
   discardFiles: (cwd: string | null) => ["git", "mutation", "discard-files", cwd] as const,
+  applyPatch: (cwd: string | null) => ["git", "mutation", "apply-patch", cwd] as const,
 };
 
 export function invalidateGitQueries(queryClient: QueryClient) {
@@ -350,6 +351,27 @@ export function gitDiscardFilesMutationOptions(input: {
     run: (api, cwd, paths) => {
       if (paths.length === 0) throw new Error("No files selected to discard.");
       return api.git.discardFiles({ cwd, paths: [...paths] });
+    },
+  });
+}
+
+export function gitApplyPatchMutationOptions(input: {
+  cwd: string | null;
+  queryClient: QueryClient;
+}) {
+  return makeGitMutationOptions<
+    { patch: string; reverse?: boolean; cached?: boolean },
+    { ok: boolean; error: string | null }
+  >({
+    cwd: input.cwd,
+    queryClient: input.queryClient,
+    mutationKey: gitMutationKeys.applyPatch(input.cwd),
+    unavailableMessage: "Applying patch is unavailable.",
+    invalidate: "cwd",
+    run: async (api, cwd, args) => {
+      const result = await api.git.applyPatch({ cwd, ...args });
+      if (!result.ok) throw new Error(result.error ?? "git apply failed");
+      return result;
     },
   });
 }
