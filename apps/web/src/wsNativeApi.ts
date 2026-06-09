@@ -25,6 +25,7 @@ import {
   type ServerLifecycleStreamEvent,
   type ServerSettingsUpdatedPayload,
   type TerminalEvent,
+  type WorkspaceFileChangeEvent,
   ORCHESTRATION_WS_CHANNELS,
   ORCHESTRATION_WS_METHODS,
   type ContextMenuItem,
@@ -67,6 +68,12 @@ function omitNullUserInputAnswers(
   };
 }
 const terminalEventListeners = new Set<(payload: TerminalEvent) => void>();
+// File-change listeners are keyed by cwd: the server pushes onto one shared
+// channel, and we fan out to the listeners that asked to watch that worktree.
+const workspaceFileChangedListenersByCwd = new Map<
+  string,
+  Set<(event: WorkspaceFileChangeEvent) => void>
+>();
 const orchestrationDomainEventListeners = new Set<(payload: OrchestrationEvent) => void>();
 const orchestrationShellEventListeners = new Set<(payload: OrchestrationShellStreamItem) => void>();
 const orchestrationThreadEventListeners = new Set<
@@ -389,6 +396,18 @@ export function createWsNativeApi(): NativeApi {
       }
     }
   });
+  transport.subscribe(WS_CHANNELS.workspaceFileChanged, (message) => {
+    const event = message.data;
+    const listeners = workspaceFileChangedListenersByCwd.get(event.cwd);
+    if (!listeners) return;
+    for (const listener of listeners) {
+      try {
+        listener(event);
+      } catch {
+        // Swallow listener errors
+      }
+    }
+  });
   transport.subscribe(ORCHESTRATION_WS_CHANNELS.domainEvent, (message) => {
     const payload = message.data;
     for (const listener of orchestrationDomainEventListeners) {
@@ -467,6 +486,28 @@ export function createWsNativeApi(): NativeApi {
         transport.request(WS_METHODS.projectsSearchLocalEntries, input),
       writeFile: (input) => transport.request(WS_METHODS.projectsWriteFile, input),
       readFile: (input) => transport.request(WS_METHODS.projectsReadFile, input),
+    },
+    workspace: {
+      onFileChanged: (cwd, callback) => {
+        let listeners = workspaceFileChangedListenersByCwd.get(cwd);
+        if (!listeners) {
+          listeners = new Set();
+          workspaceFileChangedListenersByCwd.set(cwd, listeners);
+          // First watcher for this cwd: start the server-side fs.watch stream.
+          void transport.request(WS_METHODS.subscribeWorkspaceFileChanges, { cwd });
+        }
+        listeners.add(callback);
+        return () => {
+          const set = workspaceFileChangedListenersByCwd.get(cwd);
+          if (!set) return;
+          set.delete(callback);
+          if (set.size === 0) {
+            workspaceFileChangedListenersByCwd.delete(cwd);
+            // Last watcher gone: stop the server-side fs.watch stream.
+            void transport.request(WS_METHODS.unsubscribeWorkspaceFileChanges, { cwd });
+          }
+        };
+      },
     },
     integrations: {
       checkConnections: () => transport.request(WS_METHODS.integrationsCheckConnections, {}),
@@ -837,6 +878,7 @@ export function resetWsNativeApiForTest(): void {
   serverSettingsUpdatedListeners.clear();
   gitActionProgressListeners.clear();
   terminalEventListeners.clear();
+  workspaceFileChangedListenersByCwd.clear();
   orchestrationDomainEventListeners.clear();
   orchestrationShellEventListeners.clear();
   orchestrationThreadEventListeners.clear();
@@ -854,6 +896,7 @@ if (import.meta.hot) {
     serverSettingsUpdatedListeners.clear();
     gitActionProgressListeners.clear();
     terminalEventListeners.clear();
+    workspaceFileChangedListenersByCwd.clear();
     orchestrationDomainEventListeners.clear();
     orchestrationShellEventListeners.clear();
     orchestrationThreadEventListeners.clear();

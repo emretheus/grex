@@ -84,6 +84,8 @@ import {
   ProjectWriteFileResult,
   ProjectReadFileInput,
   ProjectReadFileResult,
+  WorkspaceFileChangeEvent,
+  WorkspaceSubscribeFileChangesInput,
 } from "./project";
 import {
   IntegrationCheckConnectionsResult,
@@ -505,6 +507,25 @@ export const WsSubscribeTerminalEventsRpc = Rpc.make(WS_METHODS.subscribeTermina
   stream: true,
 });
 
+export const WsSubscribeWorkspaceFileChangesRpc = Rpc.make(
+  WS_METHODS.subscribeWorkspaceFileChanges,
+  {
+    payload: WorkspaceSubscribeFileChangesInput,
+    success: WorkspaceFileChangeEvent,
+    error: WsRpcError,
+    stream: true,
+  },
+);
+
+export const WsUnsubscribeWorkspaceFileChangesRpc = Rpc.make(
+  WS_METHODS.unsubscribeWorkspaceFileChanges,
+  {
+    payload: WorkspaceSubscribeFileChangesInput,
+    success: Schema.Void,
+    error: WsRpcError,
+  },
+);
+
 export const WsServerGetConfigRpc = Rpc.make(WS_METHODS.serverGetConfig, {
   payload: Schema.Struct({}),
   success: ServerConfig,
@@ -720,6 +741,8 @@ export const WsRpcGroup = RpcGroup.make(
   WsTerminalRestartRpc,
   WsTerminalCloseRpc,
   WsSubscribeTerminalEventsRpc,
+  WsSubscribeWorkspaceFileChangesRpc,
+  WsUnsubscribeWorkspaceFileChangesRpc,
   WsServerGetConfigRpc,
   WsServerGetEnvironmentRpc,
   WsServerGetSettingsRpc,

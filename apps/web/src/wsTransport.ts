@@ -19,6 +19,7 @@ import {
   type ServerProviderStatusesUpdatedPayload,
   type ServerSettingsUpdatedPayload,
   type TerminalEvent,
+  type WorkspaceFileChangeEvent,
   type WsPush,
   type WsPushChannel,
   type WsPushMessage,
@@ -128,6 +129,7 @@ export class WsTransport {
   private readonly stoppingStreams = new Set<string>();
   private shellSubscribed = false;
   private readonly threadSubscriptions = new Map<string, unknown>();
+  private readonly fileWatchSubscriptions = new Map<string, unknown>();
 
   constructor(url?: string) {
     this.explicitUrl = url ?? null;
@@ -169,6 +171,18 @@ export class WsTransport {
       const threadId = (params as { threadId: string }).threadId;
       this.threadSubscriptions.delete(threadId);
       this.stopStream(`orchestration.thread:${threadId}`);
+      return undefined as T;
+    }
+    if (method === WS_METHODS.subscribeWorkspaceFileChanges) {
+      const cwd = (params as { cwd: string }).cwd;
+      this.fileWatchSubscriptions.set(cwd, params);
+      this.startFileWatchStream(client, cwd, params);
+      return undefined as T;
+    }
+    if (method === WS_METHODS.unsubscribeWorkspaceFileChanges) {
+      const cwd = (params as { cwd: string }).cwd;
+      this.fileWatchSubscriptions.delete(cwd);
+      this.stopStream(`workspace.fileChanged:${cwd}`);
       return undefined as T;
     }
 
@@ -333,6 +347,9 @@ export class WsTransport {
     for (const [threadId, input] of this.threadSubscriptions) {
       this.startThreadStream(client, threadId, input);
     }
+    for (const [cwd, input] of this.fileWatchSubscriptions) {
+      this.startFileWatchStream(client, cwd, input);
+    }
     return client;
   }
 
@@ -489,6 +506,23 @@ export class WsTransport {
       (event: OrchestrationThreadStreamItem) =>
         this.emit(ORCHESTRATION_WS_CHANNELS.threadEvent, event),
       restartThread,
+    );
+  }
+
+  private startFileWatchStream(client: RpcClientInstance, cwd: string, input: unknown): void {
+    const key = `workspace.fileChanged:${cwd}`;
+    this.stopStream(key);
+    this.stoppingStreams.delete(key);
+    const restartWatch = () => {
+      void this.getClient()
+        .then((nextClient) => this.startFileWatchStream(nextClient, cwd, input))
+        .catch((error) => console.warn("WebSocket RPC file-watch stream failed to restart", error));
+    };
+    this.startStream(
+      key,
+      client[WS_METHODS.subscribeWorkspaceFileChanges](input as never),
+      (event: WorkspaceFileChangeEvent) => this.emit(WS_CHANNELS.workspaceFileChanged, event),
+      restartWatch,
     );
   }
 

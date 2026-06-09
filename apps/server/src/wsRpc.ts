@@ -49,6 +49,7 @@ import { TerminalManager } from "./terminal/Services/Manager";
 import { IntegrationsService } from "./integrations/Services/IntegrationsService";
 import { WorkspaceEntries } from "./workspace/Services/WorkspaceEntries";
 import { WorkspaceFileSystem } from "./workspace/Services/WorkspaceFileSystem";
+import { WorkspaceFileWatcher } from "./workspace/Services/WorkspaceFileWatcher";
 
 const MAX_DIAGNOSTIC_CHILD_PROCESSES = 80;
 const MAX_DIAGNOSTIC_ARGS_CHARS = 500;
@@ -310,6 +311,7 @@ export const makeWsRpcLayer = () =>
       const textGeneration = yield* TextGeneration;
       const workspaceEntries = yield* WorkspaceEntries;
       const workspaceFileSystem = yield* WorkspaceFileSystem;
+      const workspaceFileWatcher = yield* WorkspaceFileWatcher;
 
       const canonicalizeProjectWorkspaceRoot = Effect.fnUntraced(function* (
         workspaceRoot: string,
@@ -725,6 +727,18 @@ export const makeWsRpcLayer = () =>
               yield* Effect.addFinalizer(() => Effect.sync(unsubscribe));
             }),
           ),
+        [WS_METHODS.subscribeWorkspaceFileChanges]: (input) =>
+          Stream.callback((queue) =>
+            Effect.gen(function* () {
+              const unsubscribe = yield* workspaceFileWatcher.subscribe(input.cwd, (event) => {
+                Effect.runFork(Queue.offer(queue, event).pipe(Effect.asVoid));
+              });
+              yield* Effect.addFinalizer(() => Effect.sync(unsubscribe));
+            }),
+          ),
+        // The stream's scope finalizer handles teardown; this exists so the
+        // client can signal "stop" and have the transport interrupt the stream.
+        [WS_METHODS.unsubscribeWorkspaceFileChanges]: () => Effect.void,
 
         [WS_METHODS.serverGetConfig]: () =>
           rpcEffect(loadServerConfig, "Failed to load server config"),

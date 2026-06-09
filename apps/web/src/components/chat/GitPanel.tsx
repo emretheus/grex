@@ -14,6 +14,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { memo, useCallback, useMemo, useState } from "react";
 
 import { useTheme } from "~/hooks/useTheme";
+import { useWorkspaceFileWatch } from "~/hooks/useWorkspaceFileWatch";
 import {
   buildFileDiffRenderKey,
   getRenderablePatch,
@@ -250,6 +251,11 @@ export function GitPanel(props: {
     useMemo(() => createProjectSelector(props.projectId), [props.projectId]),
   );
   const cwd = thread?.worktreePath ?? project?.cwd ?? null;
+
+  // Keep the status/diff lists live as the worktree changes on disk, without
+  // polling. The watcher is shared per cwd, so mounting it here and in the
+  // Files pane is cheap.
+  useWorkspaceFileWatch(cwd);
 
   const [selected, setSelected] = useState<SelectedFile | null>(null);
 
