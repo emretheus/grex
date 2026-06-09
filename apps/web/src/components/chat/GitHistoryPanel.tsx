@@ -1,7 +1,6 @@
 // FILE: GitHistoryPanel.tsx
-// Purpose: Commit history list with a topology-order branch graph column,
-//          ref decorations, and author/date metadata. Displayed as a tab
-//          inside GitPanel ("History") when the user wants to see the log.
+// Purpose: Commit history list with VS Code Git Graph–style branch graph,
+//          ref decorations, and author/date metadata.
 // Layer: Chat right-dock UI
 
 import { type GitLogCommit, gitLogQueryOptions } from "~/lib/gitReactQuery";
@@ -10,241 +9,83 @@ import { memo, useMemo } from "react";
 import { cn } from "~/lib/utils";
 import { PanelStateMessage } from "./PanelStateMessage";
 import { useWorkspaceFileWatch } from "~/hooks/useWorkspaceFileWatch";
+import { buildGraphLayout, DEFAULT_GRAPH_CONFIG, type GraphRenderData } from "~/lib/gitGraph";
 
-// ── graph layout ─────────────────────────────────────────────────────────────
+// ── graph SVG (single element spanning all rows) ──────────────────────────────
 
-const GRAPH_COL_W = 14; // px per column
-const GRAPH_ROW_H = 28; // px per row — must match row height in CSS
-const DOT_R = 4;
+const GRAPH_ROW_H = DEFAULT_GRAPH_CONFIG.gridY;
 
-interface GraphCell {
-  // column index for this commit's dot
-  col: number;
-  // total columns used up through this row (drives SVG width)
-  totalCols: number;
-  // edges from parent row columns to child row columns
-  edges: Array<{
-    fromCol: number;
-    toCol: number;
-    // "straight" | "bend-right" | "bend-left"
-    style: "straight" | "merge" | "branch";
-  }>;
-}
-
-function buildGraphCells(commits: readonly GitLogCommit[]): GraphCell[] {
-  // columns[i] = sha of the commit that "owns" column i (ongoing branch line)
-  let columns: Array<string | null> = [];
-
-  const cells: GraphCell[] = [];
-
-  for (let i = 0; i < commits.length; i++) {
-    const commit = commits[i]!;
-    const sha = commit.sha;
-    const parents = commit.parentShas;
-
-    // Find which column owns this commit
-    let col = columns.indexOf(sha);
-    if (col === -1) {
-      // Start a new column (first commit in a new branch)
-      col = columns.indexOf(null);
-      if (col === -1) {
-        col = columns.length;
-        columns.push(sha);
-      } else {
-        columns[col] = sha;
-      }
-    }
-
-    const edges: GraphCell["edges"] = [];
-
-    // Build edges: each active column continues unless it IS this commit's col
-    // and we replace it with the first parent.
-    const nextColumns: Array<string | null> = [];
-
-    let primaryParentAssigned = false;
-    for (let c = 0; c < columns.length; c++) {
-      const occupant = columns[c] ?? null;
-      if (occupant === sha) {
-        // This column was owned by us — hand it to our first parent
-        if (!primaryParentAssigned && parents.length > 0) {
-          const p0 = parents[0]!;
-          // Check if p0 already has a column
-          const existingCol = columns.indexOf(p0, c + 1);
-          if (existingCol !== -1) {
-            // Merge edge: current col bends to existing parent col
-            edges.push({ fromCol: c, toCol: existingCol, style: "merge" });
-            nextColumns.push(null);
-          } else {
-            nextColumns.push(p0);
-            edges.push({ fromCol: c, toCol: c, style: "straight" });
-          }
-          primaryParentAssigned = true;
-        } else {
-          nextColumns.push(null);
-        }
-      } else if (occupant !== null) {
-        // Continuing branch line — check for merge target
-        const existingInNext = nextColumns.indexOf(occupant);
-        if (existingInNext !== -1) {
-          edges.push({ fromCol: c, toCol: existingInNext, style: "merge" });
-          nextColumns.push(null);
-        } else {
-          nextColumns.push(occupant);
-          edges.push({ fromCol: c, toCol: c, style: "straight" });
-        }
-      } else {
-        nextColumns.push(null);
-      }
-    }
-
-    // Additional parents (merge commits) open new columns
-    for (let p = 1; p < parents.length; p++) {
-      const parentSha = parents[p]!;
-      const existingCol = nextColumns.indexOf(parentSha);
-      if (existingCol !== -1) {
-        edges.push({ fromCol: col, toCol: existingCol, style: "merge" });
-      } else {
-        // Find free slot
-        let freeSlot = nextColumns.indexOf(null);
-        if (freeSlot === -1) {
-          freeSlot = nextColumns.length;
-          nextColumns.push(parentSha);
-        } else {
-          nextColumns[freeSlot] = parentSha;
-        }
-        edges.push({ fromCol: col, toCol: freeSlot, style: "branch" });
-      }
-    }
-
-    // Trim trailing nulls
-    while (nextColumns.length > 0 && nextColumns[nextColumns.length - 1] === null) {
-      nextColumns.pop();
-    }
-
-    const totalCols = Math.max(col + 1, nextColumns.length, 1);
-    cells.push({ col, totalCols, edges });
-    columns = nextColumns;
-  }
-
-  return cells;
-}
-
-// ── colour palette (10 colours, cycles) ────────────────────────────────────
-
-const BRANCH_COLORS = [
-  "#0158FD", // brand blue
-  "#01CCA4", // brand green
-  "#a78bfa", // violet
-  "#f59e0b", // amber
-  "#ec4899", // pink
-  "#14b8a6", // teal
-  "#f97316", // orange
-  "#8b5cf6", // purple
-  "#06b6d4", // cyan
-  "#84cc16", // lime
-];
-
-function branchColor(col: number): string {
-  return BRANCH_COLORS[col % BRANCH_COLORS.length]!;
-}
-
-// ── SVG graph strip ──────────────────────────────────────────────────────────
-
-const GraphStrip = memo(function GraphStrip({
-  cells,
-  index,
-}: {
-  cells: readonly GraphCell[];
-  index: number;
-}) {
-  const cell = cells[index];
-  if (!cell) return null;
-  const { col, totalCols, edges } = cell;
-  const w = totalCols * GRAPH_COL_W + GRAPH_COL_W / 2;
-  const cx = col * GRAPH_COL_W + GRAPH_COL_W / 2;
-  const cy = GRAPH_ROW_H / 2;
-
-  // Lines from this row to next
-  const lines = edges.map((edge, ei) => {
-    const x1 = edge.fromCol * GRAPH_COL_W + GRAPH_COL_W / 2;
-    const x2 = edge.toCol * GRAPH_COL_W + GRAPH_COL_W / 2;
-    const color = branchColor(edge.fromCol);
-    if (edge.style === "straight") {
-      return (
-        <line
-          key={ei}
-          x1={x1}
-          y1={cy}
-          x2={x2}
-          y2={GRAPH_ROW_H}
-          stroke={color}
-          strokeWidth={1.5}
-          strokeLinecap="round"
-        />
-      );
-    }
-    // Curved merge/branch line
-    const midY = GRAPH_ROW_H * 0.75;
-    return (
-      <path
-        key={ei}
-        d={`M ${x1} ${cy} Q ${x1} ${midY} ${x2} ${GRAPH_ROW_H}`}
-        stroke={color}
-        strokeWidth={1.5}
-        fill="none"
-        strokeLinecap="round"
-      />
-    );
-  });
-
-  // Lines from previous row (coming in)
-  const incomingLines = edges.map((edge, ei) => {
-    const x1 = edge.fromCol * GRAPH_COL_W + GRAPH_COL_W / 2;
-    const x2 = edge.toCol * GRAPH_COL_W + GRAPH_COL_W / 2;
-    const color = branchColor(edge.fromCol);
-    if (edge.style === "straight") {
-      return (
-        <line
-          key={`in-${ei}`}
-          x1={x1}
-          y1={0}
-          x2={x1}
-          y2={cy}
-          stroke={color}
-          strokeWidth={1.5}
-          strokeLinecap="round"
-        />
-      );
-    }
-    const midY = GRAPH_ROW_H * 0.25;
-    return (
-      <path
-        key={`in-${ei}`}
-        d={`M ${x2} 0 Q ${x2} ${midY} ${x1} ${cy}`}
-        stroke={color}
-        strokeWidth={1.5}
-        fill="none"
-        strokeLinecap="round"
-      />
-    );
-  });
+const GraphSvg = memo(function GraphSvg({ layout }: { layout: GraphRenderData }) {
+  const { paths, dots, svgWidth, svgHeight } = layout;
+  const bg = "var(--color-sidebar, #ffffff)";
 
   return (
-    <svg width={w} height={GRAPH_ROW_H} style={{ flexShrink: 0, overflow: "visible" }} aria-hidden>
-      {incomingLines}
-      {lines}
-      <circle cx={cx} cy={cy} r={DOT_R} fill={branchColor(col)} />
+    <svg
+      width={svgWidth}
+      height={svgHeight}
+      style={{ display: "block", overflow: "visible" }}
+      aria-hidden
+    >
+      {/* Branch lines */}
+      {paths.map((p, i) => (
+        <path
+          key={i}
+          d={p.d}
+          stroke={p.colour}
+          strokeWidth={DEFAULT_GRAPH_CONFIG.strokeWidth}
+          fill="none"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      ))}
+
+      {/* Commit dots */}
+      {dots.map((dot, i) =>
+        dot.isCurrent ? (
+          // HEAD: hollow ring
+          <circle
+            key={i}
+            cx={dot.cx}
+            cy={dot.cy}
+            r={DEFAULT_GRAPH_CONFIG.dotRadius}
+            fill={bg}
+            stroke={dot.colour}
+            strokeWidth={2}
+          />
+        ) : dot.isMerge ? (
+          // Merge: slightly larger filled dot with ring
+          <circle
+            key={i}
+            cx={dot.cx}
+            cy={dot.cy}
+            r={DEFAULT_GRAPH_CONFIG.dotRadius + 1}
+            fill={dot.colour}
+            stroke={bg}
+            strokeWidth={1.5}
+          />
+        ) : (
+          // Regular: filled dot with thin bg border so it sits above lines
+          <circle
+            key={i}
+            cx={dot.cx}
+            cy={dot.cy}
+            r={DEFAULT_GRAPH_CONFIG.dotRadius}
+            fill={dot.colour}
+            stroke={bg}
+            strokeWidth={1}
+          />
+        ),
+      )}
     </svg>
   );
 });
 
-// ── ref chip ─────────────────────────────────────────────────────────────────
+// ── ref chip ──────────────────────────────────────────────────────────────────
 
 function RefChip({ label }: { label: string }) {
   const isHead = label === "HEAD" || label.startsWith("HEAD -> ");
   const isRemote = !label.startsWith("tag: ") && !isHead && label.includes("/");
   const isTag = label.startsWith("tag: ");
-  const isBranch = !isTag && !isHead && !isRemote;
   const text = label.replace(/^HEAD -> /, "").replace(/^tag: /, "");
   return (
     <span
@@ -253,12 +94,10 @@ function RefChip({ label }: { label: string }) {
         isHead
           ? "bg-brand/15 text-brand ring-1 ring-inset ring-brand/30"
           : isTag
-            ? "bg-amber-500/10 text-amber-600 dark:text-amber-400 ring-1 ring-inset ring-amber-400/30"
+            ? "bg-amber-500/10 text-amber-600 ring-1 ring-inset ring-amber-400/30 dark:text-amber-400"
             : isRemote
-              ? "bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 ring-1 ring-inset ring-indigo-400/30"
-              : isBranch
-                ? "bg-muted text-muted-foreground ring-1 ring-inset ring-border"
-                : "bg-muted text-muted-foreground",
+              ? "bg-indigo-500/10 text-indigo-600 ring-1 ring-inset ring-indigo-400/30 dark:text-indigo-400"
+              : "bg-muted text-muted-foreground ring-1 ring-inset ring-border",
       )}
     >
       {text}
@@ -266,7 +105,7 @@ function RefChip({ label }: { label: string }) {
   );
 }
 
-// ── formatted date ────────────────────────────────────────────────────────────
+// ── helpers ───────────────────────────────────────────────────────────────────
 
 function formatDate(iso: string): string {
   try {
@@ -280,23 +119,15 @@ function formatDate(iso: string): string {
   }
 }
 
-// ── max active columns across all cells ──────────────────────────────────────
-
-function maxActiveCols(cells: readonly GraphCell[]): number {
-  return cells.reduce((max, c) => Math.max(max, c.totalCols), 1);
-}
-
 // ── commit row ────────────────────────────────────────────────────────────────
 
 const CommitRow = memo(function CommitRow({
   commit,
-  cells,
-  index,
+  graphColWidth,
   colTemplate,
 }: {
   commit: GitLogCommit;
-  cells: readonly GraphCell[];
-  index: number;
+  graphColWidth: number;
   colTemplate: string;
 }) {
   const headRef = commit.refs.find((r) => r === "HEAD" || r.startsWith("HEAD -> "));
@@ -309,12 +140,10 @@ const CommitRow = memo(function CommitRow({
       style={{ height: GRAPH_ROW_H, gridTemplateColumns: colTemplate }}
       title={`${commit.sha}\n${commit.authorName} <${commit.authorEmail}>\n${commit.authorDate}`}
     >
-      {/* Graph column */}
-      <div className="flex items-center overflow-visible pl-1">
-        <GraphStrip cells={cells} index={index} />
-      </div>
+      {/* Graph placeholder — actual SVG is the absolute overlay */}
+      <div style={{ width: graphColWidth }} />
 
-      {/* Description column: ref chips BEFORE subject */}
+      {/* Description: ref chips then subject */}
       <div className="flex min-w-0 items-center gap-1 overflow-hidden pr-2">
         {allRefs.length > 0 && (
           <span className="flex shrink-0 items-center gap-0.5">
@@ -328,15 +157,15 @@ const CommitRow = memo(function CommitRow({
         </span>
       </div>
 
-      {/* Date column */}
+      {/* Date */}
       <div className="pr-2 text-right text-[10px] text-muted-foreground/70">
         {formatDate(commit.authorDate)}
       </div>
 
-      {/* Author column */}
+      {/* Author */}
       <div className="truncate pr-2 text-[10px] text-muted-foreground/70">{commit.authorName}</div>
 
-      {/* Commit SHA column */}
+      {/* SHA */}
       <div className="pr-2 font-mono text-[10px] text-muted-foreground/70">{commit.shortSha}</div>
     </div>
   );
@@ -346,27 +175,32 @@ const CommitRow = memo(function CommitRow({
 
 export interface GitHistoryPanelProps {
   cwd: string;
+  /** SHA of the current HEAD commit (to render as hollow ring). */
+  headSha?: string;
 }
 
-export function GitHistoryPanel({ cwd }: GitHistoryPanelProps) {
+export function GitHistoryPanel({ cwd, headSha }: GitHistoryPanelProps) {
   useWorkspaceFileWatch(cwd);
   const logQuery = useQuery(gitLogQueryOptions(cwd));
   const commits = logQuery.data?.commits ?? [];
-  const cells = useMemo(() => buildGraphCells(commits), [commits]);
 
-  // Compute graph column width from the max active lanes
-  const graphColWidth = useMemo(() => {
-    const cols = maxActiveCols(cells);
-    return Math.max(cols * GRAPH_COL_W + GRAPH_COL_W / 2, 40);
-  }, [cells]);
+  const layout: GraphRenderData = useMemo(() => {
+    return buildGraphLayout(
+      commits.map((c) => ({
+        sha: c.sha,
+        parentShas: c.parentShas,
+        isCurrent: c.sha === headSha,
+      })),
+    );
+  }, [commits, headSha]);
 
-  // CSS grid template: Graph | Description | Date | Author | Commit
+  // Graph column width derived from the SVG width the engine computed.
+  const graphColWidth = Math.max(layout.svgWidth + DEFAULT_GRAPH_CONFIG.offsetX, 32);
   const colTemplate = `${graphColWidth}px 1fr 80px 70px 60px`;
 
   if (logQuery.isLoading && commits.length === 0) {
     return <PanelStateMessage density="compact">Loading history…</PanelStateMessage>;
   }
-
   if (logQuery.error) {
     return (
       <PanelStateMessage density="compact">
@@ -374,45 +208,48 @@ export function GitHistoryPanel({ cwd }: GitHistoryPanelProps) {
       </PanelStateMessage>
     );
   }
-
   if (commits.length === 0) {
     return <PanelStateMessage density="compact">No commits yet.</PanelStateMessage>;
   }
 
   return (
     <div className="h-full min-h-0 w-full overflow-auto">
-      {/* Sticky header row */}
+      {/* Sticky header */}
       <div
-        className="sticky top-0 z-10 grid border-b border-border/50 bg-sidebar"
+        className="sticky top-0 z-10 grid items-center border-b border-border/50 bg-sidebar"
         style={{ gridTemplateColumns: colTemplate, height: 24 }}
       >
-        <div className="pl-2 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground/70 flex items-center">
-          Graph
-        </div>
-        <div className="pr-2 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground/70 flex items-center">
-          Description
-        </div>
-        <div className="pr-2 text-right text-[10px] font-semibold uppercase tracking-wide text-muted-foreground/70 flex items-center justify-end">
-          Date
-        </div>
-        <div className="pr-2 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground/70 flex items-center">
-          Author
-        </div>
-        <div className="pr-2 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground/70 flex items-center">
-          Commit
-        </div>
+        {(["Graph", "Description", "Date", "Author", "Commit"] as const).map((label, i) => (
+          <div
+            key={label}
+            className={cn(
+              "text-[10px] font-semibold uppercase tracking-wide text-muted-foreground/70",
+              i === 0 ? "pl-2" : i === 2 ? "pr-2 text-right" : "pr-2",
+            )}
+          >
+            {label}
+          </div>
+        ))}
       </div>
 
-      {/* Commit rows */}
-      {commits.map((commit, i) => (
-        <CommitRow
-          key={commit.sha}
-          commit={commit}
-          cells={cells}
-          index={i}
-          colTemplate={colTemplate}
-        />
-      ))}
+      {/* Rows + single continuous graph SVG overlay */}
+      <div className="relative">
+        <div
+          className="pointer-events-none absolute left-0 top-0 z-[1]"
+          style={{ width: graphColWidth, height: commits.length * GRAPH_ROW_H }}
+        >
+          <GraphSvg layout={layout} />
+        </div>
+
+        {commits.map((commit) => (
+          <CommitRow
+            key={commit.sha}
+            commit={commit}
+            graphColWidth={graphColWidth}
+            colTemplate={colTemplate}
+          />
+        ))}
+      </div>
     </div>
   );
 }
