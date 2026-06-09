@@ -2739,17 +2739,37 @@ export const makeGitCore = (options?: { executeOverride?: GitCoreShape["execute"
 
     const showCommit: GitCoreShape["showCommit"] = ({ cwd, sha }) =>
       Effect.gen(function* () {
-        const FORMAT = "%H%x00%s%x00%b%x00%an%x00%ae%x00%aI%x00%cn%x00%ce%x00%cI%x00%P";
-        const headerResult = yield* runGitStdout("GitCore.showCommit.header", cwd, [
-          "show",
-          "--quiet",
-          `--format=${FORMAT}`,
-          sha,
-        ]);
+        // Use --no-patch (not --quiet) to suppress diff output while keeping format output.
+        // Body is fetched separately to avoid NUL-splitting issues with multi-line bodies.
+        const HEADER_FORMAT = "%H%x00%s%x00%an%x00%ae%x00%aI%x00%cn%x00%ce%x00%cI%x00%P";
+        const [headerResult, bodyResult, numstatResult, nameStatusResult] = yield* Effect.all(
+          [
+            runGitStdout("GitCore.showCommit.header", cwd, [
+              "log",
+              "-1",
+              `--pretty=format:${HEADER_FORMAT}`,
+              sha,
+            ]),
+            runGitStdout("GitCore.showCommit.body", cwd, ["log", "-1", "--pretty=format:%b", sha]),
+            runGitStdout(
+              "GitCore.showCommit.numstat",
+              cwd,
+              ["show", "--numstat", "--no-renames", "--format=", sha],
+              true,
+            ),
+            runGitStdout(
+              "GitCore.showCommit.nameStatus",
+              cwd,
+              ["show", "--name-status", "--no-renames", "--format=", sha],
+              true,
+            ),
+          ],
+          { concurrency: "unbounded" },
+        );
+
         const [
           fullSha = "",
           subject = "",
-          body = "",
           authorName = "",
           authorEmail = "",
           authorDate = "",
@@ -2759,26 +2779,12 @@ export const makeGitCore = (options?: { executeOverride?: GitCoreShape["execute"
           parentsRaw = "",
         ] = headerResult.trim().split("\x00");
 
+        const body = bodyResult.trim();
+
         const parentShas = parentsRaw
           .split(" ")
           .map((p) => p.trim())
           .filter((p) => p.length > 0);
-
-        const numstatResult = yield* runGitStdout("GitCore.showCommit.numstat", cwd, [
-          "show",
-          "--numstat",
-          "--no-renames",
-          "--format=",
-          sha,
-        ]);
-
-        const nameStatusResult = yield* runGitStdout("GitCore.showCommit.nameStatus", cwd, [
-          "show",
-          "--name-status",
-          "--no-renames",
-          "--format=",
-          sha,
-        ]);
 
         const statusMap = new Map<string, string>();
         for (const line of nameStatusResult.split("\n")) {
