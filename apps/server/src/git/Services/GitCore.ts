@@ -18,6 +18,8 @@ import type {
   GitInitInput,
   GitListBranchesInput,
   GitListBranchesResult,
+  GitLogInput,
+  GitLogResult,
   GitPullResult,
   GitRemoveIndexLockInput,
   GitRemoveWorktreeInput,
@@ -371,6 +373,13 @@ export interface GitCoreShape {
     cwd: string,
     paths: readonly string[],
   ) => Effect.Effect<void, GitCommandError>;
+
+  /**
+   * Read the commit log (most-recent-first) for the given cwd and optional
+   * branch. Returns structured commit metadata including refs/decorations and
+   * parent SHAs for graph rendering.
+   */
+  readonly readLog: (input: GitLogInput) => Effect.Effect<GitLogResult, GitCommandError>;
 }
 
 /**

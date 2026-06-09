@@ -31,6 +31,7 @@ import {
   GitCreateWorktreeInput,
   GitInitInput,
   GitListBranchesInput,
+  GitLogInput,
   GitPullInput,
   GitPullRequestRefInput,
   GitReadWorkingTreeDiffInput,
@@ -148,6 +149,7 @@ export const WS_METHODS = {
   gitHandoffThread: "git.handoffThread",
   gitResolvePullRequest: "git.resolvePullRequest",
   gitPreparePullRequestThread: "git.preparePullRequestThread",
+  gitLog: "git.log",
 
   // Terminal methods
   terminalOpen: "terminal.open",
@@ -284,6 +286,7 @@ const WebSocketRequestBody = Schema.Union([
   tagRequestBody(WS_METHODS.gitHandoffThread, GitHandoffThreadInput),
   tagRequestBody(WS_METHODS.gitResolvePullRequest, GitPullRequestRefInput),
   tagRequestBody(WS_METHODS.gitPreparePullRequestThread, GitPreparePullRequestThreadInput),
+  tagRequestBody(WS_METHODS.gitLog, GitLogInput),
 
   // Terminal methods
   tagRequestBody(WS_METHODS.terminalOpen, TerminalOpenInput),

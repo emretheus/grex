@@ -1,4 +1,5 @@
 import type {
+  GitLogCommit,
   GitReadWorkingTreeDiffInput,
   GitStackedAction,
   NativeApi,
@@ -25,6 +26,7 @@ export const gitQueryKeys = {
   githubRepository: (cwd: string | null) => ["git", "github-repository", cwd] as const,
   status: (cwd: string | null) => ["git", "status", cwd] as const,
   branches: (cwd: string | null) => ["git", "branches", cwd] as const,
+  log: (cwd: string | null) => ["git", "log", cwd] as const,
   workingTreeDiff: (
     cwd: string | null,
     scope: GitReadWorkingTreeDiffInput["scope"] = "workingTree",
@@ -78,6 +80,7 @@ export function invalidateGitQueriesForCwds(queryClient: QueryClient, cwds: Iter
       queryClient.invalidateQueries({ queryKey: gitQueryKeys.githubRepository(cwd) }),
       queryClient.invalidateQueries({ queryKey: gitQueryKeys.status(cwd) }),
       queryClient.invalidateQueries({ queryKey: gitQueryKeys.branches(cwd) }),
+      queryClient.invalidateQueries({ queryKey: gitQueryKeys.log(cwd) }),
       queryClient.invalidateQueries({ queryKey: ["git", "working-tree-diff", cwd] as const }),
       queryClient.invalidateQueries({ queryKey: ["git", "pull-request", cwd] as const }),
     ]),
@@ -128,6 +131,26 @@ export function gitBranchesQueryOptions(cwd: string | null) {
     refetchOnWindowFocus: true,
     refetchOnReconnect: true,
     refetchInterval: GIT_BRANCHES_REFETCH_INTERVAL_MS,
+  });
+}
+
+const GIT_LOG_STALE_TIME_MS = 10_000;
+const GIT_LOG_MAX_COUNT = 200;
+
+export { type GitLogCommit };
+
+export function gitLogQueryOptions(cwd: string | null) {
+  return queryOptions({
+    queryKey: ["git", "log", cwd] as const,
+    queryFn: async () => {
+      const api = ensureNativeApi();
+      if (!cwd) throw new Error("Git log is unavailable.");
+      return api.git.log({ cwd, maxCount: GIT_LOG_MAX_COUNT });
+    },
+    enabled: cwd !== null,
+    staleTime: GIT_LOG_STALE_TIME_MS,
+    refetchOnWindowFocus: true,
+    refetchOnReconnect: true,
   });
 }
 

@@ -19,6 +19,8 @@ import {
   GitInitInput,
   GitListBranchesInput,
   GitListBranchesResult,
+  GitLogInput,
+  GitLogResult,
   GitPreparePullRequestThreadInput,
   GitPreparePullRequestThreadResult,
   GitPullInput,
@@ -452,6 +454,12 @@ export const WsGitDiscardFilesRpc = Rpc.make(WS_METHODS.gitDiscardFiles, {
   error: WsRpcError,
 });
 
+export const WsGitLogRpc = Rpc.make(WS_METHODS.gitLog, {
+  payload: GitLogInput,
+  success: GitLogResult,
+  error: WsRpcError,
+});
+
 export const WsGitHandoffThreadRpc = Rpc.make(WS_METHODS.gitHandoffThread, {
   payload: GitHandoffThreadInput,
   success: GitHandoffThreadResult,
@@ -732,6 +740,7 @@ export const WsRpcGroup = RpcGroup.make(
   WsGitStageFilesRpc,
   WsGitUnstageFilesRpc,
   WsGitDiscardFilesRpc,
+  WsGitLogRpc,
   WsGitHandoffThreadRpc,
   WsTerminalOpenRpc,
   WsTerminalWriteRpc,

@@ -11,10 +11,12 @@
 import { type FileDiffMetadata } from "@pierre/diffs/react";
 import { type ProjectId, type ThreadId } from "@t3tools/contracts";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { memo, useCallback, useMemo, useState } from "react";
+import { lazy, memo, Suspense, useCallback, useMemo, useState } from "react";
 
 import { useTheme } from "~/hooks/useTheme";
 import { useWorkspaceFileWatch } from "~/hooks/useWorkspaceFileWatch";
+
+const GitHistoryPanel = lazy(() => import("./GitHistoryPanel"));
 import {
   buildFileDiffRenderKey,
   getRenderablePatch,
@@ -236,6 +238,30 @@ const SelectedFileDiff = memo(function SelectedFileDiff(props: {
   );
 });
 
+type GitPanelTab = "changes" | "history";
+
+function TabSwitcher(props: { active: GitPanelTab; onChange: (tab: GitPanelTab) => void }) {
+  return (
+    <div className="flex items-center gap-px rounded-md bg-muted/60 p-0.5">
+      {(["changes", "history"] as const).map((tab) => (
+        <button
+          key={tab}
+          type="button"
+          onClick={() => props.onChange(tab)}
+          className={cn(
+            "rounded px-2 py-0.5 text-[11px] font-medium capitalize leading-none transition-colors",
+            props.active === tab
+              ? "bg-background text-foreground shadow-sm"
+              : "text-muted-foreground hover:text-foreground",
+          )}
+        >
+          {tab}
+        </button>
+      ))}
+    </div>
+  );
+}
+
 export function GitPanel(props: {
   hostThreadId: ThreadId;
   projectId: ProjectId | null;
@@ -251,6 +277,8 @@ export function GitPanel(props: {
     useMemo(() => createProjectSelector(props.projectId), [props.projectId]),
   );
   const cwd = thread?.worktreePath ?? project?.cwd ?? null;
+
+  const [activeTab, setActiveTab] = useState<GitPanelTab>("changes");
 
   // Keep the status/diff lists live as the worktree changes on disk, without
   // polling. The watcher is shared per cwd, so mounting it here and in the
@@ -356,6 +384,28 @@ export function GitPanel(props: {
     return <PanelStateMessage>Source control is unavailable for this thread.</PanelStateMessage>;
   }
 
+  if (activeTab === "history") {
+    return (
+      <div className="flex h-full min-h-0 w-full flex-col">
+        <DockPaneHeader
+          title="Source control"
+          onClose={props.onClose}
+          closeLabel="Close source control"
+          actions={
+            <div className="flex items-center gap-1">
+              <TabSwitcher active={activeTab} onChange={setActiveTab} />
+            </div>
+          }
+        />
+        <div className="min-h-0 flex-1 overflow-hidden">
+          <Suspense fallback={<PanelStateMessage density="compact">Loading…</PanelStateMessage>}>
+            <GitHistoryPanel cwd={cwd} />
+          </Suspense>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex h-full min-h-0 w-full flex-col">
       <DockPaneHeader
@@ -363,16 +413,19 @@ export function GitPanel(props: {
         onClose={props.onClose}
         closeLabel="Close source control"
         actions={
-          <IconButton
-            size="icon-xs"
-            variant="ghost"
-            label="Refresh changes"
-            tooltip="Refresh changes"
-            className={DOCK_HEADER_ICON_BUTTON_CLASS}
-            onClick={refresh}
-          >
-            <RefreshCwIcon className="size-3.5" />
-          </IconButton>
+          <div className="flex items-center gap-1">
+            <TabSwitcher active={activeTab} onChange={setActiveTab} />
+            <IconButton
+              size="icon-xs"
+              variant="ghost"
+              label="Refresh changes"
+              tooltip="Refresh changes"
+              className={DOCK_HEADER_ICON_BUTTON_CLASS}
+              onClick={refresh}
+            >
+              <RefreshCwIcon className="size-3.5" />
+            </IconButton>
+          </div>
         }
       />
 

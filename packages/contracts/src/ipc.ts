@@ -21,6 +21,8 @@ import type {
   GitHubRepositoryResult,
   GitHandoffThreadInput,
   GitHandoffThreadResult,
+  GitLogInput,
+  GitLogResult,
   GitPreparePullRequestThreadInput,
   GitPreparePullRequestThreadResult,
   GitPullRequestRefInput,
@@ -426,6 +428,7 @@ export interface NativeApi {
     ) => Promise<GitReadWorkingTreeDiffResult>;
     summarizeDiff: (input: GitSummarizeDiffInput) => Promise<GitSummarizeDiffResult>;
     runStackedAction: (input: GitRunStackedActionInput) => Promise<GitRunStackedActionResult>;
+    log: (input: GitLogInput) => Promise<GitLogResult>;
     onActionProgress: (callback: (event: GitActionProgressEvent) => void) => () => void;
   };
   contextMenu: {

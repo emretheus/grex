@@ -2646,6 +2646,78 @@ export const makeGitCore = (options?: { executeOverride?: GitCoreShape["execute"
         yield* runGit("GitCore.discardFiles.clean", cwd, ["clean", "-fdq", "--", ...paths]);
       });
 
+    const GIT_LOG_DEFAULT_MAX = 200;
+    const GIT_LOG_RECORD_SEP = "\x1e";
+    const GIT_LOG_FIELD_SEP = "\x1f";
+
+    // Separator-delimited format: sha, shortSha, refs, subject, body, authorName,
+    // authorEmail, authorDate (ISO), committerDate (ISO), parents (space-sep)
+    const GIT_LOG_FORMAT =
+      ["%H", "%h", "%D", "%s", "%b", "%an", "%ae", "%aI", "%cI", "%P"].join(GIT_LOG_FIELD_SEP) +
+      GIT_LOG_RECORD_SEP;
+
+    const readLog: GitCoreShape["readLog"] = (input) =>
+      Effect.gen(function* () {
+        const maxCount = input.maxCount ?? GIT_LOG_DEFAULT_MAX;
+        const args = [
+          "log",
+          `--max-count=${maxCount}`,
+          "--topo-order",
+          `--format=${GIT_LOG_FORMAT}`,
+        ];
+        if (input.branch) args.push(input.branch);
+
+        const result = yield* executeGit("GitCore.readLog", input.cwd, args, {
+          allowNonZeroExit: true,
+        });
+
+        if (result.code !== 0) {
+          return { commits: [] };
+        }
+
+        const commits = result.stdout
+          .split(GIT_LOG_RECORD_SEP)
+          .map((record) => record.trim())
+          .filter((record) => record.length > 0)
+          .map((record) => {
+            const [
+              sha = "",
+              shortSha = "",
+              refsRaw = "",
+              subject = "",
+              body = "",
+              authorName = "",
+              authorEmail = "",
+              authorDate = "",
+              committerDate = "",
+              parentsRaw = "",
+            ] = record.split(GIT_LOG_FIELD_SEP);
+            const refs = refsRaw
+              .split(",")
+              .map((r) => r.trim())
+              .filter((r) => r.length > 0);
+            const parentShas = parentsRaw
+              .split(" ")
+              .map((p) => p.trim())
+              .filter((p) => p.length > 0);
+            return {
+              sha: sha.trim(),
+              shortSha: shortSha.trim(),
+              subject: subject.trim(),
+              body: body.trim(),
+              authorName: authorName.trim(),
+              authorEmail: authorEmail.trim(),
+              authorDate: authorDate.trim(),
+              committerDate: committerDate.trim(),
+              refs,
+              parentShas,
+            };
+          })
+          .filter((c) => c.sha.length > 0);
+
+        return { commits };
+      });
+
     return {
       execute,
       status,
@@ -2681,6 +2753,7 @@ export const makeGitCore = (options?: { executeOverride?: GitCoreShape["execute"
       stageFiles,
       unstageFiles,
       discardFiles,
+      readLog,
     } satisfies GitCoreShape;
   });
 
