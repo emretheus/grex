@@ -2603,6 +2603,49 @@ export const makeGitCore = (options?: { executeOverride?: GitCoreShape["execute"
         );
       });
 
+    const discardFiles: GitCoreShape["discardFiles"] = (cwd, paths) =>
+      Effect.gen(function* () {
+        const headExists = yield* executeGit(
+          "GitCore.discardFiles.headExists",
+          cwd,
+          ["rev-parse", "--verify", "HEAD"],
+          { allowNonZeroExit: true },
+        ).pipe(Effect.map((result) => result.code === 0));
+
+        // Split the requested paths into tracked vs untracked. `git restore`
+        // (and `checkout`) abort the whole invocation if any pathspec doesn't
+        // match a tracked file, so untracked paths must be excluded from it and
+        // removed with `git clean` instead.
+        const trackedStdout = yield* executeGit(
+          "GitCore.discardFiles.lsFiles",
+          cwd,
+          ["ls-files", "--", ...paths],
+          { allowNonZeroExit: true },
+        ).pipe(Effect.map((result) => result.stdout));
+        const trackedSet = new Set(
+          trackedStdout
+            .split("\n")
+            .map((line) => line.trim())
+            .filter((line) => line.length > 0),
+        );
+        const trackedPaths = paths.filter((p) => trackedSet.has(p));
+
+        // Revert tracked files (staged and/or unstaged) to HEAD.
+        if (headExists && trackedPaths.length > 0) {
+          yield* runGit("GitCore.discardFiles.restore", cwd, [
+            "restore",
+            "--source=HEAD",
+            "--staged",
+            "--worktree",
+            "--",
+            ...trackedPaths,
+          ]);
+        }
+
+        // Remove any untracked files/dirs among the requested paths.
+        yield* runGit("GitCore.discardFiles.clean", cwd, ["clean", "-fdq", "--", ...paths]);
+      });
+
     return {
       execute,
       status,
@@ -2637,6 +2680,7 @@ export const makeGitCore = (options?: { executeOverride?: GitCoreShape["execute"
       listLocalBranchNames,
       stageFiles,
       unstageFiles,
+      discardFiles,
     } satisfies GitCoreShape;
   });
 

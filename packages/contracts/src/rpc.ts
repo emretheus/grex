@@ -40,6 +40,8 @@ import {
   GitStatusResult,
   GitSummarizeDiffInput,
   GitSummarizeDiffResult,
+  GitDiscardFilesInput,
+  GitDiscardFilesResult,
   GitUnstageFilesInput,
   GitUnstageFilesResult,
 } from "./git";
@@ -442,6 +444,12 @@ export const WsGitUnstageFilesRpc = Rpc.make(WS_METHODS.gitUnstageFiles, {
   error: WsRpcError,
 });
 
+export const WsGitDiscardFilesRpc = Rpc.make(WS_METHODS.gitDiscardFiles, {
+  payload: GitDiscardFilesInput,
+  success: GitDiscardFilesResult,
+  error: WsRpcError,
+});
+
 export const WsGitHandoffThreadRpc = Rpc.make(WS_METHODS.gitHandoffThread, {
   payload: GitHandoffThreadInput,
   success: GitHandoffThreadResult,
@@ -702,6 +710,7 @@ export const WsRpcGroup = RpcGroup.make(
   WsGitInitRpc,
   WsGitStageFilesRpc,
   WsGitUnstageFilesRpc,
+  WsGitDiscardFilesRpc,
   WsGitHandoffThreadRpc,
   WsTerminalOpenRpc,
   WsTerminalWriteRpc,

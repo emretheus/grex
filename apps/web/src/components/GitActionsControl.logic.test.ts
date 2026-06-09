@@ -3,6 +3,7 @@ import { assert, describe, it } from "vitest";
 import {
   buildGitActionProgressStages,
   buildMenuItems,
+  combineCommitMessage,
   requiresFeatureBranchForDefaultBranchAction,
   requiresDefaultBranchConfirmation,
   resolveAutoFeatureBranchName,
@@ -1503,5 +1504,29 @@ describe("shouldOfferCreateBranchPrompt", () => {
         createBranchFlowCompleted: false,
       }),
     );
+  });
+});
+
+describe("combineCommitMessage", () => {
+  it("returns the trimmed subject when there is no description", () => {
+    assert.equal(combineCommitMessage("  Fix the bug  ", ""), "Fix the bug");
+    assert.equal(combineCommitMessage("Fix the bug", undefined), "Fix the bug");
+  });
+
+  it("joins subject and description with a blank line", () => {
+    assert.equal(
+      combineCommitMessage("Fix the bug", "It was caused by X.\nNow handled."),
+      "Fix the bug\n\nIt was caused by X.\nNow handled.",
+    );
+  });
+
+  it("ignores a description with no subject (nothing to attach a body to)", () => {
+    assert.equal(combineCommitMessage("", "orphan body"), "");
+    assert.equal(combineCommitMessage("   ", "orphan body"), "");
+  });
+
+  it("returns empty when both are empty", () => {
+    assert.equal(combineCommitMessage("", ""), "");
+    assert.equal(combineCommitMessage(undefined, undefined), "");
   });
 });

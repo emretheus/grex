@@ -362,6 +362,15 @@ export interface GitCoreShape {
     cwd: string,
     paths: readonly string[],
   ) => Effect.Effect<void, GitCommandError>;
+
+  /**
+   * Discard working-tree (and staged) changes for the provided paths: tracked
+   * files are reverted to HEAD; untracked files are deleted. Destructive.
+   */
+  readonly discardFiles: (
+    cwd: string,
+    paths: readonly string[],
+  ) => Effect.Effect<void, GitCommandError>;
 }
 
 /**

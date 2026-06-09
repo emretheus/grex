@@ -39,6 +39,7 @@ import {
   resolvePullActionAvailability,
   shouldOfferCreateBranchPrompt,
   summarizeGitResult,
+  combineCommitMessage,
 } from "./GitActionsControl.logic";
 import { getProviderStartOptions, useAppSettings } from "~/appSettings";
 import { Button } from "~/components/ui/button";
@@ -331,6 +332,7 @@ export default function GitActionsControl({
   const queryClient = useQueryClient();
   const [isCommitDialogOpen, setIsCommitDialogOpen] = useState(false);
   const [dialogCommitMessage, setDialogCommitMessage] = useState("");
+  const [dialogCommitDescription, setDialogCommitDescription] = useState("");
   const [excludedFiles, setExcludedFiles] = useState<ReadonlySet<string>>(new Set());
   const [isEditingFiles, setIsEditingFiles] = useState(false);
   const [pendingDefaultBranchAction, setPendingDefaultBranchAction] =
@@ -906,10 +908,11 @@ export default function GitActionsControl({
 
   const runDialogActionOnNewBranch = useCallback(() => {
     if (!isCommitDialogOpen) return;
-    const commitMessage = dialogCommitMessage.trim();
+    const commitMessage = combineCommitMessage(dialogCommitMessage, dialogCommitDescription);
 
     setIsCommitDialogOpen(false);
     setDialogCommitMessage("");
+    setDialogCommitDescription("");
     setExcludedFiles(new Set());
     setIsEditingFiles(false);
 
@@ -920,7 +923,13 @@ export default function GitActionsControl({
       featureBranch: true,
       skipDefaultBranchPrompt: true,
     });
-  }, [allSelected, isCommitDialogOpen, dialogCommitMessage, selectedFiles]);
+  }, [
+    allSelected,
+    isCommitDialogOpen,
+    dialogCommitMessage,
+    dialogCommitDescription,
+    selectedFiles,
+  ]);
 
   const openCreateBranchDialog = useCallback(() => {
     setCreateBranchName(suggestedCreateBranchName);
@@ -1203,9 +1212,10 @@ export default function GitActionsControl({
 
   const runDialogAction = useCallback(() => {
     if (!isCommitDialogOpen) return;
-    const commitMessage = dialogCommitMessage.trim();
+    const commitMessage = combineCommitMessage(dialogCommitMessage, dialogCommitDescription);
     setIsCommitDialogOpen(false);
     setDialogCommitMessage("");
+    setDialogCommitDescription("");
     setExcludedFiles(new Set());
     setIsEditingFiles(false);
     void runGitActionWithToast({
@@ -1216,6 +1226,7 @@ export default function GitActionsControl({
   }, [
     allSelected,
     dialogCommitMessage,
+    dialogCommitDescription,
     isCommitDialogOpen,
     selectedFiles,
     setDialogCommitMessage,
@@ -1318,6 +1329,7 @@ export default function GitActionsControl({
           if (!open) {
             setIsCommitDialogOpen(false);
             setDialogCommitMessage("");
+            setDialogCommitDescription("");
             setExcludedFiles(new Set());
             setIsEditingFiles(false);
           }
@@ -1447,8 +1459,19 @@ export default function GitActionsControl({
               <Textarea
                 value={dialogCommitMessage}
                 onChange={(event) => setDialogCommitMessage(event.target.value)}
-                placeholder="Leave empty to auto-generate"
+                placeholder="Summary — leave empty to auto-generate"
                 size="sm"
+              />
+            </div>
+            <div className="space-y-1">
+              <p className="text-xs font-medium">Description (optional)</p>
+              <Textarea
+                value={dialogCommitDescription}
+                onChange={(event) => setDialogCommitDescription(event.target.value)}
+                placeholder="Extended description, added below the summary"
+                size="sm"
+                rows={3}
+                disabled={dialogCommitMessage.trim().length === 0}
               />
             </div>
           </DialogPanel>
@@ -1459,6 +1482,7 @@ export default function GitActionsControl({
               onClick={() => {
                 setIsCommitDialogOpen(false);
                 setDialogCommitMessage("");
+                setDialogCommitDescription("");
                 setExcludedFiles(new Set());
                 setIsEditingFiles(false);
               }}

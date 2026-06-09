@@ -5,6 +5,7 @@
 // Layer: Chat right-dock UI
 // Depends on: projects.listDirectories RPC, editorStore, rightDockStore.
 
+import { useQuery } from "@tanstack/react-query";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import type { ProjectFileSystemEntry, ProjectId, ThreadId } from "@t3tools/contracts";
@@ -13,6 +14,15 @@ import { createProjectSelector, createThreadSelector } from "~/storeSelectors";
 import { useStore as useAppStore } from "~/store";
 import { useEditorStore } from "~/editorStore";
 import { useRightDockStore } from "~/rightDockStore";
+import { gitWorkingTreeDiffQueryOptions } from "~/lib/gitReactQuery";
+import {
+  buildGitFileStatusMap,
+  gitFileStatusBadge,
+  gitFileStatusColorClass,
+  type GitFileStatus,
+} from "~/lib/gitFileStatus";
+import { copyTextToClipboard } from "~/hooks/useCopyToClipboard";
+import { toastManager } from "~/components/ui/toast";
 import {
   ChevronDownIcon,
   ChevronRightIcon,
@@ -37,6 +47,16 @@ export function DockFilesPane({ hostThreadId, projectId }: DockFilesPaneProps) {
 
   const openFile = useEditorStore((s) => s.openFile);
   const openPane = useRightDockStore((s) => s.openPane);
+
+  // Per-file git status (added/modified/deleted/renamed) for tinting tree rows,
+  // derived from the same working-tree patch the diff panel uses.
+  const workingTreeDiffQuery = useQuery(
+    gitWorkingTreeDiffQueryOptions({ cwd, scope: "workingTree" }),
+  );
+  const statusByPath = useMemo(
+    () => buildGitFileStatusMap(workingTreeDiffQuery.data?.patch),
+    [workingTreeDiffQuery.data?.patch],
+  );
 
   // Per-parent-path children, expanded set, loading set.
   const [childrenByParent, setChildrenByParent] = useState<
@@ -106,6 +126,47 @@ export function DockFilesPane({ hostThreadId, projectId }: DockFilesPaneProps) {
     [hostThreadId, openFile, openPane],
   );
 
+  const handleContextMenu = useCallback(
+    async (event: React.MouseEvent, entry: { path: string; kind: "file" | "directory" }) => {
+      event.preventDefault();
+      const api = readNativeApi();
+      if (!api || !cwd) return;
+      const absolutePath = joinDirectoryPath(cwd, entry.path);
+      const clicked = await api.contextMenu.show(
+        [
+          ...(entry.kind === "file" ? [{ id: "open", label: "Open" }] : []),
+          { id: "copy-path", label: "Copy path", separatorBefore: entry.kind === "file" },
+          { id: "copy-relative-path", label: "Copy relative path" },
+          { id: "reveal", label: "Reveal in file manager", separatorBefore: true },
+        ],
+        { x: event.clientX, y: event.clientY },
+      );
+      switch (clicked) {
+        case "open":
+          handleFileClick(entry.path);
+          break;
+        case "copy-path":
+          void copyTextToClipboard(absolutePath);
+          break;
+        case "copy-relative-path":
+          void copyTextToClipboard(entry.path);
+          break;
+        case "reveal":
+          void api.shell.showInFolder(absolutePath).catch(() => {
+            toastManager.add({
+              type: "error",
+              title: "Could not reveal file",
+              description: "The file manager could not be opened.",
+            });
+          });
+          break;
+        default:
+          break;
+      }
+    },
+    [cwd, handleFileClick],
+  );
+
   if (!cwd) {
     return <PanelStateMessage>No workspace directory for this thread.</PanelStateMessage>;
   }
@@ -134,8 +195,10 @@ export function DockFilesPane({ hostThreadId, projectId }: DockFilesPaneProps) {
             expanded={expanded}
             loading={loading}
             childrenByParent={childrenByParent}
+            statusByPath={statusByPath}
             onToggleDirectory={toggleDirectory}
             onFileClick={handleFileClick}
+            onContextMenu={handleContextMenu}
           />
         )}
       </div>
@@ -149,8 +212,13 @@ interface FileTreeLevelProps {
   readonly expanded: Set<string>;
   readonly loading: Set<string>;
   readonly childrenByParent: Record<string, readonly ProjectFileSystemEntry[]>;
+  readonly statusByPath: ReadonlyMap<string, GitFileStatus>;
   readonly onToggleDirectory: (path: string) => void;
   readonly onFileClick: (path: string) => void;
+  readonly onContextMenu: (
+    event: React.MouseEvent,
+    entry: { path: string; kind: "file" | "directory" },
+  ) => void;
 }
 
 function FileTreeLevel({
@@ -159,8 +227,10 @@ function FileTreeLevel({
   expanded,
   loading,
   childrenByParent,
+  statusByPath,
   onToggleDirectory,
   onFileClick,
+  onContextMenu,
 }: FileTreeLevelProps) {
   const sorted = useMemo(() => sortEntries(entries), [entries]);
   return (
@@ -169,11 +239,17 @@ function FileTreeLevel({
         const isDir = entry.kind === "directory";
         const isExpanded = isDir && expanded.has(entry.path);
         const children = childrenByParent[entry.path];
+        const status = isDir ? undefined : statusByPath.get(entry.path);
+        const statusColor = gitFileStatusColorClass(status);
+        const statusBadge = gitFileStatusBadge(status);
         return (
           <div key={entry.path}>
             <button
               type="button"
               onClick={() => (isDir ? onToggleDirectory(entry.path) : onFileClick(entry.path))}
+              onContextMenu={(event) =>
+                onContextMenu(event, { path: entry.path, kind: entry.kind })
+              }
               className={cn(
                 "group flex w-full items-center gap-1.5 truncate px-2 text-left text-[13px] text-[var(--color-text-foreground)] transition-colors hover:bg-[var(--color-background-button-secondary-hover)]",
                 ROW_HEIGHT_CLASS,
@@ -197,9 +273,26 @@ function FileTreeLevel({
                   <FolderIcon className="size-4 shrink-0 text-[var(--color-text-foreground-secondary)]" />
                 )
               ) : (
-                <FileIcon className="size-4 shrink-0 text-[var(--color-text-foreground-tertiary,var(--color-text-foreground-secondary))]" />
+                <FileIcon
+                  className={cn(
+                    "size-4 shrink-0",
+                    statusColor ??
+                      "text-[var(--color-text-foreground-tertiary,var(--color-text-foreground-secondary))]",
+                  )}
+                />
               )}
-              <span className="truncate">{entry.name}</span>
+              <span className={cn("truncate", statusColor)}>{entry.name}</span>
+              {statusBadge ? (
+                <span
+                  className={cn(
+                    "ml-auto shrink-0 pl-1 font-mono text-[10px] font-semibold tabular-nums",
+                    statusColor,
+                  )}
+                  aria-hidden="true"
+                >
+                  {statusBadge}
+                </span>
+              ) : null}
             </button>
             {isDir && isExpanded ? (
               loading.has(entry.path) && children === undefined ? (
@@ -216,8 +309,10 @@ function FileTreeLevel({
                   expanded={expanded}
                   loading={loading}
                   childrenByParent={childrenByParent}
+                  statusByPath={statusByPath}
                   onToggleDirectory={onToggleDirectory}
                   onFileClick={onFileClick}
+                  onContextMenu={onContextMenu}
                 />
               ) : null
             ) : null}
@@ -228,9 +323,19 @@ function FileTreeLevel({
   );
 }
 
+// Join a worktree root with a worktree-relative path, preserving the platform
+// separator so the absolute path round-trips on Windows and POSIX.
+function joinDirectoryPath(rootPath: string, relativePath: string): string {
+  if (!relativePath) return rootPath;
+  const separator = rootPath.includes("\\") ? "\\" : "/";
+  const normalizedRoot = rootPath.endsWith(separator) ? rootPath.slice(0, -1) : rootPath;
+  const normalizedRelative = relativePath.split(/[\\/]+/).join(separator);
+  return `${normalizedRoot}${separator}${normalizedRelative}`;
+}
+
 // Directories first, then files; each alphabetical (case-insensitive).
 function sortEntries(entries: readonly ProjectFileSystemEntry[]): ProjectFileSystemEntry[] {
-  return [...entries].sort((a, b) => {
+  return entries.toSorted((a, b) => {
     if (a.kind !== b.kind) return a.kind === "directory" ? -1 : 1;
     return a.name.localeCompare(b.name, undefined, { sensitivity: "base" });
   });

@@ -560,3 +560,21 @@ export function resolveLiveThreadBranchUpdate(input: {
 
 // Re-export from shared for backwards compatibility in this module's exports
 export { resolveAutoFeatureBranchName } from "@t3tools/shared/git";
+
+/**
+ * Combine a commit subject and an optional extended description into a single
+ * commit message body, following git convention: subject, a blank line, then
+ * the description. Either part may be empty; the result is trimmed. A
+ * description with no subject is ignored (there is nothing to attach a body to),
+ * so the caller treats the empty result as "auto-generate".
+ */
+export function combineCommitMessage(
+  subject: string | undefined,
+  description: string | undefined,
+): string {
+  const trimmedSubject = (subject ?? "").trim();
+  const trimmedDescription = (description ?? "").trim();
+  if (!trimmedSubject) return "";
+  if (!trimmedDescription) return trimmedSubject;
+  return `${trimmedSubject}\n\n${trimmedDescription}`;
+}

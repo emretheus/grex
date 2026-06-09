@@ -57,6 +57,7 @@ export const gitMutationKeys = {
   handoffThread: (cwd: string | null) => ["git", "mutation", "handoff-thread", cwd] as const,
   stageFiles: (cwd: string | null) => ["git", "mutation", "stage-files", cwd] as const,
   unstageFiles: (cwd: string | null) => ["git", "mutation", "unstage-files", cwd] as const,
+  discardFiles: (cwd: string | null) => ["git", "mutation", "discard-files", cwd] as const,
 };
 
 export function invalidateGitQueries(queryClient: QueryClient) {
@@ -309,6 +310,23 @@ export function gitUnstageFilesMutationOptions(input: {
     run: (api, cwd, paths) => {
       if (paths.length === 0) throw new Error("No files selected to unstage.");
       return api.git.unstageFiles({ cwd, paths: [...paths] });
+    },
+  });
+}
+
+export function gitDiscardFilesMutationOptions(input: {
+  cwd: string | null;
+  queryClient: QueryClient;
+}) {
+  return makeGitMutationOptions<readonly string[], { ok: boolean }>({
+    cwd: input.cwd,
+    queryClient: input.queryClient,
+    mutationKey: gitMutationKeys.discardFiles(input.cwd),
+    unavailableMessage: "Discarding changes is unavailable.",
+    invalidate: "cwd",
+    run: (api, cwd, paths) => {
+      if (paths.length === 0) throw new Error("No files selected to discard.");
+      return api.git.discardFiles({ cwd, paths: [...paths] });
     },
   });
 }

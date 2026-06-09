@@ -43,6 +43,7 @@ import {
   GitStashInfoInput,
   GitStatusInput,
   GitSummarizeDiffInput,
+  GitDiscardFilesInput,
   GitUnstageFilesInput,
 } from "./git";
 import {
@@ -141,6 +142,7 @@ export const WS_METHODS = {
   gitInit: "git.init",
   gitStageFiles: "git.stageFiles",
   gitUnstageFiles: "git.unstageFiles",
+  gitDiscardFiles: "git.discardFiles",
   gitHandoffThread: "git.handoffThread",
   gitResolvePullRequest: "git.resolvePullRequest",
   gitPreparePullRequestThread: "git.preparePullRequestThread",
@@ -271,6 +273,7 @@ const WebSocketRequestBody = Schema.Union([
   tagRequestBody(WS_METHODS.gitInit, GitInitInput),
   tagRequestBody(WS_METHODS.gitStageFiles, GitStageFilesInput),
   tagRequestBody(WS_METHODS.gitUnstageFiles, GitUnstageFilesInput),
+  tagRequestBody(WS_METHODS.gitDiscardFiles, GitDiscardFilesInput),
   tagRequestBody(WS_METHODS.gitHandoffThread, GitHandoffThreadInput),
   tagRequestBody(WS_METHODS.gitResolvePullRequest, GitPullRequestRefInput),
   tagRequestBody(WS_METHODS.gitPreparePullRequestThread, GitPreparePullRequestThreadInput),

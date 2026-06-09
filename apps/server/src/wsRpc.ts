@@ -688,6 +688,14 @@ export const makeWsRpcLayer = () =>
             ),
             "Failed to unstage files",
           ),
+        [WS_METHODS.gitDiscardFiles]: (input) =>
+          rpcEffect(
+            git.discardFiles(input.cwd, input.paths).pipe(
+              Effect.tap(() => refreshGitStatus(input.cwd)),
+              Effect.as({ ok: true }),
+            ),
+            "Failed to discard files",
+          ),
         [WS_METHODS.gitHandoffThread]: (input) =>
           rpcEffect(
             gitManager.handoffThread(input).pipe(Effect.tap(() => refreshGitStatus(input.cwd))),
