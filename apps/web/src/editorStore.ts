@@ -16,17 +16,31 @@ export interface EditorOpenFile {
   readonly name: string;
 }
 
-interface ThreadEditorState {
+export interface SplitSlotState {
   openFiles: EditorOpenFile[];
   activePath: string | null;
 }
 
+interface ThreadEditorState {
+  openFiles: EditorOpenFile[];
+  activePath: string | null;
+  // null = no split; populated when the user clicks "Split"
+  split: SplitSlotState | null;
+}
+
 interface EditorStoreState {
   byThreadId: Record<string, ThreadEditorState>;
+  // Keyed by threadId; default 50 when absent. Session-only (not persisted).
+  splitWidthPercent: Record<string, number>;
   openFile: (threadId: ThreadId, relativePath: string) => void;
   closeFile: (threadId: ThreadId, relativePath: string) => void;
   setActive: (threadId: ThreadId, relativePath: string) => void;
   reorderFiles: (threadId: ThreadId, fromIndex: number, toIndex: number) => void;
+  openFileSplit: (threadId: ThreadId, relativePath: string) => void;
+  closeFileSplit: (threadId: ThreadId, relativePath: string) => void;
+  setActiveSplit: (threadId: ThreadId, relativePath: string) => void;
+  closeSplit: (threadId: ThreadId) => void;
+  setSplitWidthPercent: (threadId: ThreadId, percent: number) => void;
 }
 
 const EDITOR_STATE_STORAGE_KEY = "codewit:editor-state:v1";
@@ -36,7 +50,7 @@ function basename(relativePath: string): string {
 }
 
 function emptyState(): ThreadEditorState {
-  return { openFiles: [], activePath: null };
+  return { openFiles: [], activePath: null, split: null };
 }
 
 // A single stable empty value so the selector returns the SAME reference for
@@ -47,12 +61,14 @@ const EMPTY_OPEN_FILES: readonly EditorOpenFile[] = [];
 const EMPTY_THREAD_EDITOR_STATE: ThreadEditorState = {
   openFiles: EMPTY_OPEN_FILES as EditorOpenFile[],
   activePath: null,
+  split: null,
 };
 
 export const useEditorStore = create<EditorStoreState>()(
   persist(
     (set) => ({
       byThreadId: {},
+      splitWidthPercent: {},
 
       openFile: (threadId, relativePath) =>
         set((state) => {
@@ -64,7 +80,7 @@ export const useEditorStore = create<EditorStoreState>()(
           return {
             byThreadId: {
               ...state.byThreadId,
-              [threadId]: { openFiles, activePath: relativePath },
+              [threadId]: { ...current, openFiles, activePath: relativePath },
             },
           };
         }),
@@ -85,7 +101,7 @@ export const useEditorStore = create<EditorStoreState>()(
           return {
             byThreadId: {
               ...state.byThreadId,
-              [threadId]: { openFiles, activePath },
+              [threadId]: { ...current, openFiles, activePath },
             },
           };
         }),
@@ -123,10 +139,97 @@ export const useEditorStore = create<EditorStoreState>()(
             byThreadId: { ...state.byThreadId, [threadId]: { ...current, openFiles } },
           };
         }),
+
+      openFileSplit: (threadId, relativePath) =>
+        set((state) => {
+          const current = state.byThreadId[threadId] ?? emptyState();
+          const prevSplit = current.split ?? { openFiles: [], activePath: null };
+          const alreadyOpen = prevSplit.openFiles.some((f) => f.relativePath === relativePath);
+          const splitOpenFiles = alreadyOpen
+            ? prevSplit.openFiles
+            : [...prevSplit.openFiles, { relativePath, name: basename(relativePath) }];
+          return {
+            byThreadId: {
+              ...state.byThreadId,
+              [threadId]: {
+                ...current,
+                split: { openFiles: splitOpenFiles, activePath: relativePath },
+              },
+            },
+          };
+        }),
+
+      closeFileSplit: (threadId, relativePath) =>
+        set((state) => {
+          const current = state.byThreadId[threadId];
+          if (!current?.split) return state;
+          const idx = current.split.openFiles.findIndex((f) => f.relativePath === relativePath);
+          if (idx === -1) return state;
+          const splitOpenFiles = current.split.openFiles.filter(
+            (f) => f.relativePath !== relativePath,
+          );
+          if (splitOpenFiles.length === 0) {
+            // No files left — close the split entirely.
+            return {
+              byThreadId: {
+                ...state.byThreadId,
+                [threadId]: { ...current, split: null },
+              },
+            };
+          }
+          let splitActivePath = current.split.activePath;
+          if (splitActivePath === relativePath) {
+            const next = splitOpenFiles[idx - 1] ?? splitOpenFiles[idx] ?? null;
+            splitActivePath = next?.relativePath ?? null;
+          }
+          return {
+            byThreadId: {
+              ...state.byThreadId,
+              [threadId]: {
+                ...current,
+                split: { openFiles: splitOpenFiles, activePath: splitActivePath },
+              },
+            },
+          };
+        }),
+
+      setActiveSplit: (threadId, relativePath) =>
+        set((state) => {
+          const current = state.byThreadId[threadId];
+          if (!current?.split) return state;
+          if (!current.split.openFiles.some((f) => f.relativePath === relativePath)) return state;
+          return {
+            byThreadId: {
+              ...state.byThreadId,
+              [threadId]: {
+                ...current,
+                split: { ...current.split, activePath: relativePath },
+              },
+            },
+          };
+        }),
+
+      closeSplit: (threadId) =>
+        set((state) => {
+          const current = state.byThreadId[threadId];
+          if (!current) return state;
+          return {
+            byThreadId: {
+              ...state.byThreadId,
+              [threadId]: { ...current, split: null },
+            },
+          };
+        }),
+
+      setSplitWidthPercent: (threadId, percent) =>
+        set((state) => ({
+          splitWidthPercent: { ...state.splitWidthPercent, [threadId]: percent },
+        })),
     }),
     {
       name: EDITOR_STATE_STORAGE_KEY,
       storage: createJSONStorage(() => localStorage),
+      // Only persist tab state — split layout is session-only.
       partialize: (state) => ({ byThreadId: state.byThreadId }),
     },
   ),
@@ -138,4 +241,12 @@ export function selectThreadEditorState(
 ): ThreadEditorState {
   if (!threadId) return EMPTY_THREAD_EDITOR_STATE;
   return state.byThreadId[threadId] ?? EMPTY_THREAD_EDITOR_STATE;
+}
+
+export function selectThreadEditorSplitState(
+  state: EditorStoreState,
+  threadId: ThreadId | null | undefined,
+): SplitSlotState | null {
+  if (!threadId) return null;
+  return state.byThreadId[threadId]?.split ?? null;
 }
