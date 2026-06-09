@@ -101,6 +101,15 @@ export const GitPullInput = Schema.Struct({
 });
 export type GitPullInput = typeof GitPullInput.Type;
 
+// Read a single file's content at a git ref (e.g. "HEAD", ":0" for the index) so
+// the editor can show the original side of an editable diff.
+export const GitReadFileAtRefInput = Schema.Struct({
+  cwd: TrimmedNonEmptyStringSchema,
+  ref: TrimmedNonEmptyStringSchema.check(Schema.isMaxLength(256)),
+  relativePath: TrimmedNonEmptyStringSchema.check(Schema.isMaxLength(512)),
+});
+export type GitReadFileAtRefInput = typeof GitReadFileAtRefInput.Type;
+
 // Read-only diff summary requests reuse the shared git text-generation model settings.
 export const GitSummarizeDiffInput = Schema.Struct({
   cwd: TrimmedNonEmptyStringSchema,
@@ -328,6 +337,16 @@ export const GitReadWorkingTreeDiffResult = Schema.Struct({
   patch: Schema.String,
 });
 export type GitReadWorkingTreeDiffResult = typeof GitReadWorkingTreeDiffResult.Type;
+
+export const GitReadFileAtRefResult = Schema.Struct({
+  // File content at the ref. `exists` is false for files added since the ref
+  // (no original side); content is then empty.
+  contents: Schema.String,
+  exists: Schema.Boolean,
+  // True when the blob is too large to load into the editor.
+  truncated: Schema.Boolean,
+});
+export type GitReadFileAtRefResult = typeof GitReadFileAtRefResult.Type;
 
 // Stage/unstage are fire-and-forget index mutations; callers refetch status/diff.
 export const GitStageFilesResult = Schema.Struct({

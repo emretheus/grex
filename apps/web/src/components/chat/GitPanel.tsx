@@ -36,10 +36,13 @@ import {
   PlusIcon,
   RefreshCwIcon,
   RotateCcwIcon,
+  SquarePenIcon,
   Trash2,
 } from "~/lib/icons";
 import { cn } from "~/lib/utils";
 import { readNativeApi } from "~/nativeApi";
+import { useEditorStore } from "~/editorStore";
+import { useRightDockStore } from "~/rightDockStore";
 import { showConfirmDialogFallback } from "~/confirmDialogFallback";
 import { CreatePullRequestDialog } from "./CreatePullRequestDialog";
 import { useStore } from "~/store";
@@ -85,6 +88,7 @@ const GitFileRow = memo(function GitFileRow(props: {
   onSelect: (file: FileDiffMetadata) => void;
   onAction: (paths: string[]) => void;
   onDiscard?: ((paths: string[]) => void) | undefined;
+  onEditDiff?: ((path: string) => void) | undefined;
 }) {
   const filePath = resolveFileDiffPath(props.fileDiff);
   const { dir, name } = splitRepoRelativePath(filePath);
@@ -113,6 +117,18 @@ const GitFileRow = memo(function GitFileRow(props: {
         deletions={stat.deletions}
         className="shrink-0 text-[11px]"
       />
+      {props.onEditDiff ? (
+        <IconButton
+          size="icon-xs"
+          variant="ghost"
+          className="shrink-0 opacity-0 group-hover:opacity-100 data-[disabled]:opacity-40"
+          label="Edit in diff editor"
+          tooltip="Edit in diff editor"
+          onClick={() => props.onEditDiff?.(filePath)}
+        >
+          <SquarePenIcon className="size-3.5" />
+        </IconButton>
+      ) : null}
       {props.onDiscard ? (
         <IconButton
           size="icon-xs"
@@ -159,6 +175,7 @@ function GitFileSection(props: {
   onSelect: (file: FileDiffMetadata) => void;
   onAction: (paths: string[]) => void;
   onDiscard?: ((paths: string[]) => void) | undefined;
+  onEditDiff?: ((path: string) => void) | undefined;
 }) {
   const stat = useMemo(() => summarizeFileDiffStats(props.files), [props.files]);
   const allPaths = useMemo(
@@ -220,6 +237,7 @@ function GitFileSection(props: {
                 onSelect={props.onSelect}
                 onAction={props.onAction}
                 onDiscard={props.onDiscard}
+                onEditDiff={props.onEditDiff}
               />
             );
           })}
@@ -263,6 +281,16 @@ export function GitPanel(props: {
 
   const [selected, setSelected] = useState<SelectedFile | null>(null);
   const [isCreatePrOpen, setIsCreatePrOpen] = useState(false);
+  const openDiff = useEditorStore((s) => s.openDiff);
+  const openDockPane = useRightDockStore((s) => s.openPane);
+
+  const editInDiff = useCallback(
+    (path: string) => {
+      openDiff(props.hostThreadId, path, "HEAD");
+      openDockPane(props.hostThreadId, { kind: "editor" });
+    },
+    [openDiff, openDockPane, props.hostThreadId],
+  );
 
   // No fixed polling: turn-driven file changes already push-invalidate the
   // working-tree-diff cache (see __root.tsx), and focus + the Refresh button +
@@ -411,6 +439,7 @@ export function GitPanel(props: {
               actionDisabled={mutating}
               onSelect={selectStaged}
               onAction={unstage}
+              onEditDiff={editInDiff}
             />
             <GitFileSection
               title="Changes"
@@ -426,6 +455,7 @@ export function GitPanel(props: {
               onSelect={selectUnstaged}
               onAction={stage}
               onDiscard={discard}
+              onEditDiff={editInDiff}
             />
           </>
         ) : null}
