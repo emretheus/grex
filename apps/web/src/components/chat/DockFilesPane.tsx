@@ -21,6 +21,8 @@ import {
   gitFileStatusColorClass,
   type GitFileStatus,
 } from "~/lib/gitFileStatus";
+import { copyTextToClipboard } from "~/hooks/useCopyToClipboard";
+import { toastManager } from "~/components/ui/toast";
 import {
   ChevronDownIcon,
   ChevronRightIcon,
@@ -124,6 +126,47 @@ export function DockFilesPane({ hostThreadId, projectId }: DockFilesPaneProps) {
     [hostThreadId, openFile, openPane],
   );
 
+  const handleContextMenu = useCallback(
+    async (event: React.MouseEvent, entry: { path: string; kind: "file" | "directory" }) => {
+      event.preventDefault();
+      const api = readNativeApi();
+      if (!api || !cwd) return;
+      const absolutePath = joinDirectoryPath(cwd, entry.path);
+      const clicked = await api.contextMenu.show(
+        [
+          ...(entry.kind === "file" ? [{ id: "open", label: "Open" }] : []),
+          { id: "copy-path", label: "Copy path", separatorBefore: entry.kind === "file" },
+          { id: "copy-relative-path", label: "Copy relative path" },
+          { id: "reveal", label: "Reveal in file manager", separatorBefore: true },
+        ],
+        { x: event.clientX, y: event.clientY },
+      );
+      switch (clicked) {
+        case "open":
+          handleFileClick(entry.path);
+          break;
+        case "copy-path":
+          void copyTextToClipboard(absolutePath);
+          break;
+        case "copy-relative-path":
+          void copyTextToClipboard(entry.path);
+          break;
+        case "reveal":
+          void api.shell.showInFolder(absolutePath).catch(() => {
+            toastManager.add({
+              type: "error",
+              title: "Could not reveal file",
+              description: "The file manager could not be opened.",
+            });
+          });
+          break;
+        default:
+          break;
+      }
+    },
+    [cwd, handleFileClick],
+  );
+
   if (!cwd) {
     return <PanelStateMessage>No workspace directory for this thread.</PanelStateMessage>;
   }
@@ -155,6 +198,7 @@ export function DockFilesPane({ hostThreadId, projectId }: DockFilesPaneProps) {
             statusByPath={statusByPath}
             onToggleDirectory={toggleDirectory}
             onFileClick={handleFileClick}
+            onContextMenu={handleContextMenu}
           />
         )}
       </div>
@@ -171,6 +215,10 @@ interface FileTreeLevelProps {
   readonly statusByPath: ReadonlyMap<string, GitFileStatus>;
   readonly onToggleDirectory: (path: string) => void;
   readonly onFileClick: (path: string) => void;
+  readonly onContextMenu: (
+    event: React.MouseEvent,
+    entry: { path: string; kind: "file" | "directory" },
+  ) => void;
 }
 
 function FileTreeLevel({
@@ -182,6 +230,7 @@ function FileTreeLevel({
   statusByPath,
   onToggleDirectory,
   onFileClick,
+  onContextMenu,
 }: FileTreeLevelProps) {
   const sorted = useMemo(() => sortEntries(entries), [entries]);
   return (
@@ -198,6 +247,9 @@ function FileTreeLevel({
             <button
               type="button"
               onClick={() => (isDir ? onToggleDirectory(entry.path) : onFileClick(entry.path))}
+              onContextMenu={(event) =>
+                onContextMenu(event, { path: entry.path, kind: entry.kind })
+              }
               className={cn(
                 "group flex w-full items-center gap-1.5 truncate px-2 text-left text-[13px] text-[var(--color-text-foreground)] transition-colors hover:bg-[var(--color-background-button-secondary-hover)]",
                 ROW_HEIGHT_CLASS,
@@ -260,6 +312,7 @@ function FileTreeLevel({
                   statusByPath={statusByPath}
                   onToggleDirectory={onToggleDirectory}
                   onFileClick={onFileClick}
+                  onContextMenu={onContextMenu}
                 />
               ) : null
             ) : null}
@@ -268,6 +321,16 @@ function FileTreeLevel({
       })}
     </>
   );
+}
+
+// Join a worktree root with a worktree-relative path, preserving the platform
+// separator so the absolute path round-trips on Windows and POSIX.
+function joinDirectoryPath(rootPath: string, relativePath: string): string {
+  if (!relativePath) return rootPath;
+  const separator = rootPath.includes("\\") ? "\\" : "/";
+  const normalizedRoot = rootPath.endsWith(separator) ? rootPath.slice(0, -1) : rootPath;
+  const normalizedRelative = relativePath.split(/[\\/]+/).join(separator);
+  return `${normalizedRoot}${separator}${normalizedRelative}`;
 }
 
 // Directories first, then files; each alphabetical (case-insensitive).
