@@ -23,6 +23,8 @@ import type {
   GitPullResult,
   GitRemoveIndexLockInput,
   GitRemoveWorktreeInput,
+  GitShowCommitInput,
+  GitShowCommitResult,
   GitStashAndCheckoutInput,
   GitStashDropInput,
   GitStashInfoInput,
@@ -393,6 +395,13 @@ export interface GitCoreShape {
     reverse?: boolean | undefined;
     cached?: boolean | undefined;
   }) => Effect.Effect<{ ok: boolean; error: string | null }, GitCommandError>;
+
+  /**
+   * Show detailed metadata and changed-file stats for a single commit.
+   */
+  readonly showCommit: (
+    input: GitShowCommitInput,
+  ) => Effect.Effect<GitShowCommitResult, GitCommandError>;
 }
 
 /**

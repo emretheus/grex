@@ -456,6 +456,39 @@ export const GitLogResult = Schema.Struct({
 });
 export type GitLogResult = typeof GitLogResult.Type;
 
+export const GitShowCommitInput = Schema.Struct({
+  cwd: TrimmedNonEmptyStringSchema,
+  sha: TrimmedNonEmptyStringSchema,
+});
+export type GitShowCommitInput = typeof GitShowCommitInput.Type;
+
+export const GitShowCommitFile = Schema.Struct({
+  path: Schema.String,
+  oldPath: Schema.String.pipe(Schema.NullOr),
+  additions: Schema.Number,
+  deletions: Schema.Number,
+  /** "A" | "M" | "D" | "R" | "C" | "T" | "U" | "X" */
+  status: Schema.String,
+});
+export type GitShowCommitFile = typeof GitShowCommitFile.Type;
+
+export const GitShowCommitResult = Schema.Struct({
+  sha: Schema.String,
+  subject: Schema.String,
+  body: Schema.String,
+  authorName: Schema.String,
+  authorEmail: Schema.String,
+  authorDate: Schema.String,
+  committerName: Schema.String,
+  committerEmail: Schema.String,
+  committerDate: Schema.String,
+  parentShas: Schema.Array(Schema.String),
+  files: Schema.Array(GitShowCommitFile),
+  totalAdditions: Schema.Number,
+  totalDeletions: Schema.Number,
+});
+export type GitShowCommitResult = typeof GitShowCommitResult.Type;
+
 export const GitPullResult = Schema.Struct({
   status: Schema.Literals(["pulled", "skipped_up_to_date"]),
   branch: TrimmedNonEmptyStringSchema,

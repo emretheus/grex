@@ -2737,6 +2737,99 @@ export const makeGitCore = (options?: { executeOverride?: GitCoreShape["execute"
         ),
       );
 
+    const showCommit: GitCoreShape["showCommit"] = ({ cwd, sha }) =>
+      Effect.gen(function* () {
+        const FORMAT = "%H%x00%s%x00%b%x00%an%x00%ae%x00%aI%x00%cn%x00%ce%x00%cI%x00%P";
+        const headerResult = yield* runGitStdout("GitCore.showCommit.header", cwd, [
+          "show",
+          "--quiet",
+          `--format=${FORMAT}`,
+          sha,
+        ]);
+        const [
+          fullSha = "",
+          subject = "",
+          body = "",
+          authorName = "",
+          authorEmail = "",
+          authorDate = "",
+          committerName = "",
+          committerEmail = "",
+          committerDate = "",
+          parentsRaw = "",
+        ] = headerResult.trim().split("\x00");
+
+        const parentShas = parentsRaw
+          .split(" ")
+          .map((p) => p.trim())
+          .filter((p) => p.length > 0);
+
+        const numstatResult = yield* runGitStdout("GitCore.showCommit.numstat", cwd, [
+          "show",
+          "--numstat",
+          "--no-renames",
+          "--format=",
+          sha,
+        ]);
+
+        const nameStatusResult = yield* runGitStdout("GitCore.showCommit.nameStatus", cwd, [
+          "show",
+          "--name-status",
+          "--no-renames",
+          "--format=",
+          sha,
+        ]);
+
+        const statusMap = new Map<string, string>();
+        for (const line of nameStatusResult.split("\n")) {
+          const trimmed = line.trim();
+          if (!trimmed) continue;
+          const parts = trimmed.split("\t");
+          if (parts.length >= 2) {
+            statusMap.set(parts[1] ?? "", (parts[0] ?? "M").charAt(0));
+          }
+        }
+
+        let totalAdditions = 0;
+        let totalDeletions = 0;
+        const files = numstatResult
+          .split("\n")
+          .map((l) => l.trim())
+          .filter((l) => l.length > 0)
+          .map((line) => {
+            const parts = line.split("\t");
+            const additions = parseInt(parts[0] ?? "0", 10) || 0;
+            const deletions = parseInt(parts[1] ?? "0", 10) || 0;
+            const path = parts[2] ?? "";
+            totalAdditions += additions;
+            totalDeletions += deletions;
+            return {
+              path,
+              oldPath: null as string | null,
+              additions,
+              deletions,
+              status: statusMap.get(path) ?? "M",
+            };
+          })
+          .filter((f) => f.path.length > 0);
+
+        return {
+          sha: fullSha.trim(),
+          subject: subject.trim(),
+          body: body.trim(),
+          authorName: authorName.trim(),
+          authorEmail: authorEmail.trim(),
+          authorDate: authorDate.trim(),
+          committerName: committerName.trim(),
+          committerEmail: committerEmail.trim(),
+          committerDate: committerDate.trim(),
+          parentShas,
+          files,
+          totalAdditions,
+          totalDeletions,
+        };
+      });
+
     return {
       execute,
       status,
@@ -2774,6 +2867,7 @@ export const makeGitCore = (options?: { executeOverride?: GitCoreShape["execute"
       discardFiles,
       readLog,
       applyPatch,
+      showCommit,
     } satisfies GitCoreShape;
   });
 

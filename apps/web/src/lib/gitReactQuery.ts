@@ -155,6 +155,20 @@ export function gitLogQueryOptions(cwd: string | null) {
   });
 }
 
+export function gitShowCommitQueryOptions(cwd: string | null, sha: string | null) {
+  return queryOptions({
+    queryKey: ["git", "show-commit", cwd, sha] as const,
+    queryFn: async () => {
+      const api = ensureNativeApi();
+      if (!cwd || !sha) throw new Error("Commit details unavailable.");
+      return api.git.showCommit({ cwd, sha });
+    },
+    enabled: cwd !== null && sha !== null,
+    staleTime: 10 * 60_000, // commit data is immutable; cache for 10 min
+    gcTime: 30 * 60_000,
+  });
+}
+
 export function gitResolvePullRequestQueryOptions(input: {
   cwd: string | null;
   reference: string | null;

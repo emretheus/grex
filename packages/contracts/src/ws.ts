@@ -47,6 +47,7 @@ import {
   GitDiscardFilesInput,
   GitUnstageFilesInput,
   GitApplyPatchInput,
+  GitShowCommitInput,
 } from "./git";
 import {
   TerminalAckOutputInput,
@@ -152,6 +153,7 @@ export const WS_METHODS = {
   gitPreparePullRequestThread: "git.preparePullRequestThread",
   gitLog: "git.log",
   gitApplyPatch: "git.applyPatch",
+  gitShowCommit: "git.showCommit",
 
   // Terminal methods
   terminalOpen: "terminal.open",
@@ -290,6 +292,7 @@ const WebSocketRequestBody = Schema.Union([
   tagRequestBody(WS_METHODS.gitPreparePullRequestThread, GitPreparePullRequestThreadInput),
   tagRequestBody(WS_METHODS.gitLog, GitLogInput),
   tagRequestBody(WS_METHODS.gitApplyPatch, GitApplyPatchInput),
+  tagRequestBody(WS_METHODS.gitShowCommit, GitShowCommitInput),
 
   // Terminal methods
   tagRequestBody(WS_METHODS.terminalOpen, TerminalOpenInput),
