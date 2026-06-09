@@ -9,9 +9,9 @@
 // through GitCore; on settle we invalidate the per-cwd git caches so both lists stay in sync.
 
 import { type FileDiffMetadata } from "@pierre/diffs/react";
-import { type ProjectId, type ThreadId } from "@t3tools/contracts";
+import { type GitStackedAction, type ProjectId, type ThreadId } from "@t3tools/contracts";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { lazy, memo, Suspense, useCallback, useMemo, useState } from "react";
+import { lazy, memo, Suspense, useCallback, useId, useMemo, useRef, useState } from "react";
 import { buildHunkPatch } from "~/lib/patchManipulation";
 
 import { useTheme } from "~/hooks/useTheme";
@@ -30,11 +30,12 @@ import {
   gitApplyPatchMutationOptions,
   gitDiscardFilesMutationOptions,
   gitQueryKeys,
+  gitRunStackedActionMutationOptions,
   gitStageFilesMutationOptions,
   gitUnstageFilesMutationOptions,
   gitWorkingTreeDiffQueryOptions,
 } from "~/lib/gitReactQuery";
-import { PlusIcon, RefreshCwIcon, RotateCcwIcon, Trash2 } from "~/lib/icons";
+import { ChevronDownIcon, PlusIcon, RefreshCwIcon, RotateCcwIcon, Trash2 } from "~/lib/icons";
 import { cn } from "~/lib/utils";
 import { showConfirmDialogFallback } from "~/confirmDialogFallback";
 import { useStore } from "~/store";
@@ -42,6 +43,12 @@ import { createProjectSelector, createThreadSelector } from "~/storeSelectors";
 import { Alert } from "../ui/alert";
 import { Button } from "../ui/button";
 import { IconButton } from "../ui/icon-button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "../ui/menu";
 import { DOCK_HEADER_ICON_BUTTON_CLASS } from "./chatHeaderControls";
 import { DiffStat } from "./DiffStatLabel";
 import { DockPaneHeader } from "./DockPaneHeader";
@@ -329,6 +336,100 @@ const HunkActionsPanel = memo(function HunkActionsPanel(props: {
   );
 });
 
+// ── Commit panel ─────────────────────────────────────────────────────────────
+// Placed at the top of the Changes tab. Provides a textarea for the commit
+// message, a primary "Commit & Push" button, and a dropdown for "Commit only".
+
+function CommitPanel(props: {
+  stagedCount: number;
+  disabled: boolean;
+  onCommit: (action: GitStackedAction, message: string) => void;
+  error: string | null;
+}) {
+  const [message, setMessage] = useState("");
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const actionId = useId();
+
+  const canCommit = props.stagedCount > 0 && message.trim().length > 0 && !props.disabled;
+
+  const handlePrimaryCommit = useCallback(() => {
+    if (!canCommit) return;
+    props.onCommit("commit_push", message.trim());
+    setMessage("");
+  }, [canCommit, message, props]);
+
+  const handleCommitOnly = useCallback(() => {
+    if (!canCommit) return;
+    props.onCommit("commit", message.trim());
+    setMessage("");
+  }, [canCommit, message, props]);
+
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
+        e.preventDefault();
+        handlePrimaryCommit();
+      }
+    },
+    [handlePrimaryCommit],
+  );
+
+  // Suppress the unused variable — actionId is used as a stable React key
+  void actionId;
+
+  return (
+    <div className="shrink-0 border-b border-border/70 px-1.5 py-2">
+      <textarea
+        ref={textareaRef}
+        value={message}
+        onChange={(e) => setMessage(e.target.value)}
+        onKeyDown={handleKeyDown}
+        placeholder="Message (⌘↩ to commit)"
+        rows={3}
+        disabled={props.disabled}
+        className={cn(
+          "w-full resize-y rounded-md border border-border/70 bg-background px-2.5 py-1.5",
+          "text-[12px] text-foreground placeholder:text-muted-foreground/50",
+          "focus:outline-none focus:ring-1 focus:ring-ring/60",
+          "disabled:opacity-60",
+        )}
+      />
+      {props.error ? <p className="mt-1 text-[11px] text-destructive">{props.error}</p> : null}
+      <div className="mt-1.5 flex items-center justify-end gap-px">
+        <Button
+          type="button"
+          size="xs"
+          variant="default"
+          disabled={!canCommit}
+          onClick={handlePrimaryCommit}
+          className="rounded-r-none"
+        >
+          Commit
+        </Button>
+        <DropdownMenu>
+          <DropdownMenuTrigger
+            render={
+              <Button
+                type="button"
+                size="xs"
+                variant="default"
+                disabled={!canCommit}
+                className="rounded-l-none border-l border-primary-foreground/20 px-1"
+                aria-label="More commit options"
+              />
+            }
+          >
+            <ChevronDownIcon className="size-3" />
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" side="bottom" sideOffset={4}>
+            <DropdownMenuItem onSelect={handleCommitOnly}>Commit only</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+    </div>
+  );
+}
+
 type GitPanelTab = "changes" | "history";
 
 function TabSwitcher(props: { active: GitPanelTab; onChange: (tab: GitPanelTab) => void }) {
@@ -397,11 +498,13 @@ export function GitPanel(props: {
   const unstageMutation = useMutation(gitUnstageFilesMutationOptions({ cwd, queryClient }));
   const discardMutation = useMutation(gitDiscardFilesMutationOptions({ cwd, queryClient }));
   const applyPatchMutation = useMutation(gitApplyPatchMutationOptions({ cwd, queryClient }));
+  const commitMutation = useMutation(gitRunStackedActionMutationOptions({ cwd, queryClient }));
   const mutating =
     stageMutation.isPending ||
     unstageMutation.isPending ||
     discardMutation.isPending ||
-    applyPatchMutation.isPending;
+    applyPatchMutation.isPending ||
+    commitMutation.isPending;
 
   const stage = useCallback(
     (paths: string[]) => {
@@ -473,6 +576,17 @@ export function GitPanel(props: {
   const selectUnstaged = useCallback((file: FileDiffMetadata) => {
     setSelected({ section: "unstaged", path: resolveFileDiffPath(file) });
   }, []);
+
+  const handleCommit = useCallback(
+    (action: GitStackedAction, commitMessage: string) => {
+      commitMutation.mutate({
+        actionId: crypto.randomUUID(),
+        action,
+        commitMessage,
+      });
+    },
+    [commitMutation],
+  );
 
   const refresh = useCallback(() => {
     if (!cwd) return;
@@ -558,6 +672,13 @@ export function GitPanel(props: {
             </IconButton>
           </div>
         }
+      />
+
+      <CommitPanel
+        stagedCount={stagedFiles.length}
+        disabled={mutating}
+        onCommit={handleCommit}
+        error={commitMutation.error instanceof Error ? commitMutation.error.message : null}
       />
 
       <div className="flex max-h-[48%] min-h-0 shrink-0 flex-col gap-2 overflow-auto px-1.5 py-2">

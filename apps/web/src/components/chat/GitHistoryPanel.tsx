@@ -242,8 +242,9 @@ const GraphStrip = memo(function GraphStrip({
 
 function RefChip({ label }: { label: string }) {
   const isHead = label === "HEAD" || label.startsWith("HEAD -> ");
-  const isBranch = !label.startsWith("tag: ") && !label.startsWith("HEAD");
+  const isRemote = !label.startsWith("tag: ") && !isHead && label.includes("/");
   const isTag = label.startsWith("tag: ");
+  const isBranch = !isTag && !isHead && !isRemote;
   const text = label.replace(/^HEAD -> /, "").replace(/^tag: /, "");
   return (
     <span
@@ -253,9 +254,11 @@ function RefChip({ label }: { label: string }) {
           ? "bg-brand/15 text-brand ring-1 ring-inset ring-brand/30"
           : isTag
             ? "bg-amber-500/10 text-amber-600 dark:text-amber-400 ring-1 ring-inset ring-amber-400/30"
-            : isBranch
-              ? "bg-muted text-muted-foreground ring-1 ring-inset ring-border"
-              : "bg-muted text-muted-foreground",
+            : isRemote
+              ? "bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 ring-1 ring-inset ring-indigo-400/30"
+              : isBranch
+                ? "bg-muted text-muted-foreground ring-1 ring-inset ring-border"
+                : "bg-muted text-muted-foreground",
       )}
     >
       {text}
@@ -263,21 +266,24 @@ function RefChip({ label }: { label: string }) {
   );
 }
 
-// ── relative date ─────────────────────────────────────────────────────────────
+// ── formatted date ────────────────────────────────────────────────────────────
 
-function relativeDate(iso: string): string {
-  const diff = Date.now() - new Date(iso).getTime();
-  const secs = Math.floor(diff / 1000);
-  if (secs < 60) return "now";
-  const mins = Math.floor(secs / 60);
-  if (mins < 60) return `${mins}m`;
-  const hours = Math.floor(mins / 60);
-  if (hours < 24) return `${hours}h`;
-  const days = Math.floor(hours / 24);
-  if (days < 30) return `${days}d`;
-  const months = Math.floor(days / 30);
-  if (months < 12) return `${months}mo`;
-  return `${Math.floor(months / 12)}y`;
+function formatDate(iso: string): string {
+  try {
+    return new Intl.DateTimeFormat("en-GB", {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    }).format(new Date(iso));
+  } catch {
+    return "";
+  }
+}
+
+// ── max active columns across all cells ──────────────────────────────────────
+
+function maxActiveCols(cells: readonly GraphCell[]): number {
+  return cells.reduce((max, c) => Math.max(max, c.totalCols), 1);
 }
 
 // ── commit row ────────────────────────────────────────────────────────────────
@@ -286,10 +292,12 @@ const CommitRow = memo(function CommitRow({
   commit,
   cells,
   index,
+  colTemplate,
 }: {
   commit: GitLogCommit;
   cells: readonly GraphCell[];
   index: number;
+  colTemplate: string;
 }) {
   const headRef = commit.refs.find((r) => r === "HEAD" || r.startsWith("HEAD -> "));
   const otherRefs = commit.refs.filter((r) => r !== "HEAD" && !r.startsWith("HEAD -> "));
@@ -297,15 +305,17 @@ const CommitRow = memo(function CommitRow({
 
   return (
     <div
-      className="group flex min-w-0 items-center gap-1.5 px-1.5 hover:bg-sidebar-accent/50 cursor-default"
-      style={{ height: GRAPH_ROW_H }}
+      className="grid cursor-default items-center hover:bg-sidebar-accent/50"
+      style={{ height: GRAPH_ROW_H, gridTemplateColumns: colTemplate }}
       title={`${commit.sha}\n${commit.authorName} <${commit.authorEmail}>\n${commit.authorDate}`}
     >
-      <GraphStrip cells={cells} index={index} />
-      <div className="flex min-w-0 flex-1 items-baseline gap-1.5 overflow-hidden">
-        <span className="min-w-0 truncate text-[12px] text-foreground leading-none">
-          {commit.subject || <span className="text-muted-foreground italic">no message</span>}
-        </span>
+      {/* Graph column */}
+      <div className="flex items-center overflow-visible pl-1">
+        <GraphStrip cells={cells} index={index} />
+      </div>
+
+      {/* Description column: ref chips BEFORE subject */}
+      <div className="flex min-w-0 items-center gap-1 overflow-hidden pr-2">
         {allRefs.length > 0 && (
           <span className="flex shrink-0 items-center gap-0.5">
             {allRefs.slice(0, 3).map((ref) => (
@@ -313,15 +323,21 @@ const CommitRow = memo(function CommitRow({
             ))}
           </span>
         )}
-      </div>
-      <div className="flex shrink-0 items-center gap-1.5 pl-1">
-        <span className="text-[10px] font-mono text-muted-foreground/70 group-hover:text-muted-foreground">
-          {commit.shortSha}
-        </span>
-        <span className="text-[10px] text-muted-foreground/60">
-          {relativeDate(commit.authorDate)}
+        <span className="min-w-0 truncate text-[12px] leading-none text-foreground">
+          {commit.subject || <span className="italic text-muted-foreground">no message</span>}
         </span>
       </div>
+
+      {/* Date column */}
+      <div className="pr-2 text-right text-[10px] text-muted-foreground/70">
+        {formatDate(commit.authorDate)}
+      </div>
+
+      {/* Author column */}
+      <div className="truncate pr-2 text-[10px] text-muted-foreground/70">{commit.authorName}</div>
+
+      {/* Commit SHA column */}
+      <div className="pr-2 font-mono text-[10px] text-muted-foreground/70">{commit.shortSha}</div>
     </div>
   );
 });
@@ -337,6 +353,15 @@ export function GitHistoryPanel({ cwd }: GitHistoryPanelProps) {
   const logQuery = useQuery(gitLogQueryOptions(cwd));
   const commits = logQuery.data?.commits ?? [];
   const cells = useMemo(() => buildGraphCells(commits), [commits]);
+
+  // Compute graph column width from the max active lanes
+  const graphColWidth = useMemo(() => {
+    const cols = maxActiveCols(cells);
+    return Math.max(cols * GRAPH_COL_W + GRAPH_COL_W / 2, 40);
+  }, [cells]);
+
+  // CSS grid template: Graph | Description | Date | Author | Commit
+  const colTemplate = `${graphColWidth}px 1fr 80px 70px 60px`;
 
   if (logQuery.isLoading && commits.length === 0) {
     return <PanelStateMessage density="compact">Loading history…</PanelStateMessage>;
@@ -356,8 +381,37 @@ export function GitHistoryPanel({ cwd }: GitHistoryPanelProps) {
 
   return (
     <div className="h-full min-h-0 w-full overflow-auto">
+      {/* Sticky header row */}
+      <div
+        className="sticky top-0 z-10 grid border-b border-border/50 bg-sidebar"
+        style={{ gridTemplateColumns: colTemplate, height: 24 }}
+      >
+        <div className="pl-2 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground/70 flex items-center">
+          Graph
+        </div>
+        <div className="pr-2 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground/70 flex items-center">
+          Description
+        </div>
+        <div className="pr-2 text-right text-[10px] font-semibold uppercase tracking-wide text-muted-foreground/70 flex items-center justify-end">
+          Date
+        </div>
+        <div className="pr-2 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground/70 flex items-center">
+          Author
+        </div>
+        <div className="pr-2 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground/70 flex items-center">
+          Commit
+        </div>
+      </div>
+
+      {/* Commit rows */}
       {commits.map((commit, i) => (
-        <CommitRow key={commit.sha} commit={commit} cells={cells} index={i} />
+        <CommitRow
+          key={commit.sha}
+          commit={commit}
+          cells={cells}
+          index={i}
+          colTemplate={colTemplate}
+        />
       ))}
     </div>
   );
