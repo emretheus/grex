@@ -127,6 +127,13 @@ export const GitRunStackedActionInput = Schema.Struct({
   textGenerationModel: Schema.optional(TrimmedNonEmptyStringSchema).pipe(
     Schema.withConstructorDefault(() => Option.some(DEFAULT_GIT_TEXT_GENERATION_MODEL)),
   ),
+  // Optional overrides for the PR step. When omitted, the title/body are
+  // AI-generated and the base branch is auto-resolved (config → upstream →
+  // repo default), preserving the existing behavior.
+  prTitle: Schema.optional(TrimmedNonEmptyStringSchema.check(Schema.isMaxLength(256))),
+  prBody: Schema.optional(Schema.String.check(Schema.isMaxLength(60_000))),
+  prBaseBranch: Schema.optional(TrimmedNonEmptyStringSchema),
+  prDraft: Schema.optional(Schema.Boolean),
 });
 export type GitRunStackedActionInput = typeof GitRunStackedActionInput.Type;
 

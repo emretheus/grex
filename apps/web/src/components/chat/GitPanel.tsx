@@ -9,7 +9,7 @@
 // through GitCore; on settle we invalidate the per-cwd git caches so both lists stay in sync.
 
 import { type FileDiffMetadata } from "@pierre/diffs/react";
-import { type ProjectId, type ThreadId } from "@t3tools/contracts";
+import { type GitStatusResult, type ProjectId, type ThreadId } from "@t3tools/contracts";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { memo, useCallback, useMemo, useState } from "react";
 
@@ -26,12 +26,22 @@ import {
   gitDiscardFilesMutationOptions,
   gitQueryKeys,
   gitStageFilesMutationOptions,
+  gitStatusQueryOptions,
   gitUnstageFilesMutationOptions,
   gitWorkingTreeDiffQueryOptions,
 } from "~/lib/gitReactQuery";
-import { PlusIcon, RefreshCwIcon, RotateCcwIcon, Trash2 } from "~/lib/icons";
+import {
+  ExternalLinkIcon,
+  GitPullRequestIcon,
+  PlusIcon,
+  RefreshCwIcon,
+  RotateCcwIcon,
+  Trash2,
+} from "~/lib/icons";
 import { cn } from "~/lib/utils";
+import { readNativeApi } from "~/nativeApi";
 import { showConfirmDialogFallback } from "~/confirmDialogFallback";
+import { CreatePullRequestDialog } from "./CreatePullRequestDialog";
 import { useStore } from "~/store";
 import { createProjectSelector, createThreadSelector } from "~/storeSelectors";
 import { Alert } from "../ui/alert";
@@ -252,12 +262,14 @@ export function GitPanel(props: {
   const cwd = thread?.worktreePath ?? project?.cwd ?? null;
 
   const [selected, setSelected] = useState<SelectedFile | null>(null);
+  const [isCreatePrOpen, setIsCreatePrOpen] = useState(false);
 
   // No fixed polling: turn-driven file changes already push-invalidate the
   // working-tree-diff cache (see __root.tsx), and focus + the Refresh button +
   // post-mutation invalidation cover the rest. This keeps the pane cheap.
   const stagedQuery = useQuery(gitWorkingTreeDiffQueryOptions({ cwd, scope: "staged" }));
   const unstagedQuery = useQuery(gitWorkingTreeDiffQueryOptions({ cwd, scope: "unstaged" }));
+  const statusQuery = useQuery(gitStatusQueryOptions(cwd));
 
   const stagedFiles = useMemo(
     () => parsePatchToSortedFiles(stagedQuery.data?.patch, `git-pane:staged:${theme}`),
@@ -419,6 +431,14 @@ export function GitPanel(props: {
         ) : null}
       </div>
 
+      <PullRequestSection
+        status={statusQuery.data ?? null}
+        onCreate={() => setIsCreatePrOpen(true)}
+        onOpenExternal={(url) => {
+          void readNativeApi()?.shell.openExternal(url);
+        }}
+      />
+
       <div className="diff-panel-viewport min-h-0 min-w-0 flex-1 overflow-hidden border-t border-border/70">
         {selectedFileDiff ? (
           <SelectedFileDiff fileDiff={selectedFileDiff} theme={theme} />
@@ -426,6 +446,59 @@ export function GitPanel(props: {
           <PanelStateMessage density="compact">Select a file to view its diff.</PanelStateMessage>
         )}
       </div>
+
+      <CreatePullRequestDialog
+        open={isCreatePrOpen}
+        onOpenChange={setIsCreatePrOpen}
+        cwd={cwd}
+        gitStatus={statusQuery.data ?? null}
+        onCreated={(pr) => {
+          void queryClient.invalidateQueries({ queryKey: gitQueryKeys.status(cwd) });
+          if (pr.url) void readNativeApi()?.shell.openExternal(pr.url);
+        }}
+      />
+    </div>
+  );
+}
+
+// Compact PR section at the bottom of the panel: "View PR" when an open PR
+// already tracks the branch, otherwise a "Create pull request" button.
+function PullRequestSection(props: {
+  status: GitStatusResult | null;
+  onCreate: () => void;
+  onOpenExternal: (url: string) => void;
+}) {
+  const pr = props.status?.pr ?? null;
+  const branch = props.status?.branch ?? null;
+  if (!branch) return null;
+
+  return (
+    <div className="border-t border-border/70 px-2 py-2">
+      {pr && pr.state === "open" ? (
+        <button
+          type="button"
+          onClick={() => props.onOpenExternal(pr.url)}
+          className="flex w-full items-center gap-2 rounded-md px-1.5 py-1 text-left hover:bg-sidebar-accent/60"
+          title={`#${pr.number} ${pr.title}`}
+        >
+          <GitPullRequestIcon className="size-4 shrink-0 text-emerald-500" />
+          <span className="min-w-0 flex-1 truncate text-[12px] text-foreground">
+            <span className="text-muted-foreground">#{pr.number}</span> {pr.title}
+          </span>
+          <ExternalLinkIcon className="size-3.5 shrink-0 text-muted-foreground" />
+        </button>
+      ) : (
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          className="w-full justify-center"
+          onClick={props.onCreate}
+        >
+          <GitPullRequestIcon className="size-3.5" />
+          Create pull request
+        </Button>
+      )}
     </div>
   );
 }
