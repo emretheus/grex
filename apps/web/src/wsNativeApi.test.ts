@@ -310,6 +310,9 @@ describe("wsNativeApi", () => {
             customModels: [],
           },
           pi: { enabled: true, binaryPath: "pi", agentDir: "", customModels: [] },
+          qwenCode: { enabled: false, binaryPath: "", customModels: [] },
+          auggie: { enabled: false, binaryPath: "", customModels: [] },
+          goose: { enabled: false, binaryPath: "", customModels: [] },
         },
       },
     } as const;

@@ -165,7 +165,7 @@ export function useHandleNewThread() {
             branch: creationState.branch,
             worktreePath: creationState.worktreePath,
             lastKnownPr: creationState.lastKnownPr,
-            linkedIssue: creationState.linkedIssue,
+            linkedIssues: creationState.linkedIssues,
             createdAt: new Date().toISOString(),
           },
           api,

@@ -1,4 +1,5 @@
 import { Schema } from "effect";
+import * as SchemaGetter from "effect/SchemaGetter";
 import { PositiveInt, TrimmedNonEmptyString } from "./baseSchemas";
 
 // ── Provider identity ────────────────────────────────────────────────
@@ -56,6 +57,78 @@ export const LinkedIssue = Schema.Struct({
   fetchedAt: Schema.optional(Schema.String),
 });
 export type LinkedIssue = typeof LinkedIssue.Type;
+
+// ── Multi-issue helpers ──────────────────────────────────────────────
+
+export const MAX_LINKED_ISSUES = 10;
+
+/** Dedup by the stable identity pair (provider + identifier). First occurrence wins. */
+export function dedupeLinkedIssues(issues: readonly LinkedIssue[]): LinkedIssue[] {
+  const seen = new Set<string>();
+  const out: LinkedIssue[] = [];
+  for (const issue of issues) {
+    const key = `${issue.provider}:${issue.identifier}`;
+    if (!seen.has(key)) {
+      seen.add(key);
+      out.push(issue);
+    }
+  }
+  return out;
+}
+
+/**
+ * Identity equality for two LinkedIssue arrays: same length and same ordered
+ * provider:identifier sequence.  Plain `Equal.equals` cannot be used because
+ * LinkedIssue decodes to plain objects (not Effect-Equal), making it always
+ * return false for distinct array references.
+ */
+export function linkedIssuesEqual(a: readonly LinkedIssue[], b: readonly LinkedIssue[]): boolean {
+  if (a.length !== b.length) return false;
+  for (let i = 0; i < a.length; i++) {
+    if (a[i]!.provider !== b[i]!.provider || a[i]!.identifier !== b[i]!.identifier) return false;
+  }
+  return true;
+}
+
+/**
+ * Accepts: LinkedIssue[] | LinkedIssue | null | undefined
+ * Produces: readonly LinkedIssue[]  (deduped, capped at MAX_LINKED_ISSUES)
+ *
+ * Used as the backward-compat bridge for legacy single-issue fields stored in
+ * the DB, orchestration events, and localStorage drafts.
+ */
+export const LinkedIssues = Schema.Union([
+  Schema.Array(LinkedIssue),
+  LinkedIssue,
+  Schema.Null,
+  Schema.Undefined,
+]).pipe(
+  Schema.decodeTo(Schema.Array(LinkedIssue), {
+    decode: SchemaGetter.transform((value) => {
+      if (value == null) return [];
+      const arr = Array.isArray(value) ? value : [value];
+      return dedupeLinkedIssues(arr).slice(0, MAX_LINKED_ISSUES);
+    }),
+    encode: SchemaGetter.transform((value) => value),
+  }),
+);
+export type LinkedIssues = typeof LinkedIssues.Type;
+
+/**
+ * DB / JSON-string variant: wraps `LinkedIssues` so a `linked_issue_json`
+ * column (TEXT) can hold either a legacy single-object or a new array, and
+ * always decodes to `readonly LinkedIssue[]`.
+ *
+ * The column stores NULL for no issues, or a JSON string that may be a single
+ * LinkedIssue object (legacy) or an array (current).  Both are normalised to
+ * `readonly LinkedIssue[]` via the `LinkedIssues` bridge schema.
+ */
+export const LinkedIssuesFromJsonString = Schema.NullOr(Schema.fromJsonString(LinkedIssues)).pipe(
+  Schema.decodeTo(Schema.Array(LinkedIssue), {
+    decode: SchemaGetter.transform((value) => value ?? []),
+    encode: SchemaGetter.transform((value) => (value.length === 0 ? null : value)),
+  }),
+);
 
 // ── Connection status ────────────────────────────────────────────────
 

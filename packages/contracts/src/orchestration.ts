@@ -10,7 +10,7 @@ import {
 } from "./model";
 import { ProviderMentionReference, ProviderSkillReference } from "./providerDiscovery";
 import { ProjectKind } from "./project";
-import { LinkedIssue } from "./integrations";
+import { LinkedIssue, LinkedIssues } from "./integrations";
 import {
   ApprovalRequestId,
   CheckpointRef,
@@ -57,6 +57,9 @@ export const ProviderKind = Schema.Literals([
   "kilo",
   "opencode",
   "pi",
+  "qwenCode",
+  "auggie",
+  "goose",
 ]);
 export type ProviderKind = typeof ProviderKind.Type;
 export const ProviderApprovalPolicy = Schema.Literals([
@@ -130,6 +133,27 @@ export const PiModelSelection = Schema.Struct({
 });
 export type PiModelSelection = typeof PiModelSelection.Type;
 
+export const QwenCodeModelSelection = Schema.Struct({
+  provider: Schema.Literal("qwenCode"),
+  model: TrimmedNonEmptyString,
+  options: Schema.optional(Schema.Struct({})),
+});
+export type QwenCodeModelSelection = typeof QwenCodeModelSelection.Type;
+
+export const AuggieModelSelection = Schema.Struct({
+  provider: Schema.Literal("auggie"),
+  model: TrimmedNonEmptyString,
+  options: Schema.optional(Schema.Struct({})),
+});
+export type AuggieModelSelection = typeof AuggieModelSelection.Type;
+
+export const GooseModelSelection = Schema.Struct({
+  provider: Schema.Literal("goose"),
+  model: TrimmedNonEmptyString,
+  options: Schema.optional(Schema.Struct({})),
+});
+export type GooseModelSelection = typeof GooseModelSelection.Type;
+
 export const ModelSelection = Schema.Union([
   CodexModelSelection,
   ClaudeModelSelection,
@@ -139,6 +163,9 @@ export const ModelSelection = Schema.Union([
   KiloModelSelection,
   OpenCodeModelSelection,
   PiModelSelection,
+  QwenCodeModelSelection,
+  AuggieModelSelection,
+  GooseModelSelection,
 ]);
 export type ModelSelection = typeof ModelSelection.Type;
 
@@ -184,6 +211,18 @@ export const PiProviderStartOptions = Schema.Struct({
   agentDir: Schema.optional(TrimmedNonEmptyString),
 });
 
+export const QwenCodeProviderStartOptions = Schema.Struct({
+  binaryPath: Schema.optional(TrimmedNonEmptyString),
+});
+
+export const AuggieProviderStartOptions = Schema.Struct({
+  binaryPath: Schema.optional(TrimmedNonEmptyString),
+});
+
+export const GooseProviderStartOptions = Schema.Struct({
+  binaryPath: Schema.optional(TrimmedNonEmptyString),
+});
+
 export const ProviderStartOptions = Schema.Struct({
   codex: Schema.optional(CodexProviderStartOptions),
   claudeAgent: Schema.optional(ClaudeProviderStartOptions),
@@ -193,6 +232,9 @@ export const ProviderStartOptions = Schema.Struct({
   kilo: Schema.optional(KiloProviderStartOptions),
   opencode: Schema.optional(OpenCodeProviderStartOptions),
   pi: Schema.optional(PiProviderStartOptions),
+  qwenCode: Schema.optional(QwenCodeProviderStartOptions),
+  auggie: Schema.optional(AuggieProviderStartOptions),
+  goose: Schema.optional(GooseProviderStartOptions),
 });
 export type ProviderStartOptions = typeof ProviderStartOptions.Type;
 
@@ -567,9 +609,7 @@ export const OrchestrationThread = Schema.Struct({
   lastKnownPr: Schema.optional(Schema.NullOr(OrchestrationThreadPullRequest)).pipe(
     Schema.withDecodingDefault(() => null),
   ),
-  linkedIssue: Schema.optional(Schema.NullOr(LinkedIssue)).pipe(
-    Schema.withDecodingDefault(() => null),
-  ),
+  linkedIssues: Schema.optional(LinkedIssues).pipe(Schema.withDecodingDefault(() => [])),
   latestTurn: Schema.NullOr(OrchestrationLatestTurn),
   latestUserMessageAt: Schema.optional(Schema.NullOr(IsoDateTime)),
   hasPendingApprovals: Schema.optional(Schema.Boolean),
@@ -636,9 +676,7 @@ export const OrchestrationThreadShell = Schema.Struct({
   lastKnownPr: Schema.optional(Schema.NullOr(OrchestrationThreadPullRequest)).pipe(
     Schema.withDecodingDefault(() => null),
   ),
-  linkedIssue: Schema.optional(Schema.NullOr(LinkedIssue)).pipe(
-    Schema.withDecodingDefault(() => null),
-  ),
+  linkedIssues: Schema.optional(LinkedIssues).pipe(Schema.withDecodingDefault(() => [])),
   latestTurn: Schema.NullOr(OrchestrationLatestTurn),
   latestUserMessageAt: Schema.optional(Schema.NullOr(IsoDateTime)),
   hasPendingApprovals: Schema.optional(Schema.Boolean),
@@ -772,9 +810,7 @@ const ThreadCreateCommand = Schema.Struct({
   lastKnownPr: Schema.optional(Schema.NullOr(OrchestrationThreadPullRequest)).pipe(
     Schema.withDecodingDefault(() => null),
   ),
-  linkedIssue: Schema.optional(Schema.NullOr(LinkedIssue)).pipe(
-    Schema.withDecodingDefault(() => null),
-  ),
+  linkedIssues: Schema.optional(LinkedIssues).pipe(Schema.withDecodingDefault(() => [])),
   createdAt: IsoDateTime,
 });
 
@@ -877,7 +913,7 @@ const ThreadMetaUpdateCommand = Schema.Struct({
   subagentRole: Schema.optional(Schema.NullOr(TrimmedNonEmptyString)),
   handoff: Schema.optional(Schema.NullOr(ThreadHandoff)),
   lastKnownPr: Schema.optional(Schema.NullOr(OrchestrationThreadPullRequest)),
-  linkedIssue: Schema.optional(Schema.NullOr(LinkedIssue)),
+  linkedIssues: Schema.optional(LinkedIssues),
   pinnedMessages: Schema.optional(ThreadPinnedMessages),
   notes: Schema.optional(ThreadNotes),
 });
@@ -1337,9 +1373,7 @@ export const ThreadCreatedPayload = Schema.Struct({
   lastKnownPr: Schema.optional(Schema.NullOr(OrchestrationThreadPullRequest)).pipe(
     Schema.withDecodingDefault(() => null),
   ),
-  linkedIssue: Schema.optional(Schema.NullOr(LinkedIssue)).pipe(
-    Schema.withDecodingDefault(() => null),
-  ),
+  linkedIssues: Schema.optional(LinkedIssues).pipe(Schema.withDecodingDefault(() => [])),
   handoff: Schema.NullOr(ThreadHandoff).pipe(Schema.withDecodingDefault(() => null)),
   createdAt: IsoDateTime,
   updatedAt: IsoDateTime,
@@ -1383,7 +1417,7 @@ export const ThreadMetaUpdatedPayload = Schema.Struct({
   subagentRole: Schema.optional(Schema.NullOr(TrimmedNonEmptyString)),
   handoff: Schema.optional(Schema.NullOr(ThreadHandoff)),
   lastKnownPr: Schema.optional(Schema.NullOr(OrchestrationThreadPullRequest)),
-  linkedIssue: Schema.optional(Schema.NullOr(LinkedIssue)),
+  linkedIssues: Schema.optional(LinkedIssues),
   pinnedMessages: Schema.optional(ThreadPinnedMessages),
   notes: Schema.optional(ThreadNotes),
   updatedAt: IsoDateTime,

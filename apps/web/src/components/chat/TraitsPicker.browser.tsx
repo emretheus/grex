@@ -48,6 +48,9 @@ function ClaudeTraitsPickerHarness(props: {
       kilo: [],
       opencode: [],
       pi: [],
+      qwenCode: [],
+      auggie: [],
+      goose: [],
     },
   });
   const handlePromptChange = useCallback(
@@ -582,6 +585,9 @@ function OpenCodeTraitsPickerHarness(props: {
       kilo: [],
       opencode: [],
       pi: [],
+      qwenCode: [],
+      auggie: [],
+      goose: [],
     },
   });
   const handlePromptChange = useCallback(

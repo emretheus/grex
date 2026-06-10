@@ -1,5 +1,6 @@
 import {
   PROVIDER_SEND_TURN_MAX_INPUT_CHARS,
+  type LinkedIssue,
   type OrchestrationMessage,
   type OrchestrationThread,
 } from "@t3tools/contracts";
@@ -195,4 +196,44 @@ export function buildForkBootstrapText(
     intro: "This sidechat was cloned from an earlier conversation.",
     maxChars,
   });
+}
+
+const LINKED_ISSUE_CONTEXT_PER_ISSUE_CHAR_LIMIT = 2_000;
+
+/**
+ * Formats linked issues as a structured context block for injection into the
+ * first provider turn of a thread.  Uses the snapshot captured at link time
+ * (`LinkedIssue.context`) — no live network call is made here, so this is
+ * always fast and never fails due to tracker outages.
+ *
+ * Returns null when the list is empty so callers can skip injection cheaply.
+ */
+export function buildLinkedIssuesContextText(
+  linkedIssues: readonly LinkedIssue[],
+  maxChars: number,
+): string | null {
+  if (linkedIssues.length === 0) return null;
+
+  const issueBlocks = linkedIssues.map((issue) => {
+    const lines: string[] = [
+      `<issue provider="${issue.provider}" identifier="${issue.identifier}">`,
+      `Title: ${issue.title}`,
+    ];
+    if (issue.status) lines.push(`Status: ${issue.status}`);
+    if (issue.assignees && issue.assignees.length > 0) {
+      lines.push(`Assignees: ${issue.assignees.join(", ")}`);
+    }
+    if (issue.project) lines.push(`Project: ${issue.project}`);
+    if (issue.branchName) lines.push(`Branch: ${issue.branchName}`);
+    if (issue.url) lines.push(`URL: ${issue.url}`);
+    const body = issue.context?.trim() || issue.description?.trim();
+    if (body) {
+      lines.push(`\n${truncateText(body, LINKED_ISSUE_CONTEXT_PER_ISSUE_CHAR_LIMIT)}`);
+    }
+    lines.push(`</issue>`);
+    return lines.join("\n");
+  });
+
+  const body = issueBlocks.join("\n\n").trim();
+  return truncateText(body, Math.max(0, maxChars));
 }

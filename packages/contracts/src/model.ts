@@ -127,6 +127,15 @@ export const GrokModelOptions = Schema.Struct({
 });
 export type GrokModelOptions = typeof GrokModelOptions.Type;
 
+export const QwenCodeModelOptions = Schema.Struct({});
+export type QwenCodeModelOptions = typeof QwenCodeModelOptions.Type;
+
+export const AuggieModelOptions = Schema.Struct({});
+export type AuggieModelOptions = typeof AuggieModelOptions.Type;
+
+export const GooseModelOptions = Schema.Struct({});
+export type GooseModelOptions = typeof GooseModelOptions.Type;
+
 export const ProviderModelOptions = Schema.Struct({
   codex: Schema.optional(CodexModelOptions),
   claudeAgent: Schema.optional(ClaudeModelOptions),
@@ -136,6 +145,9 @@ export const ProviderModelOptions = Schema.Struct({
   kilo: Schema.optional(OpenCodeModelOptions),
   opencode: Schema.optional(OpenCodeModelOptions),
   pi: Schema.optional(PiModelOptions),
+  qwenCode: Schema.optional(QwenCodeModelOptions),
+  auggie: Schema.optional(AuggieModelOptions),
+  goose: Schema.optional(GooseModelOptions),
 });
 export type ProviderModelOptions = typeof ProviderModelOptions.Type;
 
@@ -490,6 +502,33 @@ export const MODEL_OPTIONS_BY_PROVIDER = {
     },
   ],
   pi: [],
+  qwenCode: [
+    {
+      slug: "qwen3-coder",
+      name: "Qwen3 Coder",
+      capabilities: {
+        reasoningEffortLevels: [],
+        supportsFastMode: false,
+        supportsThinkingToggle: false,
+        promptInjectedEffortLevels: [],
+        contextWindowOptions: [],
+      },
+    },
+  ],
+  auggie: [
+    {
+      slug: "auggie-auto",
+      name: "Auggie Auto",
+      capabilities: {
+        reasoningEffortLevels: [],
+        supportsFastMode: false,
+        supportsThinkingToggle: false,
+        promptInjectedEffortLevels: [],
+        contextWindowOptions: [],
+      },
+    },
+  ],
+  goose: [],
   cursor: [
     {
       slug: "auto",
@@ -562,6 +601,9 @@ export const DEFAULT_MODEL_BY_PROVIDER: Record<ProviderWithDefaultModel, ModelSl
   grok: "grok-build",
   kilo: "kilo/kilo-auto/free",
   opencode: "openai/gpt-5",
+  qwenCode: "qwen3-coder",
+  auggie: "auggie-auto",
+  goose: "goose-auto",
 };
 
 // Backward compatibility for existing Codex-only call sites.
@@ -642,6 +684,9 @@ export const MODEL_SLUG_ALIASES_BY_PROVIDER: Record<ProviderKind, Record<string,
   kilo: {},
   opencode: {},
   pi: {},
+  qwenCode: {},
+  auggie: {},
+  goose: {},
 };
 
 // ── Agent mention aliases ─────────────────────────────────────────────
@@ -677,4 +722,7 @@ export const PROVIDER_DISPLAY_NAMES: Record<ProviderKind, string> = {
   kilo: "Kilo",
   opencode: "OpenCode",
   pi: "Pi",
+  qwenCode: "Qwen Code",
+  auggie: "Auggie",
+  goose: "Goose",
 };

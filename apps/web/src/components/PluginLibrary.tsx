@@ -91,6 +91,9 @@ const PROVIDER_DISCOVERY_ORDER: ReadonlyArray<ProviderKind> = [
   "kilo",
   "opencode",
   "pi",
+  "qwenCode",
+  "auggie",
+  "goose",
 ];
 const KNOWN_PLUGIN_BRANDS: Record<string, PluginBrandArtwork> = {
   canva: { icon: SiCanva, color: "#00C4CC" },
@@ -430,6 +433,18 @@ export function PluginLibrary() {
       pi: {
         plugins: supportsPluginDiscovery(piCapabilitiesQuery.data),
         skills: supportsSkillDiscovery(piCapabilitiesQuery.data),
+      },
+      qwenCode: {
+        plugins: false,
+        skills: false,
+      },
+      auggie: {
+        plugins: false,
+        skills: false,
+      },
+      goose: {
+        plugins: false,
+        skills: false,
       },
     }),
     [

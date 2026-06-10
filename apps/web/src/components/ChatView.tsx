@@ -523,6 +523,12 @@ function getProviderStartOptionsCustomBinaryPath(
       return normalizeCustomBinaryPath(providerOptions?.cursor?.binaryPath);
     case "pi":
       return normalizeCustomBinaryPath(providerOptions?.pi?.binaryPath);
+    case "qwenCode":
+      return normalizeCustomBinaryPath(providerOptions?.qwenCode?.binaryPath);
+    case "auggie":
+      return normalizeCustomBinaryPath(providerOptions?.auggie?.binaryPath);
+    case "goose":
+      return normalizeCustomBinaryPath(providerOptions?.goose?.binaryPath);
   }
 }
 
@@ -1429,6 +1435,9 @@ export default function ChatView({
       kilo: resolveHint("kilo"),
       opencode: resolveHint("opencode"),
       pi: resolveHint("pi"),
+      qwenCode: resolveHint("qwenCode"),
+      auggie: resolveHint("auggie"),
+      goose: resolveHint("goose"),
     };
   }, [
     activeProject?.defaultModelSelection,
@@ -1486,6 +1495,15 @@ export default function ChatView({
       agentDir: settings.piAgentDir || null,
       enabled: selectedProvider === "pi" || lockedProvider === "pi" || isModelPickerOpen,
     }),
+  );
+  const qwenCodeDynamicModelsQuery = useQuery(
+    providerModelsQueryOptions({ provider: "qwenCode", enabled: false }),
+  );
+  const auggieDynamicModelsQuery = useQuery(
+    providerModelsQueryOptions({ provider: "auggie", enabled: false }),
+  );
+  const gooseDynamicModelsQuery = useQuery(
+    providerModelsQueryOptions({ provider: "goose", enabled: false }),
   );
   const claudeDynamicAgentsQuery = useQuery(
     providerAgentsQueryOptions({ provider: "claudeAgent" }),
@@ -1559,6 +1577,16 @@ export default function ChatView({
         composerModelHintByProvider.opencode,
       ),
       pi: getAppModelOptions("pi", customModelsByProvider.pi, composerModelHintByProvider.pi),
+      qwenCode: getAppModelOptions(
+        "qwenCode",
+        customModelsByProvider.qwenCode,
+        composerModelHintByProvider.qwenCode,
+      ),
+      auggie: getAppModelOptions(
+        "auggie",
+        customModelsByProvider.auggie,
+        composerModelHintByProvider.auggie,
+      ),
     };
     const result: Record<
       ProviderKind,
@@ -1577,6 +1605,9 @@ export default function ChatView({
       kilo: kiloDynamicModelsQuery.data,
       opencode: openCodeDynamicModelsQuery.data,
       pi: piDynamicModelsQuery.data,
+      qwenCode: qwenCodeDynamicModelsQuery.data,
+      auggie: auggieDynamicModelsQuery.data,
+      goose: gooseDynamicModelsQuery.data,
     };
 
     for (const provider of [
@@ -1588,6 +1619,9 @@ export default function ChatView({
       "kilo",
       "opencode",
       "pi",
+      "qwenCode",
+      "auggie",
+      "goose",
     ] as const) {
       const dynamicModels = dynamicSources[provider]?.models;
       if (dynamicModels && dynamicModels.length > 0) {
@@ -1640,6 +1674,10 @@ export default function ChatView({
       kilo: kiloDynamicModelsQuery.data?.models ?? [],
       opencode: openCodeDynamicModelsQuery.data?.models ?? [],
       pi: piDynamicModelsQuery.data?.models ?? [],
+      qwenCode: [],
+      auggie: [],
+    goose: [],
+      goose: [],
     }),
     [
       claudeDynamicModelsQuery.data?.models,
@@ -1661,6 +1699,9 @@ export default function ChatView({
     kilo: kiloDynamicModelsQuery,
     opencode: openCodeDynamicModelsQuery,
     pi: piDynamicModelsQuery,
+    qwenCode: qwenCodeDynamicModelsQuery,
+    auggie: auggieDynamicModelsQuery,
+    goose: gooseDynamicModelsQuery,
   } as const;
   const selectedRuntimeModel = useMemo(
     () =>
@@ -7767,6 +7808,15 @@ export default function ChatView({
     onRenamePinnedMessage: handleRenamePinnedMessage,
     onNotesChange: handleNotesChange,
     onClose: () => setEnvironmentPanelOpen(false),
+    issueLinkControl: {
+      threadId: activeThread.id,
+      linkedIssues:
+        (serverThread?.linkedIssues?.length ? serverThread.linkedIssues : null) ??
+        (draftThread?.linkedIssues?.length ? draftThread.linkedIssues : null) ??
+        [],
+      hasServerThread: isServerThread,
+      ...(threadWorkspaceCwd ? { projectPath: threadWorkspaceCwd } : {}),
+    },
   };
   // Full-width single chat: overlay plus transcript/composer inset. Floating overlay when the
   // column is already narrow — right dock open or a split pane (same as header compact mode).
