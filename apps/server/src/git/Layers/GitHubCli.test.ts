@@ -125,4 +125,34 @@ layer("GitHubCliLive", (it) => {
       assert.equal(error.message.includes("Pull request not found"), true);
     }),
   );
+
+  it.effect("passes --draft to gh pr create only when requested", () =>
+    Effect.gen(function* () {
+      const okResult = { stdout: "", stderr: "", code: 0, signal: null, timedOut: false };
+      mockedRunProcess.mockResolvedValue(okResult);
+      const gh = yield* GitHubCli;
+
+      yield* gh.createPullRequest({
+        cwd: "/repo",
+        baseBranch: "main",
+        headSelector: "feature",
+        title: "T",
+        bodyFile: "/tmp/body.md",
+        draft: true,
+      });
+      const draftArgs = mockedRunProcess.mock.calls[0]?.[1] ?? [];
+      expect(draftArgs).toContain("--draft");
+
+      mockedRunProcess.mockClear();
+      yield* gh.createPullRequest({
+        cwd: "/repo",
+        baseBranch: "main",
+        headSelector: "feature",
+        title: "T",
+        bodyFile: "/tmp/body.md",
+      });
+      const plainArgs = mockedRunProcess.mock.calls[0]?.[1] ?? [];
+      expect(plainArgs).not.toContain("--draft");
+    }),
+  );
 });

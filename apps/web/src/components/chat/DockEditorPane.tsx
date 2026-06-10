@@ -14,8 +14,9 @@ import { createProjectSelector, createThreadSelector } from "~/storeSelectors";
 import { selectThreadEditorState, useEditorStore } from "~/editorStore";
 import { ensureMonacoSetup, monaco } from "~/lib/monaco/monacoSetup";
 import { modelRegistry } from "~/lib/monaco/modelRegistry";
-import { XIcon } from "~/lib/icons";
+import { DiffIcon, XIcon } from "~/lib/icons";
 import { cn } from "~/lib/utils";
+import { MonacoDiffView } from "./MonacoDiffView";
 import { PanelStateMessage } from "./PanelStateMessage";
 
 interface DockEditorPaneProps {
@@ -48,6 +49,10 @@ export function DockEditorPane({ hostThreadId, projectId, isActive }: DockEditor
   const [dirtyKeys, setDirtyKeys] = useState<Set<string>>(() => new Set());
 
   const activePath = editorState.activePath;
+  const activeFile = activePath
+    ? editorState.openFiles.find((f) => f.relativePath === activePath)
+    : undefined;
+  const activeIsDiff = activeFile?.kind === "diff";
 
   // Mount the single Monaco editor instance for this pane.
   useEffect(() => {
@@ -111,10 +116,12 @@ export function DockEditorPane({ hostThreadId, projectId, isActive }: DockEditor
     });
   }, []);
 
-  // Load each newly-opened file's model.
+  // Load each newly-opened file's model. Diff tabs manage their own two-model
+  // pair inside MonacoDiffView, so they're skipped here.
   useEffect(() => {
     if (!cwd) return;
     for (const file of editorState.openFiles) {
+      if (file.kind === "diff") continue;
       const path = file.relativePath;
       if (loadByPath[path]) continue;
       setLoadByPath((prev) => ({ ...prev, [path]: { kind: "loading" } }));
@@ -146,10 +153,13 @@ export function DockEditorPane({ hostThreadId, projectId, isActive }: DockEditor
         }
       })();
     }
-    // Release models for files no longer open.
-    const openPaths = new Set(editorState.openFiles.map((f) => f.relativePath));
+    // Release file models that are no longer open as a *file* tab (closed, or
+    // flipped to a diff tab — diff tabs own their own models).
+    const openFilePaths = new Set(
+      editorState.openFiles.filter((f) => f.kind !== "diff").map((f) => f.relativePath),
+    );
     for (const [path, state] of Object.entries(loadByPath)) {
-      if (!openPaths.has(path)) {
+      if (!openFilePaths.has(path)) {
         if (state.kind === "ready") modelRegistry.release(state.modelKey);
         setLoadByPath((prev) => {
           const next = { ...prev };
@@ -161,7 +171,7 @@ export function DockEditorPane({ hostThreadId, projectId, isActive }: DockEditor
   }, [cwd, editorState.openFiles, loadByPath]);
 
   // Swap the editor's model when the active file (or its load state) changes.
-  const activeLoad = activePath ? loadByPath[activePath] : undefined;
+  const activeLoad = activePath && !activeIsDiff ? loadByPath[activePath] : undefined;
   useEffect(() => {
     const editor = editorRef.current;
     if (!editor) return;
@@ -228,8 +238,17 @@ export function DockEditorPane({ hostThreadId, projectId, isActive }: DockEditor
       {/* Tab bar */}
       <div className="flex h-[34px] shrink-0 items-stretch overflow-x-auto border-b border-[color:var(--color-border-light)]">
         {editorState.openFiles.map((file) => {
-          const load = loadByPath[file.relativePath];
-          const dirty = load?.kind === "ready" && dirtyKeys.has(load.modelKey);
+          const isDiffTab = file.kind === "diff";
+          // File tabs track dirty via loadByPath; diff tabs share the editable
+          // modified model, keyed directly in the registry.
+          const dirtyKey = isDiffTab
+            ? cwd
+              ? modelRegistry.keyFor(cwd, file.relativePath)
+              : null
+            : loadByPath[file.relativePath]?.kind === "ready"
+              ? (loadByPath[file.relativePath] as { modelKey: string }).modelKey
+              : null;
+          const dirty = dirtyKey !== null && dirtyKeys.has(dirtyKey);
           const isActiveTab = file.relativePath === activePath;
           return (
             <div
@@ -241,10 +260,17 @@ export function DockEditorPane({ hostThreadId, projectId, isActive }: DockEditor
                   : "text-[var(--color-text-foreground-secondary)] hover:text-[var(--color-text-foreground)]",
               )}
             >
+              {isDiffTab ? (
+                <DiffIcon className="size-3.5 shrink-0 text-[var(--color-text-foreground-secondary)]" />
+              ) : null}
               <button
                 type="button"
                 className="max-w-[160px] truncate"
-                title={file.relativePath}
+                title={
+                  isDiffTab
+                    ? `${file.relativePath} (diff vs ${file.diffRef ?? "HEAD"})`
+                    : file.relativePath
+                }
                 onClick={() => setActive(hostThreadId, file.relativePath)}
               >
                 {file.name}
@@ -272,8 +298,21 @@ export function DockEditorPane({ hostThreadId, projectId, isActive }: DockEditor
 
       {/* Editor surface */}
       <div className="relative min-h-0 flex-1">
-        <div ref={containerRef} className="absolute inset-0" />
-        {showOverlay ? (
+        {/* The plain-file editor is always mounted (cheap, kept warm); a diff tab
+            overlays it with a dedicated diff editor. */}
+        <div ref={containerRef} className={cn("absolute inset-0", activeIsDiff && "invisible")} />
+        {activeIsDiff && activeFile && cwd ? (
+          <div className="absolute inset-0">
+            <MonacoDiffView
+              key={`${activeFile.relativePath}:${activeFile.diffRef ?? "HEAD"}`}
+              cwd={cwd}
+              relativePath={activeFile.relativePath}
+              ref={activeFile.diffRef ?? "HEAD"}
+              isActive={isActive}
+            />
+          </div>
+        ) : null}
+        {!activeIsDiff && showOverlay ? (
           <div className="absolute inset-0 flex items-center justify-center bg-[var(--color-background-surface)] px-4 text-center text-xs text-[var(--color-text-foreground-secondary)]">
             {activeLoad?.kind === "too-large"
               ? `File too large to open in the editor (${Math.round(activeLoad.totalSize / 1024)} KB).`

@@ -1344,6 +1344,12 @@ export const makeGitManager = Effect.gen(function* () {
     codexHomePath?: string,
     providerOptions?: ProviderStartOptions,
     model?: string,
+    overrides?: {
+      readonly title?: string;
+      readonly body?: string;
+      readonly baseBranch?: string;
+      readonly draft?: boolean;
+    },
   ) =>
     Effect.gen(function* () {
       const details = yield* gitCore.statusDetails(cwd);
@@ -1378,30 +1384,43 @@ export const makeGitManager = Effect.gen(function* () {
         };
       }
 
-      const baseBranch = yield* resolveBaseBranch(cwd, branch, details.upstreamRef, headContext);
+      const baseBranch =
+        overrides?.baseBranch ??
+        (yield* resolveBaseBranch(cwd, branch, details.upstreamRef, headContext));
       if (!headContext.isCrossRepository && baseBranch === headContext.headBranch) {
         return yield* gitManagerError(
           "runPrStep",
           `Cannot create a pull request from '${headContext.headBranch}' into itself. Create or switch to a feature branch and retry.`,
         );
       }
-      const rangeContext = yield* gitCore.readRangeContext(cwd, baseBranch);
 
-      const generated = yield* textGeneration.generatePrContent({
-        cwd,
-        baseBranch,
-        headBranch: headContext.headBranch,
-        commitSummary: limitContext(rangeContext.commitSummary, 20_000),
-        diffSummary: limitContext(rangeContext.diffSummary, 20_000),
-        diffPatch: limitContext(rangeContext.diffPatch, 60_000),
-        ...(codexHomePath ? { codexHomePath } : {}),
-        ...(providerOptions ? { providerOptions } : {}),
-        ...(model ? { model } : {}),
-      });
+      // Use the caller-provided title/body when both are supplied; otherwise
+      // fall back to AI-generated PR content from the commit range.
+      let prTitle: string;
+      let prBody: string;
+      if (overrides?.title !== undefined && overrides.body !== undefined) {
+        prTitle = overrides.title;
+        prBody = overrides.body;
+      } else {
+        const rangeContext = yield* gitCore.readRangeContext(cwd, baseBranch);
+        const generated = yield* textGeneration.generatePrContent({
+          cwd,
+          baseBranch,
+          headBranch: headContext.headBranch,
+          commitSummary: limitContext(rangeContext.commitSummary, 20_000),
+          diffSummary: limitContext(rangeContext.diffSummary, 20_000),
+          diffPatch: limitContext(rangeContext.diffPatch, 60_000),
+          ...(codexHomePath ? { codexHomePath } : {}),
+          ...(providerOptions ? { providerOptions } : {}),
+          ...(model ? { model } : {}),
+        });
+        prTitle = overrides?.title ?? generated.title;
+        prBody = overrides?.body ?? generated.body;
+      }
 
       const bodyFile = path.join(tempDir, `codewit-pr-body-${process.pid}-${randomUUID()}.md`);
       yield* fileSystem
-        .writeFileString(bodyFile, generated.body)
+        .writeFileString(bodyFile, prBody)
         .pipe(
           Effect.mapError((cause) =>
             gitManagerError("runPrStep", "Failed to write pull request body temp file.", cause),
@@ -1412,8 +1431,9 @@ export const makeGitManager = Effect.gen(function* () {
           cwd,
           baseBranch,
           headSelector: headContext.preferredHeadSelector,
-          title: generated.title,
+          title: prTitle,
           bodyFile,
+          ...(overrides?.draft ? { draft: true } : {}),
         })
         .pipe(
           Effect.as(null),
@@ -1442,7 +1462,7 @@ export const makeGitManager = Effect.gen(function* () {
           status: "created" as const,
           baseBranch,
           headBranch: headContext.headBranch,
-          title: generated.title,
+          title: prTitle,
         };
       }
 
@@ -2747,6 +2767,14 @@ The local stash entry was kept for recovery.`,
                       input.codexHomePath,
                       input.providerOptions,
                       input.textGenerationModel,
+                      {
+                        ...(input.prTitle !== undefined ? { title: input.prTitle } : {}),
+                        ...(input.prBody !== undefined ? { body: input.prBody } : {}),
+                        ...(input.prBaseBranch !== undefined
+                          ? { baseBranch: input.prBaseBranch }
+                          : {}),
+                        ...(input.prDraft !== undefined ? { draft: input.prDraft } : {}),
+                      },
                     );
                   }),
                 ),

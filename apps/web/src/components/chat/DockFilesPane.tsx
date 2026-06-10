@@ -46,6 +46,7 @@ export function DockFilesPane({ hostThreadId, projectId }: DockFilesPaneProps) {
   const cwd = thread?.worktreePath ?? project?.cwd ?? null;
 
   const openFile = useEditorStore((s) => s.openFile);
+  const openDiff = useEditorStore((s) => s.openDiff);
   const openPane = useRightDockStore((s) => s.openPane);
 
   // Per-file git status (added/modified/deleted/renamed) for tinting tree rows,
@@ -132,9 +133,11 @@ export function DockFilesPane({ hostThreadId, projectId }: DockFilesPaneProps) {
       const api = readNativeApi();
       if (!api || !cwd) return;
       const absolutePath = joinDirectoryPath(cwd, entry.path);
+      const hasChanges = entry.kind === "file" && statusByPath.has(entry.path);
       const clicked = await api.contextMenu.show(
         [
           ...(entry.kind === "file" ? [{ id: "open", label: "Open" }] : []),
+          ...(hasChanges ? [{ id: "open-diff", label: "Open diff" }] : []),
           { id: "copy-path", label: "Copy path", separatorBefore: entry.kind === "file" },
           { id: "copy-relative-path", label: "Copy relative path" },
           { id: "reveal", label: "Reveal in file manager", separatorBefore: true },
@@ -144,6 +147,10 @@ export function DockFilesPane({ hostThreadId, projectId }: DockFilesPaneProps) {
       switch (clicked) {
         case "open":
           handleFileClick(entry.path);
+          break;
+        case "open-diff":
+          openDiff(hostThreadId, entry.path, "HEAD");
+          openPane(hostThreadId, { kind: "editor" });
           break;
         case "copy-path":
           void copyTextToClipboard(absolutePath);
@@ -164,7 +171,7 @@ export function DockFilesPane({ hostThreadId, projectId }: DockFilesPaneProps) {
           break;
       }
     },
-    [cwd, handleFileClick],
+    [cwd, handleFileClick, statusByPath, openDiff, openPane, hostThreadId],
   );
 
   if (!cwd) {
