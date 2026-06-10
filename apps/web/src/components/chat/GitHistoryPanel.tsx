@@ -1,751 +1,326 @@
 // FILE: GitHistoryPanel.tsx
-// Purpose: Commit history — VS Code Git Graph–style layout.
-//          Row height 24px, font 13px, badge height 18px — exact spec match.
+// Purpose: Commit history list with a topology-order branch graph column,
+//          ref decorations, and author/date metadata. Displayed as a tab
+//          inside GitPanel ("History") when the user wants to see the log.
 // Layer: Chat right-dock UI
 
-import {
-  type GitLogCommit,
-  gitLogQueryOptions,
-  gitShowCommitQueryOptions,
-} from "~/lib/gitReactQuery";
+import { type GitLogCommit, gitLogQueryOptions } from "~/lib/gitReactQuery";
 import { useQuery } from "@tanstack/react-query";
-import { memo, useMemo, useState } from "react";
+import { memo, useMemo } from "react";
 import { cn } from "~/lib/utils";
 import { PanelStateMessage } from "./PanelStateMessage";
 import { useWorkspaceFileWatch } from "~/hooks/useWorkspaceFileWatch";
-import { buildGraphLayout, DEFAULT_GRAPH_CONFIG, type GraphRenderData } from "~/lib/gitGraph";
 
-// ── layout constants — exact VS Code Git Graph values ────────────────────────
+// ── graph layout ─────────────────────────────────────────────────────────────
 
-const EMPTY_COMMITS: GitLogCommit[] = [];
-const ROW_H = 24; // line-height from #commitTable td
-const HEADER_H = 30; // th line-height 18 + 2×6 padding
-const GRAPH_CFG = {
-  ...DEFAULT_GRAPH_CONFIG,
-  gridY: ROW_H,
-  offsetY: ROW_H / 2,
-  gridX: 14,
-  offsetX: 8,
-  dotRadius: 4,
-};
+const GRAPH_COL_W = 14; // px per column
+const GRAPH_ROW_H = 28; // px per row — must match row height in CSS
+const DOT_R = 4;
 
-// ── continuous graph SVG ──────────────────────────────────────────────────────
+interface GraphCell {
+  // column index for this commit's dot
+  col: number;
+  // total columns used up through this row (drives SVG width)
+  totalCols: number;
+  // edges from parent row columns to child row columns
+  edges: Array<{
+    fromCol: number;
+    toCol: number;
+    // "straight" | "bend-right" | "bend-left"
+    style: "straight" | "merge" | "branch";
+  }>;
+}
 
-const GraphSvg = memo(function GraphSvg({ layout }: { layout: GraphRenderData }) {
-  const { paths, dots, svgWidth, svgHeight } = layout;
-  // Shadow path underneath each line for legibility, as VS Code does
+function buildGraphCells(commits: readonly GitLogCommit[]): GraphCell[] {
+  // columns[i] = sha of the commit that "owns" column i (ongoing branch line)
+  let columns: Array<string | null> = [];
+
+  const cells: GraphCell[] = [];
+
+  for (let i = 0; i < commits.length; i++) {
+    const commit = commits[i]!;
+    const sha = commit.sha;
+    const parents = commit.parentShas;
+
+    // Find which column owns this commit
+    let col = columns.indexOf(sha);
+    if (col === -1) {
+      // Start a new column (first commit in a new branch)
+      col = columns.indexOf(null);
+      if (col === -1) {
+        col = columns.length;
+        columns.push(sha);
+      } else {
+        columns[col] = sha;
+      }
+    }
+
+    const edges: GraphCell["edges"] = [];
+
+    // Build edges: each active column continues unless it IS this commit's col
+    // and we replace it with the first parent.
+    const nextColumns: Array<string | null> = [];
+
+    let primaryParentAssigned = false;
+    for (let c = 0; c < columns.length; c++) {
+      const occupant = columns[c] ?? null;
+      if (occupant === sha) {
+        // This column was owned by us — hand it to our first parent
+        if (!primaryParentAssigned && parents.length > 0) {
+          const p0 = parents[0]!;
+          // Check if p0 already has a column
+          const existingCol = columns.indexOf(p0, c + 1);
+          if (existingCol !== -1) {
+            // Merge edge: current col bends to existing parent col
+            edges.push({ fromCol: c, toCol: existingCol, style: "merge" });
+            nextColumns.push(null);
+          } else {
+            nextColumns.push(p0);
+            edges.push({ fromCol: c, toCol: c, style: "straight" });
+          }
+          primaryParentAssigned = true;
+        } else {
+          nextColumns.push(null);
+        }
+      } else if (occupant !== null) {
+        // Continuing branch line — check for merge target
+        const existingInNext = nextColumns.indexOf(occupant);
+        if (existingInNext !== -1) {
+          edges.push({ fromCol: c, toCol: existingInNext, style: "merge" });
+          nextColumns.push(null);
+        } else {
+          nextColumns.push(occupant);
+          edges.push({ fromCol: c, toCol: c, style: "straight" });
+        }
+      } else {
+        nextColumns.push(null);
+      }
+    }
+
+    // Additional parents (merge commits) open new columns
+    for (let p = 1; p < parents.length; p++) {
+      const parentSha = parents[p]!;
+      const existingCol = nextColumns.indexOf(parentSha);
+      if (existingCol !== -1) {
+        edges.push({ fromCol: col, toCol: existingCol, style: "merge" });
+      } else {
+        // Find free slot
+        let freeSlot = nextColumns.indexOf(null);
+        if (freeSlot === -1) {
+          freeSlot = nextColumns.length;
+          nextColumns.push(parentSha);
+        } else {
+          nextColumns[freeSlot] = parentSha;
+        }
+        edges.push({ fromCol: col, toCol: freeSlot, style: "branch" });
+      }
+    }
+
+    // Trim trailing nulls
+    while (nextColumns.length > 0 && nextColumns[nextColumns.length - 1] === null) {
+      nextColumns.pop();
+    }
+
+    const totalCols = Math.max(col + 1, nextColumns.length, 1);
+    cells.push({ col, totalCols, edges });
+    columns = nextColumns;
+  }
+
+  return cells;
+}
+
+// ── colour palette (10 colours, cycles) ────────────────────────────────────
+
+const BRANCH_COLORS = [
+  "#0158FD", // brand blue
+  "#01CCA4", // brand green
+  "#a78bfa", // violet
+  "#f59e0b", // amber
+  "#ec4899", // pink
+  "#14b8a6", // teal
+  "#f97316", // orange
+  "#8b5cf6", // purple
+  "#06b6d4", // cyan
+  "#84cc16", // lime
+];
+
+function branchColor(col: number): string {
+  return BRANCH_COLORS[col % BRANCH_COLORS.length]!;
+}
+
+// ── SVG graph strip ──────────────────────────────────────────────────────────
+
+const GraphStrip = memo(function GraphStrip({
+  cells,
+  index,
+}: {
+  cells: readonly GraphCell[];
+  index: number;
+}) {
+  const cell = cells[index];
+  if (!cell) return null;
+  const { col, totalCols, edges } = cell;
+  const w = totalCols * GRAPH_COL_W + GRAPH_COL_W / 2;
+  const cx = col * GRAPH_COL_W + GRAPH_COL_W / 2;
+  const cy = GRAPH_ROW_H / 2;
+
+  // Lines from this row to next
+  const lines = edges.map((edge, ei) => {
+    const x1 = edge.fromCol * GRAPH_COL_W + GRAPH_COL_W / 2;
+    const x2 = edge.toCol * GRAPH_COL_W + GRAPH_COL_W / 2;
+    const color = branchColor(edge.fromCol);
+    if (edge.style === "straight") {
+      return (
+        <line
+          key={ei}
+          x1={x1}
+          y1={cy}
+          x2={x2}
+          y2={GRAPH_ROW_H}
+          stroke={color}
+          strokeWidth={1.5}
+          strokeLinecap="round"
+        />
+      );
+    }
+    // Curved merge/branch line
+    const midY = GRAPH_ROW_H * 0.75;
+    return (
+      <path
+        key={ei}
+        d={`M ${x1} ${cy} Q ${x1} ${midY} ${x2} ${GRAPH_ROW_H}`}
+        stroke={color}
+        strokeWidth={1.5}
+        fill="none"
+        strokeLinecap="round"
+      />
+    );
+  });
+
+  // Lines from previous row (coming in)
+  const incomingLines = edges.map((edge, ei) => {
+    const x1 = edge.fromCol * GRAPH_COL_W + GRAPH_COL_W / 2;
+    const x2 = edge.toCol * GRAPH_COL_W + GRAPH_COL_W / 2;
+    const color = branchColor(edge.fromCol);
+    if (edge.style === "straight") {
+      return (
+        <line
+          key={`in-${ei}`}
+          x1={x1}
+          y1={0}
+          x2={x1}
+          y2={cy}
+          stroke={color}
+          strokeWidth={1.5}
+          strokeLinecap="round"
+        />
+      );
+    }
+    const midY = GRAPH_ROW_H * 0.25;
+    return (
+      <path
+        key={`in-${ei}`}
+        d={`M ${x2} 0 Q ${x2} ${midY} ${x1} ${cy}`}
+        stroke={color}
+        strokeWidth={1.5}
+        fill="none"
+        strokeLinecap="round"
+      />
+    );
+  });
+
   return (
-    <svg
-      width={svgWidth}
-      height={svgHeight}
-      style={{ display: "block", overflow: "visible" }}
-      aria-hidden
-    >
-      {/* Shadow paths */}
-      {paths.map((p) => (
-        <path
-          key={`s:${p.d}`}
-          d={p.d}
-          stroke="var(--color-sidebar,#1e1e1e)"
-          strokeWidth={4}
-          fill="none"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeOpacity={0.75}
-        />
-      ))}
-      {/* Coloured lines */}
-      {paths.map((p) => (
-        <path
-          key={`l:${p.d}`}
-          d={p.d}
-          stroke={p.colour}
-          strokeWidth={2}
-          fill="none"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-      ))}
-      {/* Dots */}
-      {dots.map((dot) =>
-        dot.isCurrent ? (
-          <circle
-            key={`${dot.cx},${dot.cy}`}
-            cx={dot.cx}
-            cy={dot.cy}
-            r={4}
-            fill="var(--color-sidebar,#1e1e1e)"
-            stroke={dot.colour}
-            strokeWidth={2}
-          />
-        ) : (
-          <circle
-            key={`${dot.cx},${dot.cy}`}
-            cx={dot.cx}
-            cy={dot.cy}
-            r={4}
-            fill={dot.colour}
-            stroke="var(--color-sidebar,#1e1e1e)"
-            strokeWidth={1}
-            strokeOpacity={0.75}
-          />
-        ),
-      )}
+    <svg width={w} height={GRAPH_ROW_H} style={{ flexShrink: 0, overflow: "visible" }} aria-hidden>
+      {incomingLines}
+      {lines}
+      <circle cx={cx} cy={cy} r={DOT_R} fill={branchColor(col)} />
     </svg>
   );
 });
 
-// ── VS Code Git Graph exact icons ─────────────────────────────────────────────
-// Taken verbatim from web/utils.ts SVG_ICONS in the vscode-git-graph repo.
-// ViewBox 0 0 10 16 for branch/tag, 0 0 14 16 for stash.
+// ── ref chip ─────────────────────────────────────────────────────────────────
 
-const VSCGG_BRANCH_PATH =
-  "M10 5c0-1.11-.89-2-2-2a1.993 1.993 0 0 0-1 3.72v.3c-.02.52-.23.98-.63 1.38-.4.4-.86.61-1.38.63-.83.02-1.48.16-2 .45V4.72a1.993 1.993 0 0 0-1-3.72C.88 1 0 1.89 0 3a2 2 0 0 0 1 1.72v6.56c-.59.35-1 .99-1 1.72 0 1.11.89 2 2 2 1.11 0 2-.89 2-2 0-.53-.2-1-.53-1.36.09-.06.48-.41.59-.47.25-.11.56-.17.94-.17 1.05-.05 1.95-.45 2.75-1.25S8.95 7.77 9 6.73h-.02C9.59 6.37 10 5.73 10 5zM2 1.8c.66 0 1.2.55 1.2 1.2 0 .65-.55 1.2-1.2 1.2C1.35 4.2.8 3.65.8 3c0-.65.55-1.2 1.2-1.2zm0 12.41c-.66 0-1.2-.55-1.2-1.2 0-.65.55-1.2 1.2-1.2.65 0 1.2.55 1.2 1.2 0 .65-.55 1.2-1.2 1.2zm6-8c-.66 0-1.2-.55-1.2-1.2 0-.65.55-1.2 1.2-1.2.65 0 1.2.55 1.2 1.2 0 .65-.55 1.2-1.2 1.2z";
-const VSCGG_TAG_PATH =
-  "M7.73 1.73C7.26 1.26 6.62 1 5.96 1H3.5C2.13 1 1 2.13 1 3.5v2.47c0 .66.27 1.3.73 1.77l6.06 6.06c.39.39 1.02.39 1.41 0l4.59-4.59a.996.996 0 0 0 0-1.41L7.73 1.73zM2.38 7.09c-.31-.3-.47-.7-.47-1.13V3.5c0-.88.72-1.59 1.59-1.59h2.47c.42 0 .83.16 1.13.47l6.14 6.13-4.73 4.73-6.13-6.15zM3.01 3h2v2H3V3h.01z";
-
-// ── ref badge — exact VS Code Git Graph style ─────────────────────────────────
-// Height 18px, border-radius 5px, font-size 12px, coloured icon box on left.
-//
-// Ref kinds parsed from git log %D format:
-//   "HEAD -> main"  → HEAD pointer  (bold, active border in branch color)
-//   "main"          → local branch  (solid icon bg)
-//   "origin/main"   → remote        (italic label, solid icon bg in branch color)
-//   "tag: v1.0"     → tag           (tag icon)
-
-type RefKind = "head" | "local" | "remote" | "tag";
-
-function parseRef(raw: string): { kind: RefKind; text: string; pointer?: string } {
-  if (raw === "HEAD") return { kind: "head", text: "HEAD" };
-  if (raw.startsWith("HEAD -> "))
-    return { kind: "head", text: raw.slice(8), pointer: raw.slice(8) };
-  if (raw.startsWith("tag: ")) return { kind: "tag", text: raw.slice(5) };
-  // Refs containing "/" that aren't HEAD are remote (e.g. origin/main, origin/HEAD)
-  if (raw.includes("/")) return { kind: "remote", text: raw };
-  return { kind: "local", text: raw };
-}
-
-function refSortRank(raw: string): number {
-  if (raw.startsWith("HEAD -> ") || raw === "HEAD") return 0;
-  if (raw.startsWith("tag: ")) return 3;
-  if (raw.includes("/")) return 2;
-  return 1;
-}
-
-// Expand raw refs from git log %D into sorted display tokens.
-// Sort: HEAD pointer first, then local branches, then remotes, then tags.
-function expandRefs(refs: readonly string[]): Array<{ raw: string; key: string }> {
-  return refs
-    .map((r) => ({ raw: r, key: r }))
-    .toSorted((a, b) => refSortRank(a.raw) - refSortRank(b.raw));
-}
-
-function RefBadge({ raw, branchColor }: { raw: string; branchColor: string }) {
-  const ref = parseRef(raw);
-  const isTag = ref.kind === "tag";
-  const isHead = ref.kind === "head";
-  const isRemote = ref.kind === "remote";
-
-  // HEAD badge shows just "HEAD" with an arrow-like style (no icon box, just bold border)
-  if (isHead && ref.text === "HEAD") {
-    return (
-      <span
-        style={{
-          display: "inline-flex",
-          alignItems: "center",
-          height: 18,
-          lineHeight: "18px",
-          fontSize: 12,
-          borderRadius: 5,
-          border: `1px solid ${branchColor}`,
-          background: "rgba(128,128,128,0.15)",
-          marginRight: 4,
-          padding: "0 6px",
-          flexShrink: 0,
-          fontWeight: 700,
-          color: branchColor,
-        }}
-      >
-        HEAD
-      </span>
-    );
-  }
-
+function RefChip({ label }: { label: string }) {
+  const isHead = label === "HEAD" || label.startsWith("HEAD -> ");
+  const isBranch = !label.startsWith("tag: ") && !label.startsWith("HEAD");
+  const isTag = label.startsWith("tag: ");
+  const text = label.replace(/^HEAD -> /, "").replace(/^tag: /, "");
   return (
     <span
-      style={{
-        display: "inline-flex",
-        alignItems: "center",
-        height: 18,
-        lineHeight: "18px",
-        fontSize: 12,
-        borderRadius: 5,
-        border: `1px solid ${isHead ? branchColor : "rgba(128,128,128,0.6)"}`,
-        background: "rgba(128,128,128,0.15)",
-        marginRight: 4,
-        verticalAlign: "middle",
-        overflow: "hidden",
-        flexShrink: 0,
-        whiteSpace: "nowrap",
-      }}
+      className={cn(
+        "shrink-0 rounded px-1 py-px text-[10px] font-medium leading-none",
+        isHead
+          ? "bg-brand/15 text-brand ring-1 ring-inset ring-brand/30"
+          : isTag
+            ? "bg-amber-500/10 text-amber-600 dark:text-amber-400 ring-1 ring-inset ring-amber-400/30"
+            : isBranch
+              ? "bg-muted text-muted-foreground ring-1 ring-inset ring-border"
+              : "bg-muted text-muted-foreground",
+      )}
     >
-      {/* Coloured icon box — VS Code Git Graph exact style */}
-      <span
-        style={{
-          display: "inline-flex",
-          alignItems: "center",
-          justifyContent: "center",
-          width: 16,
-          height: 18,
-          background: branchColor,
-          flexShrink: 0,
-        }}
-      >
-        <svg
-          width="10"
-          height="10"
-          viewBox={isTag ? "0 0 14 16" : "0 0 10 16"}
-          fill="var(--color-sidebar,#1e1e1e)"
-        >
-          <path d={isTag ? VSCGG_TAG_PATH : VSCGG_BRANCH_PATH} />
-        </svg>
-      </span>
-      {/* Label */}
-      <span
-        style={{
-          padding: "0 5px",
-          fontWeight: isHead ? 700 : 400,
-          color: isHead ? branchColor : "var(--foreground, #cccccc)",
-          fontStyle: isRemote ? "italic" : "normal",
-          letterSpacing: isRemote ? "-0.01em" : undefined,
-        }}
-      >
-        {ref.text}
-      </span>
+      {text}
     </span>
   );
 }
 
-// ── helpers ───────────────────────────────────────────────────────────────────
+// ── relative date ─────────────────────────────────────────────────────────────
 
-function fmtDate(iso: string): string {
-  try {
-    return new Intl.DateTimeFormat("en-GB", {
-      day: "numeric",
-      month: "short",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    }).format(new Date(iso));
-  } catch {
-    return "";
-  }
-}
-
-function shortDate(iso: string): string {
-  try {
-    return new Intl.DateTimeFormat("en-GB", {
-      day: "numeric",
-      month: "short",
-      year: "numeric",
-    }).format(new Date(iso));
-  } catch {
-    return "";
-  }
-}
-
-// ── file tree ─────────────────────────────────────────────────────────────────
-
-interface FileNode {
-  name: string;
-  fullPath: string;
-  status: string;
-  additions: number;
-  deletions: number;
-  children: FileNode[];
-  isDir: boolean;
-}
-
-function buildFileTree(
-  files: ReadonlyArray<{
-    readonly path: string;
-    readonly status: string;
-    readonly additions: number;
-    readonly deletions: number;
-  }>,
-): FileNode[] {
-  const root: FileNode = {
-    name: "",
-    fullPath: "",
-    status: "",
-    additions: 0,
-    deletions: 0,
-    children: [],
-    isDir: true,
-  };
-  for (const f of files) {
-    const parts = f.path.split("/");
-    let node = root;
-    for (let i = 0; i < parts.length; i++) {
-      const part = parts[i]!;
-      const isLast = i === parts.length - 1;
-      let child = node.children.find((c) => c.name === part);
-      if (!child) {
-        child = {
-          name: part,
-          fullPath: parts.slice(0, i + 1).join("/"),
-          status: isLast ? f.status : "",
-          additions: isLast ? f.additions : 0,
-          deletions: isLast ? f.deletions : 0,
-          children: [],
-          isDir: !isLast,
-        };
-        node.children.push(child);
-      } else if (isLast) {
-        child.additions = f.additions;
-        child.deletions = f.deletions;
-        child.status = f.status;
-      }
-      node = child;
-    }
-  }
-  return root.children;
-}
-
-const FileTreeNode = memo(function FileTreeNode({
-  node,
-  depth,
-}: {
-  node: FileNode;
-  depth: number;
-}) {
-  const [open, setOpen] = useState(true);
-  const fileColor =
-    node.status === "A"
-      ? "#4ec9b0"
-      : node.status === "D"
-        ? "#f48771"
-        : node.status === "R" || node.status === "C"
-          ? "#9cdcfe"
-          : "#dcdcaa";
-
-  return (
-    <li style={{ listStyle: "none", marginTop: node.isDir ? 4 : 2 }}>
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: 4,
-          paddingLeft: depth * 16 + 4,
-          lineHeight: "20px",
-          cursor: node.isDir ? "pointer" : "default",
-        }}
-        className="hover:bg-white/5 rounded"
-        onClick={node.isDir ? () => setOpen((o) => !o) : undefined}
-      >
-        {node.isDir ? (
-          <>
-            <svg
-              width="8"
-              height="8"
-              viewBox="0 0 8 8"
-              fill="currentColor"
-              style={{
-                color: "#cccccc",
-                flexShrink: 0,
-                transform: open ? "rotate(90deg)" : "none",
-                transition: "transform 0.1s",
-              }}
-            >
-              <path d="M2 1l4 3-4 3V1z" />
-            </svg>
-            <svg
-              width="14"
-              height="14"
-              viewBox="0 0 16 16"
-              fill="#e8ab53"
-              style={{ flexShrink: 0 }}
-            >
-              <path d="M1.75 4.5a.25.25 0 0 1 .25-.25h3.5l1.75 1.75H14a.25.25 0 0 1 .25.25v7.5a.25.25 0 0 1-.25.25H2a.25.25 0 0 1-.25-.25V4.5z" />
-            </svg>
-            <span style={{ fontSize: 13, color: "#cccccc" }}>{node.name}</span>
-          </>
-        ) : (
-          <>
-            <span style={{ width: 8, flexShrink: 0 }} />
-            <svg
-              width="13"
-              height="13"
-              viewBox="0 0 16 16"
-              fill="#cccccc"
-              style={{ opacity: 0.6, flexShrink: 0 }}
-            >
-              <path d="M2 1.75A.75.75 0 0 1 2.75 1h7.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A.75.75 0 0 1 13.25 16H2.75A.75.75 0 0 1 2 15.25Zm1.5.75v13h9V6H9.25A.75.75 0 0 1 8.5 5.25V2.5H3.5zm6.5.44V5h2.06Z" />
-            </svg>
-            <span
-              style={{
-                fontSize: 13,
-                color: fileColor,
-                flex: 1,
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-                whiteSpace: "nowrap",
-              }}
-            >
-              {node.name}
-            </span>
-            {(node.additions > 0 || node.deletions > 0) && (
-              <span style={{ fontSize: 12, flexShrink: 0, paddingRight: 6 }}>
-                {node.additions > 0 && <span style={{ color: "#4ec9b0" }}>+{node.additions}</span>}
-                {node.additions > 0 && node.deletions > 0 && (
-                  <span style={{ color: "rgba(128,128,128,0.6)" }}> | </span>
-                )}
-                {node.deletions > 0 && <span style={{ color: "#f48771" }}>-{node.deletions}</span>}
-              </span>
-            )}
-          </>
-        )}
-      </div>
-      {node.isDir && open && (
-        <ul style={{ padding: 0, margin: 0 }}>
-          {node.children.map((child) => (
-            <FileTreeNode key={child.fullPath} node={child} depth={depth + 1} />
-          ))}
-        </ul>
-      )}
-    </li>
-  );
-});
-
-// ── commit detail view (CDV) — VS Code Git Graph inline style ─────────────────
-
-const CommitDetailView = memo(function CommitDetailView({
-  cwd,
-  sha,
-  accentColor,
-  onClose,
-}: {
-  cwd: string;
-  sha: string;
-  accentColor: string;
-  onClose: () => void;
-}) {
-  const q = useQuery(gitShowCommitQueryOptions(cwd, sha));
-  const d = q.data;
-
-  return (
-    <div
-      style={{
-        background: "rgba(128,128,128,0.1)",
-        borderTop: "1px solid rgba(128,128,128,0.2)",
-        borderBottom: "1px solid rgba(128,128,128,0.2)",
-        fontSize: 13,
-        lineHeight: "18px",
-        position: "relative",
-        minHeight: 120,
-      }}
-    >
-      {/* Controls — top-right, like VS Code */}
-      <div style={{ position: "absolute", top: 4, right: 4, display: "flex", gap: 2, zIndex: 10 }}>
-        <button
-          onClick={onClose}
-          style={{
-            width: 24,
-            height: 24,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            border: "none",
-            background: "transparent",
-            cursor: "pointer",
-            borderRadius: 3,
-            color: "rgba(204,204,204,0.6)",
-          }}
-          className="hover:bg-white/10"
-          aria-label="Close"
-        >
-          <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
-            <path d="M3.72 3.72a.75.75 0 0 1 1.06 0L8 6.94l3.22-3.22a.749.749 0 0 1 1.275.326.749.749 0 0 1-.215.734L9.06 8l3.22 3.22a.749.749 0 0 1-.326 1.275.749.749 0 0 1-.734-.215L8 9.06l-3.22 3.22a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042L6.94 8 3.72 4.78a.75.75 0 0 1 0-1.06z" />
-          </svg>
-        </button>
-      </div>
-
-      {q.isPending && (
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            height: 120,
-            color: "rgba(128,128,128,0.8)",
-            fontSize: 13,
-          }}
-        >
-          Loading…
-        </div>
-      )}
-      {q.error && (
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: 8,
-            height: 120,
-            color: "#f48771",
-            fontSize: 13,
-          }}
-        >
-          <span>
-            {q.error instanceof Error ? q.error.message : "Failed to load commit details."}
-          </span>
-          <button
-            onClick={() => q.refetch()}
-            style={{
-              fontSize: 12,
-              color: "rgba(204,204,204,0.7)",
-              background: "rgba(128,128,128,0.2)",
-              border: "1px solid rgba(128,128,128,0.4)",
-              borderRadius: 4,
-              padding: "2px 10px",
-              cursor: "pointer",
-            }}
-          >
-            Retry
-          </button>
-        </div>
-      )}
-      {d && (
-        <div style={{ display: "flex", minHeight: 120 }}>
-          {/* Left: summary — accent border matches branch colour */}
-          <div
-            style={{
-              flex: "0 0 50%",
-              padding: 10,
-              borderLeft: `3px solid ${accentColor}`,
-              borderRight: "1px solid rgba(128,128,128,0.2)",
-              overflowY: "auto",
-              maxHeight: 320,
-              userSelect: "text",
-            }}
-          >
-            <CdvRow
-              label="Commit"
-              value={
-                <span
-                  style={{
-                    fontFamily: "monospace",
-                    color: "var(--vscode-textLink-foreground, #4fc3f7)",
-                  }}
-                >
-                  {d.sha}
-                </span>
-              }
-            />
-            {d.parentShas.length > 0 && (
-              <CdvRow
-                label={d.parentShas.length === 1 ? "Parent" : "Parents"}
-                value={
-                  <>
-                    {d.parentShas.map((p) => (
-                      <span
-                        key={p}
-                        style={{
-                          fontFamily: "monospace",
-                          color: "var(--vscode-textLink-foreground, #4fc3f7)",
-                          marginRight: 8,
-                        }}
-                      >
-                        {p.slice(0, 12)}
-                      </span>
-                    ))}
-                  </>
-                }
-              />
-            )}
-            <CdvRow
-              label="Author"
-              value={
-                <span>
-                  {d.authorName}
-                  {d.authorEmail ? (
-                    <span style={{ color: "rgba(128,128,128,0.8)" }}> &lt;{d.authorEmail}&gt;</span>
-                  ) : null}
-                </span>
-              }
-            />
-            {d.committerName && d.committerName !== d.authorName && (
-              <CdvRow
-                label="Committer"
-                value={
-                  <span>
-                    {d.committerName}
-                    {d.committerEmail ? (
-                      <span style={{ color: "rgba(128,128,128,0.8)" }}>
-                        {" "}
-                        &lt;{d.committerEmail}&gt;
-                      </span>
-                    ) : null}
-                  </span>
-                }
-              />
-            )}
-            <CdvRow label="Date" value={fmtDate(d.authorDate)} />
-            {d.body && (
-              <div
-                style={{
-                  marginTop: 8,
-                  color: "var(--foreground, #cccccc)",
-                  whiteSpace: "pre-wrap",
-                  wordBreak: "break-word",
-                }}
-              >
-                {d.body}
-              </div>
-            )}
-            {!d.body && (
-              <div style={{ marginTop: 8, color: "rgba(204,204,204,0.6)", fontStyle: "italic" }}>
-                {d.subject}
-              </div>
-            )}
-          </div>
-
-          {/* Right: file tree */}
-          <div
-            style={{ flex: "0 0 50%", padding: "4px 0 8px 0", overflowY: "auto", maxHeight: 320 }}
-          >
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                padding: "2px 8px 6px 8px",
-                fontSize: 11,
-                color: "rgba(128,128,128,0.7)",
-              }}
-            >
-              <span>
-                {d.files.length} file{d.files.length !== 1 ? "s" : ""} changed
-              </span>
-              <span>
-                <span style={{ color: "#4ec9b0" }}>+{d.totalAdditions}</span>
-                <span style={{ color: "rgba(128,128,128,0.5)", margin: "0 3px" }}>/</span>
-                <span style={{ color: "#f48771" }}>-{d.totalDeletions}</span>
-              </span>
-            </div>
-            <ul style={{ padding: "0 0 0 4px", margin: 0 }}>
-              {buildFileTree(d.files).map((node) => (
-                <FileTreeNode key={node.fullPath} node={node} depth={0} />
-              ))}
-            </ul>
-          </div>
-        </div>
-      )}
-    </div>
-  );
-});
-
-function CdvRow({ label, value }: { label: string; value: React.ReactNode }) {
-  return (
-    <div style={{ marginBottom: 3, display: "flex", gap: 6, flexWrap: "wrap" }}>
-      <b style={{ color: "var(--foreground, #cccccc)", minWidth: 60 }}>{label}:</b>
-      <span style={{ color: "var(--foreground, #cccccc)", flex: 1, wordBreak: "break-all" }}>
-        {value}
-      </span>
-    </div>
-  );
+function relativeDate(iso: string): string {
+  const diff = Date.now() - new Date(iso).getTime();
+  const secs = Math.floor(diff / 1000);
+  if (secs < 60) return "now";
+  const mins = Math.floor(secs / 60);
+  if (mins < 60) return `${mins}m`;
+  const hours = Math.floor(mins / 60);
+  if (hours < 24) return `${hours}h`;
+  const days = Math.floor(hours / 24);
+  if (days < 30) return `${days}d`;
+  const months = Math.floor(days / 30);
+  if (months < 12) return `${months}mo`;
+  return `${Math.floor(months / 12)}y`;
 }
 
 // ── commit row ────────────────────────────────────────────────────────────────
 
 const CommitRow = memo(function CommitRow({
   commit,
-  isExpanded,
-  graphColWidth,
-  colTemplate,
-  dotColor,
-  onToggle,
+  cells,
+  index,
 }: {
   commit: GitLogCommit;
-  isExpanded: boolean;
-  graphColWidth: number;
-  colTemplate: string;
-  dotColor: string;
-  onToggle: () => void;
+  cells: readonly GraphCell[];
+  index: number;
 }) {
-  // Expand "HEAD -> branchName" into two badges: local branch (with HEAD highlight) + rest
-  // Sort: HEAD-pointed local first, then other locals, then remotes, then tags
-  const expandedRefs = expandRefs(commit.refs);
+  const headRef = commit.refs.find((r) => r === "HEAD" || r.startsWith("HEAD -> "));
+  const otherRefs = commit.refs.filter((r) => r !== "HEAD" && !r.startsWith("HEAD -> "));
+  const allRefs = headRef ? [headRef, ...otherRefs] : otherRefs;
 
   return (
     <div
-      onClick={onToggle}
-      style={{
-        display: "grid",
-        gridTemplateColumns: colTemplate,
-        height: ROW_H,
-        alignItems: "center",
-        cursor: "pointer",
-        userSelect: "none",
-        background: isExpanded ? "rgba(128,128,128,0.25)" : undefined,
-        fontSize: 13,
-        lineHeight: `${ROW_H}px`,
-      }}
-      className={cn(!isExpanded && "hover:bg-white/10")}
+      className="group flex min-w-0 items-center gap-1.5 px-1.5 hover:bg-sidebar-accent/50 cursor-default"
+      style={{ height: GRAPH_ROW_H }}
+      title={`${commit.sha}\n${commit.authorName} <${commit.authorEmail}>\n${commit.authorDate}`}
     >
-      {/* Graph placeholder */}
-      <div style={{ width: graphColWidth }} />
-
-      {/* Description */}
-      <div style={{ display: "flex", alignItems: "center", overflow: "hidden", paddingRight: 4 }}>
-        {expandedRefs.map((ref) => (
-          <RefBadge key={ref.key} raw={ref.raw} branchColor={dotColor} />
-        ))}
-        <span
-          style={{
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-            whiteSpace: "nowrap",
-            color: "var(--foreground, #cccccc)",
-          }}
-        >
-          {commit.subject || (
-            <span style={{ color: "rgba(128,128,128,0.6)", fontStyle: "italic" }}>no message</span>
-          )}
+      <GraphStrip cells={cells} index={index} />
+      <div className="flex min-w-0 flex-1 items-baseline gap-1.5 overflow-hidden">
+        <span className="min-w-0 truncate text-[12px] text-foreground leading-none">
+          {commit.subject || <span className="text-muted-foreground italic">no message</span>}
         </span>
+        {allRefs.length > 0 && (
+          <span className="flex shrink-0 items-center gap-0.5">
+            {allRefs.slice(0, 3).map((ref) => (
+              <RefChip key={ref} label={ref} />
+            ))}
+          </span>
+        )}
       </div>
-
-      {/* Date */}
-      <div
-        style={{
-          textAlign: "right",
-          padding: "0 4px",
-          color: "rgba(204,204,204,0.8)",
-          whiteSpace: "nowrap",
-          overflow: "hidden",
-          textOverflow: "ellipsis",
-        }}
-      >
-        {shortDate(commit.authorDate)}
-      </div>
-
-      {/* Author */}
-      <div
-        style={{
-          padding: "0 4px",
-          color: "rgba(204,204,204,0.8)",
-          overflow: "hidden",
-          textOverflow: "ellipsis",
-          whiteSpace: "nowrap",
-        }}
-      >
-        {commit.authorName}
-      </div>
-
-      {/* SHA */}
-      <div style={{ padding: "0 4px", fontFamily: "monospace", color: "rgba(204,204,204,0.6)" }}>
-        {commit.shortSha}
+      <div className="flex shrink-0 items-center gap-1.5 pl-1">
+        <span className="text-[10px] font-mono text-muted-foreground/70 group-hover:text-muted-foreground">
+          {commit.shortSha}
+        </span>
+        <span className="text-[10px] text-muted-foreground/60">
+          {relativeDate(commit.authorDate)}
+        </span>
       </div>
     </div>
   );
@@ -755,43 +330,18 @@ const CommitRow = memo(function CommitRow({
 
 export interface GitHistoryPanelProps {
   cwd: string;
-  headSha?: string;
 }
 
-export function GitHistoryPanel({ cwd, headSha }: GitHistoryPanelProps) {
+export function GitHistoryPanel({ cwd }: GitHistoryPanelProps) {
   useWorkspaceFileWatch(cwd);
   const logQuery = useQuery(gitLogQueryOptions(cwd));
-  const rawCommits = logQuery.data?.commits;
-  const commits = rawCommits ?? EMPTY_COMMITS;
-  const [expandedSha, setExpandedSha] = useState<string | null>(null);
-
-  const layout: GraphRenderData = useMemo(
-    () =>
-      buildGraphLayout(
-        commits.map((c) => ({
-          sha: c.sha,
-          parentShas: c.parentShas,
-          isCurrent: c.sha === headSha,
-        })),
-        GRAPH_CFG,
-      ),
-    [commits, headSha],
-  );
-
-  const graphColWidth = Math.max(layout.svgWidth + GRAPH_CFG.offsetX, 28);
-  const colTemplate = `${graphColWidth}px 1fr 124px 124px 72px`;
-
-  const dotColorForSha = useMemo(() => {
-    const map = new Map<string, string>();
-    commits.forEach((c, i) => {
-      map.set(c.sha, layout.dots[i]?.colour ?? "#0158FD");
-    });
-    return map;
-  }, [commits, layout.dots]);
+  const commits = logQuery.data?.commits ?? [];
+  const cells = useMemo(() => buildGraphCells(commits), [commits]);
 
   if (logQuery.isLoading && commits.length === 0) {
     return <PanelStateMessage density="compact">Loading history…</PanelStateMessage>;
   }
+
   if (logQuery.error) {
     return (
       <PanelStateMessage density="compact">
@@ -799,84 +349,16 @@ export function GitHistoryPanel({ cwd, headSha }: GitHistoryPanelProps) {
       </PanelStateMessage>
     );
   }
+
   if (commits.length === 0) {
     return <PanelStateMessage density="compact">No commits yet.</PanelStateMessage>;
   }
 
   return (
-    <div
-      className="h-full min-h-0 w-full overflow-auto"
-      style={{
-        fontSize: 13,
-        lineHeight: `${ROW_H}px`,
-        background: "var(--color-sidebar, #1e1e1e)",
-        color: "var(--foreground, #cccccc)",
-      }}
-    >
-      {/* Sticky header — VS Code style: bold, small caps */}
-      <div
-        className="sticky top-0 z-10 border-b"
-        style={{
-          display: "grid",
-          gridTemplateColumns: colTemplate,
-          height: HEADER_H,
-          alignItems: "center",
-          background: "var(--color-sidebar, #1e1e1e)",
-          borderColor: "rgba(128,128,128,0.35)",
-          fontSize: 11,
-          fontWeight: 700,
-          letterSpacing: "0.06em",
-          textTransform: "uppercase",
-          color: "rgba(128,128,128,0.8)",
-        }}
-      >
-        <div style={{ padding: "6px 4px 6px 8px" }}>Graph</div>
-        <div style={{ padding: "6px 4px" }}>Description</div>
-        <div style={{ padding: "6px 12px 6px 4px", textAlign: "right" }}>Date</div>
-        <div style={{ padding: "6px 4px" }}>Author</div>
-        <div style={{ padding: "6px 4px" }}>Commit</div>
-      </div>
-
-      {/* Rows + graph overlay */}
-      <div style={{ position: "relative" }}>
-        <div
-          style={{
-            position: "absolute",
-            left: 0,
-            top: 0,
-            width: graphColWidth,
-            pointerEvents: "none",
-            zIndex: 1,
-          }}
-        >
-          <GraphSvg layout={layout} />
-        </div>
-
-        {commits.map((commit) => {
-          const isExpanded = commit.sha === expandedSha;
-          const dotColor = dotColorForSha.get(commit.sha) ?? "#0158FD";
-          return (
-            <div key={commit.sha}>
-              <CommitRow
-                commit={commit}
-                isExpanded={isExpanded}
-                graphColWidth={graphColWidth}
-                colTemplate={colTemplate}
-                dotColor={dotColor}
-                onToggle={() => setExpandedSha((p) => (p === commit.sha ? null : commit.sha))}
-              />
-              {isExpanded && (
-                <CommitDetailView
-                  cwd={cwd}
-                  sha={commit.sha}
-                  accentColor={dotColor}
-                  onClose={() => setExpandedSha(null)}
-                />
-              )}
-            </div>
-          );
-        })}
-      </div>
+    <div className="h-full min-h-0 w-full overflow-auto">
+      {commits.map((commit, i) => (
+        <CommitRow key={commit.sha} commit={commit} cells={cells} index={i} />
+      ))}
     </div>
   );
 }

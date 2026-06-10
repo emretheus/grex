@@ -1560,6 +1560,31 @@ it.layer(TestLayer)("git integration", (it) => {
       }),
     );
 
+    it.effect("reads a file's content at HEAD and reports added/missing files", () =>
+      Effect.gen(function* () {
+        const tmp = yield* makeTmpDir();
+        yield* initRepoWithCommit(tmp);
+        const core = yield* GitCore;
+
+        // README.md was committed with "# test\n" by initRepoWithCommit.
+        const committed = yield* core.readFileAtRef(tmp, "HEAD", "README.md");
+        expect(committed.exists).toBe(true);
+        expect(committed.truncated).toBe(false);
+        expect(committed.contents).toBe("# test\n");
+
+        // A file added after HEAD does not exist at HEAD.
+        yield* writeTextFile(path.join(tmp, "added.ts"), "new\n");
+        const added = yield* core.readFileAtRef(tmp, "HEAD", "added.ts");
+        expect(added.exists).toBe(false);
+        expect(added.contents).toBe("");
+
+        // A modified file still reads its committed (original) content at HEAD.
+        yield* writeTextFile(path.join(tmp, "README.md"), "# changed\n");
+        const original = yield* core.readFileAtRef(tmp, "HEAD", "README.md");
+        expect(original.contents).toBe("# test\n");
+      }),
+    );
+
     it.effect("uses rename-aware totals when deleted files move into untracked directories", () =>
       Effect.gen(function* () {
         const tmp = yield* makeTmpDir();

@@ -591,6 +591,11 @@ export const makeWsRpcLayer = () =>
           rpcEffect(gitStatusBroadcaster.getStatus(input), "Failed to read git status"),
         [WS_METHODS.gitReadWorkingTreeDiff]: (input) =>
           rpcEffect(gitManager.readWorkingTreeDiff(input), "Failed to read working tree diff"),
+        [WS_METHODS.gitReadFileAtRef]: (input) =>
+          rpcEffect(
+            git.readFileAtRef(input.cwd, input.ref, input.relativePath),
+            "Failed to read file at ref",
+          ),
         [WS_METHODS.gitSummarizeDiff]: (input) =>
           rpcEffect(gitManager.summarizeDiff(input), "Failed to summarize diff"),
         [WS_METHODS.gitPull]: (input) =>

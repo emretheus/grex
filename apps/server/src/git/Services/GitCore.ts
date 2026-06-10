@@ -402,6 +402,17 @@ export interface GitCoreShape {
   readonly showCommit: (
     input: GitShowCommitInput,
   ) => Effect.Effect<GitShowCommitResult, GitCommandError>;
+
+  /**
+   * Read a single file's content at a git ref (e.g. "HEAD"). Returns
+   * `exists: false` when the path does not exist at that ref (e.g. a newly
+   * added file), and `truncated: true` when the blob exceeds the editor limit.
+   */
+  readonly readFileAtRef: (
+    cwd: string,
+    ref: string,
+    relativePath: string,
+  ) => Effect.Effect<{ contents: string; exists: boolean; truncated: boolean }, GitCommandError>;
 }
 
 /**

@@ -9,7 +9,7 @@
 // through GitCore; on settle we invalidate the per-cwd git caches so both lists stay in sync.
 
 import { type FileDiffMetadata } from "@pierre/diffs/react";
-import { type GitStackedAction, type ProjectId, type ThreadId } from "@t3tools/contracts";
+import { type GitStackedAction, type GitStatusResult, type ProjectId, type ThreadId } from "@t3tools/contracts";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { lazy, memo, Suspense, useCallback, useId, useMemo, useRef, useState } from "react";
 import { buildHunkPatch } from "~/lib/patchManipulation";
@@ -32,12 +32,26 @@ import {
   gitQueryKeys,
   gitRunStackedActionMutationOptions,
   gitStageFilesMutationOptions,
+  gitStatusQueryOptions,
   gitUnstageFilesMutationOptions,
   gitWorkingTreeDiffQueryOptions,
 } from "~/lib/gitReactQuery";
-import { ChevronDownIcon, PlusIcon, RefreshCwIcon, RotateCcwIcon, Trash2 } from "~/lib/icons";
+import {
+  ChevronDownIcon,
+  ExternalLinkIcon,
+  GitPullRequestIcon,
+  PlusIcon,
+  RefreshCwIcon,
+  RotateCcwIcon,
+  SquarePenIcon,
+  Trash2,
+} from "~/lib/icons";
 import { cn } from "~/lib/utils";
+import { readNativeApi } from "~/nativeApi";
+import { useEditorStore } from "~/editorStore";
+import { useRightDockStore } from "~/rightDockStore";
 import { showConfirmDialogFallback } from "~/confirmDialogFallback";
+import { CreatePullRequestDialog } from "./CreatePullRequestDialog";
 import { useStore } from "~/store";
 import { createProjectSelector, createThreadSelector } from "~/storeSelectors";
 import { Alert } from "../ui/alert";
@@ -87,6 +101,7 @@ const GitFileRow = memo(function GitFileRow(props: {
   onSelect: (file: FileDiffMetadata) => void;
   onAction: (paths: string[]) => void;
   onDiscard?: ((paths: string[]) => void) | undefined;
+  onEditDiff?: ((path: string) => void) | undefined;
 }) {
   const filePath = resolveFileDiffPath(props.fileDiff);
   const { dir, name } = splitRepoRelativePath(filePath);
@@ -115,6 +130,18 @@ const GitFileRow = memo(function GitFileRow(props: {
         deletions={stat.deletions}
         className="shrink-0 text-[11px]"
       />
+      {props.onEditDiff ? (
+        <IconButton
+          size="icon-xs"
+          variant="ghost"
+          className="shrink-0 opacity-0 group-hover:opacity-100 data-[disabled]:opacity-40"
+          label="Edit in diff editor"
+          tooltip="Edit in diff editor"
+          onClick={() => props.onEditDiff?.(filePath)}
+        >
+          <SquarePenIcon className="size-3.5" />
+        </IconButton>
+      ) : null}
       {props.onDiscard ? (
         <IconButton
           size="icon-xs"
@@ -161,6 +188,7 @@ function GitFileSection(props: {
   onSelect: (file: FileDiffMetadata) => void;
   onAction: (paths: string[]) => void;
   onDiscard?: ((paths: string[]) => void) | undefined;
+  onEditDiff?: ((path: string) => void) | undefined;
 }) {
   const stat = useMemo(() => summarizeFileDiffStats(props.files), [props.files]);
   const allPaths = useMemo(
@@ -222,6 +250,7 @@ function GitFileSection(props: {
                 onSelect={props.onSelect}
                 onAction={props.onAction}
                 onDiscard={props.onDiscard}
+                onEditDiff={props.onEditDiff}
               />
             );
           })}
@@ -478,12 +507,24 @@ export function GitPanel(props: {
   useWorkspaceFileWatch(cwd);
 
   const [selected, setSelected] = useState<SelectedFile | null>(null);
+  const [isCreatePrOpen, setIsCreatePrOpen] = useState(false);
+  const openDiff = useEditorStore((s) => s.openDiff);
+  const openDockPane = useRightDockStore((s) => s.openPane);
+
+  const editInDiff = useCallback(
+    (path: string) => {
+      openDiff(props.hostThreadId, path, "HEAD");
+      openDockPane(props.hostThreadId, { kind: "editor" });
+    },
+    [openDiff, openDockPane, props.hostThreadId],
+  );
 
   // No fixed polling: turn-driven file changes already push-invalidate the
   // working-tree-diff cache (see __root.tsx), and focus + the Refresh button +
   // post-mutation invalidation cover the rest. This keeps the pane cheap.
   const stagedQuery = useQuery(gitWorkingTreeDiffQueryOptions({ cwd, scope: "staged" }));
   const unstagedQuery = useQuery(gitWorkingTreeDiffQueryOptions({ cwd, scope: "unstaged" }));
+  const statusQuery = useQuery(gitStatusQueryOptions(cwd));
 
   const stagedFiles = useMemo(
     () => parsePatchToSortedFiles(stagedQuery.data?.patch, `git-pane:staged:${theme}`),
@@ -710,6 +751,7 @@ export function GitPanel(props: {
               actionDisabled={mutating}
               onSelect={selectStaged}
               onAction={unstage}
+              onEditDiff={editInDiff}
             />
             <GitFileSection
               title="Changes"
@@ -725,10 +767,19 @@ export function GitPanel(props: {
               onSelect={selectUnstaged}
               onAction={stage}
               onDiscard={discard}
+              onEditDiff={editInDiff}
             />
           </>
         ) : null}
       </div>
+
+      <PullRequestSection
+        status={statusQuery.data ?? null}
+        onCreate={() => setIsCreatePrOpen(true)}
+        onOpenExternal={(url) => {
+          void readNativeApi()?.shell.openExternal(url);
+        }}
+      />
 
       <div className="diff-panel-viewport flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden border-t border-border/70">
         {selectedFileDiff && selectedResolved ? (
@@ -749,6 +800,59 @@ export function GitPanel(props: {
           <PanelStateMessage density="compact">Select a file to view its diff.</PanelStateMessage>
         )}
       </div>
+
+      <CreatePullRequestDialog
+        open={isCreatePrOpen}
+        onOpenChange={setIsCreatePrOpen}
+        cwd={cwd}
+        gitStatus={statusQuery.data ?? null}
+        onCreated={(pr) => {
+          void queryClient.invalidateQueries({ queryKey: gitQueryKeys.status(cwd) });
+          if (pr.url) void readNativeApi()?.shell.openExternal(pr.url);
+        }}
+      />
+    </div>
+  );
+}
+
+// Compact PR section at the bottom of the panel: "View PR" when an open PR
+// already tracks the branch, otherwise a "Create pull request" button.
+function PullRequestSection(props: {
+  status: GitStatusResult | null;
+  onCreate: () => void;
+  onOpenExternal: (url: string) => void;
+}) {
+  const pr = props.status?.pr ?? null;
+  const branch = props.status?.branch ?? null;
+  if (!branch) return null;
+
+  return (
+    <div className="border-t border-border/70 px-2 py-2">
+      {pr && pr.state === "open" ? (
+        <button
+          type="button"
+          onClick={() => props.onOpenExternal(pr.url)}
+          className="flex w-full items-center gap-2 rounded-md px-1.5 py-1 text-left hover:bg-sidebar-accent/60"
+          title={`#${pr.number} ${pr.title}`}
+        >
+          <GitPullRequestIcon className="size-4 shrink-0 text-emerald-500" />
+          <span className="min-w-0 flex-1 truncate text-[12px] text-foreground">
+            <span className="text-muted-foreground">#{pr.number}</span> {pr.title}
+          </span>
+          <ExternalLinkIcon className="size-3.5 shrink-0 text-muted-foreground" />
+        </button>
+      ) : (
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          className="w-full justify-center"
+          onClick={props.onCreate}
+        >
+          <GitPullRequestIcon className="size-3.5" />
+          Create pull request
+        </Button>
+      )}
     </div>
   );
 }

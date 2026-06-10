@@ -9,11 +9,18 @@ import type { ThreadId } from "@t3tools/contracts";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 
+/** A tab is either a plain editable file or a diff against a git ref. */
+export type EditorTabKind = "file" | "diff";
+
 export interface EditorOpenFile {
   /** Worktree-relative path, e.g. "src/index.ts". */
   readonly relativePath: string;
   /** Display name (basename). */
   readonly name: string;
+  /** How the tab renders. Absent means "file" (back-compat with persisted state). */
+  readonly kind?: EditorTabKind;
+  /** For diff tabs: the git ref for the original (left) side, e.g. "HEAD". */
+  readonly diffRef?: string;
 }
 
 export interface SplitSlotState {
@@ -33,6 +40,7 @@ interface EditorStoreState {
   // Keyed by threadId; default 50 when absent. Session-only (not persisted).
   splitWidthPercent: Record<string, number>;
   openFile: (threadId: ThreadId, relativePath: string) => void;
+  openDiff: (threadId: ThreadId, relativePath: string, ref?: string) => void;
   closeFile: (threadId: ThreadId, relativePath: string) => void;
   setActive: (threadId: ThreadId, relativePath: string) => void;
   reorderFiles: (threadId: ThreadId, fromIndex: number, toIndex: number) => void;
@@ -73,10 +81,40 @@ export const useEditorStore = create<EditorStoreState>()(
       openFile: (threadId, relativePath) =>
         set((state) => {
           const current = state.byThreadId[threadId] ?? emptyState();
-          const alreadyOpen = current.openFiles.some((f) => f.relativePath === relativePath);
-          const openFiles = alreadyOpen
-            ? current.openFiles
-            : [...current.openFiles, { relativePath, name: basename(relativePath) }];
+          const existing = current.openFiles.find((f) => f.relativePath === relativePath);
+          const openFiles = existing
+            ? // Re-opening as a plain file flips an existing diff tab back to file mode.
+              current.openFiles.map((f) =>
+                f.relativePath === relativePath
+                  ? { relativePath, name: f.name, kind: "file" as const }
+                  : f,
+              )
+            : [
+                ...current.openFiles,
+                { relativePath, name: basename(relativePath), kind: "file" as const },
+              ];
+          return {
+            byThreadId: {
+              ...state.byThreadId,
+              [threadId]: { ...current, openFiles, activePath: relativePath },
+            },
+          };
+        }),
+
+      openDiff: (threadId, relativePath, ref = "HEAD") =>
+        set((state) => {
+          const current = state.byThreadId[threadId] ?? emptyState();
+          const existing = current.openFiles.find((f) => f.relativePath === relativePath);
+          const openFiles = existing
+            ? current.openFiles.map((f) =>
+                f.relativePath === relativePath
+                  ? { relativePath, name: f.name, kind: "diff" as const, diffRef: ref }
+                  : f,
+              )
+            : [
+                ...current.openFiles,
+                { relativePath, name: basename(relativePath), kind: "diff" as const, diffRef: ref },
+              ];
           return {
             byThreadId: {
               ...state.byThreadId,

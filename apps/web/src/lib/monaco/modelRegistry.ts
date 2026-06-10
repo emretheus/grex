@@ -78,6 +78,52 @@ class ModelRegistry {
     return this.entries.get(key)?.model;
   }
 
+  // ── Read-only "original" models (the left side of a diff editor) ──
+  // Keyed by ref + path so the same HEAD blob is shared across diff tabs. These
+  // are never edited, so they only need a model + ref-count (no dirty tracking).
+  private readonly originals = new Map<
+    string,
+    { readonly model: monaco.editor.ITextModel; refs: number }
+  >();
+
+  private originalUriFor(cwd: string, relativePath: string, ref: string): monaco.Uri {
+    ensureMonacoSetup();
+    const safe = `${ref}/${cwd}/${relativePath}`.replace(/\\/g, "/").replace(/\/+/g, "/");
+    return monaco.Uri.parse(`codewit-ref://${encodeURI(safe)}`);
+  }
+
+  /** Acquire a read-only model holding `contents` (a file's content at a ref). */
+  acquireOriginal(cwd: string, relativePath: string, ref: string, contents: string): string {
+    ensureMonacoSetup();
+    const uri = this.originalUriFor(cwd, relativePath, ref);
+    const key = uri.toString();
+    const existing = this.originals.get(key);
+    if (existing) {
+      existing.refs += 1;
+      if (existing.model.getValue() !== contents) existing.model.setValue(contents);
+      return key;
+    }
+    const model =
+      monaco.editor.getModel(uri) ??
+      monaco.editor.createModel(contents, languageForPath(relativePath), uri);
+    if (model.getValue() !== contents) model.setValue(contents);
+    this.originals.set(key, { model, refs: 1 });
+    return key;
+  }
+
+  getOriginalModel(key: string): monaco.editor.ITextModel | undefined {
+    return this.originals.get(key)?.model;
+  }
+
+  releaseOriginal(key: string): void {
+    const entry = this.originals.get(key);
+    if (!entry) return;
+    entry.refs -= 1;
+    if (entry.refs > 0) return;
+    if (!entry.model.isDisposed()) entry.model.dispose();
+    this.originals.delete(key);
+  }
+
   isDirty(key: string): boolean {
     return this.dirtyUris.has(key);
   }
