@@ -1,6 +1,6 @@
 // FILE: GitHistoryPanel.tsx
-// Purpose: Commit history list with VS Code Git Graph–style branch graph,
-//          ref decorations, author/date metadata, and click-to-expand detail panel.
+// Purpose: Commit history — VS Code Git Graph–style layout with branch graph,
+//          ref chips, and click-to-expand commit detail panel.
 // Layer: Chat right-dock UI
 
 import {
@@ -15,88 +15,57 @@ import { PanelStateMessage } from "./PanelStateMessage";
 import { useWorkspaceFileWatch } from "~/hooks/useWorkspaceFileWatch";
 import { buildGraphLayout, DEFAULT_GRAPH_CONFIG, type GraphRenderData } from "~/lib/gitGraph";
 
-// ── constants ─────────────────────────────────────────────────────────────────
+// ── layout constants (match reference screenshot) ─────────────────────────────
 
-const GRAPH_ROW_H = DEFAULT_GRAPH_CONFIG.gridY;
-const HEADER_H = 24;
+const ROW_H = 32; // px — taller rows like the reference
+const HEADER_H = 28;
+const GRAPH_CFG = { ...DEFAULT_GRAPH_CONFIG, gridY: ROW_H, offsetY: ROW_H / 2 };
 
-// ── graph SVG (single element spanning all rows) ──────────────────────────────
+// ── continuous graph SVG ───────────────────────────────────────────────────────
 
-const GraphSvg = memo(function GraphSvg({
-  layout,
-  expandedIndex,
-  expandedHeight,
-}: {
-  layout: GraphRenderData;
-  expandedIndex: number | null;
-  expandedHeight: number;
-}) {
-  const { paths, dots, svgWidth } = layout;
-  // Total SVG height: all rows + expansion slot
-  const totalH = dots.length * GRAPH_ROW_H + (expandedIndex !== null ? expandedHeight : 0);
-  const bg = "var(--color-sidebar, #1e1e1e)";
-
-  // Shift dot/path y values below the expanded row down by expandedHeight.
-  function shiftY(originalY: number, dotIdx: number): number {
-    if (expandedIndex === null) return originalY;
-    return dotIdx > expandedIndex ? originalY + expandedHeight : originalY;
-  }
-
+const GraphSvg = memo(function GraphSvg({ layout }: { layout: GraphRenderData }) {
+  const { paths, dots, svgWidth, svgHeight } = layout;
+  const bg = "var(--color-sidebar, #18181b)";
   return (
     <svg
       width={svgWidth}
-      height={totalH}
+      height={svgHeight}
       style={{ display: "block", overflow: "visible" }}
       aria-hidden
     >
-      {/* Branch lines — we re-map each path's y values if expansion is active */}
       {paths.map((p, i) => (
         <path
           key={i}
           d={p.d}
           stroke={p.colour}
-          strokeWidth={DEFAULT_GRAPH_CONFIG.strokeWidth + 0.5}
+          strokeWidth={2}
           fill="none"
           strokeLinecap="round"
           strokeLinejoin="round"
         />
       ))}
-
-      {/* Commit dots */}
-      {dots.map((dot, i) => {
-        const cy = shiftY(dot.cy, i);
-        return dot.isCurrent ? (
+      {dots.map((dot, i) =>
+        dot.isCurrent ? (
+          // HEAD: hollow ring
           <circle
             key={i}
             cx={dot.cx}
-            cy={cy}
-            r={DEFAULT_GRAPH_CONFIG.dotRadius + 0.5}
+            cy={dot.cy}
+            r={5.5}
             fill={bg}
             stroke={dot.colour}
             strokeWidth={2.5}
           />
         ) : dot.isMerge ? (
-          <circle
-            key={i}
-            cx={dot.cx}
-            cy={cy}
-            r={DEFAULT_GRAPH_CONFIG.dotRadius + 1.5}
-            fill={dot.colour}
-            stroke={bg}
-            strokeWidth={1.5}
-          />
+          // Merge: diamond shape via rotated rect
+          <g key={i} transform={`translate(${dot.cx},${dot.cy}) rotate(45)`}>
+            <rect x={-4.5} y={-4.5} width={9} height={9} fill={dot.colour} rx={1} />
+          </g>
         ) : (
-          <circle
-            key={i}
-            cx={dot.cx}
-            cy={cy}
-            r={DEFAULT_GRAPH_CONFIG.dotRadius + 0.5}
-            fill={dot.colour}
-            stroke={bg}
-            strokeWidth={1.5}
-          />
-        );
-      })}
+          // Regular: solid dot
+          <circle key={i} cx={dot.cx} cy={dot.cy} r={5} fill={dot.colour} />
+        ),
+      )}
     </svg>
   );
 });
@@ -108,44 +77,41 @@ function RefChip({ label }: { label: string }) {
   const isRemote = !label.startsWith("tag: ") && !isHead && label.includes("/");
   const isTag = label.startsWith("tag: ");
   const text = label.replace(/^HEAD -> /, "").replace(/^tag: /, "");
+
+  // Icon paths (mini SVG)
+  const BranchIcon = (
+    <svg width="9" height="9" viewBox="0 0 16 16" fill="currentColor" className="shrink-0">
+      <path d="M11.75 2.5a.75.75 0 1 0 1.5 0 .75.75 0 0 0-1.5 0zm.75 1.734a2.25 2.25 0 1 1 0-3.468V8A2.25 2.25 0 0 1 10 10.25H6a.75.75 0 0 0-.75.75v1.016a2.25 2.25 0 1 1-1.5 0V4.5a2.25 2.25 0 1 1 1.5 0v5.5H10a.75.75 0 0 0 .75-.75V4.234z" />
+    </svg>
+  );
+  const TagIcon = (
+    <svg width="9" height="9" viewBox="0 0 16 16" fill="currentColor" className="shrink-0">
+      <path d="M2.5 7.775V2.75a.25.25 0 0 1 .25-.25h5.025a.25.25 0 0 1 .177.073l6.25 6.25a.25.25 0 0 1 0 .354l-5.025 5.025a.25.25 0 0 1-.354 0l-6.25-6.25a.25.25 0 0 1-.073-.177zm1.5.025 5.5 5.5 4.146-4.146-5.5-5.5H4zm1.75-2.5a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5z" />
+    </svg>
+  );
+
   return (
     <span
       className={cn(
-        "shrink-0 rounded px-1.5 py-0.5 text-[10px] font-semibold leading-none",
+        "inline-flex shrink-0 items-center gap-0.5 rounded-[4px] px-1.5 py-0.5 text-[10px] font-semibold leading-none",
         isHead
-          ? "bg-brand/20 text-brand ring-1 ring-inset ring-brand/40"
+          ? "bg-blue-600 text-white"
           : isTag
-            ? "bg-amber-500/15 text-amber-600 ring-1 ring-inset ring-amber-400/40 dark:text-amber-400"
+            ? "bg-amber-600/90 text-white"
             : isRemote
-              ? "bg-indigo-500/15 text-indigo-600 ring-1 ring-inset ring-indigo-400/40 dark:text-indigo-400"
-              : "bg-muted text-muted-foreground ring-1 ring-inset ring-border",
+              ? "bg-indigo-500/20 text-indigo-300 ring-1 ring-inset ring-indigo-400/40"
+              : "bg-zinc-600/60 text-zinc-200 ring-1 ring-inset ring-zinc-500/40",
       )}
     >
+      {(isHead || !isRemote) && !isTag ? BranchIcon : isTag ? TagIcon : null}
       {text}
     </span>
   );
 }
 
-// ── file status icon / badge ──────────────────────────────────────────────────
-
-function FileStatusDot({ status }: { status: string }) {
-  const cls =
-    status === "A"
-      ? "text-green-500"
-      : status === "D"
-        ? "text-red-500"
-        : status === "R" || status === "C"
-          ? "text-blue-400"
-          : "text-amber-400";
-  const label = status === "A" ? "A" : status === "D" ? "D" : status === "R" ? "R" : "M";
-  return (
-    <span className={cn("shrink-0 w-3.5 text-center text-[9px] font-bold", cls)}>{label}</span>
-  );
-}
-
 // ── helpers ───────────────────────────────────────────────────────────────────
 
-function formatDate(iso: string): string {
+function fmtDate(iso: string): string {
   try {
     return new Intl.DateTimeFormat("en-GB", {
       day: "numeric",
@@ -171,138 +137,284 @@ function shortDate(iso: string): string {
   }
 }
 
+// ── file-tree builder for detail panel ───────────────────────────────────────
+
+interface FileNode {
+  name: string;
+  fullPath: string;
+  status: string;
+  additions: number;
+  deletions: number;
+  children: FileNode[];
+  isDir: boolean;
+}
+
+function buildFileTree(
+  files: ReadonlyArray<{
+    readonly path: string;
+    readonly status: string;
+    readonly additions: number;
+    readonly deletions: number;
+  }>,
+): FileNode[] {
+  const root: FileNode = {
+    name: "",
+    fullPath: "",
+    status: "",
+    additions: 0,
+    deletions: 0,
+    children: [],
+    isDir: true,
+  };
+
+  for (const f of files) {
+    const parts = f.path.split("/");
+    let node = root;
+    for (let i = 0; i < parts.length; i++) {
+      const part = parts[i]!;
+      const isLast = i === parts.length - 1;
+      let child = node.children.find((c) => c.name === part);
+      if (!child) {
+        child = {
+          name: part,
+          fullPath: parts.slice(0, i + 1).join("/"),
+          status: isLast ? f.status : "",
+          additions: isLast ? f.additions : 0,
+          deletions: isLast ? f.deletions : 0,
+          children: [],
+          isDir: !isLast,
+        };
+        node.children.push(child);
+      } else if (isLast) {
+        child.additions = f.additions;
+        child.deletions = f.deletions;
+        child.status = f.status;
+      }
+      node = child;
+    }
+  }
+
+  return root.children;
+}
+
+function FileTreeNode({ node, depth }: { node: FileNode; depth: number }) {
+  const [open, setOpen] = useState(true);
+  const statusColor =
+    node.status === "A"
+      ? "text-green-400"
+      : node.status === "D"
+        ? "text-red-400"
+        : node.status === "R" || node.status === "C"
+          ? "text-blue-400"
+          : "text-yellow-400";
+
+  return (
+    <div>
+      <div
+        className={cn(
+          "flex items-center gap-1 py-[2px] hover:bg-white/5 rounded cursor-default",
+          node.isDir ? "cursor-pointer" : "",
+        )}
+        style={{ paddingLeft: `${8 + depth * 14}px` }}
+        onClick={node.isDir ? () => setOpen((o) => !o) : undefined}
+      >
+        {node.isDir ? (
+          <>
+            <svg
+              width="10"
+              height="10"
+              viewBox="0 0 10 10"
+              fill="currentColor"
+              className={cn("shrink-0 text-zinc-400 transition-transform", open ? "rotate-90" : "")}
+            >
+              <path d="M3 2l4 3-4 3V2z" />
+            </svg>
+            <svg
+              width="12"
+              height="12"
+              viewBox="0 0 16 16"
+              fill="currentColor"
+              className="shrink-0 text-zinc-400"
+            >
+              <path d="M1.75 4.5a.25.25 0 0 1 .25-.25h3.5l1.5 1.5H14a.25.25 0 0 1 .25.25v7.5a.25.25 0 0 1-.25.25H2a.25.25 0 0 1-.25-.25V4.5z" />
+            </svg>
+            <span className="text-[11px] text-zinc-300">{node.name}</span>
+          </>
+        ) : (
+          <>
+            <span className="w-[10px] shrink-0" />
+            <svg
+              width="11"
+              height="11"
+              viewBox="0 0 16 16"
+              fill="currentColor"
+              className="shrink-0 text-zinc-500"
+            >
+              <path d="M2 1.75A.75.75 0 0 1 2.75 1h6.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A.75.75 0 0 1 13.25 16H2.75A.75.75 0 0 1 2 15.25Zm1.5.75v13h9V6H9.25A.75.75 0 0 1 8.5 5.25V2.5H3.5zm6.5.44V5h2.06Z" />
+            </svg>
+            <span className={cn("flex-1 min-w-0 truncate text-[11px]", statusColor)}>
+              {node.name}
+            </span>
+            {(node.additions > 0 || node.deletions > 0) && (
+              <span className="shrink-0 text-[10px] pr-2">
+                {node.additions > 0 && <span className="text-green-400">+{node.additions}</span>}
+                {node.additions > 0 && node.deletions > 0 && (
+                  <span className="text-zinc-500"> | </span>
+                )}
+                {node.deletions > 0 && <span className="text-red-400">-{node.deletions}</span>}
+              </span>
+            )}
+          </>
+        )}
+      </div>
+      {node.isDir && open && (
+        <div>
+          {node.children.map((child) => (
+            <FileTreeNode key={child.fullPath} node={child} depth={depth + 1} />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ── expanded commit detail panel ──────────────────────────────────────────────
 
 const CommitDetailPanel = memo(function CommitDetailPanel({
   cwd,
   sha,
+  accentColor,
   onClose,
 }: {
   cwd: string;
   sha: string;
+  accentColor: string;
   onClose: () => void;
 }) {
   const q = useQuery(gitShowCommitQueryOptions(cwd, sha));
   const detail = q.data;
 
   return (
-    <div className="border-y border-border/60 bg-sidebar-accent/30" style={{ minHeight: 180 }}>
+    <div
+      className="relative border-b border-border/40 bg-[#1c1c1e]"
+      style={{ borderLeft: `3px solid ${accentColor}` }}
+    >
+      {/* Close button */}
+      <button
+        onClick={onClose}
+        className="absolute right-2 top-2 z-10 flex h-5 w-5 items-center justify-center rounded text-zinc-500 hover:bg-zinc-700 hover:text-zinc-200"
+        aria-label="Close"
+      >
+        <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+          <path
+            d="M1.5 1.5l7 7M8.5 1.5l-7 7"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+          />
+        </svg>
+      </button>
+
       {q.isLoading && (
-        <div className="flex h-32 items-center justify-center text-[11px] text-muted-foreground">
+        <div className="flex h-28 items-center justify-center text-[11px] text-zinc-500">
           Loading…
         </div>
       )}
       {q.error && (
-        <div className="flex h-32 items-center justify-center text-[11px] text-destructive">
+        <div className="flex h-28 items-center justify-center text-[11px] text-red-400">
           {q.error instanceof Error ? q.error.message : "Failed to load commit details."}
         </div>
       )}
       {detail && (
-        <div className="grid grid-cols-2 gap-0 divide-x divide-border/40">
-          {/* Left: commit metadata */}
-          <div className="space-y-2 p-3 text-[11px]">
-            {/* Close button */}
-            <div className="flex items-start justify-between gap-2">
-              <div className="space-y-1.5 min-w-0">
-                <div>
-                  <span className="font-semibold text-foreground/70">Commit: </span>
-                  <span className="font-mono text-foreground/90">{detail.sha}</span>
-                </div>
-                {detail.parentShas.length > 0 && (
-                  <div>
-                    <span className="font-semibold text-foreground/70">
-                      {detail.parentShas.length === 1 ? "Parent: " : "Parents: "}
-                    </span>
+        <div className="grid grid-cols-2 divide-x divide-border/30" style={{ minHeight: 160 }}>
+          {/* Left: metadata */}
+          <div className="space-y-1.5 p-3 pr-4 text-[11px] leading-relaxed">
+            <MetaRow
+              label="Commit"
+              value={<span className="font-mono text-zinc-200">{detail.sha}</span>}
+            />
+            {detail.parentShas.length > 0 && (
+              <MetaRow
+                label={detail.parentShas.length === 1 ? "Parent" : "Parents"}
+                value={
+                  <>
                     {detail.parentShas.map((p) => (
-                      <span key={p} className="mr-1 font-mono text-brand/80 text-[10px]">
+                      <span key={p} className="mr-2 font-mono text-blue-400">
                         {p.slice(0, 12)}
                       </span>
                     ))}
-                  </div>
-                )}
-                <div>
-                  <span className="font-semibold text-foreground/70">Author: </span>
-                  <span>{detail.authorName}</span>
+                  </>
+                }
+              />
+            )}
+            <MetaRow
+              label="Author"
+              value={
+                <span className="text-zinc-200">
+                  {detail.authorName}
                   {detail.authorEmail && (
-                    <span className="ml-1 text-muted-foreground">&lt;{detail.authorEmail}&gt;</span>
+                    <span className="ml-1 text-zinc-500">&lt;{detail.authorEmail}&gt;</span>
                   )}
-                </div>
-                {detail.committerName && detail.committerName !== detail.authorName && (
-                  <div>
-                    <span className="font-semibold text-foreground/70">Committer: </span>
-                    <span>{detail.committerName}</span>
+                </span>
+              }
+            />
+            {detail.committerName && detail.committerName !== detail.authorName && (
+              <MetaRow
+                label="Committer"
+                value={
+                  <span className="text-zinc-200">
+                    {detail.committerName}
                     {detail.committerEmail && (
-                      <span className="ml-1 text-muted-foreground">
-                        &lt;{detail.committerEmail}&gt;
-                      </span>
+                      <span className="ml-1 text-zinc-500">&lt;{detail.committerEmail}&gt;</span>
                     )}
-                  </div>
-                )}
-                <div>
-                  <span className="font-semibold text-foreground/70">Date: </span>
-                  <span className="text-foreground/80">{formatDate(detail.authorDate)}</span>
-                </div>
-              </div>
-              <button
-                onClick={onClose}
-                className="shrink-0 rounded p-0.5 text-muted-foreground/60 hover:bg-muted hover:text-foreground"
-                aria-label="Close commit details"
-              >
-                <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-                  <path
-                    d="M2 2l8 8M10 2l-8 8"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                  />
-                </svg>
-              </button>
-            </div>
+                  </span>
+                }
+              />
+            )}
+            <MetaRow
+              label="Date"
+              value={<span className="text-zinc-300">{fmtDate(detail.authorDate)}</span>}
+            />
             {detail.body && (
-              <div className="mt-1 rounded bg-muted/30 px-2 py-1.5 text-[11px] text-foreground/80 whitespace-pre-wrap break-words">
+              <div className="mt-2 rounded-sm bg-zinc-800/60 px-2.5 py-2 text-[11px] text-zinc-300 whitespace-pre-wrap break-words leading-relaxed border border-white/5">
                 {detail.body}
               </div>
             )}
-            {!detail.body && detail.subject && (
-              <div className="mt-1 text-foreground/70 italic">{detail.subject}</div>
+            {!detail.body && (
+              <div className="mt-2 text-[11px] text-zinc-400 italic">{detail.subject}</div>
             )}
           </div>
 
-          {/* Right: changed files */}
-          <div className="overflow-auto p-2" style={{ maxHeight: 280 }}>
-            <div className="mb-1.5 flex items-center justify-between px-1">
-              <span className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground/70">
+          {/* Right: file tree */}
+          <div className="overflow-auto py-2" style={{ maxHeight: 320 }}>
+            <div className="mb-1.5 flex items-center justify-between px-3">
+              <span className="text-[10px] font-semibold uppercase tracking-wider text-zinc-500">
                 {detail.files.length} file{detail.files.length !== 1 ? "s" : ""}
               </span>
-              <span className="text-[10px] text-muted-foreground/60">
-                <span className="text-green-500">+{detail.totalAdditions}</span>
-                {" / "}
-                <span className="text-red-500">-{detail.totalDeletions}</span>
+              <span className="text-[10px]">
+                <span className="text-green-400">+{detail.totalAdditions}</span>
+                <span className="mx-1 text-zinc-600">/</span>
+                <span className="text-red-400">-{detail.totalDeletions}</span>
               </span>
             </div>
-            <div className="space-y-px">
-              {detail.files.map((f) => (
-                <div
-                  key={f.path}
-                  className="flex items-center gap-1.5 rounded px-1 py-0.5 text-[11px] hover:bg-muted/30"
-                >
-                  <FileStatusDot status={f.status} />
-                  <span className="min-w-0 flex-1 truncate font-mono text-foreground/80">
-                    {f.path}
-                  </span>
-                  <span className="shrink-0 text-[10px]">
-                    {f.additions > 0 && <span className="text-green-500">+{f.additions}</span>}
-                    {f.deletions > 0 && <span className="ml-0.5 text-red-500">-{f.deletions}</span>}
-                  </span>
-                </div>
-              ))}
-            </div>
+            {buildFileTree(detail.files).map((node) => (
+              <FileTreeNode key={node.fullPath} node={node} depth={0} />
+            ))}
           </div>
         </div>
       )}
     </div>
   );
 });
+
+function MetaRow({ label, value }: { label: string; value: React.ReactNode }) {
+  return (
+    <div className="flex gap-1.5">
+      <span className="w-16 shrink-0 font-semibold text-zinc-500">{label}:</span>
+      <span className="min-w-0 flex-1 break-all">{value}</span>
+    </div>
+  );
+}
 
 // ── commit row ────────────────────────────────────────────────────────────────
 
@@ -326,40 +438,38 @@ const CommitRow = memo(function CommitRow({
   return (
     <div
       className={cn(
-        "grid cursor-pointer items-center select-none",
-        isExpanded ? "bg-sidebar-accent/60" : "hover:bg-sidebar-accent/50",
+        "grid cursor-pointer select-none items-center border-b border-transparent",
+        isExpanded ? "bg-zinc-800/70" : "hover:bg-zinc-800/40",
       )}
-      style={{ height: GRAPH_ROW_H, gridTemplateColumns: colTemplate }}
+      style={{ height: ROW_H, gridTemplateColumns: colTemplate }}
       onClick={onToggle}
-      title={`${commit.sha} — click to expand`}
     >
-      {/* Graph placeholder — actual SVG is the absolute overlay */}
       <div style={{ width: graphColWidth }} />
 
-      {/* Description: ref chips then subject */}
-      <div className="flex min-w-0 items-center gap-1 overflow-hidden pr-2">
+      {/* Description */}
+      <div className="flex min-w-0 items-center gap-1.5 overflow-hidden pr-3">
         {allRefs.length > 0 && (
-          <span className="flex shrink-0 items-center gap-0.5">
+          <span className="flex shrink-0 items-center gap-1">
             {allRefs.slice(0, 3).map((ref) => (
               <RefChip key={ref} label={ref} />
             ))}
           </span>
         )}
-        <span className="min-w-0 truncate text-[12px] leading-none text-foreground">
-          {commit.subject || <span className="italic text-muted-foreground">no message</span>}
+        <span className="min-w-0 truncate text-[12.5px] leading-none text-zinc-100">
+          {commit.subject || <span className="italic text-zinc-500">no message</span>}
         </span>
       </div>
 
       {/* Date */}
-      <div className="pr-2 text-right text-[10px] text-muted-foreground/70">
+      <div className="pr-3 text-right text-[11.5px] tabular-nums text-zinc-400">
         {shortDate(commit.authorDate)}
       </div>
 
       {/* Author */}
-      <div className="truncate pr-2 text-[10px] text-muted-foreground/70">{commit.authorName}</div>
+      <div className="truncate pr-3 text-[11.5px] text-zinc-400">{commit.authorName}</div>
 
       {/* SHA */}
-      <div className="pr-2 font-mono text-[10px] text-muted-foreground/70">{commit.shortSha}</div>
+      <div className="pr-3 font-mono text-[11px] text-zinc-500">{commit.shortSha}</div>
     </div>
   );
 });
@@ -377,20 +487,28 @@ export function GitHistoryPanel({ cwd, headSha }: GitHistoryPanelProps) {
   const commits = logQuery.data?.commits ?? [];
   const [expandedSha, setExpandedSha] = useState<string | null>(null);
 
-  const layout: GraphRenderData = useMemo(() => {
-    return buildGraphLayout(
-      commits.map((c) => ({
-        sha: c.sha,
-        parentShas: c.parentShas,
-        isCurrent: c.sha === headSha,
-      })),
-    );
-  }, [commits, headSha]);
+  const layout: GraphRenderData = useMemo(
+    () =>
+      buildGraphLayout(
+        commits.map((c) => ({
+          sha: c.sha,
+          parentShas: c.parentShas,
+          isCurrent: c.sha === headSha,
+        })),
+        GRAPH_CFG,
+      ),
+    [commits, headSha],
+  );
 
-  const graphColWidth = Math.max(layout.svgWidth + DEFAULT_GRAPH_CONFIG.offsetX, 32);
-  const colTemplate = `${graphColWidth}px 1fr 90px 70px 62px`;
+  const graphColWidth = Math.max(layout.svgWidth + GRAPH_CFG.offsetX, 36);
+  const colTemplate = `${graphColWidth}px 1fr 90px 72px 68px`;
 
-  const expandedIndex = expandedSha ? commits.findIndex((c) => c.sha === expandedSha) : null;
+  // Find the accent color for the expanded commit's dot
+  const expandedDotColor = useMemo(() => {
+    if (!expandedSha) return "#0158FD";
+    const idx = commits.findIndex((c) => c.sha === expandedSha);
+    return layout.dots[idx]?.colour ?? "#0158FD";
+  }, [expandedSha, commits, layout.dots]);
 
   if (logQuery.isLoading && commits.length === 0) {
     return <PanelStateMessage density="compact">Loading history…</PanelStateMessage>;
@@ -406,23 +524,19 @@ export function GitHistoryPanel({ cwd, headSha }: GitHistoryPanelProps) {
     return <PanelStateMessage density="compact">No commits yet.</PanelStateMessage>;
   }
 
-  // The detail panel height is flexible (content-driven), so we use a fixed
-  // estimate for SVG shift purposes — the SVG overlay uses CSS transform for dots.
-  const EXPAND_PANEL_H = 0; // SVG doesn't need shift; panel is below the row
-
   return (
-    <div className="h-full min-h-0 w-full overflow-auto">
+    <div className="h-full min-h-0 w-full overflow-auto bg-[#18181b] text-zinc-100">
       {/* Sticky header */}
       <div
-        className="sticky top-0 z-10 grid items-center border-b border-border/50 bg-sidebar"
+        className="sticky top-0 z-10 grid items-center border-b border-zinc-700/60 bg-[#1c1c1e]"
         style={{ gridTemplateColumns: colTemplate, height: HEADER_H }}
       >
         {(["Graph", "Description", "Date", "Author", "Commit"] as const).map((label, i) => (
           <div
             key={label}
             className={cn(
-              "text-[10px] font-semibold uppercase tracking-wide text-muted-foreground/60",
-              i === 0 ? "pl-2" : i === 2 ? "pr-2 text-right" : "pr-2",
+              "text-[10.5px] font-bold uppercase tracking-wider text-zinc-500",
+              i === 0 ? "pl-3" : i === 2 ? "pr-3 text-right" : "pr-3",
             )}
           >
             {label}
@@ -430,21 +544,16 @@ export function GitHistoryPanel({ cwd, headSha }: GitHistoryPanelProps) {
         ))}
       </div>
 
-      {/* Rows + single continuous graph SVG overlay */}
+      {/* Rows + graph SVG overlay */}
       <div className="relative">
-        {/* Single SVG spanning all rows */}
         <div
           className="pointer-events-none absolute left-0 top-0 z-[1]"
           style={{ width: graphColWidth }}
         >
-          <GraphSvg
-            layout={layout}
-            expandedIndex={expandedIndex !== -1 ? expandedIndex : null}
-            expandedHeight={EXPAND_PANEL_H}
-          />
+          <GraphSvg layout={layout} />
         </div>
 
-        {commits.map((commit, i) => {
+        {commits.map((commit) => {
           const isExpanded = commit.sha === expandedSha;
           return (
             <div key={commit.sha}>
@@ -453,12 +562,13 @@ export function GitHistoryPanel({ cwd, headSha }: GitHistoryPanelProps) {
                 isExpanded={isExpanded}
                 graphColWidth={graphColWidth}
                 colTemplate={colTemplate}
-                onToggle={() => setExpandedSha((prev) => (prev === commit.sha ? null : commit.sha))}
+                onToggle={() => setExpandedSha((p) => (p === commit.sha ? null : commit.sha))}
               />
               {isExpanded && (
                 <CommitDetailPanel
                   cwd={cwd}
                   sha={commit.sha}
+                  accentColor={expandedDotColor}
                   onClose={() => setExpandedSha(null)}
                 />
               )}
