@@ -1,18 +1,18 @@
 /**
- * Git graph layout engine — ported from VS Code Git Graph (MIT).
- * https://github.com/mhutchie/vscode-git-graph/blob/master/web/graph.ts
+ * Git graph layout engine — faithful port of VS Code Git Graph (MIT).
+ * https://github.com/mhutchie/vscode-git-graph/blob/develop/web/graph.ts
  *
- * Produces a list of SVG path strings + dot positions from a flat commit list.
+ * Algorithm is a direct translation of Graph.determinePath() from the original.
  * No React or DOM dependency — pure data transformation.
  */
 
 // ── config ────────────────────────────────────────────────────────────────────
 
 export interface GraphConfig {
-  readonly gridX: number; // px per column
-  readonly gridY: number; // px per row
-  readonly offsetX: number; // left padding
-  readonly offsetY: number; // centre of first row
+  readonly gridX: number;
+  readonly gridY: number;
+  readonly offsetX: number;
+  readonly offsetY: number;
   readonly dotRadius: number;
   readonly strokeWidth: number;
   readonly colours: readonly string[];
@@ -23,110 +23,171 @@ export const DEFAULT_GRAPH_CONFIG: GraphConfig = {
   gridX: 16,
   gridY: 28,
   offsetX: 10,
-  offsetY: 14, // gridY / 2 → centre of first row
+  offsetY: 14,
   dotRadius: 4,
   strokeWidth: 1.5,
   style: "rounded",
   colours: [
-    "#0158FD", // brand blue
-    "#01CCA4", // brand green
-    "#a78bfa", // violet
-    "#f59e0b", // amber
-    "#ec4899", // pink
-    "#14b8a6", // teal
-    "#f97316", // orange
-    "#8b5cf6", // purple
-    "#06b6d4", // cyan
-    "#84cc16", // lime
-    "#ef4444", // red
-    "#64748b", // slate
+    "#0158FD",
+    "#01CCA4",
+    "#a78bfa",
+    "#f59e0b",
+    "#ec4899",
+    "#14b8a6",
+    "#f97316",
+    "#8b5cf6",
+    "#06b6d4",
+    "#84cc16",
+    "#ef4444",
+    "#64748b",
   ],
 };
 
 // ── internal types ────────────────────────────────────────────────────────────
 
-/** Logic-space coordinate (column × row indices, not pixels). */
 interface Point {
-  x: number; // column index
-  y: number; // row (commit) index
+  readonly x: number;
+  readonly y: number;
 }
 
-/** A logical line segment between two points on potentially different columns. */
 interface Line {
-  p1: Point;
-  p2: Point;
-  /** true → horizontal transition anchored at p1 side; false → anchored at p2 side */
-  lockedFirst: boolean;
+  readonly p1: Point;
+  readonly p2: Point;
+  readonly lockedFirst: boolean;
 }
 
 interface UnavailablePoint {
-  x: number;
-  connectsTo: Vertex | null;
-  onBranch: Branch;
-}
-
-// ── Vertex ────────────────────────────────────────────────────────────────────
-
-class Vertex {
-  readonly id: number; // row index
-  x = -1; // column (assigned by determinePath)
-  nextX = 0; // next free column on this vertex
-  readonly parents: Vertex[] = [];
-  readonly children: Vertex[] = [];
-  onBranch: Branch | null = null;
-  readonly connections: UnavailablePoint[] = [];
-  isExpanded = false;
-
-  constructor(id: number) {
-    this.id = id;
-  }
-
-  getPoint(): Point {
-    return { x: this.x, y: this.id };
-  }
-
-  /** Returns the next available column slot on this vertex, marking it used. */
-  getNextPoint(onBranch: Branch): Point {
-    while (this.connections.some((c) => c.x === this.nextX)) {
-      this.nextX++;
-    }
-    const pt: Point = { x: this.nextX, y: this.id };
-    this.connections.push({ x: this.nextX, connectsTo: null, onBranch });
-    this.nextX++;
-    return pt;
-  }
-
-  isConnectedTo(other: Vertex): boolean {
-    return this.connections.some((c) => c.connectsTo === other);
-  }
-
-  connectTo(other: Vertex, onBranch: Branch): void {
-    this.connections.push({ x: other.x, connectsTo: other, onBranch });
-  }
+  readonly connectsTo: Vertex | null;
+  readonly onBranch: Branch;
 }
 
 // ── Branch ────────────────────────────────────────────────────────────────────
 
 class Branch {
-  readonly colourIdx: number;
+  readonly colour: number;
+  private end = 0;
   readonly lines: Line[] = [];
-  end = 0; // last vertex row index on this branch
 
-  constructor(colourIdx: number) {
-    this.colourIdx = colourIdx;
+  constructor(colour: number) {
+    this.colour = colour;
   }
 
   addLine(p1: Point, p2: Point, lockedFirst: boolean): void {
     this.lines.push({ p1, p2, lockedFirst });
   }
+
+  getEnd(): number {
+    return this.end;
+  }
+
+  setEnd(end: number): void {
+    this.end = end;
+  }
 }
 
-// ── layout algorithm (determinePath) ─────────────────────────────────────────
+// ── Vertex ────────────────────────────────────────────────────────────────────
+
+const NULL_VERTEX_ID = -1;
+
+class Vertex {
+  readonly id: number;
+  private _x = 0;
+  private nextX = 0;
+  private nextParentIdx = 0;
+  private onBranch: Branch | null = null;
+  private readonly _parents: Vertex[] = [];
+  private readonly _children: Vertex[] = [];
+  private readonly connections: UnavailablePoint[] = [];
+
+  constructor(id: number) {
+    this.id = id;
+  }
+
+  addParent(v: Vertex): void {
+    this._parents.push(v);
+  }
+  addChild(v: Vertex): void {
+    this._children.push(v);
+  }
+
+  getParents(): readonly Vertex[] {
+    return this._parents;
+  }
+
+  hasParents(): boolean {
+    return this._parents.length > 0;
+  }
+
+  isMerge(): boolean {
+    return this._parents.length > 1;
+  }
+
+  getNextParent(): Vertex | null {
+    return this.nextParentIdx < this._parents.length
+      ? (this._parents[this.nextParentIdx] ?? null)
+      : null;
+  }
+
+  registerParentProcessed(): void {
+    this.nextParentIdx++;
+  }
+
+  isNotOnBranch(): boolean {
+    return this.onBranch === null;
+  }
+
+  isOnThisBranch(b: Branch): boolean {
+    return this.onBranch === b;
+  }
+
+  getBranch(): Branch | null {
+    return this.onBranch;
+  }
+
+  addToBranch(b: Branch, x: number): void {
+    if (this.onBranch === null) {
+      this.onBranch = b;
+      this._x = x;
+    }
+  }
+
+  getPoint(): Point {
+    return { x: this._x, y: this.id };
+  }
+
+  getNextPoint(): Point {
+    return { x: this.nextX, y: this.id };
+  }
+
+  // Returns a point on this vertex that connects to the given vertex via the given branch,
+  // or null if none exists.
+  getPointConnectingTo(target: Vertex | null, onBranch: Branch): Point | null {
+    for (let i = 0; i < this.connections.length; i++) {
+      const c = this.connections[i]!;
+      if (c.connectsTo === target && c.onBranch === onBranch) {
+        return { x: i, y: this.id };
+      }
+    }
+    return null;
+  }
+
+  registerUnavailablePoint(x: number, connectsTo: Vertex | null, onBranch: Branch): void {
+    if (x === this.nextX) {
+      this.nextX = x + 1;
+      this.connections[x] = { connectsTo, onBranch };
+    }
+  }
+
+  getColour(): number {
+    return this.onBranch !== null ? this.onBranch.colour : 0;
+  }
+}
+
+// ── layout engine — direct port of Graph.determinePath() ─────────────────────
 
 class GraphLayoutEngine {
   private readonly vertices: Vertex[];
   private readonly branches: Branch[] = [];
-  /** availableColours[i] = last row index when colour i was freed (0 = never used). */
   private readonly availableColours: number[] = [];
 
   constructor(shas: string[], parentShasMap: Map<string, string[]>) {
@@ -135,17 +196,20 @@ class GraphLayoutEngine {
 
     this.vertices = shas.map((_, i) => new Vertex(i));
 
-    // Wire parent–child relationships (only within the visible window).
+    // Null sentinel for parents outside the visible window.
+    const nullVertex = new Vertex(NULL_VERTEX_ID);
+
     for (let i = 0; i < shas.length; i++) {
       const sha = shas[i]!;
       const parentShas = parentShasMap.get(sha) ?? [];
       for (const pSha of parentShas) {
         const pIdx = shaToIdx.get(pSha);
         if (pIdx !== undefined) {
-          const child = this.vertices[i]!;
-          const parent = this.vertices[pIdx]!;
-          child.parents.push(parent);
-          parent.children.push(child);
+          this.vertices[i]!.addParent(this.vertices[pIdx]!);
+          this.vertices[pIdx]!.addChild(this.vertices[i]!);
+        } else {
+          // Parent is outside the visible window — use null sentinel.
+          this.vertices[i]!.addParent(nullVertex);
         }
       }
     }
@@ -154,7 +218,6 @@ class GraphLayoutEngine {
   private getAvailableColour(startAt: number): number {
     for (let i = 0; i < this.availableColours.length; i++) {
       if (startAt > (this.availableColours[i] ?? 0)) {
-        this.availableColours[i] = 0; // mark as in use
         return i;
       }
     }
@@ -162,202 +225,192 @@ class GraphLayoutEngine {
     return this.availableColours.length - 1;
   }
 
-  private freeColour(colourIdx: number, atRow: number): void {
-    this.availableColours[colourIdx] = atRow;
-  }
-
-  /**
-   * Recursive layout pass.  Mirrors VS Code Git Graph's `determinePath`.
-   * Assigns column positions (vertex.x) and creates Branch/Line objects.
-   */
+  // Direct port of Graph.determinePath() from vscode-git-graph/web/graph.ts
   private determinePath(startAt: number): void {
-    const vertex = this.vertices[startAt];
-    if (!vertex || vertex.onBranch !== null) return;
+    let i = startAt;
+    const startVertex = this.vertices[i]!;
+    let vertex = startVertex;
+    let parentVertex = vertex.getNextParent();
 
-    // Create a new branch for this starting vertex.
-    const colourIdx = this.getAvailableColour(startAt);
-    const branch = new Branch(colourIdx);
-    this.branches.push(branch);
+    let lastPoint: Point = vertex.isNotOnBranch() ? vertex.getNextPoint() : vertex.getPoint();
 
-    let current: Vertex = vertex;
-    current.onBranch = branch;
-
-    // Assign a column to this vertex if it doesn't have one yet.
-    if (current.x === -1) {
-      const pt = current.getNextPoint(branch);
-      current.x = pt.x;
-    }
-
-    // Walk down the primary parent chain.
-    while (true) {
-      branch.end = current.id;
-
-      if (current.parents.length === 0) break;
-
-      const primaryParent = current.parents[0]!;
-
-      // Handle extra parents (merge commits) — they branch off to new columns.
-      for (let p = 1; p < current.parents.length; p++) {
-        const extraParent = current.parents[p]!;
-        if (extraParent.onBranch !== null) {
-          // Already on a branch — draw a converging line.
-          if (!current.isConnectedTo(extraParent)) {
-            const p1 = current.getPoint();
-            const p2 = extraParent.getPoint();
-            branch.addLine(p1, p2, true);
-            current.connectTo(extraParent, branch);
-          }
+    // Case 1: merge between two vertices already on branches → draw connecting line only
+    if (
+      parentVertex !== null &&
+      parentVertex.id !== NULL_VERTEX_ID &&
+      vertex.isMerge() &&
+      !vertex.isNotOnBranch() &&
+      !parentVertex.isNotOnBranch()
+    ) {
+      let foundPointToParent = false;
+      const parentBranch = parentVertex.getBranch()!;
+      for (i = startAt + 1; i < this.vertices.length; i++) {
+        const curVertex = this.vertices[i]!;
+        let curPoint = curVertex.getPointConnectingTo(parentVertex, parentBranch);
+        if (curPoint !== null) {
+          foundPointToParent = true;
         } else {
-          // New branch for this extra parent.
-          extraParent.onBranch = branch; // temporarily reuse colour? No — own branch.
-          extraParent.onBranch = null; // reset; determinePath will assign
-          // Instead: open a new column for extraParent on *this* vertex.
-          const branchPt = current.getNextPoint(branch);
-          extraParent.x = branchPt.x;
-          // Draw branching line from current down-right to extraParent's column.
-          const halfwayY = current.id + 0.5;
-          branch.addLine(current.getPoint(), { x: branchPt.x, y: halfwayY }, true);
-          // Now kick off a new branch for this extra parent.
-          const newColIdx = this.getAvailableColour(current.id);
-          const newBranch = new Branch(newColIdx);
-          this.branches.push(newBranch);
-          extraParent.onBranch = newBranch;
-          newBranch.addLine(
-            { x: branchPt.x, y: halfwayY },
-            { x: branchPt.x, y: primaryParent.id },
-            false,
-          );
-          newBranch.end = extraParent.id;
-          // Continue determinePath from extraParent later (it now has onBranch set).
+          curPoint = curVertex.getNextPoint();
+        }
+        parentBranch.addLine(
+          lastPoint,
+          curPoint,
+          !foundPointToParent && curVertex !== parentVertex ? lastPoint.x < curPoint.x : true,
+        );
+        curVertex.registerUnavailablePoint(curPoint.x, parentVertex, parentBranch);
+        lastPoint = curPoint;
+        if (foundPointToParent) {
+          vertex.registerParentProcessed();
+          break;
         }
       }
-
-      if (primaryParent.onBranch !== null) {
-        // Primary parent already claimed — draw converging line and stop.
-        const p1 = current.getPoint();
-        const p2 = primaryParent.getPoint();
-        branch.addLine(p1, p2, true);
-        break;
-      }
-
-      // Primary parent is unclaimed — continue this branch down to it.
-      const p1 = current.getPoint();
-
-      if (primaryParent.x === -1) {
-        // Assign same column as current (straight line).
-        primaryParent.x = current.x;
-      }
-      primaryParent.onBranch = branch;
-
-      const p2 = primaryParent.getPoint();
-      branch.addLine(p1, p2, p1.x === p2.x);
-
-      current = primaryParent;
+      return;
     }
 
-    this.freeColour(colourIdx, branch.end);
+    // Case 2: normal branch
+    const branch = new Branch(this.getAvailableColour(startAt));
+    vertex.addToBranch(branch, lastPoint.x);
+    vertex.registerUnavailablePoint(lastPoint.x, vertex, branch);
+
+    for (i = startAt + 1; i < this.vertices.length; i++) {
+      const curVertex = this.vertices[i]!;
+
+      // If this vertex IS the next parent and it's already on a branch, land on its exact point;
+      // otherwise take the next free slot on curVertex.
+      const curPoint =
+        parentVertex === curVertex && !parentVertex.isNotOnBranch()
+          ? curVertex.getPoint()
+          : curVertex.getNextPoint();
+
+      branch.addLine(lastPoint, curPoint, lastPoint.x < curPoint.x);
+      curVertex.registerUnavailablePoint(curPoint.x, parentVertex, branch);
+      lastPoint = curPoint;
+
+      if (parentVertex === curVertex) {
+        vertex.registerParentProcessed();
+        const parentWasAlreadyOnBranch = !parentVertex.isNotOnBranch();
+        parentVertex.addToBranch(branch, curPoint.x);
+        vertex = parentVertex;
+        parentVertex = vertex.getNextParent();
+        if (parentVertex === null || parentWasAlreadyOnBranch) {
+          break;
+        }
+      }
+    }
+
+    // Handle the case where vertex is the last in the graph (parent outside window).
+    if (i === this.vertices.length && parentVertex !== null && parentVertex.id === NULL_VERTEX_ID) {
+      vertex.registerParentProcessed();
+    }
+
+    branch.setEnd(i);
+    this.branches.push(branch);
+    this.availableColours[branch.colour] = i;
   }
 
-  run(): Branch[] {
-    for (let i = 0; i < this.vertices.length; i++) {
-      if (this.vertices[i]!.onBranch === null) {
+  run(): void {
+    let i = 0;
+    while (i < this.vertices.length) {
+      const v = this.vertices[i]!;
+      if (v.getNextParent() !== null || v.isNotOnBranch()) {
         this.determinePath(i);
+      } else {
+        i++;
       }
     }
+  }
+
+  getBranches(): readonly Branch[] {
     return this.branches;
   }
 
-  getVertices(): Vertex[] {
+  getVertices(): readonly Vertex[] {
     return this.vertices;
   }
 }
 
-// (GraphLayoutEngine ends here)
-
 // ── SVG path generation ───────────────────────────────────────────────────────
 
-function px(logical: number, gridPx: number, offsetPx: number): number {
+function pxOf(logical: number, gridPx: number, offsetPx: number): number {
   return logical * gridPx + offsetPx;
 }
 
-/** Generate a single SVG path `d` attribute string for one branch's lines. */
 function branchToPathD(branch: Branch, cfg: GraphConfig): string {
   const { gridX, gridY, offsetX, offsetY, style } = cfg;
-  // Control-point offset: 80% of row height for rounded, 38% for angular.
   const d = gridY * (style === "rounded" ? 0.8 : 0.38);
 
-  let pathD = "";
-  let lastX: number | null = null;
-  let lastY: number | null = null;
+  // Convert to pixel lines, merge consecutive verticals (same as original).
+  interface PixLine {
+    x1: number;
+    y1: number;
+    x2: number;
+    y2: number;
+    lockedFirst: boolean;
+  }
 
-  // Sort lines top-to-bottom so we can optimise consecutive vertical segments.
-  const lines = [...branch.lines].sort((a, b) => a.p1.y - b.p1.y || a.p2.y - b.p2.y);
-
-  // Merge consecutive vertical segments into single line commands.
-  const merged: Line[] = [];
-  for (const line of lines) {
-    const prev = merged[merged.length - 1];
+  const pixLines: PixLine[] = [];
+  for (const line of branch.lines) {
+    const x1 = pxOf(line.p1.x, gridX, offsetX);
+    const y1 = pxOf(line.p1.y, gridY, offsetY);
+    const x2 = pxOf(line.p2.x, gridX, offsetX);
+    const y2 = pxOf(line.p2.y, gridY, offsetY);
+    const prev = pixLines.at(-1);
     if (
       prev &&
-      prev.p1.x === prev.p2.x &&
-      line.p1.x === line.p2.x &&
-      prev.p1.x === line.p1.x &&
-      Math.abs(prev.p2.y - line.p1.y) < 0.01
+      prev.x1 === prev.x2 &&
+      x1 === x2 &&
+      prev.x2 === x1 &&
+      Math.abs(prev.y2 - y1) < 0.5
     ) {
-      prev.p2 = line.p2;
+      prev.y2 = y2;
     } else {
-      merged.push({ ...line, p1: { ...line.p1 }, p2: { ...line.p2 } });
+      pixLines.push({ x1, y1, x2, y2, lockedFirst: line.lockedFirst });
     }
   }
 
-  for (const line of merged) {
-    const x1 = px(line.p1.x, gridX, offsetX);
-    const y1 = px(line.p1.y, gridY, offsetY);
-    const x2 = px(line.p2.x, gridX, offsetX);
-    const y2 = px(line.p2.y, gridY, offsetY);
+  let path = "";
+  let prevX: number | null = null;
+  let prevY: number | null = null;
 
-    const needsMove = lastX === null || Math.abs(lastX - x1) > 0.5 || Math.abs(lastY! - y1) > 0.5;
-    if (needsMove) {
-      pathD += `M${x1.toFixed(1)},${y1.toFixed(1)}`;
-    }
+  for (const { x1, y1, x2, y2, lockedFirst } of pixLines) {
+    const needsMove = prevX === null || Math.abs(prevX - x1) > 0.5 || Math.abs(prevY! - y1) > 0.5;
+    if (needsMove) path += `M${x1.toFixed(0)},${y1.toFixed(1)}`;
 
     if (Math.abs(x1 - x2) < 0.5) {
-      // Vertical segment.
-      pathD += `L${x2.toFixed(1)},${y2.toFixed(1)}`;
+      path += `L${x2.toFixed(0)},${y2.toFixed(1)}`;
     } else if (style === "angular") {
-      if (line.lockedFirst) {
-        pathD += `L${x1.toFixed(1)},${(y2 - d).toFixed(1)}L${x2.toFixed(1)},${y2.toFixed(1)}`;
+      if (lockedFirst) {
+        path += `L${x2.toFixed(0)},${(y2 - d).toFixed(1)}L${x2.toFixed(0)},${y2.toFixed(1)}`;
       } else {
-        pathD += `L${x2.toFixed(1)},${(y1 + d).toFixed(1)}L${x2.toFixed(1)},${y2.toFixed(1)}`;
+        path += `L${x1.toFixed(0)},${(y1 + d).toFixed(1)}L${x2.toFixed(0)},${y2.toFixed(1)}`;
       }
     } else {
-      // Rounded: cubic bezier S-curve.
-      pathD +=
-        `C${x1.toFixed(1)},${(y1 + d).toFixed(1)}` +
-        ` ${x2.toFixed(1)},${(y2 - d).toFixed(1)}` +
-        ` ${x2.toFixed(1)},${y2.toFixed(1)}`;
+      path +=
+        `C${x1.toFixed(0)},${(y1 + d).toFixed(1)}` +
+        ` ${x2.toFixed(0)},${(y2 - d).toFixed(1)}` +
+        ` ${x2.toFixed(0)},${y2.toFixed(1)}`;
     }
 
-    lastX = x2;
-    lastY = y2;
+    prevX = x2;
+    prevY = y2;
   }
 
-  return pathD;
+  return path;
 }
 
 // ── public output types ───────────────────────────────────────────────────────
 
 export interface GraphBranchPath {
   colour: string;
-  d: string; // SVG path data
+  d: string;
 }
 
 export interface GraphDot {
   cx: number;
   cy: number;
   colour: string;
-  isCurrent: boolean; // HEAD — rendered as ring
-  isMerge: boolean; // merge commit — slightly larger
+  isCurrent: boolean;
+  isMerge: boolean;
 }
 
 export interface GraphRenderData {
@@ -367,14 +420,13 @@ export interface GraphRenderData {
   svgHeight: number;
 }
 
-// ── public entry point ────────────────────────────────────────────────────────
-
 export interface CommitForGraph {
   sha: string;
   parentShas: readonly string[];
-  /** True when this commit is the current HEAD. */
   isCurrent?: boolean;
 }
+
+// ── public entry point ────────────────────────────────────────────────────────
 
 export function buildGraphLayout(
   commits: readonly CommitForGraph[],
@@ -388,43 +440,44 @@ export function buildGraphLayout(
   const parentShasMap = new Map(commits.map((c) => [c.sha, [...c.parentShas]]));
 
   const engine = new GraphLayoutEngine(shas, parentShasMap);
-  const branches = engine.run();
+  engine.run();
+  const branches = engine.getBranches();
   const vertices = engine.getVertices();
 
-  // Build SVG paths per branch.
+  // Build SVG paths
   const paths: GraphBranchPath[] = [];
   for (const branch of branches) {
     const d = branchToPathD(branch, cfg);
     if (d) {
       paths.push({
-        colour: cfg.colours[branch.colourIdx % cfg.colours.length]!,
+        colour: cfg.colours[branch.colour % cfg.colours.length]!,
         d,
       });
     }
   }
 
-  // Build dot positions per vertex.
+  // Build dots
   const dots: GraphDot[] = [];
-  let maxX = 0;
   for (let i = 0; i < vertices.length; i++) {
     const v = vertices[i]!;
-    const col = Math.max(v.x, 0);
-    maxX = Math.max(maxX, col);
-    const cx = px(col, cfg.gridX, cfg.offsetX);
-    const cy = px(i, cfg.gridY, cfg.offsetY);
-    const colour = v.onBranch
-      ? cfg.colours[v.onBranch.colourIdx % cfg.colours.length]!
-      : cfg.colours[0]!;
+    const commit = commits[i]!;
+    const pt = v.getPoint();
     dots.push({
-      cx,
-      cy,
-      colour,
-      isCurrent: commits[i]?.isCurrent ?? false,
-      isMerge: (commits[i]?.parentShas.length ?? 0) > 1,
+      cx: pxOf(pt.x, cfg.gridX, cfg.offsetX),
+      cy: pxOf(pt.y, cfg.gridY, cfg.offsetY),
+      colour: cfg.colours[v.getColour() % cfg.colours.length]!,
+      isCurrent: commit.isCurrent === true,
+      isMerge: commit.parentShas.length > 1,
     });
   }
 
-  const svgWidth = px(maxX, cfg.gridX, cfg.offsetX) + cfg.offsetX;
+  // SVG dimensions: width = max nextX across all vertices
+  let maxCol = 0;
+  for (const v of vertices) {
+    const np = v.getNextPoint();
+    if (np.x > maxCol) maxCol = np.x;
+  }
+  const svgWidth = cfg.offsetX * 2 + Math.max(0, maxCol - 1) * cfg.gridX;
   const svgHeight = commits.length * cfg.gridY;
 
   return { paths, dots, svgWidth, svgHeight };

@@ -488,14 +488,32 @@ const CommitDetailView = memo(function CommitDetailView({
         <div
           style={{
             display: "flex",
+            flexDirection: "column",
             alignItems: "center",
             justifyContent: "center",
+            gap: 8,
             height: 120,
             color: "#f48771",
             fontSize: 13,
           }}
         >
-          {q.error instanceof Error ? q.error.message : "Failed to load commit details."}
+          <span>
+            {q.error instanceof Error ? q.error.message : "Failed to load commit details."}
+          </span>
+          <button
+            onClick={() => q.refetch()}
+            style={{
+              fontSize: 12,
+              color: "rgba(204,204,204,0.7)",
+              background: "rgba(128,128,128,0.2)",
+              border: "1px solid rgba(128,128,128,0.4)",
+              borderRadius: 4,
+              padding: "2px 10px",
+              cursor: "pointer",
+            }}
+          >
+            Retry
+          </button>
         </div>
       )}
       {d && (
