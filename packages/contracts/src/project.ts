@@ -114,4 +114,25 @@ export const ProjectReadFileResult = Schema.Struct({
   // Total on-disk size in bytes, so the UI can show "file too large" affordances.
   totalSize: Schema.Number,
 });
+
+// ── Live worktree file watching ──────────────────────────────────────
+//
+// A subscribe-stream RPC scoped to a cwd: starting the stream lazily begins
+// an fs.watch on that worktree (ref-counted server-side); the stream emits a
+// debounced batch of relative paths that changed so the client can refresh the
+// file tree, open diffs, and git status without polling.
+
+export const WorkspaceSubscribeFileChangesInput = Schema.Struct({
+  cwd: TrimmedNonEmptyString,
+});
+export type WorkspaceSubscribeFileChangesInput = typeof WorkspaceSubscribeFileChangesInput.Type;
+
+export const WorkspaceFileChangeEvent = Schema.Struct({
+  cwd: TrimmedNonEmptyString,
+  // Worktree-relative paths (POSIX separators) that changed in this debounce
+  // window. May be empty when the watcher could not attribute a path, in which
+  // case the client should refresh broadly for this cwd.
+  paths: Schema.Array(Schema.String),
+});
+export type WorkspaceFileChangeEvent = typeof WorkspaceFileChangeEvent.Type;
 export type ProjectReadFileResult = typeof ProjectReadFileResult.Type;

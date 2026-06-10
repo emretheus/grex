@@ -25,6 +25,7 @@ import { ServerLifecycleEventsLive } from "./serverLifecycleEvents";
 import { ServerRuntimeStartupLive } from "./serverRuntimeStartup";
 import { ServerSettingsLive } from "./serverSettings";
 import { WorkspaceLayerLive } from "./workspace/runtimeLayer";
+import { WorkspaceFileWatcherLive } from "./workspace/Layers/WorkspaceFileWatcher";
 import { ProjectFaviconResolverLive } from "./project/Layers/ProjectFaviconResolver";
 import { ServerEnvironmentLive } from "./environment/Layers/ServerEnvironment";
 import { IntegrationsServiceLive } from "./integrations/Layers/IntegrationsService";
@@ -89,6 +90,10 @@ export function makeServerRuntimeServicesLayer() {
   );
   const integrationsLayer = IntegrationsServiceLive.pipe(Layer.provide(ServerSecretStoreLive));
 
+  // The file watcher drives a best-effort git status refresh on disk changes,
+  // so it needs the GitStatusBroadcaster from GitLayerLive.
+  const workspaceFileWatcherLayer = WorkspaceFileWatcherLive.pipe(Layer.provide(GitLayerLive));
+
   return Layer.mergeAll(
     orchestrationReactorLayer,
     threadDeletionReactorLayer,
@@ -102,6 +107,7 @@ export function makeServerRuntimeServicesLayer() {
     ServerLifecycleEventsLive,
     ServerRuntimeStartupLive,
     WorkspaceLayerLive,
+    workspaceFileWatcherLayer,
     ProjectFaviconResolverLive,
     integrationsLayer,
   ).pipe(Layer.provideMerge(NodeServices.layer));

@@ -8,7 +8,12 @@
 import { useQuery } from "@tanstack/react-query";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
-import type { ProjectFileSystemEntry, ProjectId, ThreadId } from "@t3tools/contracts";
+import type {
+  ProjectFileSystemEntry,
+  ProjectId,
+  ThreadId,
+  WorkspaceFileChangeEvent,
+} from "@t3tools/contracts";
 import { readNativeApi } from "~/nativeApi";
 import { createProjectSelector, createThreadSelector } from "~/storeSelectors";
 import { useStore as useAppStore } from "~/store";
@@ -22,6 +27,7 @@ import {
   type GitFileStatus,
 } from "~/lib/gitFileStatus";
 import { copyTextToClipboard } from "~/hooks/useCopyToClipboard";
+import { useWorkspaceFileWatch } from "~/hooks/useWorkspaceFileWatch";
 import { toastManager } from "~/components/ui/toast";
 import {
   ChevronDownIcon,
@@ -101,6 +107,34 @@ export function DockFilesPane({ hostThreadId, projectId }: DockFilesPaneProps) {
     setError(null);
     if (cwd) void loadDirectory("");
   }, [cwd, loadDirectory]);
+
+  // Live disk changes: refresh only the loaded directories that actually
+  // contain a changed path (the root is always loaded). Falls back to
+  // refreshing every loaded directory when the watcher reports a broad change.
+  useWorkspaceFileWatch(
+    cwd,
+    useCallback(
+      (event: WorkspaceFileChangeEvent) => {
+        setChildrenByParent((prev) => {
+          const loadedDirs = Object.keys(prev);
+          if (loadedDirs.length === 0) return prev;
+          const broad = event.paths.length === 0;
+          const dirsToReload = broad
+            ? loadedDirs
+            : loadedDirs.filter((dir) =>
+                event.paths.some((changed) => {
+                  const slash = changed.lastIndexOf("/");
+                  const parent = slash === -1 ? "" : changed.slice(0, slash);
+                  return parent === dir;
+                }),
+              );
+          for (const dir of dirsToReload) void loadDirectory(dir);
+          return prev;
+        });
+      },
+      [loadDirectory],
+    ),
+  );
 
   const toggleDirectory = useCallback(
     (path: string) => {

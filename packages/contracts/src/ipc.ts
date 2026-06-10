@@ -21,6 +21,8 @@ import type {
   GitHubRepositoryResult,
   GitHandoffThreadInput,
   GitHandoffThreadResult,
+  GitLogInput,
+  GitLogResult,
   GitPreparePullRequestThreadInput,
   GitPreparePullRequestThreadResult,
   GitPullRequestRefInput,
@@ -66,6 +68,7 @@ import type {
   ProjectWriteFileResult,
   ProjectReadFileInput,
   ProjectReadFileResult,
+  WorkspaceFileChangeEvent,
 } from "./project";
 import type {
   IntegrationCheckConnectionsResult,
@@ -373,6 +376,12 @@ export interface NativeApi {
     writeFile: (input: ProjectWriteFileInput) => Promise<ProjectWriteFileResult>;
     readFile: (input: ProjectReadFileInput) => Promise<ProjectReadFileResult>;
   };
+  workspace: {
+    // Subscribe to live disk changes for a cwd's worktree. Starts a server-side
+    // fs.watch on first subscriber and stops it when the last one unsubscribes.
+    // Returns an unsubscribe function.
+    onFileChanged: (cwd: string, callback: (event: WorkspaceFileChangeEvent) => void) => () => void;
+  };
   integrations: {
     checkConnections: () => Promise<IntegrationCheckConnectionsResult>;
     connect: (input: IntegrationConnectInput) => Promise<IntegrationConnectResult>;
@@ -422,6 +431,7 @@ export interface NativeApi {
     readFileAtRef: (input: GitReadFileAtRefInput) => Promise<GitReadFileAtRefResult>;
     summarizeDiff: (input: GitSummarizeDiffInput) => Promise<GitSummarizeDiffResult>;
     runStackedAction: (input: GitRunStackedActionInput) => Promise<GitRunStackedActionResult>;
+    log: (input: GitLogInput) => Promise<GitLogResult>;
     onActionProgress: (callback: (event: GitActionProgressEvent) => void) => () => void;
   };
   contextMenu: {

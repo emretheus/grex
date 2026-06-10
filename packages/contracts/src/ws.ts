@@ -31,6 +31,7 @@ import {
   GitCreateWorktreeInput,
   GitInitInput,
   GitListBranchesInput,
+  GitLogInput,
   GitPullInput,
   GitPullRequestRefInput,
   GitReadFileAtRefInput,
@@ -64,6 +65,8 @@ import {
   ProjectSearchEntriesInput,
   ProjectSearchLocalEntriesInput,
   ProjectWriteFileInput,
+  WorkspaceFileChangeEvent,
+  WorkspaceSubscribeFileChangesInput,
 } from "./project";
 import {
   IntegrationConnectInput,
@@ -148,6 +151,7 @@ export const WS_METHODS = {
   gitHandoffThread: "git.handoffThread",
   gitResolvePullRequest: "git.resolvePullRequest",
   gitPreparePullRequestThread: "git.preparePullRequestThread",
+  gitLog: "git.log",
 
   // Terminal methods
   terminalOpen: "terminal.open",
@@ -180,6 +184,8 @@ export const WS_METHODS = {
   subscribeTerminalEvents: "terminal.subscribeEvents",
   subscribeOrchestrationDomainEvents: "orchestration.subscribeDomainEvents",
   subscribeGitActionProgress: "git.subscribeActionProgress",
+  subscribeWorkspaceFileChanges: "workspace.subscribeFileChanges",
+  unsubscribeWorkspaceFileChanges: "workspace.unsubscribeFileChanges",
 
   // Provider discovery
   providerGetComposerCapabilities: "provider.getComposerCapabilities",
@@ -197,6 +203,7 @@ export const WS_METHODS = {
 export const WS_CHANNELS = {
   gitActionProgress: "git.actionProgress",
   terminalEvent: "terminal.event",
+  workspaceFileChanged: "workspace.fileChanged",
   serverWelcome: "server.welcome",
   serverMaintenanceUpdated: "server.maintenanceUpdated",
   serverConfigUpdated: "server.configUpdated",
@@ -240,6 +247,8 @@ const WebSocketRequestBody = Schema.Union([
   tagRequestBody(WS_METHODS.projectsSearchLocalEntries, ProjectSearchLocalEntriesInput),
   tagRequestBody(WS_METHODS.projectsWriteFile, ProjectWriteFileInput),
   tagRequestBody(WS_METHODS.projectsReadFile, ProjectReadFileInput),
+  tagRequestBody(WS_METHODS.subscribeWorkspaceFileChanges, WorkspaceSubscribeFileChangesInput),
+  tagRequestBody(WS_METHODS.unsubscribeWorkspaceFileChanges, WorkspaceSubscribeFileChangesInput),
 
   // Integrations
   tagRequestBody(WS_METHODS.integrationsCheckConnections, Schema.Struct({})),
@@ -280,6 +289,7 @@ const WebSocketRequestBody = Schema.Union([
   tagRequestBody(WS_METHODS.gitHandoffThread, GitHandoffThreadInput),
   tagRequestBody(WS_METHODS.gitResolvePullRequest, GitPullRequestRefInput),
   tagRequestBody(WS_METHODS.gitPreparePullRequestThread, GitPreparePullRequestThreadInput),
+  tagRequestBody(WS_METHODS.gitLog, GitLogInput),
 
   // Terminal methods
   tagRequestBody(WS_METHODS.terminalOpen, TerminalOpenInput),
@@ -352,6 +362,7 @@ export interface WsPushPayloadByChannel {
   readonly [WS_CHANNELS.serverSettingsUpdated]: typeof ServerSettingsUpdatedPayload.Type;
   readonly [WS_CHANNELS.gitActionProgress]: typeof GitActionProgressEvent.Type;
   readonly [WS_CHANNELS.terminalEvent]: typeof TerminalEvent.Type;
+  readonly [WS_CHANNELS.workspaceFileChanged]: typeof WorkspaceFileChangeEvent.Type;
   readonly [ORCHESTRATION_WS_CHANNELS.domainEvent]: OrchestrationEvent;
   readonly [ORCHESTRATION_WS_CHANNELS.shellEvent]: OrchestrationShellStreamItem;
   readonly [ORCHESTRATION_WS_CHANNELS.threadEvent]: OrchestrationThreadStreamItem;
@@ -393,6 +404,10 @@ export const WsPushGitActionProgress = makeWsPushSchema(
   GitActionProgressEvent,
 );
 export const WsPushTerminalEvent = makeWsPushSchema(WS_CHANNELS.terminalEvent, TerminalEvent);
+export const WsPushWorkspaceFileChanged = makeWsPushSchema(
+  WS_CHANNELS.workspaceFileChanged,
+  WorkspaceFileChangeEvent,
+);
 export const WsPushOrchestrationDomainEvent = makeWsPushSchema(
   ORCHESTRATION_WS_CHANNELS.domainEvent,
   OrchestrationEvent,
@@ -414,6 +429,7 @@ export const WsPushChannelSchema = Schema.Literals([
   WS_CHANNELS.serverProviderStatusesUpdated,
   WS_CHANNELS.serverSettingsUpdated,
   WS_CHANNELS.terminalEvent,
+  WS_CHANNELS.workspaceFileChanged,
   ORCHESTRATION_WS_CHANNELS.domainEvent,
   ORCHESTRATION_WS_CHANNELS.shellEvent,
   ORCHESTRATION_WS_CHANNELS.threadEvent,
@@ -428,6 +444,7 @@ export const WsPush = Schema.Union([
   WsPushServerSettingsUpdated,
   WsPushGitActionProgress,
   WsPushTerminalEvent,
+  WsPushWorkspaceFileChanged,
   WsPushOrchestrationDomainEvent,
   WsPushOrchestrationShellEvent,
   WsPushOrchestrationThreadEvent,

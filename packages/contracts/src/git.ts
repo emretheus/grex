@@ -439,6 +439,34 @@ export const GitRunStackedActionResult = Schema.Struct({
 });
 export type GitRunStackedActionResult = typeof GitRunStackedActionResult.Type;
 
+// ── Commit log ──────────────────────────────────────────────────────────────
+
+export const GitLogInput = Schema.Struct({
+  cwd: TrimmedNonEmptyStringSchema,
+  maxCount: Schema.optional(PositiveInt),
+  branch: Schema.optional(TrimmedNonEmptyStringSchema),
+});
+export type GitLogInput = typeof GitLogInput.Type;
+
+export const GitLogCommit = Schema.Struct({
+  sha: TrimmedNonEmptyStringSchema,
+  shortSha: TrimmedNonEmptyStringSchema,
+  subject: Schema.String,
+  body: Schema.String,
+  authorName: Schema.String,
+  authorEmail: Schema.String,
+  authorDate: Schema.String,
+  committerDate: Schema.String,
+  refs: Schema.Array(Schema.String),
+  parentShas: Schema.Array(Schema.String),
+});
+export type GitLogCommit = typeof GitLogCommit.Type;
+
+export const GitLogResult = Schema.Struct({
+  commits: Schema.Array(GitLogCommit),
+});
+export type GitLogResult = typeof GitLogResult.Type;
+
 export const GitPullResult = Schema.Struct({
   status: Schema.Literals(["pulled", "skipped_up_to_date"]),
   branch: TrimmedNonEmptyStringSchema,
