@@ -20,9 +20,10 @@ import {
 } from "~/editorStore";
 import { ensureMonacoSetup, monaco } from "~/lib/monaco/monacoSetup";
 import { modelRegistry } from "~/lib/monaco/modelRegistry";
-import { Columns2Icon, XIcon } from "~/lib/icons";
+import { Columns2Icon, DiffIcon, XIcon } from "~/lib/icons";
 import { cn } from "~/lib/utils";
 import { createPanelResizeOverlay, removePanelResizeOverlay } from "~/lib/panelResize";
+import { MonacoDiffView } from "./MonacoDiffView";
 import { PanelStateMessage } from "./PanelStateMessage";
 
 interface DockEditorPaneProps {
@@ -72,6 +73,9 @@ function EditorSurface({
   const containerRef = useRef<HTMLDivElement | null>(null);
   const editorRef = useRef<monaco.editor.IStandaloneCodeEditor | null>(null);
   const [dirtyKeys, setDirtyKeys] = useState<Set<string>>(() => new Set());
+
+  const activeFile = activePath ? openFiles.find((f) => f.relativePath === activePath) : undefined;
+  const activeIsDiff = activeFile?.kind === "diff";
 
   // Mount the single Monaco editor instance for this surface.
   useEffect(() => {
@@ -127,9 +131,11 @@ function EditorSurface({
     });
   }, []);
 
-  // Load each newly-opened file's model.
+  // Load each newly-opened file's model. Diff tabs manage their own two-model
+  // pair inside MonacoDiffView, so they're skipped here.
   useEffect(() => {
     for (const file of openFiles) {
+      if (file.kind === "diff") continue;
       const path = file.relativePath;
       if (loadByPath[path]) continue;
       setLoadByPath((prev) => ({ ...prev, [path]: { kind: "loading" } }));
@@ -161,10 +167,13 @@ function EditorSurface({
         }
       })();
     }
-    // Release models for files no longer open.
-    const openPaths = new Set(openFiles.map((f) => f.relativePath));
+    // Release file models that are no longer open as a *file* tab (closed, or
+    // flipped to a diff tab — diff tabs own their own models).
+    const openFilePaths = new Set(
+      openFiles.filter((f) => f.kind !== "diff").map((f) => f.relativePath),
+    );
     for (const [path, state] of Object.entries(loadByPath)) {
-      if (!openPaths.has(path)) {
+      if (!openFilePaths.has(path)) {
         if (state.kind === "ready") modelRegistry.release(state.modelKey);
         setLoadByPath((prev) => {
           const next = { ...prev };
@@ -178,7 +187,7 @@ function EditorSurface({
   }, [cwd, openFiles]);
 
   // Swap the editor's model when the active file (or its load state) changes.
-  const activeLoad = activePath ? loadByPath[activePath] : undefined;
+  const activeLoad = activePath && !activeIsDiff ? loadByPath[activePath] : undefined;
   useEffect(() => {
     const editor = editorRef.current;
     if (!editor) return;
@@ -209,8 +218,16 @@ function EditorSurface({
       {/* Tab bar */}
       <div className="flex h-[34px] shrink-0 items-stretch overflow-x-auto border-b border-[color:var(--color-border-light)]">
         {openFiles.map((file) => {
+          const isDiffTab = file.kind === "diff";
           const load = loadByPath[file.relativePath];
-          const dirty = load?.kind === "ready" && dirtyKeys.has(load.modelKey);
+          const dirtyKey = isDiffTab
+            ? cwd
+              ? modelRegistry.keyFor(cwd, file.relativePath)
+              : null
+            : load?.kind === "ready"
+              ? load.modelKey
+              : null;
+          const dirty = dirtyKey !== null && dirtyKeys.has(dirtyKey ?? "");
           const isActiveTab = file.relativePath === activePath;
           return (
             <div
@@ -222,10 +239,17 @@ function EditorSurface({
                   : "text-[var(--color-text-foreground-secondary)] hover:text-[var(--color-text-foreground)]",
               )}
             >
+              {isDiffTab ? (
+                <DiffIcon className="size-3.5 shrink-0 text-[var(--color-text-foreground-secondary)]" />
+              ) : null}
               <button
                 type="button"
                 className="max-w-[160px] truncate"
-                title={file.relativePath}
+                title={
+                  isDiffTab
+                    ? `${file.relativePath} (diff vs ${file.diffRef ?? "HEAD"})`
+                    : file.relativePath
+                }
                 onClick={() => onSetActive(file.relativePath)}
               >
                 {file.name}
@@ -255,8 +279,20 @@ function EditorSurface({
 
       {/* Monaco editor + overlay */}
       <div className="relative min-h-0 flex-1">
-        <div ref={containerRef} className="absolute inset-0" />
-        {showOverlay ? (
+        {/* Plain-file editor is always mounted; a diff tab overlays with a dedicated diff view. */}
+        <div ref={containerRef} className={cn("absolute inset-0", activeIsDiff && "invisible")} />
+        {activeIsDiff && activeFile && cwd ? (
+          <div className="absolute inset-0">
+            <MonacoDiffView
+              key={`${activeFile.relativePath}:${activeFile.diffRef ?? "HEAD"}`}
+              cwd={cwd}
+              relativePath={activeFile.relativePath}
+              ref={activeFile.diffRef ?? "HEAD"}
+              isActive={isActive}
+            />
+          </div>
+        ) : null}
+        {!activeIsDiff && showOverlay ? (
           <div className="absolute inset-0 flex items-center justify-center bg-[var(--color-background-surface)] px-4 text-center text-xs text-[var(--color-text-foreground-secondary)]">
             {activeLoad?.kind === "too-large"
               ? `File too large to open in the editor (${Math.round(activeLoad.totalSize / 1024)} KB).`

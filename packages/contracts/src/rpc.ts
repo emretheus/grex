@@ -26,6 +26,8 @@ import {
   GitPullInput,
   GitPullRequestRefInput,
   GitPullResult,
+  GitReadFileAtRefInput,
+  GitReadFileAtRefResult,
   GitReadWorkingTreeDiffInput,
   GitReadWorkingTreeDiffResult,
   GitRemoveIndexLockInput,
@@ -336,6 +338,12 @@ export const WsGitGithubRepositoryRpc = Rpc.make(WS_METHODS.gitGithubRepository,
 export const WsGitReadWorkingTreeDiffRpc = Rpc.make(WS_METHODS.gitReadWorkingTreeDiff, {
   payload: GitReadWorkingTreeDiffInput,
   success: GitReadWorkingTreeDiffResult,
+  error: WsRpcError,
+});
+
+export const WsGitReadFileAtRefRpc = Rpc.make(WS_METHODS.gitReadFileAtRef, {
+  payload: GitReadFileAtRefInput,
+  success: GitReadFileAtRefResult,
   error: WsRpcError,
 });
 
@@ -721,6 +729,7 @@ export const WsRpcGroup = RpcGroup.make(
   WsGitGithubRepositoryRpc,
   WsGitStatusRpc,
   WsGitReadWorkingTreeDiffRpc,
+  WsGitReadFileAtRefRpc,
   WsGitSummarizeDiffRpc,
   WsGitPullRpc,
   WsGitRunStackedActionRpc,

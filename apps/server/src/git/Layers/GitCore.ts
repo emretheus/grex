@@ -2718,7 +2718,36 @@ export const makeGitCore = (options?: { executeOverride?: GitCoreShape["execute"
         return { commits };
       });
 
+    const READ_FILE_AT_REF_MAX_BYTES = 2 * 1024 * 1024;
+    const readFileAtRef: GitCoreShape["readFileAtRef"] = (cwd, ref, relativePath) =>
+      Effect.gen(function* () {
+        const spec = `${ref}:${relativePath}`;
+        // Size first: a missing path or non-blob returns non-zero, which we read
+        // as "does not exist at this ref" (e.g. a newly added file).
+        const sizeResult = yield* executeGit(
+          "GitCore.readFileAtRef.size",
+          cwd,
+          ["cat-file", "-s", spec],
+          { allowNonZeroExit: true },
+        );
+        if (sizeResult.code !== 0) {
+          return { contents: "", exists: false, truncated: false };
+        }
+        const size = Number.parseInt(sizeResult.stdout.trim(), 10);
+        if (Number.isFinite(size) && size > READ_FILE_AT_REF_MAX_BYTES) {
+          return { contents: "", exists: true, truncated: true };
+        }
+        const showResult = yield* executeGit("GitCore.readFileAtRef.show", cwd, ["show", spec], {
+          allowNonZeroExit: true,
+        });
+        if (showResult.code !== 0) {
+          return { contents: "", exists: false, truncated: false };
+        }
+        return { contents: showResult.stdout, exists: true, truncated: false };
+      });
+
     return {
+      readFileAtRef,
       execute,
       status,
       statusDetails,
@@ -2754,6 +2783,7 @@ export const makeGitCore = (options?: { executeOverride?: GitCoreShape["execute"
       unstageFiles,
       discardFiles,
       readLog,
+      readFileAtRef,
     } satisfies GitCoreShape;
   });
 

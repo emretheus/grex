@@ -33,6 +33,8 @@ import type {
   GitListBranchesResult,
   GitPullInput,
   GitPullResult,
+  GitReadFileAtRefInput,
+  GitReadFileAtRefResult,
   GitReadWorkingTreeDiffInput,
   GitReadWorkingTreeDiffResult,
   GitRemoveIndexLockInput,
@@ -426,6 +428,7 @@ export interface NativeApi {
     readWorkingTreeDiff: (
       input: GitReadWorkingTreeDiffInput,
     ) => Promise<GitReadWorkingTreeDiffResult>;
+    readFileAtRef: (input: GitReadFileAtRefInput) => Promise<GitReadFileAtRefResult>;
     summarizeDiff: (input: GitSummarizeDiffInput) => Promise<GitSummarizeDiffResult>;
     runStackedAction: (input: GitRunStackedActionInput) => Promise<GitRunStackedActionResult>;
     log: (input: GitLogInput) => Promise<GitLogResult>;
