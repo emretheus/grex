@@ -146,7 +146,7 @@ export function gitLogQueryOptions(cwd: string | null) {
     queryFn: async () => {
       const api = ensureNativeApi();
       if (!cwd) throw new Error("Git log is unavailable.");
-      return api.git.log({ cwd, maxCount: GIT_LOG_MAX_COUNT });
+      return api.git.log({ cwd, maxCount: GIT_LOG_MAX_COUNT, all: true });
     },
     enabled: cwd !== null,
     staleTime: GIT_LOG_STALE_TIME_MS,

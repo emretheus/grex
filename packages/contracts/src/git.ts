@@ -434,6 +434,7 @@ export const GitLogInput = Schema.Struct({
   cwd: TrimmedNonEmptyStringSchema,
   maxCount: Schema.optional(PositiveInt),
   branch: Schema.optional(TrimmedNonEmptyStringSchema),
+  all: Schema.optional(Schema.Boolean),
 });
 export type GitLogInput = typeof GitLogInput.Type;
 

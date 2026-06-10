@@ -2670,6 +2670,7 @@ export const makeGitCore = (options?: { executeOverride?: GitCoreShape["execute"
           "--topo-order",
           `--format=${GIT_LOG_FORMAT}`,
         ];
+        if (input.all) args.push("--all");
         if (input.branch) args.push(input.branch);
 
         const result = yield* executeGit("GitCore.readLog", input.cwd, args, {

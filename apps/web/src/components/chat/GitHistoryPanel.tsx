@@ -95,23 +95,81 @@ const GraphSvg = memo(function GraphSvg({ layout }: { layout: GraphRenderData })
   );
 });
 
+// ── VS Code Git Graph exact icons ─────────────────────────────────────────────
+// Taken verbatim from web/utils.ts SVG_ICONS in the vscode-git-graph repo.
+// ViewBox 0 0 10 16 for branch/tag, 0 0 14 16 for stash.
+
+const VSCGG_BRANCH_PATH =
+  "M10 5c0-1.11-.89-2-2-2a1.993 1.993 0 0 0-1 3.72v.3c-.02.52-.23.98-.63 1.38-.4.4-.86.61-1.38.63-.83.02-1.48.16-2 .45V4.72a1.993 1.993 0 0 0-1-3.72C.88 1 0 1.89 0 3a2 2 0 0 0 1 1.72v6.56c-.59.35-1 .99-1 1.72 0 1.11.89 2 2 2 1.11 0 2-.89 2-2 0-.53-.2-1-.53-1.36.09-.06.48-.41.59-.47.25-.11.56-.17.94-.17 1.05-.05 1.95-.45 2.75-1.25S8.95 7.77 9 6.73h-.02C9.59 6.37 10 5.73 10 5zM2 1.8c.66 0 1.2.55 1.2 1.2 0 .65-.55 1.2-1.2 1.2C1.35 4.2.8 3.65.8 3c0-.65.55-1.2 1.2-1.2zm0 12.41c-.66 0-1.2-.55-1.2-1.2 0-.65.55-1.2 1.2-1.2.65 0 1.2.55 1.2 1.2 0 .65-.55 1.2-1.2 1.2zm6-8c-.66 0-1.2-.55-1.2-1.2 0-.65.55-1.2 1.2-1.2.65 0 1.2.55 1.2 1.2 0 .65-.55 1.2-1.2 1.2z";
+const VSCGG_TAG_PATH =
+  "M7.73 1.73C7.26 1.26 6.62 1 5.96 1H3.5C2.13 1 1 2.13 1 3.5v2.47c0 .66.27 1.3.73 1.77l6.06 6.06c.39.39 1.02.39 1.41 0l4.59-4.59a.996.996 0 0 0 0-1.41L7.73 1.73zM2.38 7.09c-.31-.3-.47-.7-.47-1.13V3.5c0-.88.72-1.59 1.59-1.59h2.47c.42 0 .83.16 1.13.47l6.14 6.13-4.73 4.73-6.13-6.15zM3.01 3h2v2H3V3h.01z";
+
 // ── ref badge — exact VS Code Git Graph style ─────────────────────────────────
-// Height 18px, border-radius 5px, font-size 12px, dynamic per-branch colour icon bg
+// Height 18px, border-radius 5px, font-size 12px, coloured icon box on left.
+//
+// Ref kinds parsed from git log %D format:
+//   "HEAD -> main"  → HEAD pointer  (bold, active border in branch color)
+//   "main"          → local branch  (solid icon bg)
+//   "origin/main"   → remote        (italic label, solid icon bg in branch color)
+//   "tag: v1.0"     → tag           (tag icon)
 
-function RefBadge({ label, branchColor }: { label: string; branchColor: string }) {
-  const isHead = label === "HEAD" || label.startsWith("HEAD -> ");
-  const isRemote = !label.startsWith("tag: ") && !isHead && label.includes("/");
-  const isTag = label.startsWith("tag: ");
-  const text = label.replace(/^HEAD -> /, "").replace(/^tag: /, "");
+type RefKind = "head" | "local" | "remote" | "tag";
 
-  // VS Code uses an SVG icon box with branch colour bg + editor-bg fill
-  const iconBg = branchColor;
-  // Branch icon path
-  const BranchPath =
-    "M5 3.25a.75.75 0 1 1 1.5 0 .75.75 0 0 1-1.5 0zm.75 2.67c-1.03.02-2 .53-2 2.08v1.12c0 .39-.23.65-.52.84C3.69 10.2 3 10.84 3 12a.75.75 0 0 0 1.5 0c0-.23.1-.36.24-.42.14-.06.4-.2.4-.58v-1.12c0-.8.51-1.14 1-1.36V10a.75.75 0 0 0 1.5 0V5.93c.49.22 1 .56 1 1.36v1.12c0 .38.26.52.4.58.14.06.24.19.24.42a.75.75 0 0 0 1.5 0c0-1.16-.69-1.8-1.48-2.25C8.77 6.9 8.5 6.64 8.5 6.25V5.12c-.5.23-1.5.56-2.75.8z";
-  // Tag icon path
-  const TagPath =
-    "M1 7.775V2.75C1 2.37 1.37 2 1.75 2h5.025c.464 0 .91.184 1.238.513l6.25 6.25a1.75 1.75 0 0 1 0 2.474l-5.026 5.026a1.75 1.75 0 0 1-2.474 0l-6.25-6.25A1.75 1.75 0 0 1 1 7.775zm1.5 0c0 .066.026.13.073.177l6.25 6.25a.25.25 0 0 0 .354 0l5.025-5.025a.25.25 0 0 0 0-.354l-6.25-6.25a.25.25 0 0 0-.177-.073H2.75a.25.25 0 0 0-.25.25v5.025zM6 5a1 1 0 1 1 0 2 1 1 0 0 1 0-2z";
+function parseRef(raw: string): { kind: RefKind; text: string; pointer?: string } {
+  if (raw === "HEAD") return { kind: "head", text: "HEAD" };
+  if (raw.startsWith("HEAD -> "))
+    return { kind: "head", text: raw.slice(8), pointer: raw.slice(8) };
+  if (raw.startsWith("tag: ")) return { kind: "tag", text: raw.slice(5) };
+  // Refs containing "/" that aren't HEAD are remote (e.g. origin/main, origin/HEAD)
+  if (raw.includes("/")) return { kind: "remote", text: raw };
+  return { kind: "local", text: raw };
+}
+
+function refSortRank(raw: string): number {
+  if (raw.startsWith("HEAD -> ") || raw === "HEAD") return 0;
+  if (raw.startsWith("tag: ")) return 3;
+  if (raw.includes("/")) return 2;
+  return 1;
+}
+
+// Expand raw refs from git log %D into sorted display tokens.
+// Sort: HEAD pointer first, then local branches, then remotes, then tags.
+function expandRefs(refs: readonly string[]): Array<{ raw: string; key: string }> {
+  return refs
+    .map((r) => ({ raw: r, key: r }))
+    .toSorted((a, b) => refSortRank(a.raw) - refSortRank(b.raw));
+}
+
+function RefBadge({ raw, branchColor }: { raw: string; branchColor: string }) {
+  const ref = parseRef(raw);
+  const isTag = ref.kind === "tag";
+  const isHead = ref.kind === "head";
+  const isRemote = ref.kind === "remote";
+
+  // HEAD badge shows just "HEAD" with an arrow-like style (no icon box, just bold border)
+  if (isHead && ref.text === "HEAD") {
+    return (
+      <span
+        style={{
+          display: "inline-flex",
+          alignItems: "center",
+          height: 18,
+          lineHeight: "18px",
+          fontSize: 12,
+          borderRadius: 5,
+          border: `1px solid ${branchColor}`,
+          background: "rgba(128,128,128,0.15)",
+          marginRight: 4,
+          padding: "0 6px",
+          flexShrink: 0,
+          fontWeight: 700,
+          color: branchColor,
+        }}
+      >
+        HEAD
+      </span>
+    );
+  }
 
   return (
     <span
@@ -122,41 +180,47 @@ function RefBadge({ label, branchColor }: { label: string; branchColor: string }
         lineHeight: "18px",
         fontSize: 12,
         borderRadius: 5,
-        border: `1px solid ${isHead ? iconBg : "rgba(128,128,128,0.75)"}`,
+        border: `1px solid ${isHead ? branchColor : "rgba(128,128,128,0.6)"}`,
         background: "rgba(128,128,128,0.15)",
-        marginRight: 5,
+        marginRight: 4,
         verticalAlign: "middle",
         overflow: "hidden",
         flexShrink: 0,
         whiteSpace: "nowrap",
       }}
     >
-      {/* Icon box */}
+      {/* Coloured icon box — VS Code Git Graph exact style */}
       <span
         style={{
           display: "inline-flex",
           alignItems: "center",
           justifyContent: "center",
-          width: 18,
+          width: 16,
           height: 18,
-          background: iconBg,
+          background: branchColor,
           flexShrink: 0,
         }}
       >
-        <svg width="11" height="11" viewBox="0 0 16 16" fill="var(--color-sidebar,#1e1e1e)">
-          <path d={isTag ? TagPath : BranchPath} />
+        <svg
+          width="10"
+          height="10"
+          viewBox={isTag ? "0 0 14 16" : "0 0 10 16"}
+          fill="var(--color-sidebar,#1e1e1e)"
+        >
+          <path d={isTag ? VSCGG_TAG_PATH : VSCGG_BRANCH_PATH} />
         </svg>
       </span>
-      {/* Label text */}
+      {/* Label */}
       <span
         style={{
           padding: "0 5px",
           fontWeight: isHead ? 700 : 400,
-          color: "var(--foreground, #cccccc)",
+          color: isHead ? branchColor : "var(--foreground, #cccccc)",
           fontStyle: isRemote ? "italic" : "normal",
+          letterSpacing: isRemote ? "-0.01em" : undefined,
         }}
       >
-        {text}
+        {ref.text}
       </span>
     </span>
   );
@@ -592,9 +656,9 @@ const CommitRow = memo(function CommitRow({
   dotColor: string;
   onToggle: () => void;
 }) {
-  const headRef = commit.refs.find((r) => r === "HEAD" || r.startsWith("HEAD -> "));
-  const otherRefs = commit.refs.filter((r) => r !== "HEAD" && !r.startsWith("HEAD -> "));
-  const allRefs = headRef ? [headRef, ...otherRefs] : otherRefs;
+  // Expand "HEAD -> branchName" into two badges: local branch (with HEAD highlight) + rest
+  // Sort: HEAD-pointed local first, then other locals, then remotes, then tags
+  const expandedRefs = expandRefs(commit.refs);
 
   return (
     <div
@@ -617,8 +681,8 @@ const CommitRow = memo(function CommitRow({
 
       {/* Description */}
       <div style={{ display: "flex", alignItems: "center", overflow: "hidden", paddingRight: 4 }}>
-        {allRefs.map((ref) => (
-          <RefBadge key={ref} label={ref} branchColor={dotColor} />
+        {expandedRefs.map((ref) => (
+          <RefBadge key={ref.key} raw={ref.raw} branchColor={dotColor} />
         ))}
         <span
           style={{
