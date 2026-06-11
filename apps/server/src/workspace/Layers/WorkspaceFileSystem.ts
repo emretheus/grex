@@ -6,7 +6,8 @@ import {
   type WorkspaceFileSystemShape,
 } from "../Services/WorkspaceFileSystem";
 import { WorkspaceEntries } from "../Services/WorkspaceEntries";
-import { WorkspacePaths } from "../Services/WorkspacePaths";
+import { WorkspacePathOutsideRootError, WorkspacePaths } from "../Services/WorkspacePaths";
+import { resolveRealPathWithinRoot } from "../realPathContainment";
 
 // Editor load ceiling: files larger than this are reported as truncated so the
 // renderer can show a "file too large" affordance instead of streaming MBs over
@@ -18,6 +19,37 @@ export const makeWorkspaceFileSystem = Effect.gen(function* () {
   const path = yield* Path.Path;
   const workspacePaths = yield* WorkspacePaths;
   const workspaceEntries = yield* WorkspaceEntries;
+
+  // Canonicalize through the filesystem after the string-level guard so an
+  // in-root symlink that escapes the workspace cannot smuggle a read/write out.
+  // Rejects with the same out-of-root error the string guard uses.
+  const assertRealPathWithinRoot = (input: {
+    cwd: string;
+    relativePath: string;
+    absolutePath: string;
+  }) =>
+    Effect.tryPromise({
+      try: () => resolveRealPathWithinRoot(input.cwd, input.absolutePath),
+      catch: (cause) =>
+        new WorkspaceFileSystemError({
+          cwd: input.cwd,
+          relativePath: input.relativePath,
+          operation: "workspaceFileSystem.realpath",
+          detail: cause instanceof Error ? cause.message : String(cause),
+          cause,
+        }),
+    }).pipe(
+      Effect.flatMap((realPath) =>
+        realPath === null
+          ? Effect.fail(
+              new WorkspacePathOutsideRootError({
+                workspaceRoot: input.cwd,
+                relativePath: input.relativePath,
+              }),
+            )
+          : Effect.succeed(realPath),
+      ),
+    );
 
   const writeFile: WorkspaceFileSystemShape["writeFile"] = Effect.fn(
     "WorkspaceFileSystem.writeFile",
@@ -39,6 +71,13 @@ export const makeWorkspaceFileSystem = Effect.gen(function* () {
           }),
       ),
     );
+    // After the parent dir exists, canonicalize to reject a symlinked path that
+    // escapes the workspace before any bytes land on disk.
+    yield* assertRealPathWithinRoot({
+      cwd: input.cwd,
+      relativePath: input.relativePath,
+      absolutePath: target.absolutePath,
+    });
     yield* fileSystem.writeFileString(target.absolutePath, input.contents).pipe(
       Effect.mapError(
         (cause) =>
@@ -60,6 +99,12 @@ export const makeWorkspaceFileSystem = Effect.gen(function* () {
       const target = yield* workspacePaths.resolveRelativePathWithinRoot({
         workspaceRoot: input.cwd,
         relativePath: input.relativePath,
+      });
+
+      yield* assertRealPathWithinRoot({
+        cwd: input.cwd,
+        relativePath: input.relativePath,
+        absolutePath: target.absolutePath,
       });
 
       const info = yield* fileSystem.stat(target.absolutePath).pipe(
