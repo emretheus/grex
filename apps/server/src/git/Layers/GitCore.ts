@@ -80,6 +80,7 @@ interface ExecuteGitOptions {
   fallbackErrorMessage?: string | undefined;
   env?: NodeJS.ProcessEnv | undefined;
   progress?: ExecuteGitProgress | undefined;
+  stdin?: string | undefined;
 }
 
 type WorkingTreeFileStat = { path: string; insertions: number; deletions: number };
@@ -720,6 +721,9 @@ export const makeGitCore = (options?: { executeOverride?: GitCoreShape["execute"
                   ...input.env,
                   ...trace2Monitor.env,
                 },
+                ...(input.stdin !== undefined
+                  ? { stdin: Stream.fromArray([new TextEncoder().encode(input.stdin)]) }
+                  : {}),
               }),
             )
             .pipe(Effect.mapError(toGitCommandError(commandInput, "failed to spawn.")));
@@ -798,6 +802,7 @@ export const makeGitCore = (options?: { executeOverride?: GitCoreShape["execute"
         ...(options.timeoutMs !== undefined ? { timeoutMs: options.timeoutMs } : {}),
         ...(options.env ? { env: options.env } : {}),
         ...(options.progress ? { progress: options.progress } : {}),
+        ...(options.stdin !== undefined ? { stdin: options.stdin } : {}),
       }).pipe(
         Effect.flatMap((result) => {
           if (options.allowNonZeroExit || result.code === 0) {
@@ -2665,6 +2670,7 @@ export const makeGitCore = (options?: { executeOverride?: GitCoreShape["execute"
           "--topo-order",
           `--format=${GIT_LOG_FORMAT}`,
         ];
+        if (input.all) args.push("--all");
         if (input.branch) args.push(input.branch);
 
         const result = yield* executeGit("GitCore.readLog", input.cwd, args, {
@@ -2718,6 +2724,119 @@ export const makeGitCore = (options?: { executeOverride?: GitCoreShape["execute"
         return { commits };
       });
 
+    const applyPatch: GitCoreShape["applyPatch"] = ({ cwd, patch, reverse, cached }) =>
+      executeGit(
+        "GitCore.applyPatch",
+        cwd,
+        ["apply", ...(cached ? ["--cached"] : []), ...(reverse ? ["--reverse"] : []), "-"],
+        { allowNonZeroExit: true, stdin: patch },
+      ).pipe(
+        Effect.map((r) =>
+          r.code === 0
+            ? { ok: true, error: null }
+            : { ok: false, error: r.stderr.trim() || "git apply failed" },
+        ),
+      );
+
+    const showCommit: GitCoreShape["showCommit"] = ({ cwd, sha }) =>
+      Effect.gen(function* () {
+        // Use --no-patch (not --quiet) to suppress diff output while keeping format output.
+        // Body is fetched separately to avoid NUL-splitting issues with multi-line bodies.
+        const HEADER_FORMAT = "%H%x00%s%x00%an%x00%ae%x00%aI%x00%cn%x00%ce%x00%cI%x00%P";
+        const [headerResult, bodyResult, numstatResult, nameStatusResult] = yield* Effect.all(
+          [
+            runGitStdout("GitCore.showCommit.header", cwd, [
+              "log",
+              "-1",
+              `--pretty=format:${HEADER_FORMAT}`,
+              sha,
+            ]),
+            runGitStdout("GitCore.showCommit.body", cwd, ["log", "-1", "--pretty=format:%b", sha]),
+            runGitStdout(
+              "GitCore.showCommit.numstat",
+              cwd,
+              ["show", "--numstat", "--no-renames", "--format=", sha],
+              true,
+            ),
+            runGitStdout(
+              "GitCore.showCommit.nameStatus",
+              cwd,
+              ["show", "--name-status", "--no-renames", "--format=", sha],
+              true,
+            ),
+          ],
+          { concurrency: "unbounded" },
+        );
+
+        const [
+          fullSha = "",
+          subject = "",
+          authorName = "",
+          authorEmail = "",
+          authorDate = "",
+          committerName = "",
+          committerEmail = "",
+          committerDate = "",
+          parentsRaw = "",
+        ] = headerResult.trim().split("\x00");
+
+        const body = bodyResult.trim();
+
+        const parentShas = parentsRaw
+          .split(" ")
+          .map((p) => p.trim())
+          .filter((p) => p.length > 0);
+
+        const statusMap = new Map<string, string>();
+        for (const line of nameStatusResult.split("\n")) {
+          const trimmed = line.trim();
+          if (!trimmed) continue;
+          const parts = trimmed.split("\t");
+          if (parts.length >= 2) {
+            statusMap.set(parts[1] ?? "", (parts[0] ?? "M").charAt(0));
+          }
+        }
+
+        let totalAdditions = 0;
+        let totalDeletions = 0;
+        const files = numstatResult
+          .split("\n")
+          .map((l) => l.trim())
+          .filter((l) => l.length > 0)
+          .map((line) => {
+            const parts = line.split("\t");
+            const additions = parseInt(parts[0] ?? "0", 10) || 0;
+            const deletions = parseInt(parts[1] ?? "0", 10) || 0;
+            const path = parts[2] ?? "";
+            totalAdditions += additions;
+            totalDeletions += deletions;
+            return {
+              path,
+              oldPath: null as string | null,
+              additions,
+              deletions,
+              status: statusMap.get(path) ?? "M",
+            };
+          })
+          .filter((f) => f.path.length > 0);
+
+        return {
+          sha: fullSha.trim(),
+          subject: subject.trim(),
+          body: body.trim(),
+          authorName: authorName.trim(),
+          authorEmail: authorEmail.trim(),
+          authorDate: authorDate.trim(),
+          committerName: committerName.trim(),
+          committerEmail: committerEmail.trim(),
+          committerDate: committerDate.trim(),
+          parentShas,
+          files,
+          totalAdditions,
+          totalDeletions,
+        };
+      });
+
     const READ_FILE_AT_REF_MAX_BYTES = 2 * 1024 * 1024;
     const readFileAtRef: GitCoreShape["readFileAtRef"] = (cwd, ref, relativePath) =>
       Effect.gen(function* () {
@@ -2747,7 +2866,6 @@ export const makeGitCore = (options?: { executeOverride?: GitCoreShape["execute"
       });
 
     return {
-      readFileAtRef,
       execute,
       status,
       statusDetails,
@@ -2783,6 +2901,8 @@ export const makeGitCore = (options?: { executeOverride?: GitCoreShape["execute"
       unstageFiles,
       discardFiles,
       readLog,
+      applyPatch,
+      showCommit,
       readFileAtRef,
     } satisfies GitCoreShape;
   });

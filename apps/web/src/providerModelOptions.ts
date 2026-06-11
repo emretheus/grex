@@ -4,6 +4,10 @@ import {
   humanizeModelSlug,
 } from "@t3tools/shared/model";
 import type {
+  AuggieModelOptions,
+  GooseModelOptions,
+  AuggieModelSelection,
+  GooseModelSelection,
   ClaudeModelOptions,
   ClaudeModelSelection,
   CodexModelOptions,
@@ -22,6 +26,8 @@ import type {
   PiModelSelection,
   ProviderKind,
   ProviderModelOptions,
+  QwenCodeModelOptions,
+  QwenCodeModelSelection,
 } from "@t3tools/contracts";
 
 export type ProviderOptions = ProviderModelOptions[ProviderKind];
@@ -201,6 +207,18 @@ export function buildNextProviderOptions(
       ...patch,
     } as OpenCodeModelOptions;
   }
+  if (provider === "qwenCode") {
+    return {
+      ...(modelOptions as QwenCodeModelOptions | undefined),
+      ...patch,
+    } as QwenCodeModelOptions;
+  }
+  if (provider === "auggie") {
+    return {
+      ...(modelOptions as AuggieModelOptions | undefined),
+      ...patch,
+    } as AuggieModelOptions;
+  }
   return {
     ...(modelOptions as PiModelOptions | undefined),
     ...patch,
@@ -262,6 +280,16 @@ export function buildModelSelection(
   model: string,
   options?: PiModelOptions | null | undefined,
 ): PiModelSelection;
+export function buildModelSelection(
+  provider: "qwenCode",
+  model: string,
+  options?: QwenCodeModelOptions | null | undefined,
+): QwenCodeModelSelection;
+export function buildModelSelection(
+  provider: "auggie",
+  model: string,
+  options?: AuggieModelOptions | null | undefined,
+): AuggieModelSelection;
 export function buildModelSelection(
   provider: ProviderKind,
   model: string,
@@ -335,6 +363,30 @@ export function buildModelSelection(
             provider,
             model,
             options: options as PiModelOptions,
+          }
+        : { provider, model };
+    case "qwenCode":
+      return options
+        ? {
+            provider,
+            model,
+            options: options as QwenCodeModelOptions,
+          }
+        : { provider, model };
+    case "auggie":
+      return options
+        ? {
+            provider,
+            model,
+            options: options as AuggieModelOptions,
+          }
+        : { provider, model };
+    case "goose":
+      return options
+        ? {
+            provider,
+            model,
+            options: options as GooseModelOptions,
           }
         : { provider, model };
   }

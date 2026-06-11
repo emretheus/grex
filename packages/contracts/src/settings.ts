@@ -73,6 +73,24 @@ export const PiServerProviderSettings = Schema.Struct({
 });
 export type PiServerProviderSettings = typeof PiServerProviderSettings.Type;
 
+export const QwenCodeServerProviderSettings = Schema.Struct({
+  ...ProviderSettingsBase,
+  binaryPath: StringSetting.pipe(Schema.withDecodingDefault(() => "qwen")),
+});
+export type QwenCodeServerProviderSettings = typeof QwenCodeServerProviderSettings.Type;
+
+export const AuggieServerProviderSettings = Schema.Struct({
+  ...ProviderSettingsBase,
+  binaryPath: StringSetting.pipe(Schema.withDecodingDefault(() => "auggie")),
+});
+export type AuggieServerProviderSettings = typeof AuggieServerProviderSettings.Type;
+
+export const GooseServerProviderSettings = Schema.Struct({
+  ...ProviderSettingsBase,
+  binaryPath: StringSetting.pipe(Schema.withDecodingDefault(() => "goose")),
+});
+export type GooseServerProviderSettings = typeof GooseServerProviderSettings.Type;
+
 export const ServerSettings = Schema.Struct({
   enableAssistantStreaming: Schema.Boolean.pipe(Schema.withDecodingDefault(() => false)),
   defaultThreadEnvMode: ThreadEnvironmentMode.pipe(Schema.withDecodingDefault(() => "local")),
@@ -92,6 +110,9 @@ export const ServerSettings = Schema.Struct({
     kilo: KiloServerProviderSettings.pipe(Schema.withDecodingDefault(() => ({}))),
     opencode: OpenCodeServerProviderSettings.pipe(Schema.withDecodingDefault(() => ({}))),
     pi: PiServerProviderSettings.pipe(Schema.withDecodingDefault(() => ({}))),
+    qwenCode: QwenCodeServerProviderSettings.pipe(Schema.withDecodingDefault(() => ({}))),
+    auggie: AuggieServerProviderSettings.pipe(Schema.withDecodingDefault(() => ({}))),
+    goose: GooseServerProviderSettings.pipe(Schema.withDecodingDefault(() => ({}))),
   }).pipe(Schema.withDecodingDefault(() => ({}))),
 });
 export type ServerSettings = typeof ServerSettings.Type;
@@ -159,6 +180,8 @@ export const ServerSettingsPatch = Schema.Struct({
           agentDir: Schema.optionalKey(StringSetting),
         }),
       ),
+      qwenCode: Schema.optionalKey(Schema.Struct(ProviderSettingsBasePatch)),
+      auggie: Schema.optionalKey(Schema.Struct(ProviderSettingsBasePatch)),
     }),
   ),
 });

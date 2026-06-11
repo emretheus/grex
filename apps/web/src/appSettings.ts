@@ -86,7 +86,10 @@ type CustomModelSettingsKey =
   | "customGrokModels"
   | "customKiloModels"
   | "customOpenCodeModels"
-  | "customPiModels";
+  | "customPiModels"
+  | "customQwenCodeModels"
+  | "customAuggieModels"
+  | "customGooseModels";
 export type ProviderCustomModelConfig = {
   provider: ProviderKind;
   settingsKey: CustomModelSettingsKey;
@@ -106,6 +109,9 @@ const BUILT_IN_MODEL_SLUGS_BY_PROVIDER: Record<ProviderKind, ReadonlySet<string>
   kilo: new Set(getModelOptions("kilo").map((option) => option.slug)),
   opencode: new Set(getModelOptions("opencode").map((option) => option.slug)),
   pi: new Set(getModelOptions("pi").map((option) => option.slug)),
+  qwenCode: new Set(getModelOptions("qwenCode").map((option) => option.slug)),
+  auggie: new Set(getModelOptions("auggie").map((option) => option.slug)),
+  goose: new Set(getModelOptions("goose").map((option) => option.slug)),
 };
 
 const withDefaults =
@@ -135,6 +141,8 @@ export const AppSettingsSchema = Schema.Struct({
   cursorApiEndpoint: Schema.String.check(Schema.isMaxLength(4096)).pipe(withDefaults(() => "")),
   geminiBinaryPath: Schema.String.check(Schema.isMaxLength(4096)).pipe(withDefaults(() => "")),
   grokBinaryPath: Schema.String.check(Schema.isMaxLength(4096)).pipe(withDefaults(() => "")),
+  qwenCodeBinaryPath: Schema.String.check(Schema.isMaxLength(4096)).pipe(withDefaults(() => "")),
+  auggieBinaryPath: Schema.String.check(Schema.isMaxLength(4096)).pipe(withDefaults(() => "")),
   kiloBinaryPath: Schema.String.check(Schema.isMaxLength(4096)).pipe(withDefaults(() => "")),
   kiloServerUrl: Schema.String.check(Schema.isMaxLength(4096)).pipe(withDefaults(() => "")),
   kiloServerPassword: Schema.String.check(Schema.isMaxLength(4096)).pipe(withDefaults(() => "")),
@@ -181,6 +189,9 @@ export const AppSettingsSchema = Schema.Struct({
   customKiloModels: Schema.Array(Schema.String).pipe(withDefaults(() => [])),
   customOpenCodeModels: Schema.Array(Schema.String).pipe(withDefaults(() => [])),
   customPiModels: Schema.Array(Schema.String).pipe(withDefaults(() => [])),
+  customQwenCodeModels: Schema.Array(Schema.String).pipe(withDefaults(() => [])),
+  customAuggieModels: Schema.Array(Schema.String).pipe(withDefaults(() => [])),
+  customGooseModels: Schema.Array(Schema.String).pipe(withDefaults(() => [])),
   textGenerationProvider: ProviderKind.pipe(withDefaults(() => "codex" as const)),
   textGenerationModel: Schema.optional(TrimmedNonEmptyString),
   uiFontFamily: Schema.String.check(Schema.isMaxLength(256)).pipe(withDefaults(() => "")),
@@ -287,6 +298,33 @@ const PROVIDER_CUSTOM_MODEL_CONFIG: Record<ProviderKind, ProviderCustomModelConf
     placeholder: "provider/model",
     example: "anthropic/claude-sonnet-4-5",
   },
+  qwenCode: {
+    provider: "qwenCode",
+    settingsKey: "customQwenCodeModels",
+    defaultSettingsKey: "customQwenCodeModels",
+    title: "Qwen Code",
+    description: "Save additional Qwen Code model slugs for the picker and provider runtime.",
+    placeholder: "qwen-model-slug",
+    example: "qwen3-coder",
+  },
+  auggie: {
+    provider: "auggie",
+    settingsKey: "customAuggieModels",
+    defaultSettingsKey: "customAuggieModels",
+    title: "Auggie",
+    description: "Save additional Auggie model slugs for the picker and provider runtime.",
+    placeholder: "auggie-model-slug",
+    example: "auggie-auto",
+  },
+  goose: {
+    provider: "goose",
+    settingsKey: "customGooseModels",
+    defaultSettingsKey: "customGooseModels",
+    title: "Goose",
+    description: "Save additional Goose model slugs for the picker and provider runtime.",
+    placeholder: "goose-model-slug",
+    example: "goose-auto",
+  },
 };
 
 export const MODEL_PROVIDER_SETTINGS = Object.values(PROVIDER_CUSTOM_MODEL_CONFIG);
@@ -392,6 +430,12 @@ function normalizeAppSettings(settings: AppSettings): AppSettings {
     cursorBinaryPath: normalizeProviderBinaryPathOverride("cursor", settings.cursorBinaryPath),
     geminiBinaryPath: normalizeProviderBinaryPathOverride("gemini", settings.geminiBinaryPath),
     grokBinaryPath: normalizeProviderBinaryPathOverride("grok", settings.grokBinaryPath),
+    qwenCodeBinaryPath: normalizeProviderBinaryPathOverride(
+      "qwenCode",
+      settings.qwenCodeBinaryPath,
+    ),
+    auggieBinaryPath: normalizeProviderBinaryPathOverride("auggie", settings.auggieBinaryPath),
+    gooseBinaryPath: normalizeProviderBinaryPathOverride("goose", settings.gooseBinaryPath),
     kiloBinaryPath: normalizeProviderBinaryPathOverride("kilo", settings.kiloBinaryPath),
     openCodeBinaryPath: normalizeProviderBinaryPathOverride(
       "opencode",
@@ -409,6 +453,9 @@ function normalizeAppSettings(settings: AppSettings): AppSettings {
     customKiloModels: normalizeCustomModelSlugs(settings.customKiloModels, "kilo"),
     customOpenCodeModels: normalizeCustomModelSlugs(settings.customOpenCodeModels, "opencode"),
     customPiModels: normalizeCustomModelSlugs(settings.customPiModels, "pi"),
+    customQwenCodeModels: normalizeCustomModelSlugs(settings.customQwenCodeModels, "qwenCode"),
+    customAuggieModels: normalizeCustomModelSlugs(settings.customAuggieModels, "auggie"),
+    customGooseModels: normalizeCustomModelSlugs(settings.customGooseModels, "goose"),
     hiddenProviders: normalizeHiddenProviders(settings.hiddenProviders),
     providerOrder: normalizeProviderOrder(settings.providerOrder),
     hiddenModels: [],
@@ -426,6 +473,8 @@ function serverSettingsToAppSettings(settings: ServerSettings): Partial<AppSetti
     enableAssistantStreaming: settings.enableAssistantStreaming,
     geminiBinaryPath: settings.providers.gemini.binaryPath,
     grokBinaryPath: settings.providers.grok.binaryPath,
+    qwenCodeBinaryPath: settings.providers.qwenCode.binaryPath,
+    auggieBinaryPath: settings.providers.auggie.binaryPath,
     kiloBinaryPath: settings.providers.kilo.binaryPath,
     kiloServerPassword: settings.providers.kilo.serverPassword,
     kiloServerUrl: settings.providers.kilo.serverUrl,
@@ -443,6 +492,8 @@ function serverSettingsToAppSettings(settings: ServerSettings): Partial<AppSetti
     customKiloModels: settings.providers.kilo.customModels,
     customOpenCodeModels: settings.providers.opencode.customModels,
     customPiModels: settings.providers.pi.customModels,
+    customQwenCodeModels: settings.providers.qwenCode.customModels,
+    customAuggieModels: settings.providers.auggie.customModels,
     textGenerationProvider: settings.textGenerationModelSelection.provider,
     textGenerationModel: settings.textGenerationModelSelection.model,
   };
@@ -547,6 +598,24 @@ function appSettingsPatchToServerSettingsPatch(patch: Partial<AppSettings>): Ser
       ...(hasOwn(patch, "customGrokModels") ? { customModels: patch.customGrokModels ?? [] } : {}),
     };
   }
+  if (hasOwn(patch, "qwenCodeBinaryPath") || hasOwn(patch, "customQwenCodeModels")) {
+    providers.qwenCode = {
+      ...(hasOwn(patch, "qwenCodeBinaryPath")
+        ? { binaryPath: patch.qwenCodeBinaryPath ?? "" }
+        : {}),
+      ...(hasOwn(patch, "customQwenCodeModels")
+        ? { customModels: patch.customQwenCodeModels ?? [] }
+        : {}),
+    };
+  }
+  if (hasOwn(patch, "auggieBinaryPath") || hasOwn(patch, "customAuggieModels")) {
+    providers.auggie = {
+      ...(hasOwn(patch, "auggieBinaryPath") ? { binaryPath: patch.auggieBinaryPath ?? "" } : {}),
+      ...(hasOwn(patch, "customAuggieModels")
+        ? { customModels: patch.customAuggieModels ?? [] }
+        : {}),
+    };
+  }
   if (
     hasOwn(patch, "kiloBinaryPath") ||
     hasOwn(patch, "kiloServerUrl") ||
@@ -622,6 +691,9 @@ function buildInitialServerSettingsMigrationPatch(settings: AppSettings): Server
     "enableAssistantStreaming",
     "geminiBinaryPath",
     "grokBinaryPath",
+    "qwenCodeBinaryPath",
+    "auggieBinaryPath",
+    "gooseBinaryPath",
     "kiloBinaryPath",
     "kiloServerPassword",
     "kiloServerUrl",
@@ -645,6 +717,8 @@ function buildInitialServerSettingsMigrationPatch(settings: AppSettings): Server
     "customCursorModels",
     "customGeminiModels",
     "customGrokModels",
+    "customQwenCodeModels",
+    "customAuggieModels",
     "customKiloModels",
     "customOpenCodeModels",
     "customPiModels",
@@ -696,6 +770,9 @@ export function getCustomModelsByProvider(
     kilo: getCustomModelsForProvider(settings, "kilo"),
     opencode: getCustomModelsForProvider(settings, "opencode"),
     pi: getCustomModelsForProvider(settings, "pi"),
+    qwenCode: getCustomModelsForProvider(settings, "qwenCode"),
+    auggie: getCustomModelsForProvider(settings, "auggie"),
+    goose: getCustomModelsForProvider(settings, "goose"),
   };
 }
 
@@ -815,6 +892,9 @@ export function getCustomModelOptionsByProvider(
     kilo: getAppModelOptions("kilo", customModelsByProvider.kilo),
     opencode: getAppModelOptions("opencode", customModelsByProvider.opencode),
     pi: getAppModelOptions("pi", customModelsByProvider.pi),
+    qwenCode: getAppModelOptions("qwenCode", customModelsByProvider.qwenCode),
+    auggie: getAppModelOptions("auggie", customModelsByProvider.auggie),
+    goose: getAppModelOptions("goose", customModelsByProvider.goose),
   };
 }
 
@@ -828,6 +908,9 @@ export function getProviderStartOptions(
     | "cursorBinaryPath"
     | "geminiBinaryPath"
     | "grokBinaryPath"
+    | "qwenCodeBinaryPath"
+    | "auggieBinaryPath"
+  | "gooseBinaryPath"
     | "kiloBinaryPath"
     | "kiloServerPassword"
     | "kiloServerUrl"
@@ -847,6 +930,11 @@ export function getProviderStartOptions(
   const cursorBinaryPath = normalizeProviderBinaryPathOverride("cursor", settings.cursorBinaryPath);
   const geminiBinaryPath = normalizeProviderBinaryPathOverride("gemini", settings.geminiBinaryPath);
   const grokBinaryPath = normalizeProviderBinaryPathOverride("grok", settings.grokBinaryPath);
+  const qwenCodeBinaryPath = normalizeProviderBinaryPathOverride(
+    "qwenCode",
+    settings.qwenCodeBinaryPath,
+  );
+  const auggieBinaryPath = normalizeProviderBinaryPathOverride("auggie", settings.auggieBinaryPath);
   const kiloBinaryPath = normalizeProviderBinaryPathOverride("kilo", settings.kiloBinaryPath);
   const openCodeBinaryPath = normalizeProviderBinaryPathOverride(
     "opencode",
@@ -897,6 +985,27 @@ export function getProviderStartOptions(
           },
         }
       : {}),
+    ...(qwenCodeBinaryPath
+      ? {
+          qwenCode: {
+            binaryPath: qwenCodeBinaryPath,
+          },
+        }
+      : {}),
+    ...(auggieBinaryPath
+      ? {
+          auggie: {
+            binaryPath: auggieBinaryPath,
+          },
+        }
+      : {}),
+    ...(normalizeProviderBinaryPathOverride("goose", settings.gooseBinaryPath)
+      ? {
+          goose: {
+            binaryPath: normalizeProviderBinaryPathOverride("goose", settings.gooseBinaryPath),
+          },
+        }
+      : {}),
     ...(kiloBinaryPath || settings.kiloServerUrl || settings.kiloServerPassword
       ? {
           kilo: {
@@ -939,6 +1048,9 @@ export function getCustomBinaryPathForProvider(
     | "cursorBinaryPath"
     | "geminiBinaryPath"
     | "grokBinaryPath"
+    | "qwenCodeBinaryPath"
+    | "auggieBinaryPath"
+  | "gooseBinaryPath"
     | "kiloBinaryPath"
     | "openCodeBinaryPath"
     | "piBinaryPath"
@@ -962,6 +1074,12 @@ export function getCustomBinaryPathForProvider(
       return normalizeProviderBinaryPathOverride(provider, settings.openCodeBinaryPath);
     case "pi":
       return normalizeProviderBinaryPathOverride(provider, settings.piBinaryPath);
+    case "qwenCode":
+      return normalizeProviderBinaryPathOverride(provider, settings.qwenCodeBinaryPath);
+    case "auggie":
+      return normalizeProviderBinaryPathOverride(provider, settings.auggieBinaryPath);
+    case "goose":
+      return normalizeProviderBinaryPathOverride(provider, settings.gooseBinaryPath);
   }
 }
 

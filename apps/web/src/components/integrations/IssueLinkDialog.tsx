@@ -1,4 +1,5 @@
-import type { LinkedIssue } from "@t3tools/contracts";
+import type { LinkedIssue, LinkedIssues } from "@t3tools/contracts";
+import { MAX_LINKED_ISSUES } from "@t3tools/contracts";
 import { ISSUE_PROVIDER_META } from "@t3tools/shared/integrations";
 
 import { useIssueSearch } from "~/lib/useIssueSearch";
@@ -18,7 +19,10 @@ import { ProviderIcon } from "./provider-icons";
 interface IssueLinkDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  /** Called with the selected issue; caller is responsible for adding it to the list. */
   onSelect: (issue: LinkedIssue) => void;
+  /** Currently linked issues — rows matching these are shown as already linked and disabled. */
+  linkedIssues?: LinkedIssues;
   projectPath?: string | undefined;
   repositoryUrl?: string | undefined;
 }
@@ -27,6 +31,7 @@ export function IssueLinkDialog({
   open,
   onOpenChange,
   onSelect,
+  linkedIssues = [],
   projectPath,
   repositoryUrl,
 }: IssueLinkDialogProps) {
@@ -42,9 +47,12 @@ export function IssueLinkDialog({
     error,
   } = useIssueSearch({ projectPath, repositoryUrl, enabled: open });
 
+  const linkedKeys = new Set(linkedIssues.map((i) => `${i.provider}:${i.identifier}`));
+  const atLimit = linkedIssues.length >= MAX_LINKED_ISSUES;
+
+  // Stay open after selection so the user can quickly add multiple issues.
   const handleSelect = (issue: LinkedIssue) => {
     onSelect(issue);
-    onOpenChange(false);
   };
 
   return (
@@ -53,7 +61,9 @@ export function IssueLinkDialog({
         <DialogHeader className="gap-1 p-4 pr-12">
           <DialogTitle className="text-base">Link an issue</DialogTitle>
           <DialogDescription className="text-xs">
-            Attach an external issue to this thread.
+            {atLimit
+              ? `Limit of ${MAX_LINKED_ISSUES} issues reached.`
+              : "Attach external issues to this thread. Select multiple."}
           </DialogDescription>
         </DialogHeader>
 
@@ -116,27 +126,44 @@ export function IssueLinkDialog({
                 </p>
               ) : (
                 <ul className="space-y-0.5">
-                  {issues.map((issue) => (
-                    <li key={`${issue.provider}:${issue.identifier}`}>
-                      <button
-                        type="button"
-                        onClick={() => handleSelect(issue)}
-                        className="hover:bg-muted/60 flex w-full items-start gap-2 rounded-md px-2 py-1.5 text-left"
-                      >
-                        <ProviderIcon
-                          provider={issue.provider}
-                          className="mt-0.5 size-4 shrink-0"
-                        />
-                        <span className="min-w-0 flex-1">
-                          <span className="block truncate text-sm">{issue.title}</span>
-                          <span className="text-muted-foreground block truncate text-xs">
-                            {issue.identifier}
-                            {issue.status ? ` · ${issue.status}` : ""}
+                  {issues.map((issue) => {
+                    const key = `${issue.provider}:${issue.identifier}`;
+                    const isLinked = linkedKeys.has(key);
+                    const isDisabled = isLinked || atLimit;
+                    return (
+                      <li key={key}>
+                        <button
+                          type="button"
+                          disabled={isDisabled}
+                          onClick={() => handleSelect(issue)}
+                          className={cn(
+                            "flex w-full items-start gap-2 rounded-md px-2 py-1.5 text-left",
+                            isDisabled ? "opacity-50 cursor-default" : "hover:bg-muted/60",
+                          )}
+                          title={
+                            isLinked
+                              ? "Already linked"
+                              : atLimit
+                                ? `Limit of ${MAX_LINKED_ISSUES} reached`
+                                : undefined
+                          }
+                        >
+                          <ProviderIcon
+                            provider={issue.provider}
+                            className="mt-0.5 size-4 shrink-0"
+                          />
+                          <span className="min-w-0 flex-1">
+                            <span className="block truncate text-sm">{issue.title}</span>
+                            <span className="text-muted-foreground block truncate text-xs">
+                              {issue.identifier}
+                              {issue.status ? ` · ${issue.status}` : ""}
+                              {isLinked ? " · linked" : ""}
+                            </span>
                           </span>
-                        </span>
-                      </button>
-                    </li>
-                  ))}
+                        </button>
+                      </li>
+                    );
+                  })}
                 </ul>
               )}
             </DialogPanel>

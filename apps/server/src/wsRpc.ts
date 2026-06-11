@@ -704,6 +704,13 @@ export const makeWsRpcLayer = () =>
             "Failed to discard files",
           ),
         [WS_METHODS.gitLog]: (input) => rpcEffect(git.readLog(input), "Failed to read git log"),
+        [WS_METHODS.gitShowCommit]: (input) =>
+          rpcEffect(git.showCommit(input), "Failed to show commit"),
+        [WS_METHODS.gitApplyPatch]: (input) =>
+          rpcEffect(
+            git.applyPatch(input).pipe(Effect.tap(() => refreshGitStatus(input.cwd))),
+            "Failed to apply patch",
+          ),
         [WS_METHODS.gitHandoffThread]: (input) =>
           rpcEffect(
             gitManager.handoffThread(input).pipe(Effect.tap(() => refreshGitStatus(input.cwd))),

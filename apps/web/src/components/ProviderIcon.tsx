@@ -10,6 +10,8 @@ import type { ReactNode, SVGProps } from "react";
 import { CentralIcon } from "~/lib/central-icons";
 import { cn } from "~/lib/utils";
 import {
+  AuggieIcon,
+  GooseIcon,
   ClaudeAI,
   CursorIcon,
   Gemini,
@@ -19,6 +21,7 @@ import {
   OpenAI,
   OpenCodeIcon,
   PiIcon,
+  QwenCodeIcon,
 } from "./Icons";
 
 export type ProviderIconTone = "default" | "header";
@@ -71,6 +74,9 @@ export const PROVIDER_ICON_COMPONENT_BY_PROVIDER: Record<ProviderKind, Icon> = {
   kilo: KiloIcon,
   opencode: OpenCodeProviderIcon,
   pi: PiIcon,
+  qwenCode: QwenCodeIcon,
+  auggie: AuggieIcon,
+  goose: GooseIcon,
 };
 
 export function providerIconToneClassName(

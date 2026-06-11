@@ -5,7 +5,7 @@
 
 import {
   DEFAULT_RUNTIME_MODE,
-  type LinkedIssue,
+  type LinkedIssues,
   type ModelSelection,
   type OrchestrationThreadPullRequest,
   type ProjectId,
@@ -40,7 +40,7 @@ interface ActiveThreadSnapshot {
   interactionMode: ProviderInteractionMode;
   envMode?: ThreadEnvironmentMode | undefined;
   lastKnownPr?: OrchestrationThreadPullRequest | null;
-  linkedIssue?: LinkedIssue | null;
+  linkedIssues?: LinkedIssues;
 }
 
 export interface DraftReusePlanStored {
@@ -77,7 +77,7 @@ export interface TerminalThreadCreationState {
   envMode: DraftThreadEnvMode;
   interactionMode: ProviderInteractionMode;
   lastKnownPr: OrchestrationThreadPullRequest | null;
-  linkedIssue: LinkedIssue | null;
+  linkedIssues: LinkedIssues;
   modelSelection: ModelSelection;
   runtimeMode: RuntimeMode;
   worktreePath: string | null;
@@ -93,7 +93,7 @@ export function createActiveThreadSnapshot(
         runtimeMode: RuntimeMode;
         envMode?: ThreadEnvironmentMode | undefined;
         lastKnownPr?: OrchestrationThreadPullRequest | null;
-        linkedIssue?: LinkedIssue | null;
+        linkedIssues?: LinkedIssues;
       }
     | null
     | undefined,
@@ -109,7 +109,7 @@ export function createActiveThreadSnapshot(
     interactionMode: activeThread.interactionMode,
     envMode: activeThread.envMode,
     lastKnownPr: activeThread.lastKnownPr ?? null,
-    linkedIssue: activeThread.linkedIssue ?? null,
+    linkedIssues: activeThread.linkedIssues ?? [],
   };
 }
 
@@ -130,7 +130,7 @@ export function createActiveDraftThreadSnapshot(
     branch: activeDraftThread.branch,
     worktreePath: activeDraftThread.worktreePath,
     lastKnownPr: activeDraftThread.lastKnownPr ?? null,
-    linkedIssue: activeDraftThread.linkedIssue ?? null,
+    linkedIssues: activeDraftThread.linkedIssues ?? [],
     envMode: activeDraftThread.envMode,
     ...(activeDraftThread.isTemporary ? { isTemporary: true } : {}),
   };
@@ -219,6 +219,15 @@ export function buildDraftThreadContextPatch(
   };
 }
 
+// Returns the first array argument with length > 0, or undefined. Use instead of ?? chains
+// for arrays because `??` treats `[]` as non-null and would shadow a later non-empty array.
+function firstNonEmpty<T>(...arrs: (readonly T[] | undefined)[]): readonly T[] | undefined {
+  for (const arr of arrs) {
+    if (arr && arr.length > 0) return arr;
+  }
+  return undefined;
+}
+
 // Reuse only when the active route draft already belongs to the target project and surface.
 export function shouldReuseActiveDraftThread(input: {
   draftThread: DraftThreadState | null;
@@ -289,15 +298,16 @@ export function resolveTerminalThreadCreationState(
         ? (input.activeDraftThread.lastKnownPr ?? null)
         : null) ??
       null,
-    linkedIssue:
-      input.draftThread?.linkedIssue ??
-      (input.activeThread?.projectId === input.projectId
-        ? (input.activeThread.linkedIssue ?? null)
-        : null) ??
-      (input.activeDraftThread?.projectId === input.projectId
-        ? (input.activeDraftThread.linkedIssue ?? null)
-        : null) ??
-      null,
+    linkedIssues:
+      firstNonEmpty(
+        input.draftThread?.linkedIssues,
+        input.activeThread?.projectId === input.projectId
+          ? input.activeThread.linkedIssues
+          : undefined,
+        input.activeDraftThread?.projectId === input.projectId
+          ? input.activeDraftThread.linkedIssues
+          : undefined,
+      ) ?? [],
     envMode: hasExplicitEnvModeOverride
       ? (explicitEnvMode ?? "local")
       : (inheritedEnvMode ?? "local"),

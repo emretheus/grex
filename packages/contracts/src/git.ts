@@ -260,6 +260,15 @@ export const GitDiscardFilesInput = Schema.Struct({
 });
 export type GitDiscardFilesInput = typeof GitDiscardFilesInput.Type;
 
+// patch must NOT be trimmed — leading/trailing characters are significant in unified diffs
+export const GitApplyPatchInput = Schema.Struct({
+  cwd: TrimmedNonEmptyStringSchema,
+  patch: Schema.String,
+  reverse: Schema.optional(Schema.Boolean),
+  cached: Schema.optional(Schema.Boolean),
+});
+export type GitApplyPatchInput = typeof GitApplyPatchInput.Type;
+
 // RPC Results
 
 const GitStatusPr = Schema.Struct({
@@ -360,6 +369,12 @@ export type GitUnstageFilesResult = GitStageFilesResult;
 export const GitDiscardFilesResult = GitStageFilesResult;
 export type GitDiscardFilesResult = GitStageFilesResult;
 
+export const GitApplyPatchResult = Schema.Struct({
+  ok: Schema.Boolean,
+  error: Schema.NullOr(Schema.String),
+});
+export type GitApplyPatchResult = typeof GitApplyPatchResult.Type;
+
 export const GitListBranchesResult = Schema.Struct({
   branches: Schema.Array(GitBranch),
   isRepo: Schema.Boolean,
@@ -445,6 +460,7 @@ export const GitLogInput = Schema.Struct({
   cwd: TrimmedNonEmptyStringSchema,
   maxCount: Schema.optional(PositiveInt),
   branch: Schema.optional(TrimmedNonEmptyStringSchema),
+  all: Schema.optional(Schema.Boolean),
 });
 export type GitLogInput = typeof GitLogInput.Type;
 
@@ -466,6 +482,39 @@ export const GitLogResult = Schema.Struct({
   commits: Schema.Array(GitLogCommit),
 });
 export type GitLogResult = typeof GitLogResult.Type;
+
+export const GitShowCommitInput = Schema.Struct({
+  cwd: TrimmedNonEmptyStringSchema,
+  sha: TrimmedNonEmptyStringSchema,
+});
+export type GitShowCommitInput = typeof GitShowCommitInput.Type;
+
+export const GitShowCommitFile = Schema.Struct({
+  path: Schema.String,
+  oldPath: Schema.String.pipe(Schema.NullOr),
+  additions: Schema.Number,
+  deletions: Schema.Number,
+  /** "A" | "M" | "D" | "R" | "C" | "T" | "U" | "X" */
+  status: Schema.String,
+});
+export type GitShowCommitFile = typeof GitShowCommitFile.Type;
+
+export const GitShowCommitResult = Schema.Struct({
+  sha: Schema.String,
+  subject: Schema.String,
+  body: Schema.String,
+  authorName: Schema.String,
+  authorEmail: Schema.String,
+  authorDate: Schema.String,
+  committerName: Schema.String,
+  committerEmail: Schema.String,
+  committerDate: Schema.String,
+  parentShas: Schema.Array(Schema.String),
+  files: Schema.Array(GitShowCommitFile),
+  totalAdditions: Schema.Number,
+  totalDeletions: Schema.Number,
+});
+export type GitShowCommitResult = typeof GitShowCommitResult.Type;
 
 export const GitPullResult = Schema.Struct({
   status: Schema.Literals(["pulled", "skipped_up_to_date"]),

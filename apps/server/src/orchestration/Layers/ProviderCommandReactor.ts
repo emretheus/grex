@@ -50,6 +50,7 @@ import { ProviderService } from "../../provider/Services/ProviderService.ts";
 import { ServerSettingsService } from "../../serverSettings.ts";
 import { clearWorkspaceIndexCache } from "../../workspaceEntries.ts";
 import {
+  buildLinkedIssuesContextText,
   buildPriorTranscriptBootstrapText,
   buildForkBootstrapText,
   buildHandoffBootstrapText,
@@ -156,6 +157,7 @@ const DEFAULT_RUNTIME_MODE: RuntimeMode = "full-access";
 const HANDOFF_CONTEXT_WRAPPER_OVERHEAD =
   "<handoff_context>\n\n</handoff_context>\n\n<latest_user_message>\n\n</latest_user_message>"
     .length;
+const LINKED_ISSUES_CONTEXT_WRAPPER_OVERHEAD = "<linked_issues>\n\n</linked_issues>\n\n".length;
 const SIDECHAT_BOUNDARY_INSTRUCTION =
   "You are in a sidechat. Treat all prior conversation as reference-only context. Do not continue any prior task automatically. Do not mutate files, git, or the workspace and do not run workspace-changing commands unless the latest user message explicitly asks you to do so after this boundary. Use this sidechat for focused explanation, safety checks, summaries, and alternatives.";
 
@@ -926,13 +928,32 @@ const make = Effect.gen(function* () {
     const boundaryMessageText = thread.sidechatSourceThreadId
       ? wrapSidechatInput(input.messageText)
       : input.messageText;
-    const providerInput = handoffBootstrapText
+    // Inject linked issue context on the first turn only. Providers with
+    // native conversation history (Claude, Codex) will carry the block
+    // forward in their own memory; providers that restart sessions
+    // (kilo, opencode) replay the first user message via the prior-transcript
+    // bootstrap path, which already contains this block.
+    const shouldInjectLinkedIssues =
+      (thread.linkedIssues?.length ?? 0) > 0 &&
+      !hasNativeAssistantMessagesBefore(thread, input.messageId);
+    const linkedIssuesContextChars = Math.max(
+      0,
+      availableBootstrapChars - LINKED_ISSUES_CONTEXT_WRAPPER_OVERHEAD,
+    );
+    const linkedIssuesContextText =
+      shouldInjectLinkedIssues && linkedIssuesContextChars > 0
+        ? buildLinkedIssuesContextText(thread.linkedIssues ?? [], linkedIssuesContextChars)
+        : null;
+    const baseProviderInput = handoffBootstrapText
       ? `<handoff_context>\n${handoffBootstrapText}\n</handoff_context>\n\n<latest_user_message>\n${boundaryMessageText}\n</latest_user_message>`
       : sidechatBootstrapText
         ? `<sidechat_context>\n${sidechatBootstrapText}\n</sidechat_context>\n\n${boundaryMessageText}`
         : priorTranscriptBootstrapText
           ? `<thread_context>\n${priorTranscriptBootstrapText}\n</thread_context>\n\n<latest_user_message>\n${boundaryMessageText}\n</latest_user_message>`
           : boundaryMessageText;
+    const providerInput = linkedIssuesContextText
+      ? `<linked_issues>\n${linkedIssuesContextText}\n</linked_issues>\n\n${baseProviderInput}`
+      : baseProviderInput;
     const normalizedInput = toNonEmptyProviderInput(
       normalizeSkillMentionTextForProvider({
         provider: selectedProvider as ProviderKind,

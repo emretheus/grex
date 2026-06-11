@@ -166,6 +166,9 @@ describe("resolveAppModelSelection", () => {
           kilo: [],
           opencode: [],
           pi: [],
+          qwenCode: [],
+          auggie: [],
+          goose: [],
         },
         "galapagos-alpha",
       ),
@@ -185,6 +188,9 @@ describe("resolveAppModelSelection", () => {
           kilo: [],
           opencode: [],
           pi: [],
+          qwenCode: [],
+          auggie: [],
+          goose: [],
         },
         "",
       ),
@@ -204,6 +210,9 @@ describe("resolveAppModelSelection", () => {
           kilo: [],
           opencode: [],
           pi: [],
+          qwenCode: [],
+          auggie: [],
+          goose: [],
         },
         "GPT-5.3 Codex",
       ),
@@ -223,6 +232,9 @@ describe("resolveAppModelSelection", () => {
           kilo: [],
           opencode: [],
           pi: [],
+          qwenCode: [],
+          auggie: [],
+          goose: [],
         },
         "sonnet",
       ),
@@ -242,6 +254,9 @@ describe("resolveAppModelSelection", () => {
           kilo: [],
           opencode: [],
           pi: [],
+          qwenCode: [],
+          auggie: [],
+          goose: [],
         },
         "custom/selected-model",
       ),
@@ -357,6 +372,9 @@ describe("normalizeStoredAppSettings", () => {
         kiloBinaryPath: "kilo",
         openCodeBinaryPath: "opencode",
         piBinaryPath: "pi",
+        qwenCodeBinaryPath: "qwen",
+        auggieBinaryPath: "auggie",
+        gooseBinaryPath: "goose",
       }),
     );
     const normalized = normalizeStoredAppSettings(decodedSettings);
@@ -403,6 +421,9 @@ describe("getProviderStartOptions", () => {
         openCodeServerUrl: "",
         piAgentDir: "",
         piBinaryPath: "",
+        qwenCodeBinaryPath: "",
+        auggieBinaryPath: "",
+        gooseBinaryPath: "",
       }),
     ).toEqual({
       claudeAgent: {
@@ -443,6 +464,9 @@ describe("getProviderStartOptions", () => {
         openCodeServerUrl: "",
         piAgentDir: "",
         piBinaryPath: "",
+        qwenCodeBinaryPath: "",
+        auggieBinaryPath: "",
+        gooseBinaryPath: "",
       }),
     ).toBeUndefined();
   });
@@ -466,6 +490,9 @@ describe("getProviderStartOptions", () => {
         openCodeServerUrl: "",
         piAgentDir: "",
         piBinaryPath: "pi",
+        qwenCodeBinaryPath: "",
+        auggieBinaryPath: "",
+        gooseBinaryPath: "",
       }),
     ).toBeUndefined();
   });
@@ -481,6 +508,9 @@ describe("provider-indexed custom model settings", () => {
     customKiloModels: ["kilo/kilo-auto/free"],
     customOpenCodeModels: ["openrouter/gpt-oss-120b"],
     customPiModels: ["anthropic/custom-pi"],
+    customQwenCodeModels: [],
+    customAuggieModels: [],
+    customGooseModels: [],
   } as const;
 
   it("exports one provider config per provider", () => {
@@ -493,6 +523,9 @@ describe("provider-indexed custom model settings", () => {
       "kilo",
       "opencode",
       "pi",
+      "qwenCode",
+      "auggie",
+      "goose",
     ]);
   });
 
@@ -505,6 +538,9 @@ describe("provider-indexed custom model settings", () => {
     expect(getCustomModelsForProvider(settings, "kilo")).toEqual(["kilo/kilo-auto/free"]);
     expect(getCustomModelsForProvider(settings, "opencode")).toEqual(["openrouter/gpt-oss-120b"]);
     expect(getCustomModelsForProvider(settings, "pi")).toEqual(["anthropic/custom-pi"]);
+    expect(getCustomModelsForProvider(settings, "qwenCode")).toEqual([]);
+    expect(getCustomModelsForProvider(settings, "auggie")).toEqual([]);
+    expect(getCustomModelsForProvider(settings, "goose")).toEqual([]);
   });
 
   it("reads default custom models for each provider", () => {
@@ -517,6 +553,9 @@ describe("provider-indexed custom model settings", () => {
       customKiloModels: ["kilo/default-auto"],
       customOpenCodeModels: ["openai/gpt-5"],
       customPiModels: ["anthropic/default-pi"],
+      customQwenCodeModels: [],
+      customAuggieModels: [],
+    customGooseModels: [],
     } as const;
 
     expect(getDefaultCustomModelsForProvider(defaults, "codex")).toEqual(["default/codex-model"]);
@@ -529,6 +568,9 @@ describe("provider-indexed custom model settings", () => {
     expect(getDefaultCustomModelsForProvider(defaults, "kilo")).toEqual(["kilo/default-auto"]);
     expect(getDefaultCustomModelsForProvider(defaults, "opencode")).toEqual(["openai/gpt-5"]);
     expect(getDefaultCustomModelsForProvider(defaults, "pi")).toEqual(["anthropic/default-pi"]);
+    expect(getDefaultCustomModelsForProvider(defaults, "qwenCode")).toEqual([]);
+    expect(getDefaultCustomModelsForProvider(defaults, "auggie")).toEqual([]);
+    expect(getDefaultCustomModelsForProvider(defaults, "goose")).toEqual([]);
   });
 
   it("patches custom models for codex", () => {
@@ -579,6 +621,24 @@ describe("provider-indexed custom model settings", () => {
     });
   });
 
+  it("patches custom models for qwenCode", () => {
+    expect(patchCustomModels("qwenCode", ["qwen/custom-model"])).toEqual({
+      customQwenCodeModels: ["qwen/custom-model"],
+    });
+  });
+
+  it("patches custom models for auggie", () => {
+    expect(patchCustomModels("auggie", ["auggie/custom-model"])).toEqual({
+      customAuggieModels: ["auggie/custom-model"],
+    });
+  });
+
+  it("patches custom models for goose", () => {
+    expect(patchCustomModels("goose", ["goose/custom-model"])).toEqual({
+      customGooseModels: ["goose/custom-model"],
+    });
+  });
+
   it("builds a complete provider-indexed custom model record", () => {
     expect(getCustomModelsByProvider(settings)).toEqual({
       codex: ["custom/codex-model"],
@@ -589,6 +649,9 @@ describe("provider-indexed custom model settings", () => {
       kilo: ["kilo/kilo-auto/free"],
       opencode: ["openrouter/gpt-oss-120b"],
       pi: ["anthropic/custom-pi"],
+      qwenCode: [],
+      auggie: [],
+          goose: [],
     });
   });
 
@@ -619,6 +682,9 @@ describe("provider-indexed custom model settings", () => {
     expect(modelOptionsByProvider.pi.some((option) => option.slug === "anthropic/custom-pi")).toBe(
       true,
     );
+    expect(modelOptionsByProvider.qwenCode).toEqual([]);
+    expect(modelOptionsByProvider.auggie).toEqual([]);
+    expect(modelOptionsByProvider.goose).toEqual([]);
   });
 
   it("normalizes and deduplicates custom model options per provider", () => {
@@ -639,6 +705,9 @@ describe("provider-indexed custom model settings", () => {
         "anthropic/custom-pi",
         "anthropic/custom-pi",
       ],
+      customQwenCodeModels: [],
+      customAuggieModels: [],
+    customGooseModels: [],
     });
 
     expect(
@@ -712,6 +781,9 @@ describe("AppSettingsSchema", () => {
       customKiloModels: [],
       customOpenCodeModels: [],
       customPiModels: [],
+      customQwenCodeModels: [],
+      customAuggieModels: [],
+    customGooseModels: [],
     });
   });
 });

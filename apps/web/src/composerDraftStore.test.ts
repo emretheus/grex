@@ -954,6 +954,49 @@ describe("composerDraftStore project draft thread mapping", () => {
     });
   });
 
+  it("persists and replaces linked issues via setDraftThreadContext", () => {
+    const store = useComposerDraftStore.getState();
+    store.setProjectDraftThreadId(projectId, threadId, {
+      branch: "main",
+      worktreePath: null,
+    });
+
+    const issue1 = {
+      provider: "linear" as const,
+      identifier: "SWE-49",
+      title: "[Feedback] test here",
+      url: "https://linear.app/test/issue/SWE-49",
+    };
+    const issue2 = {
+      provider: "linear" as const,
+      identifier: "SWE-50",
+      title: "Another issue",
+      url: "https://linear.app/test/issue/SWE-50",
+    };
+
+    store.setDraftThreadContext(threadId, { linkedIssues: [issue1] });
+    expect(useComposerDraftStore.getState().getDraftThread(threadId)?.linkedIssues).toEqual([
+      issue1,
+    ]);
+
+    // A context update that omits linkedIssues must preserve the existing array.
+    store.setDraftThreadContext(threadId, { branch: "feature/keep-issue" });
+    expect(useComposerDraftStore.getState().getDraftThread(threadId)?.linkedIssues).toEqual([
+      issue1,
+    ]);
+
+    // Replace with multiple issues.
+    store.setDraftThreadContext(threadId, { linkedIssues: [issue1, issue2] });
+    expect(useComposerDraftStore.getState().getDraftThread(threadId)?.linkedIssues).toEqual([
+      issue1,
+      issue2,
+    ]);
+
+    // Passing [] clears all issues.
+    store.setDraftThreadContext(threadId, { linkedIssues: [] });
+    expect(useComposerDraftStore.getState().getDraftThread(threadId)?.linkedIssues).toEqual([]);
+  });
+
   it("preserves existing branch and worktree when setProjectDraftThreadId receives undefined", () => {
     const store = useComposerDraftStore.getState();
     store.setProjectDraftThreadId(projectId, threadId, {
@@ -1251,6 +1294,9 @@ describe("composerDraftStore modelSelection", () => {
         kilo: [],
         opencode: [],
         pi: [],
+        qwenCode: [],
+        auggie: [],
+        goose: [],
       },
       availableModelOptionsByProvider: {
         opencode: [{ slug: "opencode/gpt-5-nano", name: "GPT-5 Nano" }],
@@ -1278,6 +1324,9 @@ describe("composerDraftStore modelSelection", () => {
         kilo: [],
         opencode: [],
         pi: [],
+        qwenCode: [],
+        auggie: [],
+        goose: [],
       },
       availableModelOptionsByProvider: {
         opencode: [
@@ -1310,6 +1359,9 @@ describe("composerDraftStore modelSelection", () => {
         kilo: [],
         opencode: [],
         pi: [],
+        qwenCode: [],
+        auggie: [],
+        goose: [],
       },
       availableModelOptionsByProvider: {
         opencode: [
@@ -1342,6 +1394,9 @@ describe("composerDraftStore modelSelection", () => {
         kilo: [],
         opencode: [],
         pi: [],
+        qwenCode: [],
+        auggie: [],
+        goose: [],
       },
       availableModelOptionsByProvider: {
         pi: [

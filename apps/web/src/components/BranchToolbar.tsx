@@ -232,7 +232,10 @@ export default function BranchToolbar({
     serverThread?.session?.provider ?? serverThread?.modelSelection.provider ?? null;
   const branchCwd = activeWorktreePath ?? activeProject?.cwd ?? null;
   const hasServerThread = serverThread !== undefined;
-  const activeLinkedIssue = serverThread?.linkedIssue ?? draftThread?.linkedIssue ?? null;
+  const activeLinkedIssues =
+    (serverThread?.linkedIssues?.length ? serverThread.linkedIssues : null) ??
+    (draftThread?.linkedIssues?.length ? draftThread.linkedIssues : null) ??
+    [];
   const effectiveEnvMode = resolveEffectiveEnvMode({
     activeWorktreePath,
     hasServerThread,
@@ -502,12 +505,14 @@ export default function BranchToolbar({
           {...(onComposerFocusRequest ? { onComposerFocusRequest } : {})}
         />
 
-        <IssueLinkControl
-          threadId={threadId}
-          linkedIssue={activeLinkedIssue}
-          hasServerThread={hasServerThread}
-          {...(branchCwd ? { projectPath: branchCwd } : {})}
-        />
+        {!isPanel ? (
+          <IssueLinkControl
+            threadId={threadId}
+            linkedIssues={activeLinkedIssues}
+            hasServerThread={hasServerThread}
+            {...(branchCwd ? { projectPath: branchCwd } : {})}
+          />
+        ) : null}
       </div>
     </div>
   );

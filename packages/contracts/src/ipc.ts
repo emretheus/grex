@@ -56,6 +56,10 @@ import type {
   GitDiscardFilesResult,
   GitUnstageFilesInput,
   GitUnstageFilesResult,
+  GitApplyPatchInput,
+  GitApplyPatchResult,
+  GitShowCommitInput,
+  GitShowCommitResult,
 } from "./git";
 import type {
   ProjectListDirectoriesInput,
@@ -417,6 +421,8 @@ export interface NativeApi {
     stageFiles: (input: GitStageFilesInput) => Promise<GitStageFilesResult>;
     unstageFiles: (input: GitUnstageFilesInput) => Promise<GitUnstageFilesResult>;
     discardFiles: (input: GitDiscardFilesInput) => Promise<GitDiscardFilesResult>;
+    applyPatch: (input: GitApplyPatchInput) => Promise<GitApplyPatchResult>;
+    showCommit: (input: GitShowCommitInput) => Promise<GitShowCommitResult>;
     handoffThread: (input: GitHandoffThreadInput) => Promise<GitHandoffThreadResult>;
     resolvePullRequest: (input: GitPullRequestRefInput) => Promise<GitResolvePullRequestResult>;
     preparePullRequestThread: (

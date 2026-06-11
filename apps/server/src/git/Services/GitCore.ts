@@ -23,6 +23,8 @@ import type {
   GitPullResult,
   GitRemoveIndexLockInput,
   GitRemoveWorktreeInput,
+  GitShowCommitInput,
+  GitShowCommitResult,
   GitStashAndCheckoutInput,
   GitStashDropInput,
   GitStashInfoInput,
@@ -42,6 +44,7 @@ export interface ExecuteGitInput {
   readonly timeoutMs?: number;
   readonly maxOutputBytes?: number;
   readonly progress?: ExecuteGitProgress;
+  readonly stdin?: string;
 }
 
 export interface ExecuteGitResult {
@@ -380,6 +383,25 @@ export interface GitCoreShape {
    * parent SHAs for graph rendering.
    */
   readonly readLog: (input: GitLogInput) => Effect.Effect<GitLogResult, GitCommandError>;
+
+  /**
+   * Apply a unified-diff patch string to the working tree or index.
+   * Returns `{ ok: true, error: null }` on success, `{ ok: false, error }` on
+   * git apply failure (e.g. context drift) so callers can surface a reason.
+   */
+  readonly applyPatch: (input: {
+    cwd: string;
+    patch: string;
+    reverse?: boolean | undefined;
+    cached?: boolean | undefined;
+  }) => Effect.Effect<{ ok: boolean; error: string | null }, GitCommandError>;
+
+  /**
+   * Show detailed metadata and changed-file stats for a single commit.
+   */
+  readonly showCommit: (
+    input: GitShowCommitInput,
+  ) => Effect.Effect<GitShowCommitResult, GitCommandError>;
 
   /**
    * Read a single file's content at a git ref (e.g. "HEAD"). Returns

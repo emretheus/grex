@@ -10,6 +10,7 @@
 
 import type {
   EditorId,
+  LinkedIssues,
   MessageId,
   PinnedMessage,
   ResolvedKeybindingsConfig,
@@ -24,6 +25,7 @@ import {
 import BranchToolbar, { type BranchToolbarProps } from "~/components/BranchToolbar";
 import ChatMarkdown from "~/components/ChatMarkdown";
 import GitActionsControl from "~/components/GitActionsControl";
+import { IssueLinkControl } from "~/components/integrations/IssueLinkControl";
 import { IconButton } from "~/components/ui/icon-button";
 import type { RepoDiffTotals } from "~/hooks/useRepoDiffTotals";
 import { ArrowUpRightIcon, ChangesIcon, GitHubIcon, SettingsIcon } from "~/lib/icons";
@@ -108,6 +110,13 @@ export interface EnvironmentPanelProps {
   onNotesChange: (threadId: ThreadId, notes: string) => Promise<void>;
   /** Dismiss the panel overlay — invoked after actions that open the dock. */
   onClose: () => void;
+  /** Linked issue config for the issue link section. When omitted the section is hidden. */
+  issueLinkControl?: {
+    threadId: ThreadId;
+    linkedIssues: LinkedIssues;
+    hasServerThread: boolean;
+    projectPath?: string;
+  } | null;
 }
 
 const PANEL_DIVIDER_CLASS_NAME = "my-1 border-t border-[color:var(--color-border-light)]";
@@ -169,6 +178,7 @@ export function EnvironmentPanel({
   onRenamePinnedMessage,
   onNotesChange,
   onClose,
+  issueLinkControl = null,
 }: EnvironmentPanelProps) {
   const navigate = useNavigate();
   const { additions, deletions, hasChanges } = diffTotals;
@@ -216,6 +226,21 @@ export function EnvironmentPanel({
 
       {showGitActions ? (
         <GitActionsControl gitCwd={gitCwd} activeThreadId={activeThreadId} variant="panel" />
+      ) : null}
+
+      {issueLinkControl ? (
+        <>
+          <div className={PANEL_DIVIDER_CLASS_NAME} />
+          <IssueLinkControl
+            threadId={issueLinkControl.threadId}
+            linkedIssues={issueLinkControl.linkedIssues}
+            hasServerThread={issueLinkControl.hasServerThread}
+            variant="panel"
+            {...(issueLinkControl.projectPath
+              ? { projectPath: issueLinkControl.projectPath }
+              : {})}
+          />
+        </>
       ) : null}
 
       <div className={PANEL_DIVIDER_CLASS_NAME} />

@@ -14,6 +14,9 @@ import {
   type ModelSlug,
   type PiThinkingLevel,
   LinkedIssue,
+  dedupeLinkedIssues,
+  linkedIssuesEqual,
+  MAX_LINKED_ISSUES,
   ModelSelection,
   OrchestrationThreadPullRequest,
   ProjectId,
@@ -57,7 +60,7 @@ import { createJSONStorage, persist } from "zustand/middleware";
 import { createDebouncedStorage, createMemoryStorage } from "./lib/storage";
 
 export const COMPOSER_DRAFT_STORAGE_KEY = "codewit:composer-drafts:v1";
-const COMPOSER_DRAFT_STORAGE_VERSION = 4;
+const COMPOSER_DRAFT_STORAGE_VERSION = 5;
 const DraftThreadEnvModeSchema = Schema.Literals(["local", "worktree"]);
 export type DraftThreadEnvMode = typeof DraftThreadEnvModeSchema.Type;
 const DraftThreadEntryPointSchema = Schema.Literals(["chat", "terminal"]);
@@ -292,7 +295,7 @@ const PersistedDraftThreadState = Schema.Struct({
   branch: Schema.NullOr(Schema.String),
   worktreePath: Schema.NullOr(Schema.String),
   lastKnownPr: Schema.optionalKey(Schema.NullOr(OrchestrationThreadPullRequest)),
-  linkedIssue: Schema.optionalKey(Schema.NullOr(LinkedIssue)),
+  linkedIssues: Schema.optionalKey(Schema.Array(LinkedIssue)),
   envMode: DraftThreadEnvModeSchema,
   isTemporary: Schema.optionalKey(Schema.Boolean),
   promotedTo: Schema.optionalKey(ThreadId),
@@ -340,7 +343,7 @@ export interface DraftThreadState {
   branch: string | null;
   worktreePath: string | null;
   lastKnownPr?: OrchestrationThreadPullRequest | null;
-  linkedIssue?: LinkedIssue | null;
+  linkedIssues?: readonly LinkedIssue[];
   envMode: DraftThreadEnvMode;
   isTemporary?: boolean;
   promotedTo?: ThreadId;
@@ -368,7 +371,7 @@ export interface ComposerDraftStoreState {
       branch?: string | null;
       worktreePath?: string | null;
       lastKnownPr?: OrchestrationThreadPullRequest | null;
-      linkedIssue?: LinkedIssue | null;
+      linkedIssues?: readonly LinkedIssue[];
       createdAt?: string;
       envMode?: DraftThreadEnvMode;
       runtimeMode?: RuntimeMode;
@@ -383,7 +386,7 @@ export interface ComposerDraftStoreState {
       branch?: string | null;
       worktreePath?: string | null;
       lastKnownPr?: OrchestrationThreadPullRequest | null;
-      linkedIssue?: LinkedIssue | null;
+      linkedIssues?: readonly LinkedIssue[];
       projectId?: ProjectId;
       createdAt?: string;
       envMode?: DraftThreadEnvMode;
@@ -817,6 +820,22 @@ function makeModelSelection(
         model,
         ...(options
           ? { options: options as Extract<ModelSelection, { provider: "pi" }>["options"] }
+          : {}),
+      };
+    case "qwenCode":
+      return {
+        provider,
+        model,
+        ...(options
+          ? { options: options as Extract<ModelSelection, { provider: "qwenCode" }>["options"] }
+          : {}),
+      };
+    case "auggie":
+      return {
+        provider,
+        model,
+        ...(options
+          ? { options: options as Extract<ModelSelection, { provider: "auggie" }>["options"] }
           : {}),
       };
   }
@@ -1578,6 +1597,26 @@ function normalizeDraftThreadEntryPoint(value: unknown, fallback: ThreadPrimaryS
   return value === "terminal" || value === "chat" ? value : fallback;
 }
 
+function normalizeLinkedIssues(
+  candidate: Record<string, unknown>,
+): { linkedIssues: readonly LinkedIssue[] } | Record<string, never> {
+  // Accept both new array form (linkedIssues) and legacy single-object form
+  // (linkedIssue) so that v4 localStorage drafts survive the v5 migration.
+  const raw = candidate["linkedIssues"] ?? candidate["linkedIssue"];
+  if (raw == null) return {};
+  const arr: unknown[] = Array.isArray(raw) ? raw : [raw];
+  const valid: LinkedIssue[] = [];
+  for (const item of arr) {
+    try {
+      valid.push(Schema.decodeUnknownSync(LinkedIssue)(item));
+    } catch {
+      // drop invalid entries
+    }
+  }
+  const deduped = dedupeLinkedIssues(valid).slice(0, MAX_LINKED_ISSUES);
+  return deduped.length > 0 ? { linkedIssues: deduped } : {};
+}
+
 function normalizePersistedDraftThreads(
   rawDraftThreadsByThreadId: unknown,
   rawProjectDraftThreadIdByProjectId: unknown,
@@ -1644,6 +1683,7 @@ function normalizePersistedDraftThreads(
         branch: typeof branch === "string" ? branch : null,
         worktreePath: normalizedWorktreePath,
         ...(lastKnownPr ? { lastKnownPr } : {}),
+        ...normalizeLinkedIssues(candidateDraftThread),
         envMode: normalizeDraftThreadEnvMode(candidateDraftThread.envMode, normalizedWorktreePath),
         ...(isTemporary ? { isTemporary: true } : {}),
         ...(promotedTo ? { promotedTo } : {}),
@@ -2322,10 +2362,10 @@ export const useComposerDraftStore = create<ComposerDraftStoreState>()(
               options?.lastKnownPr === undefined
                 ? (existingThread?.lastKnownPr ?? null)
                 : (options.lastKnownPr ?? null),
-            linkedIssue:
-              options?.linkedIssue === undefined
-                ? (existingThread?.linkedIssue ?? null)
-                : (options.linkedIssue ?? null),
+            linkedIssues:
+              options?.linkedIssues === undefined
+                ? (existingThread?.linkedIssues ?? [])
+                : options.linkedIssues,
             envMode:
               options?.envMode ??
               (nextWorktreePath ? "worktree" : (existingThread?.envMode ?? "local")),
@@ -2343,6 +2383,10 @@ export const useComposerDraftStore = create<ComposerDraftStoreState>()(
             existingThread.branch === nextDraftThread.branch &&
             existingThread.worktreePath === nextDraftThread.worktreePath &&
             Equal.equals(existingThread.lastKnownPr ?? null, nextDraftThread.lastKnownPr ?? null) &&
+            linkedIssuesEqual(
+              existingThread.linkedIssues ?? [],
+              nextDraftThread.linkedIssues ?? [],
+            ) &&
             existingThread.envMode === nextDraftThread.envMode &&
             (existingThread.isTemporary === true) === (nextDraftThread.isTemporary === true) &&
             existingThread.promotedTo === nextDraftThread.promotedTo;
@@ -2420,6 +2464,10 @@ export const useComposerDraftStore = create<ComposerDraftStoreState>()(
               options.lastKnownPr === undefined
                 ? (existing.lastKnownPr ?? null)
                 : (options.lastKnownPr ?? null),
+            linkedIssues:
+              options.linkedIssues === undefined
+                ? (existing.linkedIssues ?? [])
+                : options.linkedIssues,
             envMode:
               options.envMode ?? (nextWorktreePath ? "worktree" : (existing.envMode ?? "local")),
             ...(nextIsTemporary ? { isTemporary: true } : {}),
@@ -2434,6 +2482,7 @@ export const useComposerDraftStore = create<ComposerDraftStoreState>()(
             nextDraftThread.branch === existing.branch &&
             nextDraftThread.worktreePath === existing.worktreePath &&
             Equal.equals(nextDraftThread.lastKnownPr ?? null, existing.lastKnownPr ?? null) &&
+            linkedIssuesEqual(nextDraftThread.linkedIssues ?? [], existing.linkedIssues ?? []) &&
             nextDraftThread.envMode === existing.envMode &&
             (nextDraftThread.isTemporary === true) === (existing.isTemporary === true) &&
             nextDraftThread.promotedTo === existing.promotedTo;

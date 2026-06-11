@@ -285,6 +285,21 @@ const composerProviderRegistry: Record<ProviderKind, ProviderRegistryEntry> = {
     renderTraitsMenuContent: (input) => renderTraitsMenuContentForProvider("pi", input),
     renderTraitsPicker: (input) => renderTraitsPickerForProvider("pi", input),
   },
+  qwenCode: {
+    getState: (input) => getProviderStateFromCapabilities(input),
+    renderTraitsMenuContent: (input) => renderTraitsMenuContentForProvider("qwenCode", input),
+    renderTraitsPicker: (input) => renderTraitsPickerForProvider("qwenCode", input),
+  },
+  goose: {
+    getState: (input) => getProviderStateFromCapabilities(input),
+    renderTraitsMenuContent: (input) => renderTraitsMenuContentForProvider("goose", input),
+    renderTraitsPicker: (input) => renderTraitsPickerForProvider("goose", input),
+  },
+  auggie: {
+    getState: (input) => getProviderStateFromCapabilities(input),
+    renderTraitsMenuContent: (input) => renderTraitsMenuContentForProvider("auggie", input),
+    renderTraitsPicker: (input) => renderTraitsPickerForProvider("auggie", input),
+  },
 };
 
 export function getComposerProviderState(input: ComposerProviderStateInput): ComposerProviderState {

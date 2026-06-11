@@ -60,6 +60,7 @@ export const gitMutationKeys = {
   stageFiles: (cwd: string | null) => ["git", "mutation", "stage-files", cwd] as const,
   unstageFiles: (cwd: string | null) => ["git", "mutation", "unstage-files", cwd] as const,
   discardFiles: (cwd: string | null) => ["git", "mutation", "discard-files", cwd] as const,
+  applyPatch: (cwd: string | null) => ["git", "mutation", "apply-patch", cwd] as const,
 };
 
 export function invalidateGitQueries(queryClient: QueryClient) {
@@ -145,12 +146,26 @@ export function gitLogQueryOptions(cwd: string | null) {
     queryFn: async () => {
       const api = ensureNativeApi();
       if (!cwd) throw new Error("Git log is unavailable.");
-      return api.git.log({ cwd, maxCount: GIT_LOG_MAX_COUNT });
+      return api.git.log({ cwd, maxCount: GIT_LOG_MAX_COUNT, all: true });
     },
     enabled: cwd !== null,
     staleTime: GIT_LOG_STALE_TIME_MS,
     refetchOnWindowFocus: true,
     refetchOnReconnect: true,
+  });
+}
+
+export function gitShowCommitQueryOptions(cwd: string | null, sha: string | null) {
+  return queryOptions({
+    queryKey: ["git", "show-commit", cwd, sha] as const,
+    queryFn: async () => {
+      const api = ensureNativeApi();
+      if (!cwd || !sha) throw new Error("Commit details unavailable.");
+      return api.git.showCommit({ cwd, sha });
+    },
+    enabled: cwd !== null && sha !== null,
+    staleTime: 10 * 60_000, // commit data is immutable; cache for 10 min
+    gcTime: 30 * 60_000,
   });
 }
 
@@ -350,6 +365,27 @@ export function gitDiscardFilesMutationOptions(input: {
     run: (api, cwd, paths) => {
       if (paths.length === 0) throw new Error("No files selected to discard.");
       return api.git.discardFiles({ cwd, paths: [...paths] });
+    },
+  });
+}
+
+export function gitApplyPatchMutationOptions(input: {
+  cwd: string | null;
+  queryClient: QueryClient;
+}) {
+  return makeGitMutationOptions<
+    { patch: string; reverse?: boolean; cached?: boolean },
+    { ok: boolean; error: string | null }
+  >({
+    cwd: input.cwd,
+    queryClient: input.queryClient,
+    mutationKey: gitMutationKeys.applyPatch(input.cwd),
+    unavailableMessage: "Applying patch is unavailable.",
+    invalidate: "cwd",
+    run: async (api, cwd, args) => {
+      const result = await api.git.applyPatch({ cwd, ...args });
+      if (!result.ok) throw new Error(result.error ?? "git apply failed");
+      return result;
     },
   });
 }

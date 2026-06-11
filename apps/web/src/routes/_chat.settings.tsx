@@ -172,6 +172,9 @@ const PROVIDER_SELECT_OPTIONS = [
   "opencode",
   "kilo",
   "pi",
+  "qwenCode",
+  "auggie",
+  "goose",
 ] as const satisfies readonly ProviderKind[];
 
 const TIMESTAMP_FORMAT_LABELS = {
@@ -197,9 +200,12 @@ type InstallBinarySettingsKey =
   | "cursorBinaryPath"
   | "geminiBinaryPath"
   | "grokBinaryPath"
+  | "qwenCodeBinaryPath"
+  | "auggieBinaryPath"
   | "kiloBinaryPath"
   | "openCodeBinaryPath"
-  | "piBinaryPath";
+  | "piBinaryPath"
+  | "gooseBinaryPath";
 type InstallProviderSettings = {
   provider: ProviderKind;
   title: string;
@@ -238,6 +244,9 @@ const PROVIDER_VISIBILITY_OPTIONS: ReadonlyArray<{ provider: ProviderKind; title
   { provider: "kilo", title: PROVIDER_DISPLAY_NAMES.kilo },
   { provider: "opencode", title: PROVIDER_DISPLAY_NAMES.opencode },
   { provider: "pi", title: PROVIDER_DISPLAY_NAMES.pi },
+  { provider: "qwenCode", title: PROVIDER_DISPLAY_NAMES.qwenCode },
+  { provider: "auggie", title: PROVIDER_DISPLAY_NAMES.auggie },
+  { provider: "goose", title: PROVIDER_DISPLAY_NAMES.goose },
 ];
 
 // Pure helper kept at module scope so the toggle handler stays trivial and the
@@ -461,6 +470,54 @@ const INSTALL_PROVIDER_SETTINGS: readonly InstallProviderSettings[] = [
     agentDirDescription:
       "Optional custom Pi agent directory for auth, models, skills, and commands.",
   },
+  {
+    provider: "qwenCode",
+    title: "Qwen Code",
+    docs: [
+      { label: "Install", href: "https://www.npmjs.com/package/@qwen-code/qwen-code" },
+      { label: "Update", href: "https://www.npmjs.com/package/@qwen-code/qwen-code" },
+      { label: "Config", href: "https://github.com/QwenLM/qwen-code" },
+    ],
+    binaryPathKey: "qwenCodeBinaryPath",
+    binaryPlaceholder: "Qwen Code binary path",
+    binaryDescription: (
+      <>
+        Leave blank to use <code>qwen</code> from your PATH.
+      </>
+    ),
+  },
+  {
+    provider: "auggie",
+    title: "Auggie",
+    docs: [
+      { label: "Install", href: "https://www.npmjs.com/package/@augmentcode/auggie" },
+      { label: "Update", href: "https://www.npmjs.com/package/@augmentcode/auggie" },
+      { label: "Config", href: "https://github.com/augmentcode/auggie" },
+    ],
+    binaryPathKey: "auggieBinaryPath",
+    binaryPlaceholder: "Auggie binary path",
+    binaryDescription: (
+      <>
+        Leave blank to use <code>auggie</code> from your PATH.
+      </>
+    ),
+  },
+  {
+    provider: "goose",
+    title: "Goose",
+    docs: [
+      { label: "Install", href: "https://github.com/ai-goose/goose" },
+      { label: "Update", href: "https://github.com/ai-goose/goose" },
+      { label: "Config", href: "https://github.com/ai-goose/goose" },
+    ],
+    binaryPathKey: "gooseBinaryPath",
+    binaryPlaceholder: "Goose binary path",
+    binaryDescription: (
+      <>
+        Leave blank to use <code>goose</code> from your PATH.
+      </>
+    ),
+  },
 ];
 
 // ── Settings UI primitives ────────────────────────────────────────────────
@@ -604,6 +661,9 @@ function SettingsRouteView() {
       settings.openCodeServerPassword,
     ),
     pi: Boolean(settings.piBinaryPath || settings.piAgentDir),
+    qwenCode: Boolean(settings.qwenCodeBinaryPath),
+    auggie: Boolean(settings.auggieBinaryPath),
+    goose: Boolean(settings.gooseBinaryPath),
   });
   const [updatingProviders, setUpdatingProviders] = useState<ReadonlySet<ProviderKind>>(
     () => new Set(),
@@ -621,6 +681,9 @@ function SettingsRouteView() {
     kilo: "",
     opencode: "",
     pi: "",
+    qwenCode: "",
+    auggie: "",
+    goose: "",
   });
   const [customModelErrorByProvider, setCustomModelErrorByProvider] = useState<
     Partial<Record<ProviderKind, string | null>>
@@ -778,7 +841,10 @@ function SettingsRouteView() {
     settings.customGrokModels.length +
     settings.customKiloModels.length +
     settings.customOpenCodeModels.length +
-    settings.customPiModels.length;
+    settings.customPiModels.length +
+    settings.customQwenCodeModels.length +
+    settings.customAuggieModels.length +
+    settings.customGooseModels.length;
   const savedCustomModelRows = MODEL_PROVIDER_SETTINGS.flatMap((providerSettings) =>
     getCustomModelsForProvider(settings, providerSettings.provider).map((slug) => ({
       key: `${providerSettings.provider}:${slug}`,
@@ -806,7 +872,10 @@ function SettingsRouteView() {
     settings.openCodeServerUrl !== defaults.openCodeServerUrl ||
     settings.openCodeServerPassword !== defaults.openCodeServerPassword ||
     settings.piBinaryPath !== defaults.piBinaryPath ||
-    settings.piAgentDir !== defaults.piAgentDir;
+    settings.piAgentDir !== defaults.piAgentDir ||
+    settings.qwenCodeBinaryPath !== defaults.qwenCodeBinaryPath ||
+    settings.auggieBinaryPath !== defaults.auggieBinaryPath ||
+    settings.gooseBinaryPath !== defaults.gooseBinaryPath;
   const changedSettingLabels = [
     ...(theme !== "system" ? ["Theme"] : []),
     ...(!isDefaultActiveTheme ? [`${resolvedTheme === "dark" ? "Dark" : "Light"} theme pack`] : []),
@@ -861,7 +930,10 @@ function SettingsRouteView() {
     settings.customGrokModels.length > 0 ||
     settings.customKiloModels.length > 0 ||
     settings.customOpenCodeModels.length > 0 ||
-    settings.customPiModels.length > 0
+    settings.customPiModels.length > 0 ||
+    settings.customQwenCodeModels.length > 0 ||
+    settings.customAuggieModels.length > 0 ||
+    settings.customGooseModels.length > 0
       ? ["Custom models"]
       : []),
     ...(isInstallSettingsDirty ? ["Provider installs"] : []),
@@ -1048,6 +1120,9 @@ function SettingsRouteView() {
       kilo: false,
       opencode: false,
       pi: false,
+      qwenCode: false,
+      auggie: false,
+      goose: false,
     });
     setSelectedCustomModelProvider("codex");
     setCustomModelInputByProvider({
@@ -1059,6 +1134,9 @@ function SettingsRouteView() {
       kilo: "",
       opencode: "",
       pi: "",
+      qwenCode: "",
+      auggie: "",
+      goose: "",
     });
     setCustomModelErrorByProvider({});
     setShowAllCustomModels(false);
@@ -2187,6 +2265,8 @@ function SettingsRouteView() {
                     customKiloModels: defaults.customKiloModels,
                     customOpenCodeModels: defaults.customOpenCodeModels,
                     customPiModels: defaults.customPiModels,
+                    customQwenCodeModels: defaults.customQwenCodeModels,
+                    customAuggieModels: defaults.customAuggieModels,
                   });
                   setCustomModelErrorByProvider({});
                   setShowAllCustomModels(false);
@@ -2208,7 +2288,10 @@ function SettingsRouteView() {
                     value !== "grok" &&
                     value !== "kilo" &&
                     value !== "opencode" &&
-                    value !== "pi"
+                    value !== "pi" &&
+                    value !== "qwenCode" &&
+                    value !== "auggie" &&
+                    value !== "goose"
                   ) {
                     return;
                   }
@@ -2485,6 +2568,9 @@ function SettingsRouteView() {
                     openCodeServerPassword: defaults.openCodeServerPassword,
                     piAgentDir: defaults.piAgentDir,
                     piBinaryPath: defaults.piBinaryPath,
+                    qwenCodeBinaryPath: defaults.qwenCodeBinaryPath,
+                    auggieBinaryPath: defaults.auggieBinaryPath,
+                    gooseBinaryPath: defaults.gooseBinaryPath,
                   });
                   setOpenInstallProviders({
                     codex: false,
@@ -2495,6 +2581,9 @@ function SettingsRouteView() {
                     kilo: false,
                     opencode: false,
                     pi: false,
+                    qwenCode: false,
+                    auggie: false,
+        goose: false,
                   });
                 }}
               />
@@ -2525,12 +2614,16 @@ function SettingsRouteView() {
                               : providerSettings.provider === "pi"
                                 ? settings.piBinaryPath !== defaults.piBinaryPath ||
                                   settings.piAgentDir !== defaults.piAgentDir
-                                : settings.openCodeBinaryPath !== defaults.openCodeBinaryPath ||
-                                  settings.openCodeExperimentalWebSockets !==
-                                    defaults.openCodeExperimentalWebSockets ||
-                                  settings.openCodeServerUrl !== defaults.openCodeServerUrl ||
-                                  settings.openCodeServerPassword !==
-                                    defaults.openCodeServerPassword;
+                                : providerSettings.provider === "qwenCode"
+                                  ? settings.qwenCodeBinaryPath !== defaults.qwenCodeBinaryPath
+                                  : providerSettings.provider === "auggie"
+                                    ? settings.auggieBinaryPath !== defaults.auggieBinaryPath
+                                    : settings.openCodeBinaryPath !== defaults.openCodeBinaryPath ||
+                                      settings.openCodeExperimentalWebSockets !==
+                                        defaults.openCodeExperimentalWebSockets ||
+                                      settings.openCodeServerUrl !== defaults.openCodeServerUrl ||
+                                      settings.openCodeServerPassword !==
+                                        defaults.openCodeServerPassword;
                 const binaryPathValue =
                   providerSettings.binaryPathKey === "claudeBinaryPath"
                     ? claudeBinaryPath
@@ -2546,7 +2639,11 @@ function SettingsRouteView() {
                               ? openCodeBinaryPath
                               : providerSettings.binaryPathKey === "piBinaryPath"
                                 ? piBinaryPath
-                                : codexBinaryPath;
+                                : providerSettings.binaryPathKey === "qwenCodeBinaryPath"
+                                  ? settings.qwenCodeBinaryPath
+                                  : providerSettings.binaryPathKey === "auggieBinaryPath"
+                                    ? settings.auggieBinaryPath
+                                    : codexBinaryPath;
                 const providerStatus = providerStatusByProvider.get(providerSettings.provider);
                 const providerUpdateLabel = providerStatus
                   ? providerUpdateStatusLabel(providerStatus)
@@ -2685,7 +2782,13 @@ function SettingsRouteView() {
                                                 ? { openCodeBinaryPath: event.target.value }
                                                 : providerSettings.binaryPathKey === "piBinaryPath"
                                                   ? { piBinaryPath: event.target.value }
-                                                  : { codexBinaryPath: event.target.value },
+                                                  : providerSettings.binaryPathKey ===
+                                                      "qwenCodeBinaryPath"
+                                                    ? { qwenCodeBinaryPath: event.target.value }
+                                                    : providerSettings.binaryPathKey ===
+                                                        "auggieBinaryPath"
+                                                      ? { auggieBinaryPath: event.target.value }
+                                                      : { codexBinaryPath: event.target.value },
                                   )
                                 }
                                 placeholder={providerSettings.binaryPlaceholder}
