@@ -142,6 +142,17 @@ const SPLIT_RATIO_MAX = 0.75;
 const allowAnySplitDirection = (_direction: SplitDirection) => true;
 const noop = () => {};
 
+// Static panel state for the editor-workspace embedded chat: it owns no
+// right-side panels (diff/browser live in the editor shell), so every field is
+// inert. Module-scoped so the reference stays stable across renders.
+const EDITOR_CHAT_PANEL_STATE: SplitViewPanePanelState = {
+  panel: null,
+  diffTurnId: null,
+  diffFilePath: null,
+  hasOpenedPanel: false,
+  lastOpenPanel: "browser",
+};
+
 function clampSplitRatio(value: number): number {
   if (!Number.isFinite(value)) return 0.5;
   return Math.min(SPLIT_RATIO_MAX, Math.max(SPLIT_RATIO_MIN, value));
@@ -629,6 +640,7 @@ function DeferredChatView(props: {
   onCloseThreadPane?: () => void;
   onMounted?: () => void;
   onOpenEditorView?: () => void;
+  editorPresentation?: boolean;
 }) {
   const onMounted = props.onMounted ?? noop;
   const mountKey = `${props.paneScopeId}:${props.threadId}`;
@@ -680,6 +692,7 @@ function DeferredChatView(props: {
       {...(props.onChangeThread ? { onChangeThreadInSplitPane: props.onChangeThread } : {})}
       {...(props.onCloseThreadPane ? { onCloseThreadPane: props.onCloseThreadPane } : {})}
       {...(props.onOpenEditorView ? { onOpenEditorView: props.onOpenEditorView } : {})}
+      {...(props.editorPresentation ? { editorPresentation: true } : {})}
     />
   );
 }
@@ -1811,11 +1824,22 @@ function EditorWorkspaceSurface(props: {
     [navigate, openFile, props.threadId],
   );
 
+  // Slim, embedded chat: render ChatView directly in editor presentation so it
+  // drops the full-width chrome (Environment overlay, split/maximize/dock
+  // toggles) and reads as a Cursor-style transcript+composer column.
   const chatPanel = (
-    <SingleChatSurface
+    <DeferredChatView
       threadId={props.threadId}
-      search={props.search}
-      projectId={props.projectId}
+      paneScopeId={`editor:${props.threadId}`}
+      deferMount={false}
+      surfaceMode="single"
+      isFocusedPane
+      panelState={EDITOR_CHAT_PANEL_STATE}
+      onToggleDiff={noop}
+      onToggleBrowser={noop}
+      onOpenBrowserUrl={noop}
+      onOpenTurnDiff={noop}
+      editorPresentation
     />
   );
 
