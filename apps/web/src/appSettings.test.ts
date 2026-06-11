@@ -555,7 +555,7 @@ describe("provider-indexed custom model settings", () => {
       customPiModels: ["anthropic/default-pi"],
       customQwenCodeModels: [],
       customAuggieModels: [],
-    customGooseModels: [],
+      customGooseModels: [],
     } as const;
 
     expect(getDefaultCustomModelsForProvider(defaults, "codex")).toEqual(["default/codex-model"]);
@@ -651,7 +651,7 @@ describe("provider-indexed custom model settings", () => {
       pi: ["anthropic/custom-pi"],
       qwenCode: [],
       auggie: [],
-          goose: [],
+      goose: [],
     });
   });
 
@@ -707,7 +707,7 @@ describe("provider-indexed custom model settings", () => {
       ],
       customQwenCodeModels: [],
       customAuggieModels: [],
-    customGooseModels: [],
+      customGooseModels: [],
     });
 
     expect(
@@ -783,7 +783,7 @@ describe("AppSettingsSchema", () => {
       customPiModels: [],
       customQwenCodeModels: [],
       customAuggieModels: [],
-    customGooseModels: [],
+      customGooseModels: [],
     });
   });
 });

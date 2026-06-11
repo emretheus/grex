@@ -109,3 +109,23 @@ export function useDesktopTopBarTrafficLightGutterClassName(): string | null {
     ? DESKTOP_TOP_BAR_TRAFFIC_LIGHT_GUTTER_CLASS
     : null;
 }
+
+/**
+ * Windows frameless window caption buttons (minimize, maximize, close) sit at the
+ * viewport top-right and are 138px wide. Reserve that space so right-flush top-bar
+ * controls don't overlap the native caption cluster.
+ */
+export function useDesktopTopBarWindowControlsGutterClassName(): string | null {
+  if (typeof window === "undefined") return null;
+  const bridge = (window as unknown as Record<string, unknown>).desktopBridge;
+  if (!bridge || typeof bridge !== "object") return null;
+  const b = bridge as unknown as Record<string, unknown>;
+  if (typeof b.getPlatform !== "function") return null;
+  try {
+    const platform = (b.getPlatform as () => string)();
+    if (platform !== "win32") return null;
+  } catch {
+    return null;
+  }
+  return "pr-[138px]!";
+}

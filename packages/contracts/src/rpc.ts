@@ -116,6 +116,8 @@ import {
   ServerGetEnvironmentResult,
   ServerGetProviderUsageSnapshotInput,
   ServerGetProviderUsageSnapshotResult,
+  ServerListProviderUsageInput,
+  ServerListProviderUsageResult,
   ServerLifecycleStreamEvent,
   ServerGetSettingsResult,
   ServerListWorktreesResult,
@@ -609,6 +611,12 @@ export const WsServerGetProviderUsageSnapshotRpc = Rpc.make(
   },
 );
 
+export const WsServerListProviderUsageRpc = Rpc.make(WS_METHODS.serverListProviderUsage, {
+  payload: ServerListProviderUsageInput,
+  success: ServerListProviderUsageResult,
+  error: WsRpcError,
+});
+
 export const WsServerGetDiagnosticsRpc = Rpc.make(WS_METHODS.serverGetDiagnostics, {
   payload: Schema.Struct({}),
   success: ServerDiagnosticsResult,
@@ -787,6 +795,7 @@ export const WsRpcGroup = RpcGroup.make(
   WsServerUpdateProviderRpc,
   WsServerListWorktreesRpc,
   WsServerGetProviderUsageSnapshotRpc,
+  WsServerListProviderUsageRpc,
   WsServerGetDiagnosticsRpc,
   WsServerTranscribeVoiceRpc,
   WsServerGenerateThreadRecapRpc,

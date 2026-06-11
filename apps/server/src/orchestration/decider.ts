@@ -862,6 +862,112 @@ export const decideOrchestrationCommand = Effect.fn("decideOrchestrationCommand"
       };
     }
 
+    case "thread.marker.add": {
+      yield* requireThread({
+        readModel,
+        command,
+        threadId: command.threadId,
+      });
+      const occurredAt = nowIso();
+      return {
+        ...withEventBase({
+          aggregateKind: "thread",
+          aggregateId: command.threadId,
+          occurredAt,
+          commandId: command.commandId,
+        }),
+        type: "thread.marker-added",
+        payload: {
+          threadId: command.threadId,
+          marker: {
+            id: command.markerId,
+            messageId: command.messageId,
+            startOffset: command.startOffset,
+            endOffset: command.endOffset,
+            selectedText: command.selectedText,
+            style: command.style,
+            color: command.color,
+            done: false,
+            label: null,
+            createdAt: occurredAt,
+            updatedAt: occurredAt,
+          },
+          updatedAt: occurredAt,
+        },
+      };
+    }
+
+    case "thread.marker.remove": {
+      yield* requireThread({
+        readModel,
+        command,
+        threadId: command.threadId,
+      });
+      const occurredAt = nowIso();
+      return {
+        ...withEventBase({
+          aggregateKind: "thread",
+          aggregateId: command.threadId,
+          occurredAt,
+          commandId: command.commandId,
+        }),
+        type: "thread.marker-removed",
+        payload: {
+          threadId: command.threadId,
+          markerId: command.markerId,
+          updatedAt: occurredAt,
+        },
+      };
+    }
+
+    case "thread.marker.done.set": {
+      yield* requireThread({
+        readModel,
+        command,
+        threadId: command.threadId,
+      });
+      const occurredAt = nowIso();
+      return {
+        ...withEventBase({
+          aggregateKind: "thread",
+          aggregateId: command.threadId,
+          occurredAt,
+          commandId: command.commandId,
+        }),
+        type: "thread.marker-done-set",
+        payload: {
+          threadId: command.threadId,
+          markerId: command.markerId,
+          done: command.done,
+          updatedAt: occurredAt,
+        },
+      };
+    }
+
+    case "thread.marker.label.set": {
+      yield* requireThread({
+        readModel,
+        command,
+        threadId: command.threadId,
+      });
+      const occurredAt = nowIso();
+      return {
+        ...withEventBase({
+          aggregateKind: "thread",
+          aggregateId: command.threadId,
+          occurredAt,
+          commandId: command.commandId,
+        }),
+        type: "thread.marker-label-set",
+        payload: {
+          threadId: command.threadId,
+          markerId: command.markerId,
+          label: command.label,
+          updatedAt: occurredAt,
+        },
+      };
+    }
+
     case "thread.runtime-mode.set": {
       yield* requireThread({
         readModel,

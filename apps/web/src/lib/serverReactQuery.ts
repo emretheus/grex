@@ -11,6 +11,7 @@ export const serverQueryKeys = {
   worktrees: () => ["server", "worktrees"] as const,
   providerUsage: (provider: ProviderKind | null | undefined, homePath?: string | null) =>
     ["server", "providerUsage", provider ?? null, homePath ?? null] as const,
+  allProviderUsage: () => ["server", "allProviderUsage"] as const,
 };
 
 export function serverConfigQueryOptions() {
@@ -89,5 +90,22 @@ export function serverProviderUsageSnapshotQueryOptions(input: {
         ...(input.homePath ? { homePath: input.homePath } : {}),
       });
     },
+  });
+}
+
+export async function fetchAllProviderUsage(options?: { forceRefresh?: boolean }) {
+  const api = ensureNativeApi();
+  return api.server.listProviderUsage({ forceRefresh: options?.forceRefresh });
+}
+
+export function serverAllProviderUsageQueryOptions(input?: { enabled?: boolean }) {
+  return queryOptions({
+    queryKey: serverQueryKeys.allProviderUsage(),
+    enabled: input?.enabled !== false,
+    staleTime: 60_000,
+    refetchInterval: 60_000,
+    refetchOnWindowFocus: false,
+    retry: false,
+    queryFn: () => fetchAllProviderUsage(),
   });
 }

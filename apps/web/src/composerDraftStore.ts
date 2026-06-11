@@ -838,6 +838,14 @@ function makeModelSelection(
           ? { options: options as Extract<ModelSelection, { provider: "auggie" }>["options"] }
           : {}),
       };
+    case "goose":
+      return {
+        provider,
+        model,
+        ...(options
+          ? { options: options as Extract<ModelSelection, { provider: "goose" }>["options"] }
+          : {}),
+      };
   }
 }
 

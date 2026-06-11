@@ -9,7 +9,12 @@
 // through GitCore; on settle we invalidate the per-cwd git caches so both lists stay in sync.
 
 import { type FileDiffMetadata } from "@pierre/diffs/react";
-import { type GitStackedAction, type GitStatusResult, type ProjectId, type ThreadId } from "@t3tools/contracts";
+import {
+  type GitStackedAction,
+  type GitStatusResult,
+  type ProjectId,
+  type ThreadId,
+} from "@t3tools/contracts";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { lazy, memo, Suspense, useCallback, useId, useMemo, useRef, useState } from "react";
 import { buildHunkPatch } from "~/lib/patchManipulation";
@@ -470,13 +475,13 @@ function TabSwitcher(props: { active: GitPanelTab; onChange: (tab: GitPanelTab) 
           type="button"
           onClick={() => props.onChange(tab)}
           className={cn(
-            "rounded px-2 py-0.5 text-[11px] font-medium capitalize leading-none transition-colors",
+            "rounded px-2 py-0.5 text-[11px] font-medium leading-none transition-colors",
             props.active === tab
               ? "bg-background text-foreground shadow-sm"
               : "text-muted-foreground hover:text-foreground",
           )}
         >
-          {tab}
+          {tab === "history" ? "GitGraph" : "Changes"}
         </button>
       ))}
     </div>

@@ -28,6 +28,13 @@ export function normalizeServerProviderUsageRateLimit(
   };
 }
 
+/** Returns true when the snapshot is explicitly non-ok (error/auth/unsupported), blocking fallbacks. */
+export function isProviderUsageSnapshotNonOk(
+  snapshot: ServerGetProviderUsageSnapshotResult | null | undefined,
+): boolean {
+  return snapshot?.status !== undefined && snapshot.status !== "ok";
+}
+
 export function normalizeServerProviderUsageLines(
   snapshot: ServerGetProviderUsageSnapshotResult | null | undefined,
 ): OpenUsageUsageLine[] {

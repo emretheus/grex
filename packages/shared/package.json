@@ -107,6 +107,14 @@
     "./integrations": {
       "types": "./src/integrations.ts",
       "import": "./src/integrations.ts"
+    },
+    "./threadMarkers": {
+      "types": "./src/threadMarkers.ts",
+      "import": "./src/threadMarkers.ts"
+    },
+    "./providerUsage": {
+      "types": "./src/providerUsage.ts",
+      "import": "./src/providerUsage.ts"
     }
   },
   "scripts": {

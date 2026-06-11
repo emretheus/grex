@@ -1,38 +1,23 @@
 import type { ProviderKind } from "@t3tools/contracts";
-import {
-  ServiceMap, it, assert, vi } from "@effect/vitest";
-import {
-  ServiceMap, assertFailure } from "@effect/vitest/utils";
+import { it, assert, vi } from "@effect/vitest";
+import { assertFailure } from "@effect/vitest/utils";
 
-import {
-  ServiceMap, Effect, Layer, Stream } from "effect";
+import { Effect, Layer, Stream } from "effect";
 
-import {
-  ServiceMap, ClaudeAdapter, ClaudeAdapterShape } from "../Services/ClaudeAdapter.ts";
-import {
-  ServiceMap, CodexAdapter, CodexAdapterShape } from "../Services/CodexAdapter.ts";
-import {
-  ServiceMap, CursorAdapter, CursorAdapterShape } from "../Services/CursorAdapter.ts";
-import {
-  ServiceMap, GeminiAdapter, GeminiAdapterShape } from "../Services/GeminiAdapter.ts";
-import {
-  ServiceMap, GrokAdapter, GrokAdapterShape } from "../Services/GrokAdapter.ts";
-import {
-  ServiceMap, KiloAdapter, KiloAdapterShape } from "../Services/KiloAdapter.ts";
-import {
-  ServiceMap, OpenCodeAdapter, OpenCodeAdapterShape } from "../Services/OpenCodeAdapter.ts";
-import {
-  ServiceMap, PiAdapter, PiAdapterShape } from "../Services/PiAdapter.ts";
-import {
-  ServiceMap, QwenCodeAdapter, QwenCodeAdapterShape } from "../Services/QwenCodeAdapter.ts";
-import {
-  ServiceMap, AuggieAdapter, AuggieAdapterShape } from "../Services/AuggieAdapter.ts";
-import {
-  ServiceMap, ProviderAdapterRegistry } from "../Services/ProviderAdapterRegistry.ts";
-import {
-  ServiceMap, ProviderAdapterRegistryLive } from "./ProviderAdapterRegistry.ts";
-import {
-  ServiceMap, ProviderUnsupportedError } from "../Errors.ts";
+import { ClaudeAdapter, ClaudeAdapterShape } from "../Services/ClaudeAdapter.ts";
+import { CodexAdapter, CodexAdapterShape } from "../Services/CodexAdapter.ts";
+import { CursorAdapter, CursorAdapterShape } from "../Services/CursorAdapter.ts";
+import { GeminiAdapter, GeminiAdapterShape } from "../Services/GeminiAdapter.ts";
+import { GooseAdapter, GooseAdapterShape } from "../Services/GooseAdapter.ts";
+import { GrokAdapter, GrokAdapterShape } from "../Services/GrokAdapter.ts";
+import { KiloAdapter, KiloAdapterShape } from "../Services/KiloAdapter.ts";
+import { OpenCodeAdapter, OpenCodeAdapterShape } from "../Services/OpenCodeAdapter.ts";
+import { PiAdapter, PiAdapterShape } from "../Services/PiAdapter.ts";
+import { QwenCodeAdapter, QwenCodeAdapterShape } from "../Services/QwenCodeAdapter.ts";
+import { AuggieAdapter, AuggieAdapterShape } from "../Services/AuggieAdapter.ts";
+import { ProviderAdapterRegistry } from "../Services/ProviderAdapterRegistry.ts";
+import { ProviderAdapterRegistryLive } from "./ProviderAdapterRegistry.ts";
+import { ProviderUnsupportedError } from "../Errors.ts";
 import * as NodeServices from "@effect/platform-node/NodeServices";
 
 const fakeCodexAdapter: CodexAdapterShape = {
@@ -205,6 +190,23 @@ const fakeAuggieAdapter: AuggieAdapterShape = {
   streamEvents: Stream.empty,
 };
 
+const fakeGooseAdapter: GooseAdapterShape = {
+  provider: "goose",
+  capabilities: { sessionModelSwitch: "unsupported" },
+  startSession: vi.fn(),
+  sendTurn: vi.fn(),
+  interruptTurn: vi.fn(),
+  respondToRequest: vi.fn(),
+  respondToUserInput: vi.fn(),
+  stopSession: vi.fn(),
+  listSessions: vi.fn(),
+  hasSession: vi.fn(),
+  readThread: vi.fn(),
+  rollbackThread: vi.fn(),
+  stopAll: vi.fn(),
+  streamEvents: Stream.empty,
+};
+
 const layer = it.layer(
   Layer.mergeAll(
     Layer.provide(
@@ -220,6 +222,7 @@ const layer = it.layer(
         Layer.succeed(PiAdapter, fakePiAdapter),
         Layer.succeed(QwenCodeAdapter, fakeQwenCodeAdapter),
         Layer.succeed(AuggieAdapter, fakeAuggieAdapter),
+        Layer.succeed(GooseAdapter, fakeGooseAdapter),
       ),
     ),
     NodeServices.layer,

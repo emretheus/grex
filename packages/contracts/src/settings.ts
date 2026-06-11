@@ -182,6 +182,7 @@ export const ServerSettingsPatch = Schema.Struct({
       ),
       qwenCode: Schema.optionalKey(Schema.Struct(ProviderSettingsBasePatch)),
       auggie: Schema.optionalKey(Schema.Struct(ProviderSettingsBasePatch)),
+      goose: Schema.optionalKey(Schema.Struct(ProviderSettingsBasePatch)),
     }),
   ),
 });

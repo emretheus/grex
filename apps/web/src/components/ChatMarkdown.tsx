@@ -33,6 +33,7 @@ import { fnv1a32 } from "../lib/diffRendering";
 import { dedentCode, parseCodeFenceInfo, type CodeFenceInfo } from "../lib/codeFence";
 import { cn } from "~/lib/utils";
 import { FileEntryIcon } from "./chat/FileEntryIcon";
+import { LinkChipIcon } from "./LinkChipIcon";
 import { isLocalImageMarkdownSrc } from "../lib/localImageUrls";
 import { LRUCache } from "../lib/lruCache";
 import { useTheme } from "../hooks/useTheme";
@@ -122,6 +123,15 @@ const MARKDOWN_REHYPE_PLUGINS: MarkdownRehypePlugins = [
   [rehypeKatex, { output: "htmlAndMathml", strict: false, throwOnError: false }],
   rehypeRestoreLiteralDollars,
 ];
+const EXTERNAL_HTTP_HREF_PATTERN = /^https?:\/\//i;
+const MARKDOWN_EXTERNAL_LINK_CLASS_NAME = "chat-markdown__external-link";
+const MARKDOWN_EXTERNAL_LINK_ICON_CLASS_NAME =
+  "chat-markdown__external-link-icon size-3.5 shrink-0 mr-1 align-text-bottom inline-block";
+
+function isExternalHttpHref(href: string | undefined): href is string {
+  return typeof href === "string" && EXTERNAL_HTTP_HREF_PATTERN.test(href);
+}
+
 const INLINE_MATH_HINT_REGEX = /[\\^_=+\-*/<>()[\]{}]/;
 const ALL_CAPS_DOLLAR_IDENTIFIER_REGEX = /^[A-Z][A-Z0-9_]{1,31}$/;
 
@@ -691,15 +701,24 @@ function ChatMarkdown({
       a({ node: _node, href, children, className, ...props }) {
         const restoredHref = href ? restoreLiteralDollarPlaceholders(href) : href;
         const targetPath = resolveMarkdownFileLinkTarget(restoredHref, cwd);
+        const isExternalHttp = isExternalHttpHref(restoredHref);
         if (!targetPath) {
           return (
             <a
               {...props}
-              className={className}
+              className={
+                isExternalHttp ? cn(MARKDOWN_EXTERNAL_LINK_CLASS_NAME, className) : className
+              }
               href={restoredHref}
               target="_blank"
               rel="noopener noreferrer"
             >
+              {isExternalHttp ? (
+                <LinkChipIcon
+                  url={restoredHref}
+                  className={MARKDOWN_EXTERNAL_LINK_ICON_CLASS_NAME}
+                />
+              ) : null}
               {children}
             </a>
           );

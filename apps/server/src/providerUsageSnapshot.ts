@@ -563,6 +563,9 @@ async function loadProviderUsageSnapshot(input: {
         ...(input.homePath ? { homePath: input.homePath } : {}),
       });
     case "claudeAgent":
+      // Live API data (5h / Weekly) is now handled by the batch endpoint
+      // (server.listProviderUsage → collectProviderUsageSnapshots).
+      // This per-provider path only returns local transcript data for fallback.
       return loadClaudeUsageSnapshot({ homeDir: input.homeDir });
     case "gemini":
     default:
