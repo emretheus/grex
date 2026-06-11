@@ -269,6 +269,7 @@ import {
   useComposerThreadDraft,
   useEffectiveComposerModelState,
 } from "../composerDraftStore";
+import { useComposerFocusRequestStore } from "../composerFocusRequestStore";
 import {
   appendOriginalTerminalContextBlock,
   appendTerminalContextsToPrompt,
@@ -3120,6 +3121,16 @@ export default function ChatView({
       focusComposer();
     });
   }, [focusComposer]);
+  // External panels (diff headers, file explorer, editor preview) bump this nonce
+  // after inserting a reference so the composer visibly receives the text.
+  const composerFocusRequestNonce = useComposerFocusRequestStore((store) =>
+    activeThreadId ? (store.requestsByThreadId[activeThreadId] ?? 0) : 0,
+  );
+  useEffect(() => {
+    if (composerFocusRequestNonce > 0) {
+      scheduleComposerFocus();
+    }
+  }, [composerFocusRequestNonce, scheduleComposerFocus]);
   // Context gate is intentionally prompt-independent so the suggestion list stays
   // mounted while the user types — that lets us animate it closed instead of an
   // abrupt unmount (which jolted the centered composer).

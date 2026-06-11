@@ -32,6 +32,14 @@ function getSelectionRect(selection: Selection): DOMRect | null {
   return boundingRect.width > 0 || boundingRect.height > 0 ? boundingRect : null;
 }
 
+// Bounding rect of the live window selection, or null when nothing is selected.
+// Shared by generic selectable surfaces (file preview, diff view) that position
+// the floating "Add to chat" action without owning their own rect plumbing.
+export function getActiveSelectionRect(): DOMRect | null {
+  const selection = window.getSelection();
+  return selection ? getSelectionRect(selection) : null;
+}
+
 function selectionContainerForNode(node: Node | null): HTMLElement | null {
   if (!node) {
     return null;
