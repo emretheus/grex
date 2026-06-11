@@ -9,7 +9,12 @@
 // through GitCore; on settle we invalidate the per-cwd git caches so both lists stay in sync.
 
 import { type FileDiffMetadata } from "@pierre/diffs/react";
-import { type GitStackedAction, type GitStatusResult, type ProjectId, type ThreadId } from "@t3tools/contracts";
+import {
+  type GitStackedAction,
+  type GitStatusResult,
+  type ProjectId,
+  type ThreadId,
+} from "@t3tools/contracts";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { lazy, memo, Suspense, useCallback, useId, useMemo, useRef, useState } from "react";
 import { buildHunkPatch } from "~/lib/patchManipulation";

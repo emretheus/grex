@@ -1,38 +1,22 @@
 import type { ProviderKind } from "@t3tools/contracts";
-import {
-  ServiceMap, it, assert, vi } from "@effect/vitest";
-import {
-  ServiceMap, assertFailure } from "@effect/vitest/utils";
+import { ServiceMap, it, assert, vi } from "@effect/vitest";
+import { ServiceMap, assertFailure } from "@effect/vitest/utils";
 
-import {
-  ServiceMap, Effect, Layer, Stream } from "effect";
+import { ServiceMap, Effect, Layer, Stream } from "effect";
 
-import {
-  ServiceMap, ClaudeAdapter, ClaudeAdapterShape } from "../Services/ClaudeAdapter.ts";
-import {
-  ServiceMap, CodexAdapter, CodexAdapterShape } from "../Services/CodexAdapter.ts";
-import {
-  ServiceMap, CursorAdapter, CursorAdapterShape } from "../Services/CursorAdapter.ts";
-import {
-  ServiceMap, GeminiAdapter, GeminiAdapterShape } from "../Services/GeminiAdapter.ts";
-import {
-  ServiceMap, GrokAdapter, GrokAdapterShape } from "../Services/GrokAdapter.ts";
-import {
-  ServiceMap, KiloAdapter, KiloAdapterShape } from "../Services/KiloAdapter.ts";
-import {
-  ServiceMap, OpenCodeAdapter, OpenCodeAdapterShape } from "../Services/OpenCodeAdapter.ts";
-import {
-  ServiceMap, PiAdapter, PiAdapterShape } from "../Services/PiAdapter.ts";
-import {
-  ServiceMap, QwenCodeAdapter, QwenCodeAdapterShape } from "../Services/QwenCodeAdapter.ts";
-import {
-  ServiceMap, AuggieAdapter, AuggieAdapterShape } from "../Services/AuggieAdapter.ts";
-import {
-  ServiceMap, ProviderAdapterRegistry } from "../Services/ProviderAdapterRegistry.ts";
-import {
-  ServiceMap, ProviderAdapterRegistryLive } from "./ProviderAdapterRegistry.ts";
-import {
-  ServiceMap, ProviderUnsupportedError } from "../Errors.ts";
+import { ServiceMap, ClaudeAdapter, ClaudeAdapterShape } from "../Services/ClaudeAdapter.ts";
+import { ServiceMap, CodexAdapter, CodexAdapterShape } from "../Services/CodexAdapter.ts";
+import { ServiceMap, CursorAdapter, CursorAdapterShape } from "../Services/CursorAdapter.ts";
+import { ServiceMap, GeminiAdapter, GeminiAdapterShape } from "../Services/GeminiAdapter.ts";
+import { ServiceMap, GrokAdapter, GrokAdapterShape } from "../Services/GrokAdapter.ts";
+import { ServiceMap, KiloAdapter, KiloAdapterShape } from "../Services/KiloAdapter.ts";
+import { ServiceMap, OpenCodeAdapter, OpenCodeAdapterShape } from "../Services/OpenCodeAdapter.ts";
+import { ServiceMap, PiAdapter, PiAdapterShape } from "../Services/PiAdapter.ts";
+import { ServiceMap, QwenCodeAdapter, QwenCodeAdapterShape } from "../Services/QwenCodeAdapter.ts";
+import { ServiceMap, AuggieAdapter, AuggieAdapterShape } from "../Services/AuggieAdapter.ts";
+import { ServiceMap, ProviderAdapterRegistry } from "../Services/ProviderAdapterRegistry.ts";
+import { ServiceMap, ProviderAdapterRegistryLive } from "./ProviderAdapterRegistry.ts";
+import { ServiceMap, ProviderUnsupportedError } from "../Errors.ts";
 import * as NodeServices from "@effect/platform-node/NodeServices";
 
 const fakeCodexAdapter: CodexAdapterShape = {

@@ -2583,7 +2583,7 @@ function SettingsRouteView() {
                     pi: false,
                     qwenCode: false,
                     auggie: false,
-        goose: false,
+                    goose: false,
                   });
                 }}
               />
