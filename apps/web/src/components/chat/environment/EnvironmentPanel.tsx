@@ -110,6 +110,9 @@ export interface EnvironmentPanelProps {
   onNotesChange: (threadId: ThreadId, notes: string) => Promise<void>;
   /** Dismiss the panel overlay — invoked after actions that open the dock. */
   onClose: () => void;
+  /** When provided, the Editor section shows an "Editor view" row that opens the
+   *  full-screen editor workspace. */
+  onOpenEditorView?: () => void;
   /** Linked issue config for the issue link section. When omitted the section is hidden. */
   issueLinkControl?: {
     threadId: ThreadId;
@@ -178,6 +181,7 @@ export function EnvironmentPanel({
   onRenamePinnedMessage,
   onNotesChange,
   onClose,
+  onOpenEditorView,
   issueLinkControl = null,
 }: EnvironmentPanelProps) {
   const navigate = useNavigate();
@@ -269,6 +273,7 @@ export function EnvironmentPanel({
         keybindings={keybindings}
         availableEditors={availableEditors}
         openInCwd={openInCwd}
+        {...(onOpenEditorView ? { onOpenEditorView } : {})}
       />
 
       {showRecap && recap ? (

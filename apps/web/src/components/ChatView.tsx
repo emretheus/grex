@@ -7831,6 +7831,7 @@ export default function ChatView({
     onRenamePinnedMessage: handleRenamePinnedMessage,
     onNotesChange: handleNotesChange,
     onClose: () => setEnvironmentPanelOpen(false),
+    ...(onOpenEditorView ? { onOpenEditorView } : {}),
     issueLinkControl: {
       threadId: activeThread.id,
       linkedIssues:
