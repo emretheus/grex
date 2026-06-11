@@ -29,6 +29,8 @@ import { Schema } from "effect";
 import ChatView from "../components/ChatView";
 import BrowserPanel from "../components/BrowserPanel";
 import { ProviderIcon } from "../components/ProviderIcon";
+import { EditorWorkspaceView } from "../components/EditorWorkspaceView";
+import { useEditorStore } from "../editorStore";
 import { ChatPaneDropOverlay } from "../components/chat-drop-overlay/ChatPaneDropOverlay";
 import { DiffWorkerPoolProvider } from "../components/DiffWorkerPoolProvider";
 import {
@@ -91,6 +93,7 @@ import { toastManager } from "../components/ui/toast";
 import { useStore } from "../store";
 import {
   createAllThreadsSelector,
+  createProjectSelector,
   createSidebarThreadSummariesSelector,
   createThreadExistsSelector,
   createThreadProjectIdSelector,
@@ -625,6 +628,7 @@ function DeferredChatView(props: {
   onChangeThread?: () => void;
   onCloseThreadPane?: () => void;
   onMounted?: () => void;
+  onOpenEditorView?: () => void;
 }) {
   const onMounted = props.onMounted ?? noop;
   const mountKey = `${props.paneScopeId}:${props.threadId}`;
@@ -675,6 +679,7 @@ function DeferredChatView(props: {
       {...(props.onMaximize ? { onMaximizeSurface: props.onMaximize } : {})}
       {...(props.onChangeThread ? { onChangeThreadInSplitPane: props.onChangeThread } : {})}
       {...(props.onCloseThreadPane ? { onCloseThreadPane: props.onCloseThreadPane } : {})}
+      {...(props.onOpenEditorView ? { onOpenEditorView: props.onOpenEditorView } : {})}
     />
   );
 }
@@ -1412,6 +1417,15 @@ function SingleChatSurface(props: {
     });
   }, [createSplitView, navigate, props.projectId, props.threadId]);
 
+  const handleOpenEditorView = useCallback(() => {
+    void navigate({
+      to: "/$threadId",
+      params: { threadId: props.threadId },
+      replace: true,
+      search: (previous) => ({ ...previous, view: "editor" as const }),
+    });
+  }, [navigate, props.threadId]);
+
   const handleDropThread = useCallback(
     (payload: { threadId: ThreadIdType; direction: SplitDirection; side: SplitDropSide }) => {
       if (!props.projectId) return;
@@ -1722,6 +1736,7 @@ function SingleChatSurface(props: {
             onOpenBrowserUrl={handleOpenBrowserUrl}
             onOpenTurnDiff={handleOpenTurnDiff}
             onSplitSurface={handleSplitSurface}
+            onOpenEditorView={handleOpenEditorView}
           />
         </SidebarInset>
       </ChatPaneDropOverlay>
@@ -1743,6 +1758,77 @@ function SingleChatSurface(props: {
         renderPane={renderDockPane}
       />
     </div>
+  );
+}
+
+// Thin wrapper that renders the full-screen editor workspace with the standard
+// chat surface as the right-side chat panel.
+function EditorWorkspaceSurface(props: {
+  threadId: ThreadIdType;
+  projectId: ProjectId | null;
+  search: DiffRouteSearch;
+}) {
+  const navigate = useNavigate();
+  const openFile = useEditorStore((s) => s.openFile);
+
+  const threadSelector = useMemo(() => createProjectSelector(props.projectId), [props.projectId]);
+  const project = useStore(threadSelector);
+  // For the worktree path we read directly from thread state; worktreePath is
+  // set on the thread shell when the provider opens a worktree.
+  const worktreePath = useStore(
+    useCallback(
+      (state) => {
+        const shellById = state.threadShellById ?? {};
+        const threadShell = shellById[props.threadId];
+        return threadShell?.worktreePath ?? null;
+      },
+      [props.threadId],
+    ),
+  );
+
+  const workspaceRoot = worktreePath ?? project?.cwd ?? null;
+  const projectName = project?.name ?? null;
+
+  const handleExitEditorView = useCallback(() => {
+    void navigate({
+      to: "/$threadId",
+      params: { threadId: props.threadId },
+      replace: true,
+      search: (previous) => ({ ...previous, view: undefined, editorFilePath: undefined }),
+    });
+  }, [navigate, props.threadId]);
+
+  const handleSelectFile = useCallback(
+    (path: string) => {
+      openFile(props.threadId, path);
+      void navigate({
+        to: "/$threadId",
+        params: { threadId: props.threadId },
+        replace: true,
+        search: (previous) => ({ ...previous, editorFilePath: path }),
+      });
+    },
+    [navigate, openFile, props.threadId],
+  );
+
+  const chatPanel = (
+    <SingleChatSurface
+      threadId={props.threadId}
+      search={props.search}
+      projectId={props.projectId}
+    />
+  );
+
+  return (
+    <EditorWorkspaceView
+      threadId={props.threadId}
+      workspaceRoot={workspaceRoot}
+      projectName={projectName}
+      selectedFilePath={props.search.editorFilePath ?? null}
+      chatPanel={chatPanel}
+      onSelectFile={handleSelectFile}
+      onExitEditorView={handleExitEditorView}
+    />
   );
 }
 
@@ -1815,6 +1901,13 @@ function ChatThreadRouteView() {
 
   if (!routeThreadExists) {
     return <ChatMountSkeleton />;
+  }
+
+  // Full-screen editor workspace view
+  if (search.view === "editor") {
+    return (
+      <EditorWorkspaceSurface threadId={threadId} projectId={activeProjectId} search={search} />
+    );
   }
 
   return <SingleChatSurface threadId={threadId} search={search} projectId={activeProjectId} />;

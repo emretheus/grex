@@ -778,6 +778,8 @@ interface ChatViewProps {
   onMaximizeSurface?: () => void;
   onChangeThreadInSplitPane?: () => void;
   onCloseThreadPane?: () => void;
+  /** When provided, the header renders an "Editor view" toggle button. */
+  onOpenEditorView?: () => void;
 }
 
 export default function ChatView({
@@ -794,6 +796,7 @@ export default function ChatView({
   onMaximizeSurface,
   onChangeThreadInSplitPane,
   onCloseThreadPane,
+  onOpenEditorView,
 }: ChatViewProps) {
   const markThreadVisited = useStore((store) => store.markThreadVisited);
   const syncServerShellSnapshot = useStore((store) => store.syncServerShellSnapshot);
@@ -1677,7 +1680,7 @@ export default function ChatView({
       pi: piDynamicModelsQuery.data?.models ?? [],
       qwenCode: [],
       auggie: [],
-    goose: [],
+      goose: [],
       goose: [],
     }),
     [
@@ -8395,6 +8398,7 @@ export default function ChatView({
           onNavigateToThread={onNavigateToThread}
           onRenameThread={() => setRenameDialogOpen(true)}
           {...(onCloseThreadPane ? { onCloseThreadPane } : {})}
+          {...(onOpenEditorView ? { onOpenEditorView } : {})}
         />
       </header>
 

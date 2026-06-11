@@ -4,6 +4,10 @@ export type ChatRightPanel = "browser" | "diff";
 
 export interface DiffRouteSearch {
   splitViewId?: string | undefined;
+  // When "editor", the thread renders the full-screen editor workspace instead
+  // of the standard chat layout. `editorFilePath` deep-links the open file.
+  view?: "editor" | undefined;
+  editorFilePath?: string | undefined;
   panel?: ChatRightPanel | undefined;
   diff?: "1" | undefined;
   diffTurnId?: TurnId | undefined;
@@ -37,6 +41,9 @@ export function stripDiffSearchParams<T extends Record<string, unknown>>(
 
 export function parseDiffRouteSearch(search: Record<string, unknown>): DiffRouteSearch {
   const splitViewId = normalizeSearchString(search.splitViewId);
+  const viewRaw = normalizeSearchString(search.view);
+  const view = viewRaw === "editor" ? "editor" : undefined;
+  const editorFilePath = view ? normalizeSearchString(search.editorFilePath) : undefined;
   const panelRaw = normalizeSearchString(search.panel);
   const panel: ChatRightPanel | undefined =
     panelRaw === "browser" ? "browser" : panelRaw === "diff" ? "diff" : undefined;
@@ -48,6 +55,8 @@ export function parseDiffRouteSearch(search: Record<string, unknown>): DiffRoute
 
   return {
     ...(splitViewId ? { splitViewId } : {}),
+    ...(view ? { view } : {}),
+    ...(editorFilePath ? { editorFilePath } : {}),
     ...(resolvedPanel ? { panel: resolvedPanel } : {}),
     ...(diff ? { diff } : {}),
     ...(diffTurnId ? { diffTurnId } : {}),
