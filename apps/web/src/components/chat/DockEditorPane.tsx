@@ -30,6 +30,11 @@ interface DockEditorPaneProps {
   readonly hostThreadId: ThreadId;
   readonly projectId: ProjectId | null;
   readonly isActive: boolean;
+  /**
+   * Message shown when no file is open. Defaults to the dock-tab wording; the
+   * full-screen editor workspace passes a sidebar-appropriate hint.
+   */
+  readonly emptyStateMessage?: string;
 }
 
 type FileLoadState =
@@ -484,7 +489,12 @@ function SplitSurface({
 
 // ---- DockEditorPane ----
 
-export function DockEditorPane({ hostThreadId, projectId, isActive }: DockEditorPaneProps) {
+export function DockEditorPane({
+  hostThreadId,
+  projectId,
+  isActive,
+  emptyStateMessage,
+}: DockEditorPaneProps) {
   const thread = useAppStore(useMemo(() => createThreadSelector(hostThreadId), [hostThreadId]));
   const project = useAppStore(useMemo(() => createProjectSelector(projectId), [projectId]));
   const cwd = thread?.worktreePath ?? project?.cwd ?? null;
@@ -532,7 +542,11 @@ export function DockEditorPane({ hostThreadId, projectId, isActive }: DockEditor
   }
 
   if (editorState.openFiles.length === 0) {
-    return <PanelStateMessage>Open a file from the Files tab to start editing.</PanelStateMessage>;
+    return (
+      <PanelStateMessage>
+        {emptyStateMessage ?? "Open a file from the Files tab to start editing."}
+      </PanelStateMessage>
+    );
   }
 
   const primaryWidthStyle = splitState ? `${splitWidthPercent}%` : "100%";

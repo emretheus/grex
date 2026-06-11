@@ -11,7 +11,7 @@ import type { ProjectId, ThreadId } from "@t3tools/contracts";
 import { readNativeApi } from "~/nativeApi";
 import { createProjectSelector, createThreadSelector } from "~/storeSelectors";
 import { useStore as useAppStore } from "~/store";
-import { useEditorStore } from "~/editorStore";
+import { useEditorStore, selectThreadEditorState } from "~/editorStore";
 import { useRightDockStore } from "~/rightDockStore";
 import { gitWorkingTreeDiffQueryOptions } from "~/lib/gitReactQuery";
 import { buildGitFileStatusMap } from "~/lib/gitFileStatus";
@@ -34,6 +34,7 @@ export function DockFilesPane({ hostThreadId, projectId }: DockFilesPaneProps) {
   const openFile = useEditorStore((s) => s.openFile);
   const openDiff = useEditorStore((s) => s.openDiff);
   const openPane = useRightDockStore((s) => s.openPane);
+  const activeFilePath = useEditorStore((s) => selectThreadEditorState(s, hostThreadId).activePath);
 
   // Per-file git status (added/modified/deleted/renamed) for tinting tree rows,
   // derived from the same working-tree patch the diff panel uses.
@@ -111,6 +112,7 @@ export function DockFilesPane({ hostThreadId, projectId }: DockFilesPaneProps) {
         <WorkspaceFileTree
           cwd={cwd}
           statusByPath={statusByPath}
+          activeFilePath={activeFilePath}
           onFileClick={handleFileClick}
           onFileContextMenu={handleContextMenu}
         />

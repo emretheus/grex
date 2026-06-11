@@ -15,6 +15,7 @@ import {
   type GitFileStatus,
 } from "~/lib/gitFileStatus";
 import { useWorkspaceFileWatch } from "~/hooks/useWorkspaceFileWatch";
+import { Skeleton } from "~/components/ui/skeleton";
 import {
   ChevronDownIcon,
   ChevronRightIcon,
@@ -55,6 +56,7 @@ interface FileTreeLevelProps {
   readonly loading: Set<string>;
   readonly childrenByParent: Record<string, readonly ProjectFileSystemEntry[]>;
   readonly statusByPath: ReadonlyMap<string, GitFileStatus>;
+  readonly activeFilePath: string | null;
   readonly onToggleDirectory: (path: string) => void;
   readonly onFileClick: (path: string) => void;
   readonly onContextMenu: (
@@ -70,6 +72,7 @@ export function FileTreeLevel({
   loading,
   childrenByParent,
   statusByPath,
+  activeFilePath,
   onToggleDirectory,
   onFileClick,
   onContextMenu,
@@ -84,6 +87,7 @@ export function FileTreeLevel({
         const status = isDir ? undefined : statusByPath.get(entry.path);
         const statusColor = gitFileStatusColorClass(status);
         const statusBadge = gitFileStatusBadge(status);
+        const isActive = !isDir && entry.path === activeFilePath;
         return (
           <div key={entry.path}>
             <button
@@ -92,8 +96,12 @@ export function FileTreeLevel({
               onContextMenu={(event) =>
                 onContextMenu(event, { path: entry.path, kind: entry.kind })
               }
+              aria-current={isActive ? "true" : undefined}
               className={cn(
-                "group flex w-full items-center gap-1.5 truncate px-2 text-left text-[13px] text-[var(--color-text-foreground)] transition-colors hover:bg-[var(--color-background-button-secondary-hover)]",
+                "group flex w-full items-center gap-1.5 truncate px-2 text-left text-[13px] text-[var(--color-text-foreground)] outline-none transition-colors",
+                "hover:bg-[var(--color-background-button-secondary-hover)]",
+                "focus-visible:bg-[var(--color-background-button-secondary-hover)]",
+                isActive && "bg-sidebar-accent",
                 ROW_HEIGHT_CLASS,
               )}
               style={{ paddingLeft: `${depth * 12 + 8}px` }}
@@ -139,10 +147,14 @@ export function FileTreeLevel({
             {isDir && isExpanded ? (
               loading.has(entry.path) && children === undefined ? (
                 <div
-                  className="px-2 py-1 text-xs text-[var(--color-text-foreground-secondary)]"
-                  style={{ paddingLeft: `${(depth + 1) * 12 + 24}px` }}
+                  role="status"
+                  aria-live="polite"
+                  aria-label="Loading files"
+                  className="flex flex-col gap-1.5 py-1.5"
+                  style={{ paddingLeft: `${(depth + 1) * 12 + 24}px`, paddingRight: 12 }}
                 >
-                  Loading…
+                  <Skeleton className="h-2.5 w-2/3" />
+                  <Skeleton className="h-2.5 w-1/2" />
                 </div>
               ) : children && children.length > 0 ? (
                 <FileTreeLevel
@@ -152,6 +164,7 @@ export function FileTreeLevel({
                   loading={loading}
                   childrenByParent={childrenByParent}
                   statusByPath={statusByPath}
+                  activeFilePath={activeFilePath}
                   onToggleDirectory={onToggleDirectory}
                   onFileClick={onFileClick}
                   onContextMenu={onContextMenu}
@@ -175,6 +188,10 @@ export interface WorkspaceFileTreeProps {
    * When omitted, all rows render without status colors.
    */
   readonly statusByPath?: ReadonlyMap<string, GitFileStatus>;
+  /** Worktree-relative path of the currently-open file; its row is highlighted. */
+  readonly activeFilePath?: string | null;
+  /** Optional message shown when the workspace root is empty. */
+  readonly emptyMessage?: string;
   /**
    * When provided the caller owns the expanded set and receives toggle events.
    * When omitted the tree manages expansion internally.
@@ -204,6 +221,8 @@ export interface WorkspaceFileTreeProps {
 export function WorkspaceFileTree({
   cwd,
   statusByPath,
+  activeFilePath = null,
+  emptyMessage = "This folder is empty.",
   expandedExternally,
   onFileClick,
   onFileContextMenu,
@@ -317,7 +336,7 @@ export function WorkspaceFileTree({
 
   if (error) {
     return (
-      <div className="px-3 py-2 text-xs text-[var(--color-text-foreground-error,#e5484d)]">
+      <div role="alert" className="px-3 py-2 text-xs text-destructive">
         {error}
       </div>
     );
@@ -325,16 +344,28 @@ export function WorkspaceFileTree({
 
   if (rootEntries === undefined) {
     return (
-      <div className="px-3 py-2 text-xs text-[var(--color-text-foreground-secondary)]">
-        Loading…
+      <div
+        role="status"
+        aria-live="polite"
+        aria-label="Loading files"
+        className="flex flex-col gap-1.5 px-2 py-2"
+      >
+        {[0, 1, 2, 3, 4].map((index) => (
+          <Skeleton
+            key={index}
+            className="h-3"
+            // Stagger widths so the placeholder reads as a real file list.
+            style={{ width: `${[78, 60, 70, 52, 66][index]}%` }}
+          />
+        ))}
       </div>
     );
   }
 
   if (rootEntries.length === 0) {
     return (
-      <div className="px-3 py-2 text-xs text-[var(--color-text-foreground-secondary)]">
-        Empty directory.
+      <div className="px-3 py-3 text-xs text-[var(--color-text-foreground-secondary)]">
+        {emptyMessage}
       </div>
     );
   }
@@ -347,6 +378,7 @@ export function WorkspaceFileTree({
       loading={loading}
       childrenByParent={childrenByParent}
       statusByPath={resolvedStatusByPath}
+      activeFilePath={activeFilePath}
       onToggleDirectory={toggleDirectory}
       onFileClick={onFileClick}
       onContextMenu={onFileContextMenu}

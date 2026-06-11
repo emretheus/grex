@@ -20,9 +20,9 @@ import type { ThreadPrimarySurface } from "../../types";
 import GitActionsControl from "../GitActionsControl";
 import {
   ArrowRightIcon,
+  Columns2Icon,
   HandoffIcon,
   PanelRightCloseIcon,
-  SquarePenIcon,
   TerminalIcon,
   XIcon,
 } from "~/lib/icons";
@@ -458,14 +458,14 @@ export const ChatHeader = memo(function ChatHeader({
               render={
                 <ChatHeaderIconButton
                   type="button"
-                  label="Open editor view"
+                  label="Open editor workspace"
                   onClick={onOpenEditorView}
                 >
-                  <SquarePenIcon className="size-3.5" />
+                  <Columns2Icon className="size-3.5" />
                 </ChatHeaderIconButton>
               }
             />
-            <TooltipPopup side="bottom">Open editor view</TooltipPopup>
+            <TooltipPopup side="bottom">Open editor workspace</TooltipPopup>
           </Tooltip>
         ) : null}
 
