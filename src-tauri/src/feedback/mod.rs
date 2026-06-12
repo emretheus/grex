@@ -19,7 +19,7 @@ use crate::{forge::remote::parse_remote, models::db};
 pub mod github_rest;
 
 /// GitHub login (owner) of the Codewit upstream repository.
-pub const CODEWIT_UPSTREAM_OWNER: &str = "dohooo";
+pub const CODEWIT_UPSTREAM_OWNER: &str = "emretheus";
 /// Repository name of the Codewit upstream.
 pub const CODEWIT_UPSTREAM_REPO: &str = "codewit";
 

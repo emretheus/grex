@@ -43,9 +43,7 @@ export function CodewitLogoAnimated({
 	const shouldAnimate = autoplay && loop && !reducedMotion;
 
 	if (shouldAnimate) {
-		return (
-			<CodewitLogoCss size={size} className={className} theme={effectiveTheme} />
-		);
+		return <CodewitLogoCss size={size} className={className} />;
 	}
 
 	const src = effectiveTheme === "light" ? logoDarkSrc : logoLightSrc;
@@ -65,50 +63,38 @@ export function CodewitLogoAnimated({
 function CodewitLogoCss({
 	size,
 	className,
-	theme,
 }: {
 	size?: string | number;
 	className?: string;
-	theme: "light" | "dark";
 }) {
-	const color = theme === "light" ? "#0E0E0E" : "#FEFEFE";
-
+	// The Codewit mark is a two-color stroke (blue "C" + green ">"), so it
+	// reads the same on light and dark surfaces — no theme inversion needed.
+	// While the agent works the chevron advances + brightens like a streaming
+	// prompt and the C gently breathes.
 	return (
 		<svg
 			aria-hidden="true"
 			className={cn("block", className)}
 			fill="none"
-			style={{ width: size, height: size, color }}
+			style={{ width: size, height: size }}
 			viewBox="0 0 1024 1024"
 			xmlns="http://www.w3.org/2000/svg"
 		>
 			<path
-				className="codewit-logo-css-piece codewit-logo-css-piece-tl"
-				d="M162 306.673V80.582L375.51 193.625V419.709L162 306.673Z"
+				className="codewit-logo-anim-piece codewit-logo-anim-c"
+				d="M578 300 L318 300 L198 512 L318 724 L578 724"
+				stroke="#1B5BFF"
+				strokeWidth="102"
+				strokeLinejoin="miter"
+				strokeMiterlimit="10"
 			/>
 			<path
-				className="codewit-logo-css-piece codewit-logo-css-piece-ml"
-				d="M376.057 454.357L162.553 341.314V567.399L376.057 680.442V454.357Z"
-			/>
-			<path
-				className="codewit-logo-css-piece codewit-logo-css-piece-bl"
-				d="M162 828.14V602.047L375.51 715.089V941.174L162 828.14Z"
-			/>
-			<path
-				className="codewit-logo-css-piece codewit-logo-css-piece-bridge"
-				d="M404.308 680.442V454.357L617.918 341.314V567.399L404.308 680.442Z"
-			/>
-			<path
-				className="codewit-logo-css-piece codewit-logo-css-piece-br"
-				d="M646.615 828.14V602.047L860.126 715.089V941.174L646.615 828.14Z"
-			/>
-			<path
-				className="codewit-logo-css-piece codewit-logo-css-piece-mr"
-				d="M860.667 454.357L647.165 341.314V567.399L860.667 680.442V454.357Z"
-			/>
-			<path
-				className="codewit-logo-css-piece codewit-logo-css-piece-tr"
-				d="M646.615 306.673V80.582L860.126 193.625V419.709L646.615 306.673Z"
+				className="codewit-logo-anim-piece codewit-logo-anim-chevron"
+				d="M616 344 L826 512 L616 680"
+				stroke="#16C98C"
+				strokeWidth="96"
+				strokeLinejoin="miter"
+				strokeMiterlimit="10"
 			/>
 		</svg>
 	);

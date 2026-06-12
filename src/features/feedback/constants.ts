@@ -1,5 +1,5 @@
 /** Upstream codewit repository — hardcoded. Users never configure this. */
-export const CODEWIT_UPSTREAM_OWNER = "dohooo";
+export const CODEWIT_UPSTREAM_OWNER = "emretheus";
 export const CODEWIT_UPSTREAM_REPO = "codewit";
 export const CODEWIT_UPSTREAM_SLUG = `${CODEWIT_UPSTREAM_OWNER}/${CODEWIT_UPSTREAM_REPO}`;
 export const CODEWIT_UPSTREAM_HTML_URL = `https://github.com/${CODEWIT_UPSTREAM_SLUG}`;
