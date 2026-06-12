@@ -9,11 +9,10 @@
 // Layer: Environment panel container
 
 import type {
-  EditorId,
   LinkedIssues,
   MessageId,
   PinnedMessage,
-  ResolvedKeybindingsConfig,
+  ProviderKind,
   ThreadId,
 } from "@t3tools/contracts";
 import { useNavigate } from "@tanstack/react-router";
@@ -28,12 +27,13 @@ import GitActionsControl from "~/components/GitActionsControl";
 import { IssueLinkControl } from "~/components/integrations/IssueLinkControl";
 import { IconButton } from "~/components/ui/icon-button";
 import type { RepoDiffTotals } from "~/hooks/useRepoDiffTotals";
-import { ArrowUpRightIcon, ChangesIcon, GitHubIcon, SettingsIcon } from "~/lib/icons";
+import { ArrowUpRightIcon, ChangesIcon, Columns2Icon, GitHubIcon, SettingsIcon } from "~/lib/icons";
 import { cn } from "~/lib/utils";
 
-import { EnvironmentEditorSection } from "./EnvironmentEditorSection";
+import { EnvironmentMarkersSection } from "./EnvironmentMarkersSection";
 import { EnvironmentNotesSection } from "./EnvironmentNotesSection";
 import { EnvironmentPinnedSection } from "./EnvironmentPinnedSection";
+import { EnvironmentUsageSection } from "./EnvironmentUsageSection";
 import { ENVIRONMENT_PANEL_RECAP_MARKDOWN_CLASS_NAME } from "./environmentPanelStyles";
 import {
   ENVIRONMENT_ROW_ICON_CLASS_NAME,
@@ -69,8 +69,6 @@ export interface EnvironmentPanelProps {
     readonly url: string;
   } | null;
   isGitRepo: boolean;
-  keybindings: ResolvedKeybindingsConfig;
-  availableEditors: ReadonlyArray<EditorId>;
   activeThreadId: ThreadId | null;
   /** Whether the active runtime exposes git actions (hides "Commit and Push" otherwise). */
   showGitActions: boolean;
@@ -113,6 +111,8 @@ export interface EnvironmentPanelProps {
   /** When provided, the Editor section shows an "Editor view" row that opens the
    *  full-screen editor workspace. */
   onOpenEditorView?: () => void;
+  /** Active provider for usage display. */
+  activeProvider?: ProviderKind | null;
   /** Linked issue config for the issue link section. When omitted the section is hidden. */
   issueLinkControl?: {
     threadId: ThreadId;
@@ -120,6 +120,21 @@ export interface EnvironmentPanelProps {
     hasServerThread: boolean;
     projectPath?: string;
   } | null;
+  /** Per-thread transcript markers (highlight/underline) synced from the server. */
+  threadMarkers?: readonly import("@t3tools/contracts").ThreadMarker[] | null;
+  /** Live text of messages containing markers (for availability checks). */
+  markerMessageTextById?: ReadonlyMap<MessageId, string>;
+  /** Scroll the transcript to a marker. */
+  onJumpToMarker?: (marker: import("@t3tools/contracts").ThreadMarker) => void;
+  /** Toggle a marker's done state. */
+  onToggleMarkerDone?: (markerId: import("@t3tools/contracts").ThreadMarkerId) => void;
+  /** Remove a marker. */
+  onRemoveMarker?: (markerId: import("@t3tools/contracts").ThreadMarkerId) => void;
+  /** Rename a marker. */
+  onRenameMarker?: (
+    markerId: import("@t3tools/contracts").ThreadMarkerId,
+    label: string | null,
+  ) => void;
 }
 
 const PANEL_DIVIDER_CLASS_NAME = "my-1 border-t border-[color:var(--color-border-light)]";
@@ -161,8 +176,6 @@ export function EnvironmentPanel({
   openInCwd,
   githubRepository = null,
   isGitRepo,
-  keybindings,
-  availableEditors,
   activeThreadId,
   showGitActions,
   diffOpen,
@@ -183,6 +196,13 @@ export function EnvironmentPanel({
   onClose,
   onOpenEditorView,
   issueLinkControl = null,
+  activeProvider = null,
+  threadMarkers = null,
+  markerMessageTextById,
+  onJumpToMarker,
+  onToggleMarkerDone,
+  onRemoveMarker,
+  onRenameMarker,
 }: EnvironmentPanelProps) {
   const navigate = useNavigate();
   const { additions, deletions, hasChanges } = diffTotals;
@@ -267,17 +287,34 @@ export function EnvironmentPanel({
         </>
       ) : null}
 
-      <EnvironmentEditorSection
-        keybindings={keybindings}
-        availableEditors={availableEditors}
-        openInCwd={openInCwd}
-        {...(onOpenEditorView ? { onOpenEditorView } : {})}
-      />
+      {onOpenEditorView ? (
+        <>
+          <div className="flex flex-col gap-0.5">
+            <EnvironmentSectionLabel>Editor</EnvironmentSectionLabel>
+            <EnvironmentRow
+              icon={<Columns2Icon className={ENVIRONMENT_ROW_ICON_CLASS_NAME} aria-hidden />}
+              label="Editor view"
+              onClick={() => {
+                onOpenEditorView();
+                onClose();
+              }}
+            />
+          </div>
+          <div className={PANEL_DIVIDER_CLASS_NAME} />
+        </>
+      ) : null}
 
       {showRecap && recap ? (
         <>
           <div className={PANEL_DIVIDER_CLASS_NAME} />
           <EnvironmentRecapSection recap={recap} markdownCwd={markdownCwd} />
+        </>
+      ) : null}
+
+      {activeProvider ? (
+        <>
+          <div className={PANEL_DIVIDER_CLASS_NAME} />
+          <EnvironmentUsageSection provider={activeProvider} />
         </>
       ) : null}
 
@@ -291,6 +328,26 @@ export function EnvironmentPanel({
             onToggleDone={onTogglePinnedMessageDone}
             onUnpin={onUnpinMessage}
             onRename={onRenamePinnedMessage}
+          />
+        </>
+      ) : null}
+
+      {threadMarkers &&
+      threadMarkers.length > 0 &&
+      markerMessageTextById &&
+      onJumpToMarker &&
+      onToggleMarkerDone &&
+      onRemoveMarker &&
+      onRenameMarker ? (
+        <>
+          <div className={PANEL_DIVIDER_CLASS_NAME} />
+          <EnvironmentMarkersSection
+            markers={threadMarkers}
+            messageTextById={markerMessageTextById}
+            onJump={onJumpToMarker}
+            onToggleDone={onToggleMarkerDone}
+            onRemove={onRemoveMarker}
+            onRename={onRenameMarker}
           />
         </>
       ) : null}

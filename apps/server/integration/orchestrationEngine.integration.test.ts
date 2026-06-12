@@ -17,6 +17,7 @@ import { assert, it } from "@effect/vitest";
 import { Effect, Option, Schema } from "effect";
 
 import type { TestTurnResponse } from "./TestProviderAdapter.integration.ts";
+import { gooseTurnTextFixture } from "./fixtures/providerRuntime.ts";
 import {
   gitRefExists,
   gitShowFileAtRef,
@@ -1222,6 +1223,118 @@ it.live("forwards thread.turn.interrupt to claudeAgent provider sessions", () =>
         assert.equal(interruptCalls.length, 1);
       }),
     "claudeAgent",
+  ),
+);
+
+it.live("starts a goose session on first turn when provider is requested", () =>
+  withHarness(
+    (harness) =>
+      Effect.gen(function* () {
+        yield* seedProjectAndThread(harness);
+
+        yield* harness.adapterHarness!.queueTurnResponseForNextSession({
+          events: gooseTurnTextFixture as TestTurnResponse["events"],
+        });
+
+        yield* startTurn({
+          harness,
+          commandId: "cmd-turn-start-goose-initial",
+          messageId: "msg-user-goose-initial",
+          text: "Use Goose",
+          modelSelection: {
+            provider: "goose",
+            model: "goose-auto",
+          },
+        });
+
+        const thread = yield* harness.waitForThread(
+          THREAD_ID,
+          (entry) =>
+            entry.session?.providerName === "goose" &&
+            entry.session.status === "ready" &&
+            entry.messages.some(
+              (message) =>
+                message.role === "assistant" &&
+                message.text === "Goose is ready to help.\nTask completed.\n",
+            ),
+        );
+        assert.equal(thread.session?.providerName, "goose");
+      }),
+    "goose",
+  ),
+);
+
+it.live("runs two goose turns and verifies multi-turn checkpoint state", () =>
+  withHarness(
+    (harness) =>
+      Effect.gen(function* () {
+        yield* seedProjectAndThread(harness);
+
+        yield* harness.adapterHarness!.queueTurnResponseForNextSession({
+          events: gooseTurnTextFixture as TestTurnResponse["events"],
+        });
+
+        yield* startTurn({
+          harness,
+          commandId: "cmd-turn-start-goose-multi-1",
+          messageId: "msg-user-goose-multi-1",
+          text: "First Goose turn",
+          modelSelection: {
+            provider: "goose",
+            model: "goose-auto",
+          },
+        });
+
+        yield* harness.waitForThread(
+          THREAD_ID,
+          (entry) => entry.session?.providerName === "goose" && entry.checkpoints.length === 1,
+        );
+
+        yield* harness.adapterHarness!.queueTurnResponse(THREAD_ID, {
+          events: [
+            {
+              type: "turn.started",
+              ...runtimeBase("evt-goose-multi-4", "2026-02-24T10:31:01.000Z", "goose"),
+              threadId: THREAD_ID,
+              turnId: FIXTURE_TURN_ID,
+            },
+            {
+              type: "message.delta",
+              ...runtimeBase("evt-goose-multi-5", "2026-02-24T10:31:01.050Z", "goose"),
+              threadId: THREAD_ID,
+              turnId: FIXTURE_TURN_ID,
+              delta: "Goose turn 2.\n",
+            },
+            {
+              type: "turn.completed",
+              ...runtimeBase("evt-goose-multi-6", "2026-02-24T10:31:01.100Z", "goose"),
+              threadId: THREAD_ID,
+              turnId: FIXTURE_TURN_ID,
+              status: "completed",
+            },
+          ],
+        });
+
+        yield* startTurn({
+          harness,
+          commandId: "cmd-turn-start-goose-multi-2",
+          messageId: "msg-user-goose-multi-2",
+          text: "Second Goose turn",
+        });
+
+        const thread = yield* harness.waitForThread(
+          THREAD_ID,
+          (entry) =>
+            entry.session?.providerName === "goose" &&
+            entry.checkpoints.length === 2 &&
+            entry.messages.some(
+              (message) => message.role === "assistant" && message.text === "Goose turn 2.\n",
+            ),
+        );
+        assert.equal(thread.session?.providerName, "goose");
+        assert.equal(thread.checkpoints.length, 2);
+      }),
+    "goose",
   ),
 );
 

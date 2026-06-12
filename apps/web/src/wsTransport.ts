@@ -534,11 +534,16 @@ export class WsTransport {
   ): void {
     if (this.streamCleanups.has(key)) return;
     const runnableStream = stream as Stream.Stream<T, WsTransportRpcError, never>;
-    const cancel = this.runtime.runCallback(
+    // `runCallback` can invoke `onExit` synchronously when the stream fails or
+    // completes immediately (e.g. an RPC that errors on the first pull). Declaring
+    // `cancel` with `let` (initialized to undefined) avoids a temporal-dead-zone
+    // ReferenceError when `onExit` reads it before the assignment lands.
+    let cancel: (() => void) | undefined;
+    cancel = this.runtime.runCallback(
       Stream.runForEach(runnableStream, (event) => Effect.sync(() => listener(event))),
       {
         onExit: (exit) => {
-          if (this.streamCleanups.get(key) === cancel) {
+          if (cancel !== undefined && this.streamCleanups.get(key) === cancel) {
             this.streamCleanups.delete(key);
           }
           const wasStoppedIntentionally = this.stoppingStreams.delete(key);
@@ -564,6 +569,10 @@ export class WsTransport {
         },
       },
     );
+    // `runCallback` has returned, so `cancel` is now assigned. If `onExit` fired
+    // synchronously it already deleted any entry it observed; re-registering here
+    // keeps the live cleanup, and the `cancel !== undefined` guard in `onExit`
+    // safely no-ops on that synchronous pass.
     this.streamCleanups.set(key, cancel);
   }
 

@@ -12,6 +12,7 @@ export const SETTINGS_SECTION_IDS = [
   "archived",
   "models",
   "providers",
+  "usage",
   "integrations",
   "advanced",
 ] as const;
@@ -103,12 +104,12 @@ export const SETTINGS_NAV_ITEMS: readonly SettingsNavItem[] = [
     eyebrow: "Picker visibility",
   },
   {
-    id: "integrations",
+    id: "usage",
     group: "codewit",
-    label: "Integrations",
-    description: "Connect Linear, GitHub, Jira, and other issue trackers.",
-    icon: "puzzle",
-    eyebrow: "Issue trackers",
+    label: "Usage",
+    description: "Live provider quota, credits, and rate limits.",
+    icon: "chart-1",
+    eyebrow: "Account limits",
   },
   {
     id: "advanced",

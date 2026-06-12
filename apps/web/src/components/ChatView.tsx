@@ -1598,6 +1598,11 @@ export default function ChatView({
         customModelsByProvider.auggie,
         composerModelHintByProvider.auggie,
       ),
+      goose: getAppModelOptions(
+        "goose",
+        customModelsByProvider.goose,
+        composerModelHintByProvider.goose,
+      ),
     };
     const result: Record<
       ProviderKind,
@@ -1687,7 +1692,6 @@ export default function ChatView({
       pi: piDynamicModelsQuery.data?.models ?? [],
       qwenCode: [],
       auggie: [],
-      goose: [],
       goose: [],
     }),
     [
@@ -7811,8 +7815,6 @@ export default function ChatView({
     openInCwd: threadWorkspaceCwd,
     githubRepository: githubRepositoryQuery.data?.repository ?? null,
     isGitRepo,
-    keybindings,
-    availableEditors,
     activeThreadId: activeThread.id,
     showGitActions,
     diffOpen: resolvedDiffOpen,
@@ -7832,6 +7834,7 @@ export default function ChatView({
     onNotesChange: handleNotesChange,
     onClose: () => setEnvironmentPanelOpen(false),
     ...(onOpenEditorView ? { onOpenEditorView } : {}),
+    activeProvider: selectedProvider,
     issueLinkControl: {
       threadId: activeThread.id,
       linkedIssues:

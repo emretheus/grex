@@ -51,6 +51,7 @@ import { APP_VERSION } from "../branding";
 import { useDesktopTopBarTrafficLightGutterClassName } from "../hooks/useDesktopTopBarGutter";
 import { ProviderOptionLabel } from "../components/ProviderIcon";
 import { IntegrationsSettingsPanel } from "../components/integrations/IntegrationsSettingsPanel";
+import { ProviderUsageSettingsPanel } from "../components/settings/ProviderUsageSettingsPanel";
 import {
   Autocomplete,
   AutocompleteEmpty,
@@ -2460,6 +2461,12 @@ function SettingsRouteView() {
     </div>
   );
 
+  const renderUsagePanel = () => (
+    <div className="p-6">
+      <ProviderUsageSettingsPanel />
+    </div>
+  );
+
   const renderProviderUpdatesSection = () => (
     <div ref={providerUpdatesRef} id="provider-updates">
       <SettingsSection title="Updates">
@@ -3108,6 +3115,8 @@ function SettingsRouteView() {
         return renderModelsPanel();
       case "providers":
         return renderProvidersPanel();
+      case "usage":
+        return renderUsagePanel();
       case "integrations":
         return <IntegrationsSettingsPanel />;
       case "advanced":

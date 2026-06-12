@@ -26,6 +26,8 @@ import { ServerConfig, type ServerConfigShape } from "./config";
 import { LOCAL_IMAGE_ROUTE_PATH, resolveAllowedLocalImageFile } from "./localImageFiles.ts";
 import type { ProjectFaviconResolverShape } from "./project/Services/ProjectFaviconResolver";
 import { ProjectFaviconResolver } from "./project/Services/ProjectFaviconResolver";
+import { resolveFavicon } from "./siteFaviconCache.ts";
+import { collectProviderUsageSnapshots } from "./providerUsage/index.ts";
 import type { ServerReadiness } from "./server/readiness";
 
 const PROJECT_FAVICON_CACHE_CONTROL = "public, max-age=3600";
@@ -59,6 +61,8 @@ export function makeEffectHttpRouteLayer(readiness: ServerReadiness) {
     ),
     authEffectRouteLayer,
     projectFaviconEffectRouteLayer,
+    siteFaviconEffectRouteLayer,
+    providerUsageEffectRouteLayer,
     localImageEffectRouteLayer,
     attachmentsEffectRouteLayer,
     staticAndDevEffectRouteLayer,
@@ -298,6 +302,55 @@ const projectFaviconEffectRouteLayer = HttpRouter.add(
   }).pipe(Effect.catchTag("AuthError", (error) => Effect.succeed(authErrorResponse(error)))),
 );
 
+const SITE_FAVICON_CACHE_CONTROL = "public, max-age=86400";
+
+const providerUsageEffectRouteLayer = HttpRouter.add(
+  "GET",
+  "/api/provider-usage",
+  Effect.gen(function* () {
+    yield* requireAuthenticatedRequest.pipe(
+      Effect.catchTag("AuthError", (error) => Effect.fail(error)),
+    );
+    const snapshots = yield* Effect.promise(() =>
+      collectProviderUsageSnapshots({
+        homeDir: process.env.HOME ?? process.env.USERPROFILE ?? "",
+        env: process.env,
+        platform: process.platform,
+        nowMs: Date.now(),
+      }),
+    );
+    return HttpServerResponse.jsonUnsafe(snapshots, { status: 200 });
+  }).pipe(Effect.catchTag("AuthError", (error) => Effect.succeed(authErrorResponse(error)))),
+);
+
+const siteFaviconEffectRouteLayer = HttpRouter.add(
+  "GET",
+  "/api/site-favicon",
+  Effect.gen(function* () {
+    yield* requireAuthenticatedRequest.pipe(
+      Effect.catchTag("AuthError", (error) => Effect.fail(error)),
+    );
+    const request = yield* HttpServerRequest.HttpServerRequest;
+    const url = HttpServerRequest.toURL(request);
+    if (!url) return HttpServerResponse.text("Bad Request", { status: 400 });
+    const domain = url.searchParams.get("domain");
+    if (!domain) return HttpServerResponse.text("Missing domain parameter", { status: 400 });
+    const favicon = yield* Effect.promise(() => resolveFavicon(domain));
+    if (!favicon.bytes) {
+      return HttpServerResponse.text(FALLBACK_FAVICON_SVG, {
+        status: 200,
+        contentType: "image/svg+xml",
+        headers: { "Cache-Control": SITE_FAVICON_CACHE_CONTROL },
+      });
+    }
+    return HttpServerResponse.uint8Array(favicon.bytes, {
+      status: 200,
+      contentType: favicon.contentType ?? "image/png",
+      headers: { "Cache-Control": SITE_FAVICON_CACHE_CONTROL },
+    });
+  }).pipe(Effect.catchTag("AuthError", (error) => Effect.succeed(authErrorResponse(error)))),
+);
+
 export const localImageEffectRouteLayer = HttpRouter.add(
   "GET",
   LOCAL_IMAGE_ROUTE_PATH,
@@ -485,6 +538,66 @@ const staticAndDevEffectRouteLayer = HttpRouter.add(
 
 const FALLBACK_FAVICON_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#6b728080" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-fallback="project-favicon"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-8l-2-2H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2Z"/></svg>`;
 
+const serveProviderUsage = Effect.fn(function* (input: {
+  readonly url: URL;
+  readonly respond: Respond;
+  readonly serverConfig: ServerConfigShape;
+}) {
+  if (!isLegacyTokenAuthorized({ config: input.serverConfig, url: input.url })) {
+    input.respond(401, { "Content-Type": "text/plain" }, "Unauthorized");
+    return;
+  }
+  const snapshots = yield* Effect.promise(() =>
+    collectProviderUsageSnapshots({
+      homeDir: process.env.HOME ?? process.env.USERPROFILE ?? "",
+      env: process.env as Record<string, string>,
+      platform: process.platform,
+      nowMs: Date.now(),
+    }),
+  );
+  input.respond(
+    200,
+    { "Content-Type": "application/json; charset=utf-8" },
+    JSON.stringify(snapshots),
+  );
+});
+
+const serveSiteFavicon = Effect.fn(function* (input: {
+  readonly url: URL;
+  readonly respond: Respond;
+  readonly serverConfig: ServerConfigShape;
+}) {
+  if (!isLegacyTokenAuthorized({ config: input.serverConfig, url: input.url })) {
+    input.respond(401, { "Content-Type": "text/plain" }, "Unauthorized");
+    return;
+  }
+  const domain = input.url.searchParams.get("domain");
+  if (!domain) {
+    input.respond(400, { "Content-Type": "text/plain" }, "Missing domain parameter");
+    return;
+  }
+  const favicon = yield* Effect.promise(() => resolveFavicon(domain));
+  if (!favicon.bytes) {
+    input.respond(
+      200,
+      {
+        "Content-Type": "image/svg+xml",
+        "Cache-Control": SITE_FAVICON_CACHE_CONTROL,
+      },
+      FALLBACK_FAVICON_SVG,
+    );
+    return;
+  }
+  input.respond(
+    200,
+    {
+      "Content-Type": favicon.contentType ?? "image/png",
+      "Cache-Control": SITE_FAVICON_CACHE_CONTROL,
+    },
+    favicon.bytes,
+  );
+});
+
 type Respond = (
   statusCode: number,
   headers: Record<string, string | Array<string>>,
@@ -551,6 +664,16 @@ export function createHttpRequestHandler({
             fileSystem,
             projectFaviconResolver,
           });
+          return;
+        }
+
+        if (url.pathname === "/api/site-favicon") {
+          yield* serveSiteFavicon({ url, respond, serverConfig });
+          return;
+        }
+
+        if (url.pathname === "/api/provider-usage") {
+          yield* serveProviderUsage({ url, respond, serverConfig });
           return;
         }
 

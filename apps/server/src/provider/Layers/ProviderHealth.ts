@@ -87,6 +87,9 @@ const GROK_PROVIDER = "grok" as const;
 const KILO_PROVIDER = "kilo" as const;
 const OPENCODE_PROVIDER = "opencode" as const;
 const PI_PROVIDER = "pi" as const;
+const QWENCODE_PROVIDER = "qwenCode" as const;
+const AUGGIE_PROVIDER = "auggie" as const;
+const GOOSE_PROVIDER = "goose" as const;
 type ProviderStatuses = ReadonlyArray<ServerProviderStatus>;
 
 const PROVIDERS = [
@@ -98,6 +101,9 @@ const PROVIDERS = [
   KILO_PROVIDER,
   OPENCODE_PROVIDER,
   PI_PROVIDER,
+  QWENCODE_PROVIDER,
+  AUGGIE_PROVIDER,
+  GOOSE_PROVIDER,
 ] as const satisfies ReadonlyArray<ProviderKind>;
 
 const UPDATE_OUTPUT_MAX_BYTES = 10_000;
@@ -191,6 +197,20 @@ const PACKAGE_MANAGED_PROVIDER_UPDATES: Partial<
       lockKey: "pi-native",
       strategy: "always",
     },
+  },
+  qwenCode: {
+    provider: QWENCODE_PROVIDER,
+    binaryName: "qwen",
+    npmPackageName: "@qwen-code/qwen-code",
+    homebrew: null,
+    nativeUpdate: null,
+  },
+  auggie: {
+    provider: AUGGIE_PROVIDER,
+    binaryName: "auggie",
+    npmPackageName: "@augmentcode/auggie",
+    homebrew: null,
+    nativeUpdate: null,
   },
 };
 
@@ -792,6 +812,33 @@ const runCursorCommand = (args: ReadonlyArray<string>, executable = DEFAULT_CURS
   );
 
 const runPiCommand = (args: ReadonlyArray<string>, executable = "pi") =>
+  runProviderCommand(executable, args).pipe(
+    Effect.flatMap((result) =>
+      isWindowsShellCommandMissingResult({ code: result.code, stderr: result.stderr })
+        ? Effect.fail(new Error(`spawn ${executable} ENOENT`))
+        : Effect.succeed(result),
+    ),
+  );
+
+const runQwenCodeCommand = (args: ReadonlyArray<string>, executable = "qwen") =>
+  runProviderCommand(executable, args).pipe(
+    Effect.flatMap((result) =>
+      isWindowsShellCommandMissingResult({ code: result.code, stderr: result.stderr })
+        ? Effect.fail(new Error(`spawn ${executable} ENOENT`))
+        : Effect.succeed(result),
+    ),
+  );
+
+const runAuggieCommand = (args: ReadonlyArray<string>, executable = "auggie") =>
+  runProviderCommand(executable, args).pipe(
+    Effect.flatMap((result) =>
+      isWindowsShellCommandMissingResult({ code: result.code, stderr: result.stderr })
+        ? Effect.fail(new Error(`spawn ${executable} ENOENT`))
+        : Effect.succeed(result),
+    ),
+  );
+
+const runGooseCommand = (args: ReadonlyArray<string>, executable = "goose") =>
   runProviderCommand(executable, args).pipe(
     Effect.flatMap((result) =>
       isWindowsShellCommandMissingResult({ code: result.code, stderr: result.stderr })
@@ -1548,6 +1595,213 @@ export const checkPiProviderStatus = (
     }
   });
 
+// ── QwenCode health check ───────────────────────────────────────────
+
+export const makeCheckQwenCodeProviderStatus = (
+  binaryPath?: string,
+): Effect.Effect<ServerProviderStatus, never, ChildProcessSpawner.ChildProcessSpawner> =>
+  Effect.gen(function* () {
+    const checkedAt = new Date().toISOString();
+    const executable = nonEmptyTrimmed(binaryPath) ?? "qwen";
+
+    const versionProbe = yield* runQwenCodeCommand(["--version"], executable).pipe(
+      Effect.timeoutOption(DEFAULT_TIMEOUT_MS),
+      Effect.result,
+    );
+
+    if (Result.isFailure(versionProbe)) {
+      const error = versionProbe.failure;
+      return {
+        provider: QWENCODE_PROVIDER,
+        status: "error" as const,
+        available: false,
+        authStatus: "unknown" as const,
+        checkedAt,
+        message: isCommandMissingCause(error)
+          ? "QwenCode CLI (`qwen`) is not installed or not on PATH."
+          : `Failed to execute QwenCode CLI health check: ${error instanceof Error ? error.message : String(error)}.`,
+      } satisfies ServerProviderStatus;
+    }
+
+    if (Option.isNone(versionProbe.success)) {
+      return {
+        provider: QWENCODE_PROVIDER,
+        status: "error" as const,
+        available: false,
+        authStatus: "unknown" as const,
+        checkedAt,
+        message: "QwenCode CLI is installed but failed to run. Timed out while running command.",
+      } satisfies ServerProviderStatus;
+    }
+
+    const version = versionProbe.success.value;
+    if (version.code !== 0) {
+      const detail = detailFromResult(version);
+      return {
+        provider: QWENCODE_PROVIDER,
+        status: "error" as const,
+        available: false,
+        authStatus: "unknown" as const,
+        checkedAt,
+        message: detail
+          ? `QwenCode CLI is installed but failed to run. ${detail}`
+          : "QwenCode CLI is installed but failed to run.",
+      } satisfies ServerProviderStatus;
+    }
+    const parsedVersion = parseGenericCliVersion(`${version.stdout}\n${version.stderr}`);
+
+    return {
+      provider: QWENCODE_PROVIDER,
+      status: "ready" as const,
+      available: true,
+      authStatus: "unknown" as const,
+      version: parsedVersion,
+      checkedAt,
+      message:
+        "QwenCode CLI is installed. Run `qwen` to authenticate locally, or set provider API keys before starting a session.",
+    } satisfies ServerProviderStatus;
+  });
+
+export const checkQwenCodeProviderStatus = makeCheckQwenCodeProviderStatus();
+
+// ── Auggie health check ─────────────────────────────────────────────
+
+export const makeCheckAuggieProviderStatus = (
+  binaryPath?: string,
+): Effect.Effect<ServerProviderStatus, never, ChildProcessSpawner.ChildProcessSpawner> =>
+  Effect.gen(function* () {
+    const checkedAt = new Date().toISOString();
+    const executable = nonEmptyTrimmed(binaryPath) ?? "auggie";
+
+    const versionProbe = yield* runAuggieCommand(["--version"], executable).pipe(
+      Effect.timeoutOption(DEFAULT_TIMEOUT_MS),
+      Effect.result,
+    );
+
+    if (Result.isFailure(versionProbe)) {
+      const error = versionProbe.failure;
+      return {
+        provider: AUGGIE_PROVIDER,
+        status: "error" as const,
+        available: false,
+        authStatus: "unknown" as const,
+        checkedAt,
+        message: isCommandMissingCause(error)
+          ? "Auggie CLI (`auggie`) is not installed or not on PATH."
+          : `Failed to execute Auggie CLI health check: ${error instanceof Error ? error.message : String(error)}.`,
+      } satisfies ServerProviderStatus;
+    }
+
+    if (Option.isNone(versionProbe.success)) {
+      return {
+        provider: AUGGIE_PROVIDER,
+        status: "error" as const,
+        available: false,
+        authStatus: "unknown" as const,
+        checkedAt,
+        message: "Auggie CLI is installed but failed to run. Timed out while running command.",
+      } satisfies ServerProviderStatus;
+    }
+
+    const version = versionProbe.success.value;
+    if (version.code !== 0) {
+      const detail = detailFromResult(version);
+      return {
+        provider: AUGGIE_PROVIDER,
+        status: "error" as const,
+        available: false,
+        authStatus: "unknown" as const,
+        checkedAt,
+        message: detail
+          ? `Auggie CLI is installed but failed to run. ${detail}`
+          : "Auggie CLI is installed but failed to run.",
+      } satisfies ServerProviderStatus;
+    }
+    const parsedVersion = parseGenericCliVersion(`${version.stdout}\n${version.stderr}`);
+
+    return {
+      provider: AUGGIE_PROVIDER,
+      status: "ready" as const,
+      available: true,
+      authStatus: "unknown" as const,
+      version: parsedVersion,
+      checkedAt,
+      message:
+        "Auggie CLI is installed. Run `auggie login` to authenticate locally, or set ANTHROPIC_API_KEY / OPENAI_API_KEY before starting a session.",
+    } satisfies ServerProviderStatus;
+  });
+
+export const checkAuggieProviderStatus = makeCheckAuggieProviderStatus();
+
+// ── Goose health check ──────────────────────────────────────────────
+
+export const makeCheckGooseProviderStatus = (
+  binaryPath?: string,
+): Effect.Effect<ServerProviderStatus, never, ChildProcessSpawner.ChildProcessSpawner> =>
+  Effect.gen(function* () {
+    const checkedAt = new Date().toISOString();
+    const executable = nonEmptyTrimmed(binaryPath) ?? "goose";
+
+    const versionProbe = yield* runGooseCommand(["--version"], executable).pipe(
+      Effect.timeoutOption(DEFAULT_TIMEOUT_MS),
+      Effect.result,
+    );
+
+    if (Result.isFailure(versionProbe)) {
+      const error = versionProbe.failure;
+      return {
+        provider: GOOSE_PROVIDER,
+        status: "error" as const,
+        available: false,
+        authStatus: "unknown" as const,
+        checkedAt,
+        message: isCommandMissingCause(error)
+          ? "Goose CLI (`goose`) is not installed or not on PATH."
+          : `Failed to execute Goose CLI health check: ${error instanceof Error ? error.message : String(error)}.`,
+      } satisfies ServerProviderStatus;
+    }
+
+    if (Option.isNone(versionProbe.success)) {
+      return {
+        provider: GOOSE_PROVIDER,
+        status: "error" as const,
+        available: false,
+        authStatus: "unknown" as const,
+        checkedAt,
+        message: "Goose CLI is installed but failed to run. Timed out while running command.",
+      } satisfies ServerProviderStatus;
+    }
+
+    const version = versionProbe.success.value;
+    if (version.code !== 0) {
+      const detail = detailFromResult(version);
+      return {
+        provider: GOOSE_PROVIDER,
+        status: "error" as const,
+        available: false,
+        authStatus: "unknown" as const,
+        checkedAt,
+        message: detail
+          ? `Goose CLI is installed but failed to run. ${detail}`
+          : "Goose CLI is installed but failed to run.",
+      } satisfies ServerProviderStatus;
+    }
+    const parsedVersion = parseGenericCliVersion(`${version.stdout}\n${version.stderr}`);
+
+    return {
+      provider: GOOSE_PROVIDER,
+      status: "ready" as const,
+      available: true,
+      authStatus: "unknown" as const,
+      version: parsedVersion,
+      checkedAt,
+      message:
+        "Goose CLI is installed. Run `goose` to authenticate locally, or set provider API keys (e.g. ANTHROPIC_API_KEY, OPENAI_API_KEY) before starting a session.",
+    } satisfies ServerProviderStatus;
+  });
+
+export const checkGooseProviderStatus = makeCheckGooseProviderStatus();
+
 // ── Cursor health check ─────────────────────────────────────────────
 
 export const makeCheckCursorProviderStatus = (
@@ -1776,6 +2030,12 @@ export const ProviderHealthLive = Layer.effect(
           return settings.providers.opencode.binaryPath;
         case "pi":
           return settings.providers.pi.binaryPath;
+        case "qwenCode":
+          return settings.providers.qwenCode.binaryPath;
+        case "auggie":
+          return settings.providers.auggie.binaryPath;
+        case "goose":
+          return settings.providers.goose.binaryPath;
       }
     };
 
@@ -1903,6 +2163,9 @@ export const ProviderHealthLive = Layer.effect(
                 settings.providers.pi.agentDir,
                 settings.providers.pi.binaryPath,
               ),
+              makeCheckQwenCodeProviderStatus(settings.providers.qwenCode.binaryPath),
+              makeCheckAuggieProviderStatus(settings.providers.auggie.binaryPath),
+              makeCheckGooseProviderStatus(settings.providers.goose.binaryPath),
             ],
             {
               concurrency: "unbounded",

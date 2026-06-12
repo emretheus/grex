@@ -475,13 +475,13 @@ function TabSwitcher(props: { active: GitPanelTab; onChange: (tab: GitPanelTab) 
           type="button"
           onClick={() => props.onChange(tab)}
           className={cn(
-            "rounded px-2 py-0.5 text-[11px] font-medium capitalize leading-none transition-colors",
+            "rounded px-2 py-0.5 text-[11px] font-medium leading-none transition-colors",
             props.active === tab
               ? "bg-background text-foreground shadow-sm"
               : "text-muted-foreground hover:text-foreground",
           )}
         >
-          {tab}
+          {tab === "history" ? "GitGraph" : "Changes"}
         </button>
       ))}
     </div>

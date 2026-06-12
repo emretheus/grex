@@ -56,6 +56,7 @@ import Migration0040 from "./Migrations/040_ProjectionThreadsPinnedMessagesNotes
 import Migration0041 from "./Migrations/041_ProjectionProjectsPinned.ts";
 import Migration0042 from "./Migrations/042_ProjectionThreadsLinkedIssue.ts";
 import Migration0043 from "./Migrations/043_NormalizeLinkedIssuesArray.ts";
+import Migration0044 from "./Migrations/044_ProjectionThreadsMarkers.ts";
 
 /**
  * Migration loader with all migrations defined inline.
@@ -111,6 +112,7 @@ export const migrationEntries = [
   [41, "ProjectionProjectsPinned", Migration0041],
   [42, "ProjectionThreadsLinkedIssue", Migration0042],
   [43, "NormalizeLinkedIssuesArray", Migration0043],
+  [44, "ProjectionThreadsMarkers", Migration0044],
 ] as const;
 
 export const makeMigrationLoader = (throughId?: number) =>

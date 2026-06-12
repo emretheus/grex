@@ -121,6 +121,13 @@ export const ServerProviderUsageLine = Schema.Struct({
   subtitle: Schema.optional(TrimmedNonEmptyString),
 });
 export type ServerProviderUsageLine = typeof ServerProviderUsageLine.Type;
+export const ServerProviderUsageStatus = Schema.Literals([
+  "ok",
+  "needs-auth",
+  "error",
+  "unsupported",
+] as const);
+export type ServerProviderUsageStatus = typeof ServerProviderUsageStatus.Type;
 
 export const ServerProviderUsageSnapshot = Schema.Struct({
   provider: ProviderKind,
@@ -128,6 +135,9 @@ export const ServerProviderUsageSnapshot = Schema.Struct({
   limits: Schema.Array(ServerProviderUsageLimit),
   usageLines: Schema.Array(ServerProviderUsageLine),
   source: TrimmedNonEmptyString,
+  status: Schema.optional(ServerProviderUsageStatus),
+  planName: Schema.optional(TrimmedNonEmptyString),
+  detail: Schema.optional(TrimmedNonEmptyString),
 });
 export type ServerProviderUsageSnapshot = typeof ServerProviderUsageSnapshot.Type;
 
@@ -139,6 +149,14 @@ export type ServerGetProviderUsageSnapshotInput = typeof ServerGetProviderUsageS
 
 export const ServerGetProviderUsageSnapshotResult = Schema.NullOr(ServerProviderUsageSnapshot);
 export type ServerGetProviderUsageSnapshotResult = typeof ServerGetProviderUsageSnapshotResult.Type;
+
+export const ServerListProviderUsageInput = Schema.Struct({
+  forceRefresh: Schema.optional(Schema.Boolean),
+});
+export type ServerListProviderUsageInput = typeof ServerListProviderUsageInput.Type;
+
+export const ServerListProviderUsageResult = Schema.Array(ServerProviderUsageSnapshot);
+export type ServerListProviderUsageResult = typeof ServerListProviderUsageResult.Type;
 
 export const ServerDiagnosticsMemory = Schema.Struct({
   rssBytes: NonNegativeInt,

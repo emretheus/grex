@@ -15,6 +15,7 @@ import { makeKiloAdapterLive, makeOpenCodeAdapterLive } from "./Layers/OpenCodeA
 import { makePiAdapterLive } from "./Layers/PiAdapter";
 import { makeQwenCodeAdapterLive } from "./Layers/QwenCodeAdapter";
 import { makeAuggieAdapterLive } from "./Layers/AuggieAdapter";
+import { makeGooseAdapterLive } from "./Layers/GooseAdapter";
 import { ProviderAdapterRegistryLive } from "./Layers/ProviderAdapterRegistry";
 import { ProviderDiscoveryServiceLive } from "./Layers/ProviderDiscoveryService";
 import { makeProviderServiceLive } from "./Layers/ProviderService";
@@ -93,6 +94,7 @@ export function makeServerProviderLayer(): Layer.Layer<
       Layer.provide(piAdapterLayer),
       Layer.provide(qwenCodeAdapterLayer),
       Layer.provide(auggieAdapterLayer),
+      Layer.provide(gooseAdapterLayer),
       Layer.provideMerge(providerSessionDirectoryLayer),
     );
     const providerServiceLayer = makeProviderServiceLive(

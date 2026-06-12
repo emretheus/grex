@@ -110,6 +110,111 @@ export const codexTurnToolFixture = [
   },
 ] satisfies ReadonlyArray<LegacyProviderRuntimeEvent>;
 
+const GOOSE_PROVIDER = "goose" as const;
+
+function gooseBaseEvent(
+  eventId: string,
+  createdAt: string,
+): Pick<LegacyProviderRuntimeEvent, "eventId" | "provider" | "sessionId" | "createdAt"> {
+  return {
+    eventId: EventId.makeUnsafe(eventId),
+    provider: GOOSE_PROVIDER,
+    sessionId: SESSION_ID,
+    createdAt,
+  };
+}
+
+export const gooseTurnTextFixture = [
+  {
+    type: "turn.started",
+    ...gooseBaseEvent("evt-goose-1", "2026-02-23T00:10:00.000Z"),
+    threadId: THREAD_ID,
+    turnId: TURN_ID,
+    payload: {},
+  },
+  {
+    type: "content.delta",
+    ...gooseBaseEvent("evt-goose-2", "2026-02-23T00:10:00.100Z"),
+    threadId: THREAD_ID,
+    turnId: TURN_ID,
+    payload: {
+      streamKind: "assistant_text",
+      delta: "Goose is ready to help.\n",
+    },
+  },
+  {
+    type: "content.delta",
+    ...gooseBaseEvent("evt-goose-3", "2026-02-23T00:10:00.200Z"),
+    threadId: THREAD_ID,
+    turnId: TURN_ID,
+    payload: {
+      streamKind: "assistant_text",
+      delta: "Task completed.\n",
+    },
+  },
+  {
+    type: "turn.completed",
+    ...gooseBaseEvent("evt-goose-4", "2026-02-23T00:10:00.300Z"),
+    threadId: THREAD_ID,
+    turnId: TURN_ID,
+    payload: {
+      state: "completed",
+    },
+  },
+] satisfies ReadonlyArray<LegacyProviderRuntimeEvent>;
+
+export const gooseTurnToolFixture = [
+  {
+    type: "turn.started",
+    ...gooseBaseEvent("evt-goose-11", "2026-02-23T00:11:00.000Z"),
+    threadId: THREAD_ID,
+    turnId: TURN_ID,
+    payload: {},
+  },
+  {
+    type: "item.started",
+    ...gooseBaseEvent("evt-goose-12", "2026-02-23T00:11:00.100Z"),
+    threadId: THREAD_ID,
+    turnId: TURN_ID,
+    payload: {
+      itemType: "command_execution",
+      title: "Running goose task",
+      detail: "goose run build",
+    },
+  },
+  {
+    type: "item.completed",
+    ...gooseBaseEvent("evt-goose-13", "2026-02-23T00:11:00.200Z"),
+    threadId: THREAD_ID,
+    turnId: TURN_ID,
+    payload: {
+      itemType: "command_execution",
+      status: "completed",
+      title: "Running goose task",
+      detail: "goose run build",
+    },
+  },
+  {
+    type: "content.delta",
+    ...gooseBaseEvent("evt-goose-14", "2026-02-23T00:11:00.300Z"),
+    threadId: THREAD_ID,
+    turnId: TURN_ID,
+    payload: {
+      streamKind: "assistant_text",
+      delta: "Build completed successfully.\n",
+    },
+  },
+  {
+    type: "turn.completed",
+    ...gooseBaseEvent("evt-goose-15", "2026-02-23T00:11:00.400Z"),
+    threadId: THREAD_ID,
+    turnId: TURN_ID,
+    payload: {
+      state: "completed",
+    },
+  },
+] satisfies ReadonlyArray<LegacyProviderRuntimeEvent>;
+
 export const codexTurnApprovalFixture = [
   {
     type: "turn.started",
