@@ -77,6 +77,7 @@ const makeProjectionThreadRepository = Effect.gen(function* () {
           pinned_messages_json,
           thread_markers_json,
           notes,
+          latest_user_message_at,
           pending_approval_count,
           pending_user_input_count,
           has_actionable_proposed_plan,

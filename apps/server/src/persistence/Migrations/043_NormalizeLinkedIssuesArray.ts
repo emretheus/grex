@@ -45,7 +45,7 @@ export default Effect.gen(function* () {
   const eventRows = yield* sql<{ sequence: number; payload_json: string }>`
     SELECT sequence, payload_json
     FROM orchestration_events
-    WHERE type IN ('thread.created', 'thread.meta-updated')
+    WHERE event_type IN ('thread.created', 'thread.meta-updated')
       AND payload_json LIKE '%"linkedIssue"%'
   `;
 

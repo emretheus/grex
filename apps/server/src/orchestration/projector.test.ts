@@ -97,7 +97,7 @@ describe("orchestration projector", () => {
         forkSourceThreadId: null,
         sidechatSourceThreadId: null,
         lastKnownPr: null,
-        linkedIssue: null,
+        linkedIssues: [],
         latestTurn: null,
         createdAt: now,
         updatedAt: now,
