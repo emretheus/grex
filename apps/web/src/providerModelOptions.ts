@@ -219,6 +219,12 @@ export function buildNextProviderOptions(
       ...patch,
     } as AuggieModelOptions;
   }
+  if (provider === "goose") {
+    return {
+      ...(modelOptions as GooseModelOptions | undefined),
+      ...patch,
+    } as GooseModelOptions;
+  }
   return {
     ...(modelOptions as PiModelOptions | undefined),
     ...patch,

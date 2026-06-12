@@ -47,6 +47,7 @@ const makeProviderAdapterRegistry = (options?: ProviderAdapterRegistryLiveOption
             yield* PiAdapter,
             yield* QwenCodeAdapter,
             yield* AuggieAdapter,
+            yield* GooseAdapter,
           ];
     const byProvider = new Map(adapters.map((adapter) => [adapter.provider, adapter]));
 

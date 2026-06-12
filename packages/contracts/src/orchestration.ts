@@ -23,6 +23,7 @@ import {
   ProjectId,
   ProviderItemId,
   ThreadId,
+  ThreadMarkerId,
   TrimmedNonEmptyString,
   TurnId,
 } from "./baseSchemas";
@@ -300,6 +301,9 @@ export const CHAT_ASSISTANT_SELECTION_TEXT_MAX_CHARS = 4_000;
 export const THREAD_NOTES_MAX_CHARS = 16_384;
 export const PINNED_MESSAGES_MAX_COUNT = 100;
 export const PINNED_MESSAGE_LABEL_MAX_CHARS = 60;
+export const THREAD_MARKERS_MAX_COUNT = 200;
+export const THREAD_MARKER_LABEL_MAX_CHARS = 60;
+export const THREAD_MARKER_SELECTED_TEXT_MAX_CHARS = 4_000;
 // Correlation id is command id by design in this model.
 export const CorrelationId = CommandId;
 export type CorrelationId = typeof CorrelationId.Type;
@@ -565,6 +569,37 @@ export const ThreadPinnedMessages = Schema.Array(PinnedMessage).check(
 );
 export type ThreadPinnedMessages = typeof ThreadPinnedMessages.Type;
 
+export const ThreadMarkerStyle = Schema.Literals(["highlight", "underline"]);
+export type ThreadMarkerStyle = typeof ThreadMarkerStyle.Type;
+export const ThreadMarkerColor = Schema.Literals(["yellow", "blue", "green", "pink"]);
+export type ThreadMarkerColor = typeof ThreadMarkerColor.Type;
+export const ThreadMarkerLabel = TrimmedNonEmptyString.check(
+  Schema.isMaxLength(THREAD_MARKER_LABEL_MAX_CHARS),
+);
+export type ThreadMarkerLabel = typeof ThreadMarkerLabel.Type;
+export const ThreadMarker = Schema.Struct({
+  id: ThreadMarkerId,
+  messageId: MessageId,
+  startOffset: NonNegativeInt,
+  endOffset: NonNegativeInt,
+  selectedText: TrimmedNonEmptyString.check(
+    Schema.isMaxLength(THREAD_MARKER_SELECTED_TEXT_MAX_CHARS),
+  ),
+  style: ThreadMarkerStyle,
+  color: ThreadMarkerColor,
+  label: Schema.optional(Schema.NullOr(ThreadMarkerLabel)).pipe(
+    Schema.withDecodingDefault(() => null),
+  ),
+  done: Schema.optional(Schema.Boolean).pipe(Schema.withDecodingDefault(() => false)),
+  createdAt: IsoDateTime,
+  updatedAt: IsoDateTime,
+});
+export type ThreadMarker = typeof ThreadMarker.Type;
+export const ThreadMarkers = Schema.Array(ThreadMarker).check(
+  Schema.isMaxLength(THREAD_MARKERS_MAX_COUNT),
+);
+export type ThreadMarkers = typeof ThreadMarkers.Type;
+
 export const OrchestrationThread = Schema.Struct({
   id: ThreadId,
   projectId: ProjectId,
@@ -624,6 +659,7 @@ export const OrchestrationThread = Schema.Struct({
   handoff: Schema.NullOr(ThreadHandoff).pipe(Schema.withDecodingDefault(() => null)),
   pinnedMessages: Schema.optional(ThreadPinnedMessages),
   notes: Schema.optional(ThreadNotes),
+  threadMarkers: Schema.optional(ThreadMarkers),
   messages: Schema.Array(OrchestrationMessage),
   proposedPlans: Schema.Array(OrchestrationProposedPlan).pipe(Schema.withDecodingDefault(() => [])),
   activities: Schema.Array(OrchestrationThreadActivity),
@@ -1108,6 +1144,44 @@ const ThreadActivityAppendCommand = Schema.Struct({
   createdAt: IsoDateTime,
 });
 
+const ThreadMarkerAddCommand = Schema.Struct({
+  type: Schema.Literal("thread.marker.add"),
+  commandId: CommandId,
+  threadId: ThreadId,
+  markerId: ThreadMarkerId,
+  messageId: MessageId,
+  startOffset: NonNegativeInt,
+  endOffset: NonNegativeInt,
+  selectedText: TrimmedNonEmptyString.check(
+    Schema.isMaxLength(THREAD_MARKER_SELECTED_TEXT_MAX_CHARS),
+  ),
+  style: ThreadMarkerStyle,
+  color: ThreadMarkerColor,
+});
+
+const ThreadMarkerRemoveCommand = Schema.Struct({
+  type: Schema.Literal("thread.marker.remove"),
+  commandId: CommandId,
+  threadId: ThreadId,
+  markerId: ThreadMarkerId,
+});
+
+const ThreadMarkerDoneSetCommand = Schema.Struct({
+  type: Schema.Literal("thread.marker.done.set"),
+  commandId: CommandId,
+  threadId: ThreadId,
+  markerId: ThreadMarkerId,
+  done: Schema.Boolean,
+});
+
+const ThreadMarkerLabelSetCommand = Schema.Struct({
+  type: Schema.Literal("thread.marker.label.set"),
+  commandId: CommandId,
+  threadId: ThreadId,
+  markerId: ThreadMarkerId,
+  label: Schema.NullOr(ThreadMarkerLabel),
+});
+
 const DispatchableClientOrchestrationCommand = Schema.Union([
   ProjectCreateCommand,
   ProjectMetaUpdateCommand,
@@ -1133,6 +1207,10 @@ const DispatchableClientOrchestrationCommand = Schema.Union([
   ThreadMessageEditAndResendCommand,
   ThreadActivityAppendCommand,
   ThreadSessionStopCommand,
+  ThreadMarkerAddCommand,
+  ThreadMarkerRemoveCommand,
+  ThreadMarkerDoneSetCommand,
+  ThreadMarkerLabelSetCommand,
 ]);
 export type DispatchableClientOrchestrationCommand =
   typeof DispatchableClientOrchestrationCommand.Type;
@@ -1162,6 +1240,10 @@ export const ClientOrchestrationCommand = Schema.Union([
   ThreadMessageEditAndResendCommand,
   ThreadActivityAppendCommand,
   ThreadSessionStopCommand,
+  ThreadMarkerAddCommand,
+  ThreadMarkerRemoveCommand,
+  ThreadMarkerDoneSetCommand,
+  ThreadMarkerLabelSetCommand,
 ]);
 export type ClientOrchestrationCommand = typeof ClientOrchestrationCommand.Type;
 
@@ -1294,6 +1376,10 @@ export const OrchestrationEventType = Schema.Literals([
   "thread.proposed-plan-upserted",
   "thread.turn-diff-completed",
   "thread.activity-appended",
+  "thread.marker-added",
+  "thread.marker-removed",
+  "thread.marker-done-set",
+  "thread.marker-label-set",
 ]);
 export type OrchestrationEventType = typeof OrchestrationEventType.Type;
 
@@ -1374,6 +1460,7 @@ export const ThreadCreatedPayload = Schema.Struct({
     Schema.withDecodingDefault(() => null),
   ),
   linkedIssues: Schema.optional(LinkedIssues).pipe(Schema.withDecodingDefault(() => [])),
+  threadMarkers: Schema.optional(ThreadMarkers),
   handoff: Schema.NullOr(ThreadHandoff).pipe(Schema.withDecodingDefault(() => null)),
   createdAt: IsoDateTime,
   updatedAt: IsoDateTime,
@@ -1420,6 +1507,7 @@ export const ThreadMetaUpdatedPayload = Schema.Struct({
   linkedIssues: Schema.optional(LinkedIssues),
   pinnedMessages: Schema.optional(ThreadPinnedMessages),
   notes: Schema.optional(ThreadNotes),
+  threadMarkers: Schema.optional(ThreadMarkers),
   updatedAt: IsoDateTime,
 });
 
@@ -1586,6 +1674,32 @@ export const ThreadTurnDiffCompletedPayload = Schema.Struct({
 export const ThreadActivityAppendedPayload = Schema.Struct({
   threadId: ThreadId,
   activity: OrchestrationThreadActivity,
+});
+
+export const ThreadMarkerAddedPayload = Schema.Struct({
+  threadId: ThreadId,
+  marker: ThreadMarker,
+  updatedAt: IsoDateTime,
+});
+
+export const ThreadMarkerRemovedPayload = Schema.Struct({
+  threadId: ThreadId,
+  markerId: ThreadMarkerId,
+  updatedAt: IsoDateTime,
+});
+
+export const ThreadMarkerDoneSetPayload = Schema.Struct({
+  threadId: ThreadId,
+  markerId: ThreadMarkerId,
+  done: Schema.Boolean,
+  updatedAt: IsoDateTime,
+});
+
+export const ThreadMarkerLabelSetPayload = Schema.Struct({
+  threadId: ThreadId,
+  markerId: ThreadMarkerId,
+  label: Schema.NullOr(ThreadMarkerLabel),
+  updatedAt: IsoDateTime,
 });
 
 export const OrchestrationEventMetadata = Schema.Struct({
@@ -1759,6 +1873,26 @@ export const OrchestrationEvent = Schema.Union([
     ...EventBaseFields,
     type: Schema.Literal("thread.activity-appended"),
     payload: ThreadActivityAppendedPayload,
+  }),
+  Schema.Struct({
+    ...EventBaseFields,
+    type: Schema.Literal("thread.marker-added"),
+    payload: ThreadMarkerAddedPayload,
+  }),
+  Schema.Struct({
+    ...EventBaseFields,
+    type: Schema.Literal("thread.marker-removed"),
+    payload: ThreadMarkerRemovedPayload,
+  }),
+  Schema.Struct({
+    ...EventBaseFields,
+    type: Schema.Literal("thread.marker-done-set"),
+    payload: ThreadMarkerDoneSetPayload,
+  }),
+  Schema.Struct({
+    ...EventBaseFields,
+    type: Schema.Literal("thread.marker-label-set"),
+    payload: ThreadMarkerLabelSetPayload,
   }),
 ]);
 export type OrchestrationEvent = typeof OrchestrationEvent.Type;
