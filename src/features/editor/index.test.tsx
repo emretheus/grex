@@ -106,6 +106,16 @@ vi.mock("@/lib/monaco-runtime", () => ({
 	syncVirtualFile: runtimeMocks.syncVirtualFile,
 }));
 
+// The real `convertFileSrc` reads `window.__TAURI_INTERNALS__` synchronously and
+// throws in jsdom — stub it so the image preview renders a deterministic URL.
+vi.mock("@/lib/ipc", async (importOriginal) => {
+	const actual = await importOriginal<typeof import("@/lib/ipc")>();
+	return {
+		...actual,
+		convertFileSrc: (path: string) => `asset://localhost/${path}`,
+	};
+});
+
 // Avoid loading the heavy streamdown bundle in jsdom — render a stub that
 // just exposes the source so we can assert preview content was passed in.
 vi.mock("@/components/streamdown-loader", () => ({
@@ -806,5 +816,67 @@ describe("WorkspaceEditorSurface", () => {
 			expect(screen.getByLabelText("Editor canvas")).toBeInTheDocument();
 			expect(screen.getByText("No such file")).toBeInTheDocument();
 		});
+	});
+
+	it("renders an image preview instead of Monaco for image files", async () => {
+		const onChangeSpy = vi.fn();
+		const onError = vi.fn();
+
+		render(
+			<TooltipProvider delayDuration={0}>
+				<EditorSurfaceHarness
+					initialSession={{
+						kind: "diff",
+						path: "/tmp/codewit-workspace/assets/logo.png",
+						fileStatus: "M",
+					}}
+					onChangeSpy={onChangeSpy}
+					onError={onError}
+				/>
+			</TooltipProvider>,
+		);
+
+		const img = await screen.findByAltText(
+			"Preview of /tmp/codewit-workspace/assets/logo.png",
+		);
+		expect(img).toHaveAttribute(
+			"src",
+			"asset://localhost//tmp/codewit-workspace/assets/logo.png",
+		);
+		// The change status is surfaced so the diff context isn't lost.
+		expect(screen.getByText("Modified")).toBeInTheDocument();
+
+		// Crucially: images must NOT touch Monaco or the (text-only) file readers,
+		// which throw on binary bytes.
+		expect(runtimeMocks.createFileEditor).not.toHaveBeenCalled();
+		expect(runtimeMocks.createDiffEditor).not.toHaveBeenCalled();
+		expect(apiMocks.readEditorFile).not.toHaveBeenCalled();
+		expect(apiMocks.readFileAtRef).not.toHaveBeenCalled();
+		expect(onError).not.toHaveBeenCalled();
+	});
+
+	it("shows a deleted notice for removed images (no broken <img>)", async () => {
+		const onChangeSpy = vi.fn();
+
+		render(
+			<TooltipProvider delayDuration={0}>
+				<EditorSurfaceHarness
+					initialSession={{
+						kind: "diff",
+						path: "/tmp/codewit-workspace/assets/old-icon.svg",
+						fileStatus: "D",
+					}}
+					onChangeSpy={onChangeSpy}
+				/>
+			</TooltipProvider>,
+		);
+
+		await waitFor(() => {
+			expect(
+				screen.getByText("This image was deleted in this change."),
+			).toBeInTheDocument();
+		});
+		expect(screen.queryByAltText(/Preview of/)).not.toBeInTheDocument();
+		expect(runtimeMocks.createDiffEditor).not.toHaveBeenCalled();
 	});
 });

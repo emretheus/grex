@@ -35,6 +35,7 @@ import {
 	type InspectorFileItem,
 	isMarkdownPath,
 } from "@/lib/editor-session";
+import { isImageExtensionPath } from "@/lib/path-util";
 import {
 	codewitQueryKeys,
 	workspaceChangesQueryOptions,
@@ -43,6 +44,8 @@ import {
 import { cn } from "@/lib/utils";
 import { describeUnknownError } from "@/lib/workspace-helpers";
 import { useRouterSelectedWorkspaceId } from "@/router/use-router-selection";
+
+import { EditorImagePreview } from "./image-preview";
 
 // Refined segmented-tab look: no tray, soft glassy pill on the active state.
 // Hover only changes text color (no bg) — otherwise hover-on-inactive sits next
@@ -462,6 +465,10 @@ export function WorkspaceEditorSurface({
 		editorSession.modifiedText !== undefined;
 	const closeLabel =
 		editorSession.kind === "diff" ? "Close diff view" : "Close editor view";
+	// Image files render as a picture (asset protocol), never through Monaco.
+	// This bypasses both the text-loader (which throws on binary bytes) and the
+	// editor/diff controllers below.
+	const isImage = isImageExtensionPath(editorSession.path);
 	const isMarkdown = isMarkdownPath(editorSession.path);
 	const viewMode: EditorViewMode = isMarkdown
 		? (editorSession.viewMode ?? "source")
@@ -562,6 +569,11 @@ export function WorkspaceEditorSurface({
 	}, [filteredWorkspaceFiles.length, selectedSearchIndex]);
 
 	useEffect(() => {
+		// Images are rendered by <EditorImagePreview> from the asset protocol —
+		// reading their bytes as text here would throw and surface a false error.
+		if (isImage) {
+			return;
+		}
 		if (
 			(editorSession.kind === "file" && canRenderFile) ||
 			(editorSession.kind === "diff" && canRenderDiff)
@@ -631,7 +643,7 @@ export function WorkspaceEditorSurface({
 		return () => {
 			cancelled = true;
 		};
-	}, [canRenderDiff, canRenderFile, editorSession, workspaceRootPath]);
+	}, [canRenderDiff, canRenderFile, editorSession, workspaceRootPath, isImage]);
 
 	// Reclaim focus on mount AND on every file/kind switch — without it, a click
 	// in the changes list (a tabIndex={0} row outside any focus-scope) leaves
@@ -705,6 +717,18 @@ export function WorkspaceEditorSurface({
 	useLayoutEffect(() => {
 		const host = editorHostRef.current;
 		if (!host) {
+			return;
+		}
+
+		// ── Image files: no Monaco. Tear down any controller left over from a
+		// previous text file in this surface and let <EditorImagePreview> render.
+		if (isImage) {
+			disposeControllers({
+				fileControllerRef,
+				diffControllerRef,
+				changeSubscriptionRef,
+			});
+			host.replaceChildren();
 			return;
 		}
 
@@ -886,7 +910,13 @@ export function WorkspaceEditorSurface({
 			// changes), and the separate unmount effect handles final cleanup.
 			disposed = true;
 		};
-	}, [canRenderDiff, canRenderFile, editorSession.kind, editorSession.path]);
+	}, [
+		canRenderDiff,
+		canRenderFile,
+		editorSession.kind,
+		editorSession.path,
+		isImage,
+	]);
 
 	useEffect(() => {
 		if (
@@ -1223,9 +1253,11 @@ export function WorkspaceEditorSurface({
 					ref={editorHostRef}
 					aria-label="Editor canvas"
 					className="h-full min-h-0 flex-1"
-					aria-hidden={showPreview}
-					style={showPreview ? { visibility: "hidden" } : undefined}
+					aria-hidden={showPreview || isImage}
+					style={showPreview || isImage ? { visibility: "hidden" } : undefined}
 				/>
+
+				{isImage && <EditorImagePreview session={editorSession} />}
 
 				{showPreview && (
 					<div
