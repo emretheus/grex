@@ -64,8 +64,7 @@ export const resolveGooseAcpAuthMethodId = (
       errorMessage: "Goose ACP authentication is unavailable.",
       data: {
         authMethods: [...authMethodIds],
-        detail:
-          "Run `goose` to authenticate locally, or set provider API keys (e.g. ANTHROPIC_API_KEY, OPENAI_API_KEY).",
+        detail: "Run `goose` to authenticate locally, or set provider API keys (e.g. ANTHROPIC_API_KEY, OPENAI_API_KEY).",
       },
     });
   });

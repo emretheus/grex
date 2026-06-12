@@ -12,7 +12,9 @@ import {
   type GooseAcpRuntimeSettings,
 } from "./GooseAcpSupport.ts";
 
-function initializeWithAuthMethods(authMethodIds: string[]): EffectAcpSchema.InitializeResponse {
+function initializeWithAuthMethods(
+  authMethodIds: string[],
+): EffectAcpSchema.InitializeResponse {
   return {
     authMethods: authMethodIds.map((id) => ({ id, name: id, description: id })),
   } as unknown as EffectAcpSchema.InitializeResponse;
@@ -38,20 +40,30 @@ describe("resolveGooseAcpAuthMethodId", () => {
   it("uses cached_token when available", async () => {
     await expect(
       Effect.runPromise(
-        resolveGooseAcpAuthMethodId(initializeWithAuthMethods(["cached_token", "oauth"])),
+        resolveGooseAcpAuthMethodId(
+          initializeWithAuthMethods(["cached_token", "oauth"]),
+        ),
       ),
     ).resolves.toBe("cached_token");
   });
 
   it("falls back to oauth when cached_token is unavailable", async () => {
     await expect(
-      Effect.runPromise(resolveGooseAcpAuthMethodId(initializeWithAuthMethods(["oauth"]))),
+      Effect.runPromise(
+        resolveGooseAcpAuthMethodId(
+          initializeWithAuthMethods(["oauth"]),
+        ),
+      ),
     ).resolves.toBe("oauth");
   });
 
   it("fails when no known auth methods are available", async () => {
     await expect(
-      Effect.runPromise(resolveGooseAcpAuthMethodId(initializeWithAuthMethods(["unknown"]))),
+      Effect.runPromise(
+        resolveGooseAcpAuthMethodId(
+          initializeWithAuthMethods(["unknown"]),
+        ),
+      ),
     ).rejects.toThrow();
   });
 });

@@ -256,7 +256,9 @@ export function EnvironmentPanel({
             linkedIssues={issueLinkControl.linkedIssues}
             hasServerThread={issueLinkControl.hasServerThread}
             variant="panel"
-            {...(issueLinkControl.projectPath ? { projectPath: issueLinkControl.projectPath } : {})}
+            {...(issueLinkControl.projectPath
+              ? { projectPath: issueLinkControl.projectPath }
+              : {})}
           />
         </>
       ) : null}

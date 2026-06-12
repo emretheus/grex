@@ -855,7 +855,9 @@ export function makeGooseAdapter(
         return c !== undefined && !c.stopped;
       });
 
-    const getComposerCapabilities: NonNullable<GooseAdapterShape["getComposerCapabilities"]> = () =>
+    const getComposerCapabilities: NonNullable<
+      GooseAdapterShape["getComposerCapabilities"]
+    > = () =>
       Effect.succeed({
         provider: PROVIDER,
         supportsSkillMentions: false,
