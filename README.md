@@ -1,0 +1,71 @@
+<div align="center">
+
+# Codewit
+
+**One minimal desktop app for every AI coding agent.**
+
+Codewit is an open, multi-provider GUI for coding agents — run Claude Code, Codex,
+Cursor, Gemini, Grok, Kilo Code, OpenCode and Pi from a single clean, local-first
+interface, with built-in chat, diff review, a file explorer + editor, and terminals.
+
+[![Latest release](https://img.shields.io/github/v/release/emretheus/codewit?label=release&labelColor=1c2933&color=0158fd)](https://github.com/emretheus/codewit/releases)
+[![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-1c2933.svg?labelColor=1c2933&color=666)](./LICENSE)
+[![CI](https://img.shields.io/github/actions/workflow/status/emretheus/codewit/ci.yml?branch=main&labelColor=1c2933)](https://github.com/emretheus/codewit/actions)
+
+[Download](https://github.com/emretheus/codewit/releases) ·
+[Contributing](./CONTRIBUTING.md)
+
+</div>
+
+## Why Codewit
+
+Most coding-agent tools lock you into a single model. Codewit is **multi-provider by
+design** — pick the agent that fits the task, switch between them without losing your
+conversation, and keep everything in one fast, local-first desktop app.
+
+- **One app, many agents** — no juggling separate terminals or apps per provider.
+- **See and edit code in-app** — a real file explorer and editable editor.
+- **Review before you ship** — inline diffs, working-tree changes, and git actions in one place.
+- **Local-first** — state lives in a local SQLite database on your machine.
+
+## Supported agents
+
+Codewit auto-detects the provider CLIs you already have installed:
+
+| Agent | Provider |
+| --- | --- |
+| **Claude Code** | Anthropic |
+| **Codex** | OpenAI |
+| **OpenCode** | OpenCode |
+
+> More providers are on the way.
+
+## Install
+
+| Platform | Download |
+| --- | --- |
+| **macOS** (Apple Silicon / Intel) | [Releases page](https://github.com/emretheus/codewit/releases/latest) |
+| **Windows** | [Releases page](https://github.com/emretheus/codewit/releases/latest) |
+
+## Features
+
+- 🔀 **Multi-provider chat** — multiple coding agents, one interface.
+- 📂 **File explorer + editor** — browse and edit files in-app (Monaco).
+- 🔍 **Diff review** — per-turn diffs and working-tree changes.
+- 🌿 **Git + worktrees** — commit, branch, and open PRs; isolate work in git worktrees.
+- 🖥️ **Integrated terminals** — run commands alongside the agent.
+- 🕰️ **Checkpointing** — every turn is snapshotted for safe review.
+
+## Tech stack
+
+Tauri · React · TypeScript · Vite · Tailwind · Monaco · SQLite · Bun.
+
+## Lineage
+
+Codewit is a fork of [Helmor](https://github.com/dohooo/helmor), an open-source local
+workbench for multi-agent software development created by Caspian Zhao and Nathan Lian.
+We're grateful to the Helmor project, whose Apache 2.0-licensed work made this possible.
+
+## License
+
+[Apache 2.0](./LICENSE)

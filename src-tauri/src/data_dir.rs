@@ -1,0 +1,295 @@
+//! Resolves the Codewit data directory based on build profile and environment.
+//!
+//! - Debug builds: `~/codewit-dev/`
+//! - Release builds: `~/codewit/`
+//! - `CODEWIT_DATA_DIR` env var overrides both
+//!
+//! The SQLite database lives at `{data_dir}/codewit.db`.
+
+use std::fs;
+use std::path::PathBuf;
+
+use anyhow::{Context, Result};
+
+#[cfg(test)]
+pub static TEST_ENV_LOCK: std::sync::Mutex<()> = std::sync::Mutex::new(());
+
+/// Name of the database file inside the data directory.
+const DB_FILENAME: &str = "codewit.db";
+
+/// Default top-level directory name for Codewit app data.
+const fn default_data_dir_name() -> &'static str {
+    if cfg!(debug_assertions) {
+        "codewit-dev"
+    } else {
+        "codewit"
+    }
+}
+
+/// Returns the resolved data directory, creating it if necessary.
+pub fn data_dir() -> Result<PathBuf> {
+    let dir = resolve_data_dir()?;
+
+    if !dir.exists() {
+        fs::create_dir_all(&dir)
+            .with_context(|| format!("Failed to create Codewit data directory {}", dir.display()))?;
+    }
+
+    Ok(dir)
+}
+
+/// Returns the path to the SQLite database file.
+pub fn db_path() -> Result<PathBuf> {
+    Ok(data_dir()?.join(DB_FILENAME))
+}
+
+/// Returns the workspaces directory inside the data dir.
+pub fn workspaces_dir() -> Result<PathBuf> {
+    let dir = data_dir()?.join("workspaces");
+    if !dir.exists() {
+        fs::create_dir_all(&dir).context("Failed to create workspaces directory")?;
+    }
+    Ok(dir)
+}
+
+/// Returns the chats directory inside the data dir. Houses Chat-mode
+/// workspaces — scratch dirs grouped by local date (`<chats>/YYYY-MM-DD/`)
+/// because chat workspaces aren't bound to any repository.
+pub fn chats_dir() -> Result<PathBuf> {
+    let dir = data_dir()?.join("chats");
+    if !dir.exists() {
+        fs::create_dir_all(&dir).context("Failed to create chats directory")?;
+    }
+    Ok(dir)
+}
+
+/// Returns the logs directory inside the data dir.
+pub fn logs_dir() -> Result<PathBuf> {
+    let dir = data_dir()?.join("logs");
+    if !dir.exists() {
+        fs::create_dir_all(&dir).context("Failed to create logs directory")?;
+    }
+    Ok(dir)
+}
+
+/// Returns the runtime state directory inside the data dir.
+pub fn run_dir() -> Result<PathBuf> {
+    let dir = data_dir()?.join("run");
+    if !dir.exists() {
+        fs::create_dir_all(&dir).context("Failed to create run directory")?;
+    }
+    Ok(dir)
+}
+
+/// Returns the generated images directory inside the data dir.
+pub fn generated_images_dir() -> Result<PathBuf> {
+    let dir = data_dir()?.join("generated-images");
+    if !dir.exists() {
+        fs::create_dir_all(&dir).context("Failed to create generated images directory")?;
+    }
+    Ok(dir)
+}
+
+/// Returns `<data_dir>/cache/<kind>/`, creating it if missing. All
+/// disposable caches live under `cache/` so the data-dir root stays
+/// small and scannable.
+pub fn cache_dir(kind: &str) -> Result<PathBuf> {
+    debug_assert!(
+        !kind.is_empty()
+            && kind
+                .chars()
+                .all(|c| c.is_ascii_alphanumeric() || c == '-' || c == '_'),
+        "cache kind must match [A-Za-z0-9_-]+: {kind}",
+    );
+    let dir = data_dir()?.join("cache").join(kind);
+    if !dir.exists() {
+        fs::create_dir_all(&dir)
+            .with_context(|| format!("Failed to create cache dir {}", dir.display()))?;
+    }
+    Ok(dir)
+}
+
+/// Forge account avatars (gh / glab), served via `asset://`.
+pub fn avatar_cache_dir() -> Result<PathBuf> {
+    cache_dir("avatars")
+}
+
+/// Composer-pasted images, bucketed by session id. See
+/// `crate::maintenance::paste_cache` for GC.
+pub fn paste_cache_dir() -> Result<PathBuf> {
+    cache_dir("paste")
+}
+
+/// React Query persister cache (one file per cache key).
+pub fn query_cache_dir() -> Result<PathBuf> {
+    cache_dir("query")
+}
+
+/// Returns the directory where Codewit-managed GGUF model files live.
+///
+/// Deliberately kept separate from `~/.cache/huggingface/hub/` — we
+/// don't share that cache with other local-LLM tools because (a) we
+/// need pause/resume + integrity checks that the HF cache loader
+/// doesn't expose, (b) we want the user to be able to disable Local
+/// LLM and reclaim disk by deleting one folder we own, (c) multi-part
+/// download orchestration needs predictable, atomic rename semantics
+/// that the HF cache layout doesn't guarantee.
+pub fn local_llm_models_dir() -> Result<PathBuf> {
+    let dir = data_dir()?.join("local-llm").join("models");
+    if !dir.exists() {
+        fs::create_dir_all(&dir).context("Failed to create Local LLM models directory")?;
+    }
+    Ok(dir)
+}
+
+/// Returns the Conductor source database path for import.
+/// This is the real Conductor database on the local machine.
+pub fn conductor_source_db_path() -> Option<PathBuf> {
+    let home = dirs_home()?;
+    let path = home.join("Library/Application Support/com.conductor.app/conductor.db");
+    if path.is_file() {
+        Some(path)
+    } else {
+        None
+    }
+}
+
+/// Returns the Conductor filesystem root directory.
+///
+/// Reads `conductor_root_path` from the Conductor settings table.
+/// Falls back to `~/conductor/` if the setting is absent.
+pub fn conductor_root_path() -> Option<PathBuf> {
+    let db_path = conductor_source_db_path()?;
+    let conn = rusqlite::Connection::open_with_flags(
+        &db_path,
+        rusqlite::OpenFlags::SQLITE_OPEN_READ_ONLY | rusqlite::OpenFlags::SQLITE_OPEN_NO_MUTEX,
+    )
+    .ok()?;
+
+    let root: Option<String> = conn
+        .query_row(
+            "SELECT value FROM settings WHERE key = 'conductor_root_path'",
+            [],
+            |row| row.get(0),
+        )
+        .ok();
+
+    let path = match root {
+        Some(ref s) if !s.is_empty() => PathBuf::from(s),
+        _ => dirs_home()?.join("conductor"),
+    };
+
+    if path.is_dir() {
+        Some(path)
+    } else {
+        None
+    }
+}
+
+/// Check if this is a development build.
+pub fn is_dev() -> bool {
+    cfg!(debug_assertions)
+}
+
+/// Resolve the data directory path without creating it.
+fn resolve_data_dir() -> Result<PathBuf> {
+    // 1. Environment variable override
+    if let Ok(dir) = std::env::var("CODEWIT_DATA_DIR") {
+        return Ok(PathBuf::from(dir));
+    }
+
+    // Fuse: a unit test reaching this fallback would operate on the REAL
+    // `~/codewit-dev` data directory — DB pools open against it, file
+    // helpers delete inside it, and a concurrently running dev app gets
+    // its writes starved. Fail the offending test loudly instead of
+    // polluting silently.
+    if cfg!(test) {
+        panic!(
+            "Test resolved the real data directory (~/{}/). Create a \
+             `testkit::TestEnv` (and keep it alive) before touching the DB \
+             or any data-dir path.",
+            default_data_dir_name()
+        );
+    }
+
+    // 2. Build profile based
+    let home = dirs_home().context("Could not determine home directory")?;
+
+    Ok(home.join(default_data_dir_name()))
+}
+
+fn dirs_home() -> Option<PathBuf> {
+    crate::platform::paths::home_dir()
+}
+
+/// Ensure all required subdirectories exist.
+pub fn ensure_directory_structure() -> Result<()> {
+    data_dir()?;
+    workspaces_dir()?;
+    chats_dir()?;
+    logs_dir()?;
+    run_dir()?;
+    generated_images_dir()?;
+    Ok(())
+}
+
+/// Returns the workspace directory for a given repo + workspace.
+pub fn workspace_dir(repo_name: &str, directory_name: &str) -> Result<PathBuf> {
+    Ok(workspaces_dir()?.join(repo_name).join(directory_name))
+}
+
+/// Returns a human-readable description of the data mode.
+pub fn data_mode_label() -> &'static str {
+    if cfg!(debug_assertions) {
+        "development"
+    } else {
+        "production"
+    }
+}
+
+/// Returns the path to the data directory as resolved (for display/info).
+pub fn data_dir_display() -> Result<String> {
+    Ok(data_dir()?.display().to_string())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    /// Test path construction without touching environment variables.
+    /// This avoids races with other test modules that also set CODEWIT_DATA_DIR.
+
+    #[test]
+    fn db_filename_is_codewit_db() {
+        assert_eq!(DB_FILENAME, "codewit.db");
+    }
+
+    #[test]
+    fn is_dev_returns_true_in_debug() {
+        // In test (debug) builds, this should be true
+        assert!(is_dev());
+    }
+
+    #[test]
+    fn data_mode_label_returns_development_in_debug() {
+        assert_eq!(data_mode_label(), "development");
+    }
+
+    #[test]
+    fn default_data_dir_name_returns_dev_directory_in_debug() {
+        assert_eq!(default_data_dir_name(), "codewit-dev");
+    }
+
+    #[test]
+    fn conductor_source_db_path_returns_option() {
+        // Just verify it doesn't panic — the result depends on whether
+        // Conductor is installed on the build machine.
+        let _ = conductor_source_db_path();
+    }
+
+    #[test]
+    fn dirs_home_returns_some() {
+        // HOME should be set in any normal test environment
+        assert!(dirs_home().is_some());
+    }
+}

@@ -1,0 +1,22 @@
+{
+	"compilerOptions": {
+		"target": "ES2022",
+		"module": "ES2022",
+		"moduleResolution": "bundler",
+		"strict": true,
+		"noUncheckedIndexedAccess": true,
+		"noImplicitOverride": true,
+		"noFallthroughCasesInSwitch": true,
+		"allowImportingTsExtensions": true,
+		"types": ["node", "bun"],
+		"esModuleInterop": true,
+		"skipLibCheck": true,
+		"noEmit": true
+	},
+	"include": [
+		"src",
+		"test",
+		"scripts/stage-vendor.ts",
+		"scripts/vendor-platform.ts"
+	]
+}

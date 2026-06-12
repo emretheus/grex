@@ -1,0 +1,1672 @@
+use rusqlite::OptionalExtension;
+use serde::{Deserialize, Serialize};
+use serde_json::Value;
+use tauri::{AppHandle, Manager};
+use uuid::Uuid;
+
+use super::CmdResult;
+use crate::workspace_state;
+
+#[derive(Debug, Clone, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct GenerateSessionTitleRequest {
+    pub session_id: String,
+    pub user_message: String,
+    pub title_seed: Option<String>,
+}
+
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct GenerateSessionTitleResponse {
+    pub title: Option<String>,
+    pub branch_renamed: bool,
+    pub skipped: bool,
+}
+
+/// Per-attempt cap the sidecar enforces on title generation
+/// (`TITLE_GENERATION_TIMEOUT_MS` in `title.ts`).
+const TITLE_ATTEMPT_TIMEOUT_SECS: u64 = 15;
+/// Handoff buffer added on top of the whole attempt chain. The Rust wait gets
+/// no intermediate events to reset `recv_timeout`, so it must cover every
+/// attempt end-to-end: `attempts × 15s + buffer`.
+const TITLE_CHAIN_BUFFER_SECS: u64 = 10;
+
+type WorkspaceInfo = (String, String, Option<String>, String, Option<String>);
+
+/// Build the deduped provider order for title generation from the user's
+/// configured models, in priority order: action (`pr_model_id`) → review →
+/// default. Repeated providers collapse to their first occurrence. Defaults
+/// to `[claude]` when nothing is configured.
+fn detect_title_providers() -> Vec<String> {
+    let mut providers: Vec<String> = Vec::new();
+    for key in [
+        "app.pr_model_id",
+        "app.review_model_id",
+        "app.default_model_id",
+    ] {
+        let Ok(Some(model_id)) = crate::settings::load_setting_value(key) else {
+            continue;
+        };
+        let trimmed = model_id.trim();
+        if trimmed.is_empty() {
+            continue;
+        }
+        let provider = super::catalog::resolve_model(trimmed, None).provider;
+        if !providers.contains(&provider) {
+            tracing::debug!(
+                setting = key,
+                model_id = trimmed,
+                provider = %provider,
+                "detect_title_providers: provider from configured model"
+            );
+            providers.push(provider);
+        }
+    }
+    if providers.is_empty() {
+        tracing::debug!("detect_title_providers: none configured, defaulting to claude");
+        providers.push("claude".to_string());
+    }
+    providers
+}
+
+/// Build the ordered title-generation attempt chain. For each detected
+/// provider: try the user's custom model first (claude only), then the
+/// provider's own fast/default pick. The sidecar walks this list and stops
+/// at the first attempt that produces a title.
+fn build_title_attempts() -> Vec<Value> {
+    let claude_custom = super::custom_providers::configured_models()
+        .into_iter()
+        .next();
+    let opencode_custom = first_opencode_custom_model();
+    let mut attempts: Vec<Value> = Vec::new();
+    for provider in detect_title_providers() {
+        // A provider's custom model (if the user configured one) is tried
+        // before its fast/default pick.
+        match provider.as_str() {
+            "claude" => {
+                if let Some(model) = &claude_custom {
+                    attempts.push(serde_json::json!({
+                        "provider": "claude",
+                        "model": model.cli_model,
+                        "claudeEnvironment": {
+                            "ANTHROPIC_BASE_URL": model.base_url,
+                            "ANTHROPIC_AUTH_TOKEN": model.api_key,
+                        },
+                    }));
+                }
+            }
+            "opencode" => {
+                if let Some(slug) = &opencode_custom {
+                    attempts.push(serde_json::json!({
+                        "provider": "opencode",
+                        "model": slug,
+                    }));
+                }
+            }
+            _ => {}
+        }
+        // Provider's own fast/default model. For claude this is the
+        // post-custom fallback (haiku); for others it's the default pick.
+        attempts.push(serde_json::json!({ "provider": provider }));
+    }
+    attempts
+}
+
+/// First custom opencode model the user configured in `opencode.jsonc`, as a
+/// `provider/model` slug (e.g. `hundun/deepseek-v4-flash`). `None` when no
+/// custom opencode provider is set up.
+fn first_opencode_custom_model() -> Option<String> {
+    let providers = super::opencode_config::read_custom_providers().ok()?;
+    let provider = providers.into_iter().next()?;
+    let model = provider.models.into_iter().next()?;
+    Some(format!("{}/{}", provider.id, model.id))
+}
+
+fn can_replace_session_title(current_title: &str, title_seed: Option<&str>) -> bool {
+    current_title == "Untitled"
+        || title_seed
+            .map(str::trim)
+            .filter(|seed| !seed.is_empty())
+            .is_some_and(|seed| current_title == seed)
+}
+
+pub async fn generate_session_title(
+    app: AppHandle,
+    sidecar: tauri::State<'_, crate::sidecar::ManagedSidecar>,
+    request: GenerateSessionTitleRequest,
+) -> CmdResult<GenerateSessionTitleResponse> {
+    let connection =
+        crate::models::db::read_conn().map_err(|e| anyhow::anyhow!("Failed to open DB: {e}"))?;
+    let (current_title, action_kind): (String, Option<super::ActionKind>) = connection
+        .query_row(
+            "SELECT title, action_kind FROM sessions WHERE id = ?1",
+            [&request.session_id],
+            |row| Ok((row.get(0)?, row.get(1)?)),
+        )
+        .map_err(|e| anyhow::anyhow!("Session not found: {e}"))?;
+
+    let should_generate_title = action_kind.is_none()
+        && can_replace_session_title(&current_title, request.title_seed.as_deref());
+    tracing::debug!(
+        session_id = %request.session_id,
+        current_title,
+        title_seed = request.title_seed.as_deref().unwrap_or(""),
+        should_generate_title,
+        "generate_session_title title gating resolved"
+    );
+
+    let workspace_info: Option<WorkspaceInfo> = if action_kind.is_none() {
+        let sql = format!(
+            r#"SELECT w.id, r.id, r.root_path, w.directory_name, w.branch
+                   FROM workspaces w
+                   JOIN repos r ON r.id = w.repository_id
+                   JOIN sessions s ON s.workspace_id = w.id
+                   WHERE s.id = ?1 AND w.state {}"#,
+            workspace_state::OPERATIONAL_FILTER,
+        );
+        match connection.query_row(&sql, [&request.session_id], |row| {
+            Ok((
+                row.get(0)?,
+                row.get(1)?,
+                row.get(2)?,
+                row.get(3)?,
+                row.get(4)?,
+            ))
+        }) {
+            Ok(info) => Some(info),
+            Err(rusqlite::Error::QueryReturnedNoRows) => None,
+            Err(error) => {
+                tracing::error!(
+                    session_id = %request.session_id,
+                    "generate_session_title: workspace lookup SQL failed: {error:#}"
+                );
+                None
+            }
+        }
+    } else {
+        None
+    };
+
+    let branch_settings = workspace_info
+        .as_ref()
+        .and_then(|(_, repo_id, _, _, _)| {
+            crate::repos::load_repo_branch_prefix_settings(repo_id).ok()
+        })
+        .unwrap_or(crate::settings::EffectiveBranchPrefixSettings {
+            branch_prefix_type: None,
+            branch_prefix_custom: None,
+            forge_provider: None,
+            remote_url: None,
+            forge_login: None,
+        });
+
+    let should_generate_branch =
+        workspace_info
+            .as_ref()
+            .is_some_and(|(_, _, _, directory_name, branch)| {
+                branch.as_deref().is_some_and(|current_branch| {
+                    crate::helpers::is_auto_generated_branch_name(
+                        current_branch,
+                        directory_name,
+                        &branch_settings,
+                    )
+                })
+            });
+    tracing::debug!(
+        session_id = %request.session_id,
+        workspace_info_found = workspace_info.is_some(),
+        current_branch = workspace_info
+            .as_ref()
+            .and_then(|(_, _, _, _, b)| b.as_deref())
+            .unwrap_or(""),
+        directory_name = workspace_info
+            .as_ref()
+            .map(|(_, _, _, d, _)| d.as_str())
+            .unwrap_or(""),
+        should_generate_branch,
+        "generate_session_title branch gating resolved"
+    );
+
+    let branch_rename_prompt = workspace_info
+        .as_ref()
+        .and_then(|(_, repo_id, _, _, _)| crate::repos::load_repo_preferences(repo_id).ok())
+        .and_then(|preferences| preferences.branch_rename)
+        .filter(|value| !value.trim().is_empty());
+
+    if !should_generate_title && !should_generate_branch {
+        tracing::debug!(
+            session_id = %request.session_id,
+            "generate_session_title skipped: neither title nor branch needs generation"
+        );
+        return Ok(GenerateSessionTitleResponse {
+            title: None,
+            branch_renamed: false,
+            skipped: true,
+        });
+    }
+
+    // Cascade head: try the bundled local LLM first. On any failure
+    // (server not running, timeout, parse mismatch) fall through to
+    // the sidecar's cloud cascade (custom-claude → claude → codex →
+    // cursor). `TITLE_TIMEOUT` inside `local_llm::title` caps the
+    // attempt at ~15s so a stuck cold load can't block this path long.
+    let local_result: Option<(String, Option<String>)> = {
+        let user_message = request.user_message.clone();
+        let branch_prompt = branch_rename_prompt.clone();
+        let generate_branch = should_generate_branch;
+        let app_for_local = app.clone();
+        let session_id_for_log = request.session_id.clone();
+        match tauri::async_runtime::spawn_blocking(move || {
+            let manager = app_for_local.state::<crate::local_llm::Manager>();
+            manager
+                .inner()
+                .generate_title(&user_message, branch_prompt.as_deref(), generate_branch)
+        })
+        .await
+        {
+            Ok(Ok((title, branch))) => {
+                tracing::info!(
+                    session_id = %session_id_for_log,
+                    generated_title = %title,
+                    generated_branch = branch.as_deref().unwrap_or(""),
+                    "generate_session_title produced by local LLM (sidecar cascade skipped)"
+                );
+                Some((title, branch))
+            }
+            Ok(Err(error)) => {
+                tracing::debug!(
+                    session_id = %session_id_for_log,
+                    error = %error,
+                    "Local LLM title attempt failed; falling through to sidecar cascade"
+                );
+                None
+            }
+            Err(error) => {
+                tracing::warn!(
+                    session_id = %session_id_for_log,
+                    error = %error,
+                    "Local LLM title task join failed; falling through to sidecar cascade"
+                );
+                None
+            }
+        }
+    };
+
+    let session_id = request.session_id.clone();
+    let (generated_title, generated_branch): (Option<String>, Option<String>) =
+        if let Some((title, branch)) = local_result {
+            (Some(title), branch)
+        } else {
+            let request_id = Uuid::new_v4().to_string();
+            // Build the provider/model attempt chain from the user's configured
+            // models (action → review → default, deduped); each claude/opencode
+            // step tries the custom model then the fast default, other providers
+            // contribute their own fast/default pick. The sidecar walks the list
+            // and stops at the first attempt that produces a title. Skip the
+            // branch slug instruction when we won't apply it (local mode,
+            // already-renamed worktree, etc.) to save LLM output.
+            let attempts = build_title_attempts();
+            // No intermediate events reset `recv_timeout`, so the Rust wait must
+            // cover the whole chain end-to-end: attempts × per-attempt + buffer.
+            let title_timeout = std::time::Duration::from_secs(
+                attempts.len() as u64 * TITLE_ATTEMPT_TIMEOUT_SECS + TITLE_CHAIN_BUFFER_SECS,
+            );
+            let attempt_chain: Vec<String> = attempts
+                .iter()
+                .map(|a| {
+                    let p = a.get("provider").and_then(|v| v.as_str()).unwrap_or("?");
+                    let m = a
+                        .get("model")
+                        .and_then(|v| v.as_str())
+                        .unwrap_or("(default)");
+                    format!("{p}:{m}")
+                })
+                .collect();
+            tracing::debug!(
+                session_id = %session_id,
+                request_id = %request_id,
+                attempts = ?attempt_chain,
+                generate_branch = should_generate_branch,
+                "generate_session_title: dispatching title attempt chain"
+            );
+            let mut params = serde_json::json!({
+                "userMessage": request.user_message,
+                "branchRenamePrompt": branch_rename_prompt,
+                "generateBranch": should_generate_branch,
+                "attempts": attempts,
+            });
+            if let Some(agent_proxy) = super::streaming::load_agent_proxy_setting() {
+                if let Some(obj) = params.as_object_mut() {
+                    obj.insert("agentProxy".to_string(), agent_proxy);
+                }
+            }
+            let sidecar_req = crate::sidecar::SidecarRequest {
+                id: request_id.clone(),
+                method: "generateTitle".to_string(),
+                params,
+            };
+
+            let rx = sidecar.subscribe(&request_id);
+
+            if let Err(e) = sidecar.send(&sidecar_req) {
+                sidecar.unsubscribe(&request_id);
+                return Err(anyhow::anyhow!("Sidecar send failed: {e}").into());
+            }
+
+            let session_id_for_task = session_id.clone();
+            tauri::async_runtime::spawn_blocking({
+                let rid = request_id;
+                let session_id_for_logs = session_id_for_task;
+                move || {
+                    let sidecar_state: tauri::State<'_, crate::sidecar::ManagedSidecar> =
+                        app.state();
+                    let mut title: Option<String> = None;
+                    let mut branch_name: Option<String> = None;
+
+                    loop {
+                        match rx.recv_timeout(title_timeout) {
+                            Ok(event) => match event.event_type() {
+                                "titleGenerated" => {
+                                    title = event
+                                        .raw
+                                        .get("title")
+                                        .and_then(Value::as_str)
+                                        .map(str::to_string)
+                                        .filter(|text| !text.is_empty());
+                                    branch_name = event
+                                        .raw
+                                        .get("branchName")
+                                        .and_then(Value::as_str)
+                                        .map(str::to_string)
+                                        .filter(|branch| !branch.is_empty());
+                                    tracing::debug!(
+                                        session_id = %session_id_for_logs,
+                                        generated_title = title.as_deref().unwrap_or(""),
+                                        generated_branch = branch_name.as_deref().unwrap_or(""),
+                                        "generate_session_title received titleGenerated"
+                                    );
+                                    break;
+                                }
+                                "error" => {
+                                    let message = event
+                                        .raw
+                                        .get("message")
+                                        .and_then(Value::as_str)
+                                        .unwrap_or("Unknown error");
+                                    tracing::error!(
+                                        "generate_session_title: sidecar error: {message}"
+                                    );
+                                    break;
+                                }
+                                _ => {}
+                            },
+                            Err(std::sync::mpsc::RecvTimeoutError::Timeout) => {
+                                tracing::error!(
+                                    "generate_session_title: timed out after {title_timeout:?}"
+                                );
+                                break;
+                            }
+                            Err(std::sync::mpsc::RecvTimeoutError::Disconnected) => {
+                                tracing::error!("generate_session_title: sidecar disconnected");
+                                break;
+                            }
+                        }
+                    }
+
+                    sidecar_state.unsubscribe(&rid);
+                    (title, branch_name)
+                }
+            })
+            .await
+            .map_err(|e| anyhow::anyhow!("Title generation task failed: {e}"))?
+        };
+
+    if should_generate_title && generated_title.is_none() {
+        tracing::error!(
+            session_id = %session_id,
+            "generate_session_title: sidecar returned no title, but title generation was expected"
+        );
+    }
+    if should_generate_branch && generated_branch.is_none() {
+        tracing::error!(
+            session_id = %session_id,
+            "generate_session_title: sidecar returned no branch name, but branch rename was expected"
+        );
+    }
+
+    let mut title_renamed = false;
+    if should_generate_title {
+        if let Some(ref title) = generated_title {
+            let connection = crate::models::db::read_conn()
+                .map_err(|e| anyhow::anyhow!("Failed to open DB: {e}"))?;
+            // Session may have been deleted while title generation was in flight.
+            // Treat as a silent skip — matches the branch re-read a few lines below.
+            let latest_title: Option<String> = connection
+                .query_row(
+                    "SELECT title FROM sessions WHERE id = ?1",
+                    [&session_id],
+                    |row| row.get(0),
+                )
+                .optional()
+                .map_err(|e| anyhow::anyhow!("Failed to re-read session title: {e}"))?;
+            let Some(latest_title) = latest_title else {
+                tracing::debug!(
+                    session_id = %session_id,
+                    "Skipping auto session rename: session deleted during title generation"
+                );
+                return Ok(GenerateSessionTitleResponse {
+                    title: generated_title,
+                    branch_renamed: false,
+                    skipped: false,
+                });
+            };
+
+            if can_replace_session_title(&latest_title, request.title_seed.as_deref()) {
+                crate::sessions::rename_session(&session_id, title)
+                    .map_err(|e| anyhow::anyhow!("Failed to rename session: {e}"))?;
+                title_renamed = true;
+                tracing::debug!(
+                    session_id = %session_id,
+                    title,
+                    latest_title,
+                    title_seed = request.title_seed.as_deref().unwrap_or(""),
+                    "Auto session rename applied"
+                );
+            } else {
+                tracing::debug!(
+                    session_id = %session_id,
+                    latest_title,
+                    title_seed = request.title_seed.as_deref().unwrap_or(""),
+                    "Skipping auto session rename: title changed while generation was in flight"
+                );
+            }
+        }
+    }
+
+    let mut branch_renamed = false;
+    if should_generate_branch {
+        if let (Some(branch_segment), Some((workspace_id, _, root_path, directory_name, _))) =
+            (generated_branch.as_deref(), workspace_info)
+        {
+            // Acquire per-workspace lock so concurrent title-gens serialise
+            // their branch renames instead of racing on `git branch -m`.
+            let ws_lock = crate::models::db::workspace_fs_mutation_lock(&workspace_id);
+            let _guard = ws_lock.lock().await;
+
+            // Re-read branch under lock to avoid TOCTOU: if another title-gen
+            // already renamed the branch, we'll see the updated value and skip.
+            let old_branch: Option<String> = {
+                let read_conn = crate::models::db::read_conn()
+                    .map_err(|e| anyhow::anyhow!("Failed to open DB: {e}"))?;
+                read_conn
+                    .query_row(
+                        "SELECT branch FROM workspaces WHERE id = ?1",
+                        [&workspace_id],
+                        |row| row.get(0),
+                    )
+                    .ok()
+                    .flatten()
+            };
+
+            if !old_branch.as_deref().is_some_and(|b| {
+                crate::helpers::is_auto_generated_branch_name(b, &directory_name, &branch_settings)
+            }) {
+                tracing::debug!(
+                    workspace_id = %workspace_id,
+                    "Skipping auto branch rename: branch already differs from default"
+                );
+            } else {
+                let base_branch =
+                    crate::helpers::branch_name_for_directory(branch_segment, &branch_settings);
+
+                // Deduplicate: if the target branch already exists in git,
+                // append -2, -3, ... until we find a free name. Prevents
+                // collisions when multiple workspaces generate the same
+                // branch name from similar prompts.
+                let new_branch = if let Some(ref repo_root) = root_path {
+                    let repo = std::path::Path::new(repo_root);
+                    if repo.is_dir() {
+                        deduplicate_branch_name(&base_branch, repo)
+                    } else {
+                        base_branch
+                    }
+                } else {
+                    base_branch
+                };
+
+                if old_branch.as_deref() != Some(new_branch.as_str()) {
+                    let fs_rename_attempted = matches!(
+                        (&old_branch, &root_path),
+                        (Some(_), Some(ref repo_root)) if std::path::Path::new(repo_root).is_dir()
+                    );
+
+                    let fs_rename_ok = if let (Some(ref old_name), Some(ref repo_root)) =
+                        (&old_branch, &root_path)
+                    {
+                        if std::path::Path::new(repo_root).is_dir() {
+                            match crate::git_ops::run_git(
+                                ["-C", repo_root, "branch", "-m", old_name, &new_branch],
+                                None,
+                            ) {
+                                Ok(_) => true,
+                                Err(error) => {
+                                    tracing::error!(old = old_name, new = %new_branch, "git branch -m failed: {error:#}; leaving branch unchanged");
+                                    false
+                                }
+                            }
+                        } else {
+                            true
+                        }
+                    } else {
+                        true
+                    };
+
+                    if fs_rename_ok {
+                        let write_result = crate::models::workspaces::update_workspace_branch(
+                            &workspace_id,
+                            &new_branch,
+                        );
+                        if let Err(error) = write_result {
+                            tracing::error!(workspace_id = %workspace_id, "DB UPDATE workspaces.branch failed: {error:#}");
+                            if fs_rename_attempted {
+                                if let (Some(ref old_name), Some(ref repo_root)) =
+                                    (&old_branch, &root_path)
+                                {
+                                    if let Err(rb_err) = crate::git_ops::run_git(
+                                        ["-C", repo_root, "branch", "-m", &new_branch, old_name],
+                                        None,
+                                    ) {
+                                        tracing::error!(fs = %new_branch, db = old_name, "FS rollback git branch -m also failed: {rb_err:#} — manual reconciliation required");
+                                    }
+                                }
+                            }
+                        } else {
+                            branch_renamed = true;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    Ok(GenerateSessionTitleResponse {
+        title: title_renamed.then_some(generated_title).flatten(),
+        branch_renamed,
+        skipped: false,
+    })
+}
+
+/// If `base` already exists as a local branch, try `base-2`, `base-3`, …
+/// up to a small limit. Returns the first free name, or `base` unchanged
+/// if the check itself fails (defensive: let `git branch -m` report the
+/// real error).
+fn deduplicate_branch_name(base: &str, repo_root: &std::path::Path) -> String {
+    let repo_root_str = repo_root.display().to_string();
+    let exists = |name: &str| -> bool {
+        crate::git_ops::run_git(
+            [
+                "-C",
+                &repo_root_str,
+                "rev-parse",
+                "--verify",
+                &format!("refs/heads/{name}"),
+            ],
+            None,
+        )
+        .is_ok()
+    };
+    if !exists(base) {
+        return base.to_string();
+    }
+    for n in 2..=100 {
+        let candidate = format!("{base}-{n}");
+        if !exists(&candidate) {
+            return candidate;
+        }
+    }
+    // All 100 slots taken — return base and let git report the error.
+    base.to_string()
+}
+
+#[derive(Debug, Clone, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ListSlashCommandsRequest {
+    pub provider: String,
+    pub working_directory: Option<String>,
+    pub workspace_id: Option<String>,
+    /// Repo id of the workspace — used to serve a repo-level fallback when the
+    /// exact workspace cache is cold (different workspaces on the same repo
+    /// usually share the same skill directories).
+    pub repo_id: Option<String>,
+}
+
+/// Sidecar timeout for `listSlashCommands`. Claude's in-sidecar AbortController
+/// fires at 20s; leave some buffer so the sidecar error surfaces first.
+const LIST_SLASH_COMMANDS_TIMEOUT: std::time::Duration = std::time::Duration::from_secs(25);
+
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct SlashCommandEntry {
+    pub name: String,
+    pub description: String,
+    pub argument_hint: Option<String>,
+    pub source: String,
+}
+
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct SlashCommandsResponse {
+    pub commands: Vec<SlashCommandEntry>,
+}
+
+pub async fn list_slash_commands(
+    app: AppHandle,
+    sidecar: tauri::State<'_, crate::sidecar::ManagedSidecar>,
+    cache: tauri::State<'_, super::slash_commands::SlashCommandCache>,
+    request: ListSlashCommandsRequest,
+) -> CmdResult<SlashCommandsResponse> {
+    // Start page has no workspace, so `working_directory` is empty. Fall
+    // back to the repo's `root_path` so Claude CLI can scan the project's
+    // `.claude/commands/` and the cache key aligns with the repo prewarm.
+    let request = resolve_repo_fallback_cwd(request);
+    let cwd = request.working_directory.as_deref().unwrap_or("");
+    let repo_id = request.repo_id.as_deref().unwrap_or("");
+    let additional_directories = slash_command_scan_directories(&request);
+    tracing::debug!(
+        provider = %request.provider,
+        cwd,
+        workspace_id = request.workspace_id.as_deref().unwrap_or(""),
+        repo_id,
+        linked_dir_count = additional_directories.len(),
+        "list_slash_commands request"
+    );
+
+    // Guard: if cwd is provided but doesn't exist (archived/deleted workspace),
+    // skip the sidecar call. Spawning Claude CLI in a missing dir makes bun
+    // auto-create `node_modules/.bun` at that path, resurrecting the dir.
+    if !cwd.is_empty() && !std::path::Path::new(cwd).is_dir() {
+        tracing::debug!(
+            cwd,
+            "list_slash_commands: cwd missing, returning empty (cached repo fallback may still apply)"
+        );
+        if additional_directories.is_empty() && !repo_id.is_empty() {
+            let rkey = super::slash_commands::repo_key(&request.provider, repo_id);
+            if let Some(commands) = cache.get_repo(&rkey) {
+                return Ok(SlashCommandsResponse { commands });
+            }
+        }
+        return Ok(SlashCommandsResponse {
+            commands: Vec::new(),
+        });
+    }
+
+    let ws_key = super::slash_commands::workspace_key(
+        &request.provider,
+        request.working_directory.as_deref(),
+        &additional_directories,
+    );
+
+    // 1. Workspace-level exact hit → return instantly + SWR refresh.
+    if let Some(commands) = cache.get_workspace(&ws_key) {
+        spawn_background_refresh(&app, &cache, &request, ws_key);
+        return Ok(SlashCommandsResponse { commands });
+    }
+
+    // 2. Repo-level fallback → return stale-but-plausible + SWR refresh.
+    if additional_directories.is_empty() && !repo_id.is_empty() {
+        let rkey = super::slash_commands::repo_key(&request.provider, repo_id);
+        if let Some(commands) = cache.get_repo(&rkey) {
+            tracing::debug!(
+                provider = %request.provider,
+                cwd,
+                repo_id,
+                count = commands.len(),
+                "list_slash_commands serving repo fallback"
+            );
+            spawn_background_refresh(&app, &cache, &request, ws_key);
+            return Ok(SlashCommandsResponse { commands });
+        }
+    }
+
+    // 3. Cold miss on both tiers — synchronous sidecar fetch.
+    tracing::debug!(
+        provider = %request.provider,
+        cwd,
+        repo_id,
+        "list_slash_commands cache miss; fetching full result synchronously"
+    );
+    let commands = fetch_from_sidecar(&sidecar, &request, &additional_directories)?;
+    tracing::debug!(
+        provider = %request.provider,
+        cwd,
+        repo_id,
+        count = commands.len(),
+        "list_slash_commands sync fetch succeeded"
+    );
+    cache.set(ws_key, request.repo_id.as_deref(), commands.clone());
+    Ok(SlashCommandsResponse { commands })
+}
+
+/// When the caller (e.g. start page) has a `repo_id` but no `working_directory`,
+/// resolve it to the repo's local `root_path` so the sidecar can scan
+/// project-level `.claude/commands/`. Same key shape as `dispatch_prewarm_for_repo`,
+/// so cache hits line up.
+fn resolve_repo_fallback_cwd(mut request: ListSlashCommandsRequest) -> ListSlashCommandsRequest {
+    if request
+        .working_directory
+        .as_deref()
+        .map(str::trim)
+        .is_some_and(|s| !s.is_empty())
+    {
+        return request;
+    }
+    let Some(repo_id) = request.repo_id.as_deref().filter(|s| !s.is_empty()) else {
+        return request;
+    };
+    let Some(record) = crate::models::repos::load_repository_by_id(repo_id)
+        .ok()
+        .flatten()
+    else {
+        return request;
+    };
+    let root_path = record.root_path.trim();
+    if root_path.is_empty() || !std::path::Path::new(root_path).is_dir() {
+        return request;
+    }
+    request.working_directory = Some(root_path.to_string());
+    request
+}
+
+fn lookup_workspace_linked_directories_for_commands(workspace_id: Option<&str>) -> Vec<String> {
+    let Some(workspace_id) = workspace_id else {
+        return Vec::new();
+    };
+    match crate::workspaces::get_workspace_linked_directories(workspace_id) {
+        Ok(dirs) => dirs,
+        Err(err) => {
+            tracing::warn!(
+                workspace_id,
+                error = %err,
+                "Failed to load linked directories for slash commands; falling back to empty list"
+            );
+            Vec::new()
+        }
+    }
+}
+
+fn slash_command_scan_directories(request: &ListSlashCommandsRequest) -> Vec<String> {
+    let mut dirs =
+        lookup_workspace_linked_directories_for_commands(request.workspace_id.as_deref());
+    if request.provider == "codex" {
+        append_repo_root_scan_directory(request, &mut dirs);
+    }
+    dirs
+}
+
+fn append_repo_root_scan_directory(request: &ListSlashCommandsRequest, dirs: &mut Vec<String>) {
+    let Some(repo_id) = request.repo_id.as_deref().filter(|s| !s.is_empty()) else {
+        return;
+    };
+    let Some(record) = crate::models::repos::load_repository_by_id(repo_id)
+        .ok()
+        .flatten()
+    else {
+        return;
+    };
+    let root_path = record.root_path.trim();
+    if root_path.is_empty() || !std::path::Path::new(root_path).is_dir() {
+        return;
+    }
+    if request.working_directory.as_deref() == Some(root_path) {
+        return;
+    }
+    if !dirs.iter().any(|dir| dir == root_path) {
+        dirs.push(root_path.to_string());
+    }
+}
+
+/// Prewarm the slash-command cache for a single workspace (both providers).
+/// Safe to call repeatedly — the cache's per-key refresh lock dedupes.
+pub fn prewarm_slash_command_cache_for_workspace(app: &AppHandle, workspace_id: &str) {
+    let app = app.clone();
+    let workspace_id = workspace_id.to_string();
+    let _ = std::thread::Builder::new()
+        .name("slash-cmd-prewarm-ws".into())
+        .spawn(move || {
+            let record = match crate::models::workspaces::load_workspace_record_by_id(&workspace_id)
+            {
+                Ok(Some(r)) => r,
+                Ok(None) => {
+                    tracing::debug!(workspace_id, "Slash-command prewarm: workspace not found");
+                    return;
+                }
+                Err(e) => {
+                    tracing::warn!(workspace_id, error = %e, "Slash-command prewarm: load failed");
+                    return;
+                }
+            };
+            // Skip archived workspaces — their `root_path` still points at the
+            // old worktree location in DB, but the directory is gone. Spawning
+            // Claude CLI there makes bun auto-create `node_modules/.bun`,
+            // resurrecting the archived dir as a ghost.
+            if !record.state.is_operational() {
+                tracing::debug!(
+                    workspace_id,
+                    state = %record.state,
+                    "Slash-command prewarm: skipping non-operational workspace"
+                );
+                return;
+            }
+            let Some(root_path) = record
+                .root_path
+                .as_deref()
+                .map(str::trim)
+                .filter(|p| !p.is_empty())
+            else {
+                tracing::debug!(
+                    workspace_id,
+                    "Slash-command prewarm: workspace has no root_path"
+                );
+                return;
+            };
+            dispatch_prewarm(&app, Some(&workspace_id), root_path, &record.repo_id);
+        });
+}
+
+/// Prewarm on startup: only the last-selected workspace (persisted in
+/// `settings.app.last_workspace_id`). The frontend's workspace-switch handler
+/// also fires `prewarm_slash_commands_for_workspace` on initial selection —
+/// `SlashCommandCache::try_start_refresh` dedupes the two calls.
+pub fn prewarm_slash_command_cache(app: &AppHandle) {
+    let app = app.clone();
+    let _ = std::thread::Builder::new()
+        .name("slash-cmd-prewarm".into())
+        .spawn(move || {
+            let last_id = match crate::models::settings::load_setting_value("app.last_workspace_id")
+            {
+                Ok(Some(id)) if !id.trim().is_empty() => id,
+                _ => {
+                    tracing::debug!(
+                        "Slash-command prewarm skipped: no last_workspace_id persisted"
+                    );
+                    return;
+                }
+            };
+            tracing::debug!(workspace_id = %last_id, "Slash-command prewarm using last workspace");
+            prewarm_slash_command_cache_for_workspace(&app, &last_id);
+        });
+}
+
+/// Repo-level prewarm — for the start page where no workspace is selected.
+/// Uses the repo's `root_path` as cwd; cache key matches what
+/// `resolve_repo_fallback_cwd` produces, so the next `/` press hits warm.
+pub fn prewarm_slash_command_cache_for_repo(app: &AppHandle, repo_id: &str) {
+    let app = app.clone();
+    let repo_id = repo_id.to_string();
+    let _ = std::thread::Builder::new()
+        .name("slash-cmd-prewarm-repo".into())
+        .spawn(move || {
+            let record = match crate::models::repos::load_repository_by_id(&repo_id) {
+                Ok(Some(r)) => r,
+                Ok(None) => {
+                    tracing::debug!(repo_id, "Slash-command prewarm: repo not found");
+                    return;
+                }
+                Err(e) => {
+                    tracing::warn!(repo_id, error = %e, "Slash-command prewarm: load failed");
+                    return;
+                }
+            };
+            let root_path = record.root_path.trim();
+            if root_path.is_empty() || !std::path::Path::new(root_path).is_dir() {
+                tracing::debug!(
+                    repo_id,
+                    root_path,
+                    "Slash-command prewarm: repo root_path missing or not a directory"
+                );
+                return;
+            }
+            dispatch_prewarm(&app, None, root_path, &repo_id);
+        });
+}
+
+/// Schedule a background refresh per provider. Workspace-scoped callers pass
+/// `Some(workspace_id)` (which also pulls in any linked-directory commands);
+/// repo-scoped callers (start page) pass `None` and the key shape matches
+/// `resolve_repo_fallback_cwd` so the next `/` press hits warm cache.
+fn dispatch_prewarm(app: &AppHandle, workspace_id: Option<&str>, root_path: &str, repo_id: &str) {
+    let cache: tauri::State<'_, super::slash_commands::SlashCommandCache> = app.state();
+    let additional_directories = lookup_workspace_linked_directories_for_commands(workspace_id);
+    for provider in ["claude", "codex"] {
+        let request = ListSlashCommandsRequest {
+            provider: provider.to_string(),
+            working_directory: Some(root_path.to_string()),
+            workspace_id: workspace_id.map(str::to_string),
+            repo_id: Some(repo_id.to_string()),
+        };
+        let ws_key = super::slash_commands::workspace_key(
+            provider,
+            Some(root_path),
+            &additional_directories,
+        );
+        tracing::debug!(
+            provider,
+            workspace_id = workspace_id.unwrap_or(""),
+            cwd = root_path,
+            repo_id,
+            linked_dir_count = additional_directories.len(),
+            "Slash-command prewarm dispatching background refresh"
+        );
+        spawn_background_refresh(app, &cache, &request, ws_key);
+    }
+}
+
+/// Blocking sidecar call for `listSlashCommands`. Used by both the
+/// synchronous cold-miss path and the background refresh thread.
+fn fetch_from_sidecar(
+    sidecar: &crate::sidecar::ManagedSidecar,
+    request: &ListSlashCommandsRequest,
+    additional_directories: &[String],
+) -> CmdResult<Vec<SlashCommandEntry>> {
+    let request_id = Uuid::new_v4().to_string();
+
+    let mut params = serde_json::Map::new();
+    params.insert("provider".into(), Value::String(request.provider.clone()));
+    if let Some(cwd) = request.working_directory.as_ref() {
+        params.insert("cwd".into(), Value::String(cwd.clone()));
+    }
+    if !additional_directories.is_empty() {
+        params.insert(
+            "additionalDirectories".into(),
+            Value::Array(
+                additional_directories
+                    .iter()
+                    .cloned()
+                    .map(Value::String)
+                    .collect(),
+            ),
+        );
+    }
+
+    let sidecar_req = crate::sidecar::SidecarRequest {
+        id: request_id.clone(),
+        method: "listSlashCommands".to_string(),
+        params: Value::Object(params),
+    };
+
+    let rx = sidecar.subscribe(&request_id);
+    if let Err(e) = sidecar.send(&sidecar_req) {
+        sidecar.unsubscribe(&request_id);
+        return Err(anyhow::anyhow!("Sidecar send failed: {e}").into());
+    }
+
+    let mut commands: Vec<SlashCommandEntry> = Vec::new();
+    let mut error: Option<String> = None;
+
+    loop {
+        match rx.recv_timeout(LIST_SLASH_COMMANDS_TIMEOUT) {
+            Ok(event) => match event.event_type() {
+                "slashCommandsListed" => {
+                    if let Some(entries) = event.raw.get("commands").and_then(Value::as_array) {
+                        for entry in entries {
+                            let Some(name) = entry.get("name").and_then(Value::as_str) else {
+                                continue;
+                            };
+                            let description = entry
+                                .get("description")
+                                .and_then(Value::as_str)
+                                .unwrap_or("")
+                                .to_string();
+                            let argument_hint = entry
+                                .get("argumentHint")
+                                .and_then(Value::as_str)
+                                .filter(|hint| !hint.is_empty())
+                                .map(str::to_string);
+                            let source = entry
+                                .get("source")
+                                .and_then(Value::as_str)
+                                .unwrap_or("builtin")
+                                .to_string();
+                            commands.push(SlashCommandEntry {
+                                name: name.to_string(),
+                                description,
+                                argument_hint,
+                                source,
+                            });
+                        }
+                    }
+                    break;
+                }
+                "error" => {
+                    error = Some(
+                        event
+                            .raw
+                            .get("message")
+                            .and_then(Value::as_str)
+                            .unwrap_or("Unknown error")
+                            .to_string(),
+                    );
+                    break;
+                }
+                _ => {}
+            },
+            Err(std::sync::mpsc::RecvTimeoutError::Timeout) => {
+                error = Some(format!(
+                    "listSlashCommands timed out after {}s",
+                    LIST_SLASH_COMMANDS_TIMEOUT.as_secs()
+                ));
+                break;
+            }
+            Err(std::sync::mpsc::RecvTimeoutError::Disconnected) => {
+                error = Some("Sidecar disconnected while waiting for slash commands".to_string());
+                break;
+            }
+        }
+    }
+
+    sidecar.unsubscribe(&request_id);
+    if let Some(message) = error {
+        Err(anyhow::anyhow!("listSlashCommands failed: {message}").into())
+    } else {
+        Ok(commands)
+    }
+}
+
+/// Fire-and-forget background thread that refreshes the workspace-level
+/// cache entry. Writes into both workspace and repo tiers on success.
+fn spawn_background_refresh(
+    app: &AppHandle,
+    cache: &super::slash_commands::SlashCommandCache,
+    request: &ListSlashCommandsRequest,
+    ws_key: super::slash_commands::WorkspaceKey,
+) {
+    if !cache.try_start_refresh(&ws_key) {
+        tracing::debug!(
+            provider = %request.provider,
+            cwd = request.working_directory.as_deref().unwrap_or(""),
+            "Background slash command refresh skipped; another refresh is in flight"
+        );
+        return;
+    }
+
+    tracing::debug!(
+        provider = %request.provider,
+        cwd = request.working_directory.as_deref().unwrap_or(""),
+        "Background slash command refresh started"
+    );
+
+    let app = app.clone();
+    let request = request.clone();
+    let refresh_key = ws_key.clone();
+
+    std::thread::Builder::new()
+        .name("slash-cmd-refresh".into())
+        .spawn(move || {
+            let sidecar_state: tauri::State<'_, crate::sidecar::ManagedSidecar> = app.state();
+            let cache_state: tauri::State<'_, super::slash_commands::SlashCommandCache> =
+                app.state();
+            let additional_directories = slash_command_scan_directories(&request);
+
+            match fetch_from_sidecar(&sidecar_state, &request, &additional_directories) {
+                Ok(commands) => {
+                    tracing::debug!(
+                        provider = %request.provider,
+                        cwd = request.working_directory.as_deref().unwrap_or(""),
+                        linked_dir_count = additional_directories.len(),
+                        count = commands.len(),
+                        "Background slash command refresh succeeded"
+                    );
+                    cache_state.set(ws_key, request.repo_id.as_deref(), commands);
+                }
+                Err(e) => {
+                    // Don't clear the cache — stale local data is better than nothing.
+                    tracing::warn!("Background slash command refresh failed: {e:?}");
+                }
+            }
+
+            cache_state.finish_refresh(&refresh_key);
+        })
+        .ok();
+}
+
+pub fn fetch_agent_model_sections() -> Vec<super::catalog::AgentModelSection> {
+    super::catalog::static_model_sections()
+}
+
+// ---------------------------------------------------------------------------
+// Cursor model list — proxied to the sidecar's `Cursor.models.list`
+// ---------------------------------------------------------------------------
+
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct CursorModelParameterValue {
+    pub value: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub display_name: Option<String>,
+}
+
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct CursorModelParameter {
+    pub id: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub display_name: Option<String>,
+    pub values: Vec<CursorModelParameterValue>,
+}
+
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct CursorModelEntry {
+    pub id: String,
+    pub label: String,
+    /// Persisted into `cursorProvider.cachedModels` so toolbar UI is
+    /// derived synchronously without a sidecar round-trip per render.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub parameters: Option<Vec<CursorModelParameter>>,
+}
+
+/// 30s budget for `Cursor.models.list` — SDK cold-start can take a few
+/// seconds while it warms its HTTP/2 pool.
+const LIST_CURSOR_MODELS_TIMEOUT: std::time::Duration = std::time::Duration::from_secs(30);
+
+pub fn fetch_cursor_models(
+    sidecar: &crate::sidecar::ManagedSidecar,
+    api_key_override: Option<String>,
+) -> CmdResult<Vec<CursorModelEntry>> {
+    let request_id = Uuid::new_v4().to_string();
+    let mut params = serde_json::json!({ "provider": "cursor" });
+    if let Some(key) = api_key_override.filter(|k| !k.is_empty()) {
+        if let Some(obj) = params.as_object_mut() {
+            obj.insert("apiKey".to_string(), serde_json::Value::String(key));
+        }
+    }
+    let sidecar_req = crate::sidecar::SidecarRequest {
+        id: request_id.clone(),
+        method: "listModels".to_string(),
+        params,
+    };
+
+    let rx = sidecar.subscribe(&request_id);
+    if let Err(e) = sidecar.send(&sidecar_req) {
+        sidecar.unsubscribe(&request_id);
+        return Err(anyhow::anyhow!("Sidecar send failed: {e}").into());
+    }
+
+    let mut models: Vec<CursorModelEntry> = Vec::new();
+    let mut error: Option<String> = None;
+
+    loop {
+        match rx.recv_timeout(LIST_CURSOR_MODELS_TIMEOUT) {
+            Ok(event) => match event.event_type() {
+                "modelsListed" => {
+                    if let Some(entries) = event.raw.get("models").and_then(Value::as_array) {
+                        for entry in entries {
+                            let Some(id) = entry.get("id").and_then(Value::as_str) else {
+                                continue;
+                            };
+                            let label = entry
+                                .get("label")
+                                .and_then(Value::as_str)
+                                .unwrap_or(id)
+                                .to_string();
+                            let parameters = entry
+                                .get("cursorParameters")
+                                .and_then(Value::as_array)
+                                .map(|values| parse_cursor_parameters(values.as_slice()));
+                            models.push(CursorModelEntry {
+                                id: id.to_string(),
+                                label,
+                                parameters,
+                            });
+                        }
+                    }
+                    break;
+                }
+                "error" => {
+                    error = Some(
+                        event
+                            .raw
+                            .get("message")
+                            .and_then(Value::as_str)
+                            .unwrap_or("Unknown error")
+                            .to_string(),
+                    );
+                    break;
+                }
+                _ => {}
+            },
+            Err(std::sync::mpsc::RecvTimeoutError::Timeout) => {
+                error = Some(format!(
+                    "Cursor model list timed out after {}s",
+                    LIST_CURSOR_MODELS_TIMEOUT.as_secs()
+                ));
+                break;
+            }
+            Err(std::sync::mpsc::RecvTimeoutError::Disconnected) => {
+                error = Some("Sidecar disconnected during Cursor model list".to_string());
+                break;
+            }
+        }
+    }
+
+    sidecar.unsubscribe(&request_id);
+
+    if let Some(message) = error {
+        return Err(anyhow::anyhow!(message).into());
+    }
+    Ok(models)
+}
+
+/// Parse the sidecar's `cursorParameters` field. Best-effort: drops
+/// malformed entries instead of blanking the whole list.
+fn parse_cursor_parameters(arr: &[Value]) -> Vec<CursorModelParameter> {
+    arr.iter()
+        .filter_map(|entry| {
+            let id = entry.get("id").and_then(Value::as_str)?.to_string();
+            let display_name = entry
+                .get("displayName")
+                .and_then(Value::as_str)
+                .map(str::to_string);
+            let values = entry
+                .get("values")
+                .and_then(Value::as_array)
+                .map(|values| {
+                    values
+                        .iter()
+                        .filter_map(|v| {
+                            let value = v.get("value").and_then(Value::as_str)?.to_string();
+                            let display_name = v
+                                .get("displayName")
+                                .and_then(Value::as_str)
+                                .map(str::to_string);
+                            Some(CursorModelParameterValue {
+                                value,
+                                display_name,
+                            })
+                        })
+                        .collect()
+                })
+                .unwrap_or_default();
+            Some(CursorModelParameter {
+                id,
+                display_name,
+                values,
+            })
+        })
+        .collect()
+}
+
+// opencode model list — proxied to the sidecar's `client.provider.list()`
+
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct OpencodeModelEntry {
+    // `<providerID>/<modelID>` slug — doubles as the cliModel.
+    pub id: String,
+    pub label: String,
+    // opencode `variants` keys; empty ⟺ no effort switch.
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub effort_levels: Vec<String>,
+}
+
+const LIST_OPENCODE_MODELS_TIMEOUT: std::time::Duration = std::time::Duration::from_secs(30);
+
+pub fn fetch_opencode_models(
+    sidecar: &crate::sidecar::ManagedSidecar,
+    force_reload: bool,
+) -> CmdResult<Vec<OpencodeModelEntry>> {
+    let request_id = Uuid::new_v4().to_string();
+    let sidecar_req = crate::sidecar::SidecarRequest {
+        id: request_id.clone(),
+        method: "listModels".to_string(),
+        params: serde_json::json!({ "provider": "opencode", "forceReload": force_reload }),
+    };
+
+    let rx = sidecar.subscribe(&request_id);
+    if let Err(e) = sidecar.send(&sidecar_req) {
+        sidecar.unsubscribe(&request_id);
+        return Err(anyhow::anyhow!("Sidecar send failed: {e}").into());
+    }
+
+    let mut models: Vec<OpencodeModelEntry> = Vec::new();
+    let mut error: Option<String> = None;
+
+    loop {
+        match rx.recv_timeout(LIST_OPENCODE_MODELS_TIMEOUT) {
+            Ok(event) => match event.event_type() {
+                "modelsListed" => {
+                    if let Some(entries) = event.raw.get("models").and_then(Value::as_array) {
+                        for entry in entries {
+                            let Some(id) = entry.get("id").and_then(Value::as_str) else {
+                                continue;
+                            };
+                            let label = entry
+                                .get("label")
+                                .and_then(Value::as_str)
+                                .unwrap_or(id)
+                                .to_string();
+                            let effort_levels = entry
+                                .get("effortLevels")
+                                .and_then(Value::as_array)
+                                .map(|arr| {
+                                    arr.iter()
+                                        .filter_map(|v| v.as_str().map(str::to_string))
+                                        .collect()
+                                })
+                                .unwrap_or_default();
+                            models.push(OpencodeModelEntry {
+                                id: id.to_string(),
+                                label,
+                                effort_levels,
+                            });
+                        }
+                    }
+                    break;
+                }
+                "error" => {
+                    error = Some(
+                        event
+                            .raw
+                            .get("message")
+                            .and_then(Value::as_str)
+                            .unwrap_or("Unknown error")
+                            .to_string(),
+                    );
+                    break;
+                }
+                _ => {}
+            },
+            Err(std::sync::mpsc::RecvTimeoutError::Timeout) => {
+                error = Some(format!(
+                    "opencode model list timed out after {}s",
+                    LIST_OPENCODE_MODELS_TIMEOUT.as_secs()
+                ));
+                break;
+            }
+            Err(std::sync::mpsc::RecvTimeoutError::Disconnected) => {
+                error = Some("Sidecar disconnected during opencode model list".to_string());
+                break;
+            }
+        }
+    }
+
+    sidecar.unsubscribe(&request_id);
+
+    if let Some(message) = error {
+        return Err(anyhow::anyhow!(message).into());
+    }
+    Ok(models)
+}
+
+// ---------------------------------------------------------------------------
+// Live context-usage (hover popover, Claude only)
+// ---------------------------------------------------------------------------
+
+#[derive(Debug, Clone, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct GetLiveContextUsageRequest {
+    pub session_id: String,
+    pub provider_session_id: Option<String>,
+    /// Model id used by the sidecar and stamped into the returned meta.
+    pub model: String,
+    pub cwd: Option<String>,
+}
+
+/// Slightly longer than the sidecar's own 30 s cap so the timeout surfaces
+/// as a friendly sidecar-side message instead of a Rust-side one.
+const CONTEXT_USAGE_TIMEOUT: std::time::Duration = std::time::Duration::from_secs(32);
+
+pub fn fetch_live_context_usage(
+    sidecar: &crate::sidecar::ManagedSidecar,
+    request: GetLiveContextUsageRequest,
+) -> CmdResult<String> {
+    let request_id = Uuid::new_v4().to_string();
+
+    let mut params = serde_json::Map::new();
+    params.insert(
+        "sessionId".into(),
+        Value::String(request.session_id.clone()),
+    );
+    if let Some(provider_session_id) = request.provider_session_id.as_deref() {
+        params.insert(
+            "providerSessionId".into(),
+            Value::String(provider_session_id.to_string()),
+        );
+    }
+    params.insert("model".into(), Value::String(request.model.clone()));
+    if let Some(cwd) = request.cwd.as_deref() {
+        params.insert("cwd".into(), Value::String(cwd.to_string()));
+    }
+    if let Some(agent_proxy) = super::streaming::load_agent_proxy_setting() {
+        params.insert("agentProxy".into(), agent_proxy);
+    }
+
+    let sidecar_req = crate::sidecar::SidecarRequest {
+        id: request_id.clone(),
+        method: "getContextUsage".to_string(),
+        params: Value::Object(params),
+    };
+
+    let rx = sidecar.subscribe(&request_id);
+    if let Err(e) = sidecar.send(&sidecar_req) {
+        sidecar.unsubscribe(&request_id);
+        return Err(anyhow::anyhow!("getContextUsage sidecar send failed: {e}").into());
+    }
+
+    let result: CmdResult<String> = loop {
+        match rx.recv_timeout(CONTEXT_USAGE_TIMEOUT) {
+            Ok(event) => match event.event_type() {
+                "contextUsageResult" => {
+                    let meta = event
+                        .raw
+                        .get("meta")
+                        .and_then(Value::as_str)
+                        .unwrap_or("")
+                        .to_string();
+                    break Ok(meta);
+                }
+                "error" => {
+                    let msg = event
+                        .raw
+                        .get("message")
+                        .and_then(Value::as_str)
+                        .unwrap_or("Unknown error")
+                        .to_string();
+                    break Err(anyhow::anyhow!("getContextUsage failed: {msg}").into());
+                }
+                _ => {}
+            },
+            Err(std::sync::mpsc::RecvTimeoutError::Timeout) => {
+                break Err(anyhow::anyhow!(
+                    "getContextUsage timed out after {}s",
+                    CONTEXT_USAGE_TIMEOUT.as_secs()
+                )
+                .into());
+            }
+            Err(std::sync::mpsc::RecvTimeoutError::Disconnected) => {
+                break Err(
+                    anyhow::anyhow!("Sidecar disconnected while waiting for context usage").into(),
+                );
+            }
+        }
+    };
+
+    sidecar.unsubscribe(&request_id);
+    result
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn make_request(cwd: Option<&str>, repo_id: Option<&str>) -> ListSlashCommandsRequest {
+        ListSlashCommandsRequest {
+            provider: "claude".to_string(),
+            working_directory: cwd.map(str::to_string),
+            workspace_id: None,
+            repo_id: repo_id.map(str::to_string),
+        }
+    }
+
+    #[test]
+    fn fallback_noop_when_working_directory_already_set() {
+        let req = make_request(Some("/some/path"), Some("r1"));
+        let resolved = resolve_repo_fallback_cwd(req);
+        assert_eq!(resolved.working_directory.as_deref(), Some("/some/path"));
+    }
+
+    #[test]
+    fn fallback_noop_when_repo_id_missing() {
+        let req = make_request(None, None);
+        let resolved = resolve_repo_fallback_cwd(req);
+        assert_eq!(resolved.working_directory, None);
+    }
+
+    #[test]
+    fn fallback_noop_when_repo_id_blank() {
+        let req = make_request(None, Some(""));
+        let resolved = resolve_repo_fallback_cwd(req);
+        assert_eq!(resolved.working_directory, None);
+    }
+
+    fn setup_test_db(dir: &std::path::Path) {
+        let db_path = dir.join("codewit.db");
+        let conn = rusqlite::Connection::open(&db_path).unwrap();
+        crate::schema::ensure_schema(&conn).unwrap();
+        drop(conn);
+        crate::models::db::init_pools().expect("failed to init test DB pools");
+    }
+
+    fn insert_repo(repo_id: &str, root_path: &str) {
+        let db_path = crate::data_dir::data_dir().unwrap().join("codewit.db");
+        let conn = rusqlite::Connection::open(&db_path).unwrap();
+        conn.execute(
+            "INSERT INTO repos (id, name, root_path) VALUES (?1, 'test-repo', ?2)",
+            rusqlite::params![repo_id, root_path],
+        )
+        .unwrap();
+    }
+
+    #[test]
+    fn fallback_resolves_to_repo_root_path() {
+        let dir = tempfile::tempdir().unwrap();
+        let _guard = crate::data_dir::TEST_ENV_LOCK.lock().unwrap();
+        std::env::set_var("CODEWIT_DATA_DIR", dir.path());
+
+        setup_test_db(dir.path());
+        let repo_root = dir.path().join("repo-root");
+        std::fs::create_dir(&repo_root).unwrap();
+        insert_repo("r1", repo_root.to_str().unwrap());
+
+        let req = make_request(None, Some("r1"));
+        let resolved = resolve_repo_fallback_cwd(req);
+        assert_eq!(
+            resolved.working_directory.as_deref(),
+            Some(repo_root.to_str().unwrap())
+        );
+
+        std::env::remove_var("CODEWIT_DATA_DIR");
+    }
+
+    #[test]
+    fn fallback_noop_when_repo_root_path_does_not_exist() {
+        let dir = tempfile::tempdir().unwrap();
+        let _guard = crate::data_dir::TEST_ENV_LOCK.lock().unwrap();
+        std::env::set_var("CODEWIT_DATA_DIR", dir.path());
+
+        setup_test_db(dir.path());
+        // Insert a repo whose root_path points at a directory that doesn't
+        // exist — guards the start-page case where the user deleted the
+        // working tree behind Codewit's back.
+        insert_repo("r1", "/nonexistent/path/for/test");
+
+        let req = make_request(None, Some("r1"));
+        let resolved = resolve_repo_fallback_cwd(req);
+        assert_eq!(resolved.working_directory, None);
+
+        std::env::remove_var("CODEWIT_DATA_DIR");
+    }
+
+    #[test]
+    fn fallback_noop_when_repo_not_in_db() {
+        let dir = tempfile::tempdir().unwrap();
+        let _guard = crate::data_dir::TEST_ENV_LOCK.lock().unwrap();
+        std::env::set_var("CODEWIT_DATA_DIR", dir.path());
+
+        setup_test_db(dir.path());
+        // No insert_repo — DB lookup returns Ok(None).
+
+        let req = make_request(None, Some("ghost-repo"));
+        let resolved = resolve_repo_fallback_cwd(req);
+        assert_eq!(resolved.working_directory, None);
+
+        std::env::remove_var("CODEWIT_DATA_DIR");
+    }
+
+    #[test]
+    fn detect_title_providers_dedupes_in_priority_order() {
+        let dir = tempfile::tempdir().unwrap();
+        let _guard = crate::data_dir::TEST_ENV_LOCK.lock().unwrap();
+        std::env::set_var("CODEWIT_DATA_DIR", dir.path());
+        setup_test_db(dir.path());
+
+        // Nothing configured → [claude].
+        assert_eq!(detect_title_providers(), vec!["claude".to_string()]);
+
+        // default only → [its provider].
+        crate::settings::upsert_setting_value("app.default_model_id", "cursor-gpt-5.3-codex")
+            .unwrap();
+        assert_eq!(detect_title_providers(), vec!["cursor".to_string()]);
+
+        // review (codex) leads, default (cursor) follows.
+        crate::settings::upsert_setting_value("app.review_model_id", "gpt-5.5").unwrap();
+        assert_eq!(
+            detect_title_providers(),
+            vec!["codex".to_string(), "cursor".to_string()]
+        );
+
+        // action (claude) leads the deduped chain.
+        crate::settings::upsert_setting_value("app.pr_model_id", "sonnet").unwrap();
+        assert_eq!(
+            detect_title_providers(),
+            vec![
+                "claude".to_string(),
+                "codex".to_string(),
+                "cursor".to_string()
+            ]
+        );
+
+        // Duplicate providers collapse: review → another claude model is skipped.
+        crate::settings::upsert_setting_value("app.review_model_id", "haiku").unwrap();
+        assert_eq!(
+            detect_title_providers(),
+            vec!["claude".to_string(), "cursor".to_string()]
+        );
+
+        std::env::remove_var("CODEWIT_DATA_DIR");
+    }
+
+    #[test]
+    fn build_title_attempts_chains_providers_without_custom() {
+        let dir = tempfile::tempdir().unwrap();
+        let _guard = crate::data_dir::TEST_ENV_LOCK.lock().unwrap();
+        std::env::set_var("CODEWIT_DATA_DIR", dir.path());
+        setup_test_db(dir.path());
+
+        // pr=codex, default=cursor → providers [codex, cursor]; no custom set.
+        crate::settings::upsert_setting_value("app.pr_model_id", "gpt-5.5").unwrap();
+        crate::settings::upsert_setting_value("app.default_model_id", "cursor-gpt-5.3-codex")
+            .unwrap();
+
+        let attempts = build_title_attempts();
+        let chain: Vec<&str> = attempts
+            .iter()
+            .map(|a| a.get("provider").unwrap().as_str().unwrap())
+            .collect();
+        assert_eq!(chain, vec!["codex", "cursor"]);
+        // No custom configured → no attempt carries an explicit model.
+        assert!(attempts.iter().all(|a| a.get("model").is_none()));
+
+        std::env::remove_var("CODEWIT_DATA_DIR");
+    }
+}

@@ -1,0 +1,230 @@
+/**
+ * Provider-agnostic SessionManager interface. Both
+ * `ClaudeSessionManager` and `CodexSessionManager` implement this so
+ * the entry point in `index.ts` can dispatch by provider without knowing
+ * any SDK-specific details.
+ */
+
+import type { AgentProxySettings } from "./agent-proxy.js";
+import type { SidecarEmitter } from "./emitter.js";
+
+export type Provider = "claude" | "codex" | "cursor" | "opencode";
+
+export interface SendMessageParams {
+	readonly sessionId: string;
+	readonly prompt: string;
+	readonly model: string | undefined;
+	readonly cwd: string | undefined;
+	readonly resume: string | undefined;
+	readonly permissionMode: string | undefined;
+	readonly effortLevel: string | undefined;
+	readonly fastMode: boolean | undefined;
+	/** Mirrors the Claude Agent SDK's `thinking.display` field. When
+	 *  absent, the manager falls back to its hardcoded default. */
+	readonly claudeThinkingDisplay?: "summarized" | "omitted";
+	readonly claudeEnvironment?: Readonly<Record<string, string>>;
+	readonly agentProxy?: AgentProxySettings;
+	/**
+	 * Extra directories the user linked via `/add-dir`. Passed to Claude as
+	 * `additionalDirectories`; merged into Codex's per-turn `sandboxPolicy`
+	 * writable roots when the session is in plan mode. Absent for sessions
+	 * with no linked dirs so callers don't need to hand-populate empty
+	 * arrays everywhere.
+	 */
+	readonly additionalDirectories?: readonly string[];
+	/**
+	 * Source repo `root_path` for the workspace this session belongs to.
+	 * Claude uses it to load project-scope MCP servers from
+	 * `~/.claude.json` — `cwd` is the worktree (never matches the user's
+	 * registered project key), so without this hint only user-scope MCPs
+	 * surface to the agent.
+	 */
+	readonly sourceRepoPath?: string;
+	/**
+	 * Structured image attachment paths from the composer. The single
+	 * source of truth for which `@<path>` substrings inside `prompt`
+	 * should be lifted out as image attachments. Paths may contain
+	 * whitespace (macOS Finder drops); never re-derive this list from
+	 * the prompt text. Always present — empty array means "no
+	 * attachments".
+	 */
+	readonly images: readonly string[];
+}
+
+export interface ListSlashCommandsParams {
+	readonly cwd: string | undefined;
+	readonly additionalDirectories?: readonly string[];
+}
+
+/**
+ * Ad-hoc context-usage query for the hover popover. `providerSessionId`
+ * is the SDK's own session id (what `resume:` takes) — used when no live
+ * `Query` is held for this codewit session. `model` is the composer's
+ * current model id; `cwd` lets the transient query load project settings.
+ */
+export interface GetContextUsageParams {
+	readonly codewitSessionId: string;
+	readonly providerSessionId: string | null;
+	readonly model: string;
+	readonly cwd: string | undefined;
+	readonly agentProxy?: AgentProxySettings;
+}
+
+export interface GenerateTitleOptions {
+	readonly model?: string;
+	readonly claudeEnvironment?: Readonly<Record<string, string>>;
+	readonly agentProxy?: AgentProxySettings;
+	/** When false, only the title is requested — branch generation is omitted
+	 * from the prompt entirely (saves tokens for local-mode workspaces and
+	 * any other case where the caller has no intent to rename a branch). */
+	readonly generateBranch?: boolean;
+}
+
+/**
+ * One slash-command entry exposed to the composer popup. Mirrors the Claude
+ * Agent SDK's `SlashCommand` shape so the Claude path is a 1:1 forward, and
+ * the Codex path (skill scanner) maps onto the same fields.
+ */
+export interface SlashCommandInfo {
+	readonly name: string;
+	readonly description: string;
+	readonly argumentHint: string | undefined;
+	readonly source: "builtin" | "skill";
+}
+
+/**
+ * Generic resolution for a unified `userInputRequest` round-trip. Every
+ * source (Claude AskUserQuestion, Claude MCP elicitation, Codex
+ * `requestUserInput`) emits the same wire event and accepts the same
+ * response shape; per-provider conversion to the SDK-specific form
+ * happens inside each manager's resolver closure.
+ */
+export type UserInputResolution =
+	| {
+			action: "submit";
+			content: Record<string, unknown>;
+			/** Provider-specific meta (e.g. Codex `{ persist: "session" | "always" }`). */
+			meta?: Record<string, unknown>;
+	  }
+	| {
+			action: "decline";
+			content?: Record<string, unknown>;
+			meta?: Record<string, unknown>;
+	  }
+	| { action: "cancel" };
+
+/** Mirrors `ModelParameterDefinition` from @cursor/sdk. Single source of
+ *  truth for derived `effortLevels`/`supportsFastMode` + send-time params. */
+export interface CursorModelParameter {
+	readonly id: string;
+	readonly displayName?: string;
+	readonly values: ReadonlyArray<{
+		readonly value: string;
+		readonly displayName?: string;
+	}>;
+}
+
+/** A model entry returned by listModels. Provider is implicit. */
+export interface ProviderModelInfo {
+	readonly id: string;
+	readonly label: string;
+	readonly cliModel: string;
+	readonly effortLevels?: readonly string[];
+	readonly supportsFastMode?: boolean;
+	/** Cursor-only — raw `parameters[]` from `ModelListItem`. */
+	readonly cursorParameters?: readonly CursorModelParameter[];
+}
+
+export interface SessionManager {
+	/**
+	 * Resolve a parked unified `userInputRequest`. Each manager translates
+	 * the generic `UserInputResolution` into the SDK-specific shape that
+	 * its own pending-resolver closure expects (e.g. AskUserQuestion's
+	 * `updatedInput`, MCP `ElicitationResult`, or Codex `answers`).
+	 *
+	 * Returns `true` when the manager owned this id and resolved its
+	 * waiter, `false` when not in its pending map. `index.ts` fans the
+	 * call out to every provider and at least one is expected to claim
+	 * it; if none does, the dispatcher reports an error to the caller.
+	 */
+	resolveUserInput(
+		userInputId: string,
+		resolution: UserInputResolution,
+	): boolean;
+
+	/**
+	 * Stream a single user turn to the underlying provider SDK and forward
+	 * every event back through `emitter`. Resolves when the stream
+	 * terminates (end / aborted / error). Implementations must always emit
+	 * exactly one terminal event.
+	 */
+	sendMessage(
+		requestId: string,
+		params: SendMessageParams,
+		emitter: SidecarEmitter,
+	): Promise<void>;
+
+	/**
+	 * Generate a short session title from the user's first message and
+	 * emit exactly one `titleGenerated` event.
+	 */
+	generateTitle(
+		requestId: string,
+		userMessage: string,
+		branchRenamePrompt: string | null,
+		emitter: SidecarEmitter,
+		timeoutMs?: number,
+		options?: GenerateTitleOptions,
+	): Promise<void>;
+
+	/**
+	 * List the slash commands available for the composer popup. Claude
+	 * delegates to the SDK control protocol; Codex walks the documented
+	 * skill directories on disk. Both return the same shape so the
+	 * frontend doesn't have to branch.
+	 */
+	listSlashCommands(
+		params: ListSlashCommandsParams,
+	): Promise<readonly SlashCommandInfo[]>;
+
+	/** List available models. `apiKey` overrides the manager's stored key
+	 *  for one-off probes (e.g. onboarding validation); when omitted the
+	 *  manager uses whatever it has configured. `forceReload` (opencode only)
+	 *  restarts the model server to pick up a just-written config change. */
+	listModels(opts?: {
+		apiKey?: string;
+		forceReload?: boolean;
+	}): Promise<readonly ProviderModelInfo[]>;
+
+	/**
+	 * Abort an in-flight session by id. No-op if the session is not active.
+	 */
+	stopSession(sessionId: string): Promise<void>;
+
+	/**
+	 * Inject an additional user message into an in-flight turn (real
+	 * mid-turn steer). Returns `true` when the input was delivered to
+	 * the provider, `false` when no active turn exists for `sessionId`.
+	 * Implementations MUST confirm provider acceptance before emitting
+	 * any pipeline event — a failed steer must not pollute the stream.
+	 * Throws on SDK-level rejection.
+	 */
+	steer(
+		sessionId: string,
+		prompt: string,
+		files: readonly string[],
+		images: readonly string[],
+	): Promise<boolean>;
+
+	/**
+	 * Tear down every in-flight session this manager owns. Called when the
+	 * sidecar is shutting down (parent process is exiting). Implementations
+	 * must release SDK resources — Claude's `Query.close()`, Codex's
+	 * `AbortController.abort()` — so the underlying CLI children get a
+	 * chance to exit on their own before the sidecar is killed.
+	 *
+	 * Must not throw. Returns when every owned session has been signalled
+	 * (not necessarily after the underlying CLIs have actually exited).
+	 */
+	shutdown(): Promise<void>;
+}

@@ -1,0 +1,36 @@
+---
+source: tests/stream_bridge_events.rs
+expression: snapshot
+---
+line_count: 1
+control_events:
+  - kind: userInputRequest
+    message: Codex needs your input.
+    modelId: model-id
+    payload:
+      kind: form
+      schema:
+        properties:
+          approval:
+            description: Approve plan?
+            oneOf:
+              - const: "Yes"
+                description: Proceed
+                title: "Yes"
+              - const: "No"
+                description: Stop
+                title: "No"
+            title: Approval
+            type: string
+        required:
+          - approval
+        type: object
+    permissionMode: default
+    provider: codex
+    resolvedModel: test-model
+    sessionId: provider-session-1
+    source: Codex
+    userInputId: user-input-1
+    workingDirectory: /tmp/codewit
+final_messages: []
+dropped_event_types: []

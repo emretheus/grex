@@ -1,0 +1,86 @@
+{
+	"$schema": "https://schema.tauri.app/config/2",
+	"productName": "Codewit",
+	"version": "0.1.0",
+	"identifier": "ai.codewit.desktop",
+	"build": {
+		"beforeDevCommand": "bun x vite",
+		"devUrl": "http://localhost:1420",
+		"beforeBuildCommand": "node scripts/prepare-sidecar.mjs && bun run build",
+		"frontendDist": "../dist"
+	},
+	"plugins": {
+		"deep-link": {
+			"desktop": {
+				"schemes": [
+					"codewit",
+					"codewit-dev"
+				]
+			}
+		},
+		"updater": {
+			"pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDc2NTAwQTQ2NUMzNDk2RTQKUldUa2xqUmNSZ3BRZGtsT3pQbFhGQkxxdmZ3bzdxUnZzdFBIR0ZENng2YzEvYy9kcWcrekEyU24K",
+			"endpoints": [
+				"https://github.com/emretheus/codewit/releases/latest/download/latest.json"
+			]
+		}
+	},
+	"app": {
+		"macOSPrivateApi": true,
+		"windows": [
+			{
+				"title": "Codewit",
+				"width": 1300,
+				"height": 810,
+				"minWidth": 900,
+				"minHeight": 600,
+				"titleBarStyle": "Overlay",
+				"trafficLightPosition": {
+					"x": 12,
+					"y": 20
+				},
+				"hiddenTitle": true,
+				"center": true,
+				"backgroundColor": "#0E0E0E"
+			}
+		],
+		"security": {
+			"csp": null,
+			"assetProtocol": {
+				"enable": true,
+				"scope": {
+					"allow": [
+						"**"
+					]
+				}
+			}
+		}
+	},
+	"bundle": {
+		"active": true,
+		"createUpdaterArtifacts": true,
+		"targets": "all",
+		"externalBin": [
+			"../sidecar/dist/codewit-sidecar",
+			"./target/bundled/codewit-cli"
+		],
+		"resources": {
+			"../sidecar/dist/vendor/": "vendor"
+		},
+		"icon": [
+			"icons/32x32.png",
+			"icons/128x128.png",
+			"icons/128x128@2x.png",
+			"icons/icon.ico",
+			"icons/icon.icns"
+		],
+		"macOS": {
+			"entitlements": "Entitlements.plist"
+		},
+		"windows": {
+			"nsis": {
+				"installMode": "currentUser"
+			}
+		}
+	}
+}
