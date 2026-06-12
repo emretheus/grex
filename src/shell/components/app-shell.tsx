@@ -169,6 +169,7 @@ export function AppShell({
 				onOpenStartContextCard: sel.contextPanelActions.openStartContextCard,
 				onOpenWorkspaceContextCard:
 					sel.contextPanelActions.openWorkspaceContextCard,
+				onBackToInspector: () => sel.contextPanelActions.setMode("inspector"),
 				// Settle-gated id for the inspector's git-diff. Matches the settled
 				// `selectedWorkspaceDetail` / `workspaceRootPath` below so the diff
 				// query key stays internally consistent during a rapid-switch burst.
