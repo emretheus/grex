@@ -1,7 +1,5 @@
 <svg width="1024" height="1024" viewBox="0 0 1024 1024" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <!-- Codewit mark: hexagonal "C" (blue) + ">" chevron (green) = a code prompt. -->
-  <path d="M578 300 L318 300 L198 512 L318 724 L578 724"
-        stroke="#1B5BFF" stroke-width="102" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" fill="none"/>
-  <path d="M616 344 L826 512 L616 680"
-        stroke="#16C98C" stroke-width="96" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" fill="none"/>
+  <!-- Codewit mark: octagonal blue "C" + green ">" chevron (a code prompt). -->
+  <path fill="#1B5BFF" d="M652 284 L360 284 L224 392 L224 632 L360 740 L652 740 L558 660 L430 660 L330 560 L330 464 L430 364 L558 364 Z"/>
+  <path d="M652 392 L862 512 L652 632" stroke="#16C98C" stroke-width="94" fill="none" stroke-linejoin="miter" stroke-miterlimit="10" stroke-linecap="butt"/>
 </svg>

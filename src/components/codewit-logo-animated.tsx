@@ -82,17 +82,14 @@ function CodewitLogoCss({
 		>
 			<path
 				className="codewit-logo-anim-piece codewit-logo-anim-c"
-				d="M578 300 L318 300 L198 512 L318 724 L578 724"
-				stroke="#1B5BFF"
-				strokeWidth="102"
-				strokeLinejoin="miter"
-				strokeMiterlimit="10"
+				d="M652 284 L360 284 L224 392 L224 632 L360 740 L652 740 L558 660 L430 660 L330 560 L330 464 L430 364 L558 364 Z"
+				fill="#1B5BFF"
 			/>
 			<path
 				className="codewit-logo-anim-piece codewit-logo-anim-chevron"
-				d="M616 344 L826 512 L616 680"
+				d="M652 392 L862 512 L652 632"
 				stroke="#16C98C"
-				strokeWidth="96"
+				strokeWidth="94"
 				strokeLinejoin="miter"
 				strokeMiterlimit="10"
 			/>
