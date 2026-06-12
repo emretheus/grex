@@ -160,12 +160,12 @@ describe("threadBootstrap", () => {
       interactionMode: "default",
       envMode: undefined,
       lastKnownPr: null,
-      linkedIssue: null,
+      linkedIssues: [],
     });
     expect(createActiveDraftThreadSnapshot(makeDraftThread(), PROJECT_ID)).toEqual({
       ...makeDraftThread(),
       lastKnownPr: null,
-      linkedIssue: null,
+      linkedIssues: [],
     });
   });
 
@@ -236,7 +236,7 @@ describe("threadBootstrap", () => {
       branch: "feature/terminal-bootstrap",
       worktreePath: "/repo/.worktrees/terminal-bootstrap",
       lastKnownPr: null,
-      linkedIssue: null,
+      linkedIssues: [],
     });
   });
 

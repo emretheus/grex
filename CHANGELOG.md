@@ -1,5 +1,45 @@
 # Changelog
 
+## 0.3.0 - 2026-06-12
+
+### Added
+
+- Added a full-screen editor workspace (`EditorWorkspaceView`) reachable via a `view=editor` route param and a `ChatHeader` toggle: a three-pane shell (activity bar, file/diff sidebar, an editable Monaco center reusing `DockEditorPane`, and a resizable/collapsible chat pane). Sidebar files can be dragged or right-clicked into the chat composer, and per-thread shell preferences persist via `editorWorkspaceViewState`.
+- Added cross-panel chat-reference plumbing so the file explorer, editor, and diff headers can push references into the active thread's composer — `chatReferences` (`@path` mentions, line/column labels, fenced snippets, "why changed" prompts), a `composerFocusRequestStore` focus nonce that `ChatView` subscribes to, and a floating "Add to chat" action (`useCodeSelectionAction`) over code surfaces.
+- Added live provider usage tracking: a server `providerUsage/` pipeline with per-provider fetchers (Codex via `~/.codex/auth.json` → ChatGPT `backend-api/wham/usage`, plus Claude, Cursor, and Gemini) reporting rolling 5h and weekly windows, a `ProviderHealth` layer, SQLite-backed snapshot storage, a `ProviderUsageSettingsPanel`, and a `ProviderUsageMenuControl` chip in the chat header and Environment panel.
+- Added per-thread transcript markers (highlight/underline) with full server-side projection and sync — new `thread.marker.*` decider cases, the `044_ProjectionThreadsMarkers` migration, shared `threadMarkers` logic, and an `EnvironmentMarkersSection`.
+- Added inline link chips and site favicons in chat markdown (`InlineLinkChip`, `LinkChipIcon`, `SiteFavicon`) backed by a server-side `siteFaviconCache` (500-entry LRU, 24h success TTL) that gives every domain one outbound fetch and one cached blob.
+- Added three new coding-agent providers — `qwenCode`, `auggie`, and `goose` — wired through `ProviderKind`, model-options contracts, orchestration start-options, provider ordering, and the composer provider registry, raising the supported-provider count from eight to eleven.
+- Added a commit history panel (`GitHistoryPanel`) reachable via a Changes / History switcher in the Git dock pane: a `git.log` RPC (`GitCore.readLog`) feeding a pure-JS topology layout rendered as an inline SVG branch graph with ref-decoration chips and relative timestamps, plus a `git.show` commit-detail RPC and an in-panel Commit & Push UI.
+- Added a live file-watch channel: a ref-counted, 200ms-debounced `WorkspaceFileWatcher` (`fs.watch` per cwd) broadcasting `WorkspaceFileChangeEvent` over a subscribe/unsubscribe stream RPC, with a `useWorkspaceFileWatch` hook that reloads changed directories and auto-invalidates git React Query state — no polling.
+- Added a split editor to the Editor dock pane: a "Split editor" button opens the active file in a second side-by-side panel with a drag divider (clamped 20–80%), per-thread persisted split width, and Cmd+S saving the last-focused surface.
+- Added hunk-level git staging: a `git.applyPatch` RPC (`git apply --cached`/`--reverse` over stdin), client-side `patchManipulation` that reconstructs valid unified diffs from `@pierre/diffs` metadata, and a `HunkActionsPanel` in `GitPanel` exposing per-hunk Stage/Discard (unstaged) and Unstage (staged) actions.
+- Added pull-request creation from the source-control panel — a `CreatePullRequestDialog` with base-branch selector, optional title/body, and a draft toggle that reuses the `create_pr` stacked action (now accepting `prTitle`/`prBody`/`prBaseBranch`/`prDraft` overrides; `gh pr create` gained `--draft`), plus a "View PR" row when an open PR already tracks the branch.
+- Added editable diff tabs: a changed file opens as a Monaco diff editor with the committed (HEAD) version on the left and the editable working-tree file on the right (saved with Cmd/Ctrl+S), backed by a new `git.readFileAtRef` RPC and an `openDiff` editor-store action, reachable from the git panel and the file-tree context menu.
+- Added git-status colors and badges (added/modified/deleted/renamed) to file-tree rows, derived from the working-tree patch the diff panel already fetches (no new RPC), plus a right-click context menu (Open, Copy path, Copy relative path, Reveal in file manager).
+- Added discard actions to the source-control panel — a per-file trash button and a "Discard all" header action behind confirm dialogs — backed by a `git.discardFiles` RPC that reverts tracked files to HEAD and removes untracked files, splitting the two server-side so git never aborts on an unmatched pathspec.
+- Added a separate optional commit-description field to the commit dialog, combined with the summary the git-convention way (summary, blank line, description) via `combineCommitMessage`.
+- Added a branded bottom-left "update available" popout card (`DesktopUpdatePopoutCard` / `useDesktopUpdatePopout`) with Download → Restart & install actions and per-version dismissal, matching the post-update What's New card, plus a `VITE_PREVIEW_UPDATE_CARD` dev-only preview flag.
+
+### Changed
+
+- Replaced the colored letter-monogram provider marks in Settings → Integrations with each tracker's official inline-SVG brand logo (theme-aware for monochrome marks) and relaid the section from a single-column list into a responsive two-column card grid showing logo, name, description, and a compact connect/disconnect action.
+- Extracted the file tree into a shared `WorkspaceFileTree` component (lazy directory listing, git-status colors, live file-watch) now used by both `DockFilesPane` and the new workspace sidebar.
+- Reworked the Environment panel to add Usage and Markers sections and removed the legacy "Editor / Open in Finder" row.
+- Hardened workspace file reads/writes with a `realPathContainment` guard that resolves paths through `fs.realpath` after the existing string-level check — handling not-yet-existing targets via the nearest existing ancestor and canonicalizing symlinked roots — so an in-root symlink cannot escape the workspace.
+
+### Fixed
+
+- Fixed an infinite render loop ("Maximum update depth exceeded") that crashed the Files/Editor dock pane when opened on a thread with no editor state yet: `selectThreadEditorState` now returns a single stable empty value instead of a freshly built object on every call.
+
+### Verification
+
+- `bun run fmt:check`
+- `bun run lint` (passes with existing warnings, 0 errors)
+- `bun run typecheck` (8/8 packages)
+- `bun run test`
+- Web production build (`@t3tools/web`)
+
 ## 0.2.0 - 2026-06-08
 
 ### Added
