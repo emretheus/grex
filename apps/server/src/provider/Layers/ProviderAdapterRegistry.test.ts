@@ -207,7 +207,6 @@ const fakeGooseAdapter: GooseAdapterShape = {
   streamEvents: Stream.empty,
 };
 
-
 const layer = it.layer(
   Layer.mergeAll(
     Layer.provide(

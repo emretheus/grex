@@ -27,7 +27,7 @@ import GitActionsControl from "~/components/GitActionsControl";
 import { IssueLinkControl } from "~/components/integrations/IssueLinkControl";
 import { IconButton } from "~/components/ui/icon-button";
 import type { RepoDiffTotals } from "~/hooks/useRepoDiffTotals";
-import { ArrowUpRightIcon, ChangesIcon, GitHubIcon, SettingsIcon } from "~/lib/icons";
+import { ArrowUpRightIcon, ChangesIcon, Columns2Icon, GitHubIcon, SettingsIcon } from "~/lib/icons";
 import { cn } from "~/lib/utils";
 
 import { EnvironmentMarkersSection } from "./EnvironmentMarkersSection";
@@ -108,6 +108,9 @@ export interface EnvironmentPanelProps {
   onNotesChange: (threadId: ThreadId, notes: string) => Promise<void>;
   /** Dismiss the panel overlay — invoked after actions that open the dock. */
   onClose: () => void;
+  /** When provided, the Editor section shows an "Editor view" row that opens the
+   *  full-screen editor workspace. */
+  onOpenEditorView?: () => void;
   /** Active provider for usage display. */
   activeProvider?: ProviderKind | null;
   /** Linked issue config for the issue link section. When omitted the section is hidden. */
@@ -191,6 +194,7 @@ export function EnvironmentPanel({
   onRenamePinnedMessage,
   onNotesChange,
   onClose,
+  onOpenEditorView,
   issueLinkControl = null,
   activeProvider = null,
   threadMarkers = null,
@@ -256,9 +260,7 @@ export function EnvironmentPanel({
             linkedIssues={issueLinkControl.linkedIssues}
             hasServerThread={issueLinkControl.hasServerThread}
             variant="panel"
-            {...(issueLinkControl.projectPath
-              ? { projectPath: issueLinkControl.projectPath }
-              : {})}
+            {...(issueLinkControl.projectPath ? { projectPath: issueLinkControl.projectPath } : {})}
           />
         </>
       ) : null}
@@ -277,6 +279,23 @@ export function EnvironmentPanel({
               }
               onClick={() => {
                 onOpenGithubRepository(githubRepository.url);
+                onClose();
+              }}
+            />
+          </div>
+          <div className={PANEL_DIVIDER_CLASS_NAME} />
+        </>
+      ) : null}
+
+      {onOpenEditorView ? (
+        <>
+          <div className="flex flex-col gap-0.5">
+            <EnvironmentSectionLabel>Editor</EnvironmentSectionLabel>
+            <EnvironmentRow
+              icon={<Columns2Icon className={ENVIRONMENT_ROW_ICON_CLASS_NAME} aria-hidden />}
+              label="Editor view"
+              onClick={() => {
+                onOpenEditorView();
                 onClose();
               }}
             />

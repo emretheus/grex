@@ -18,7 +18,14 @@ import { HiMiniArrowsPointingOut } from "react-icons/hi2";
 import { TbExchange } from "react-icons/tb";
 import type { ThreadPrimarySurface } from "../../types";
 import GitActionsControl from "../GitActionsControl";
-import { ArrowRightIcon, HandoffIcon, PanelRightCloseIcon, TerminalIcon, XIcon } from "~/lib/icons";
+import {
+  ArrowRightIcon,
+  Columns2Icon,
+  HandoffIcon,
+  PanelRightCloseIcon,
+  TerminalIcon,
+  XIcon,
+} from "~/lib/icons";
 import {
   CHAT_HEADER_TOGGLE_CLASS_NAME,
   ChatHeaderButton,
@@ -103,6 +110,8 @@ interface ChatHeaderProps {
   onNavigateToThread: (threadId: ThreadId) => void;
   onRenameThread: () => void;
   onCloseThreadPane?: () => void;
+  /** When provided, renders an "Editor view" toggle button in the header toolbar. */
+  onOpenEditorView?: () => void;
 }
 
 export type ChatHeaderThreadIconKind = "none" | "provider" | "terminal";
@@ -157,6 +166,7 @@ export const ChatHeader = memo(function ChatHeader({
   onNavigateToThread,
   onRenameThread,
   onCloseThreadPane,
+  onOpenEditorView,
 }: ChatHeaderProps) {
   const { isMobile, state } = useSidebar();
   const headerRef = useRef<HTMLDivElement>(null);
@@ -438,6 +448,24 @@ export const ChatHeader = memo(function ChatHeader({
               }
             />
             <TooltipPopup side="bottom">{changeThreadAction.label}</TooltipPopup>
+          </Tooltip>
+        ) : null}
+
+        {/* Editor workspace view toggle — navigates to the full-screen editor layout. */}
+        {onOpenEditorView && !isDisposableThread ? (
+          <Tooltip>
+            <TooltipTrigger
+              render={
+                <ChatHeaderIconButton
+                  type="button"
+                  label="Open editor workspace"
+                  onClick={onOpenEditorView}
+                >
+                  <Columns2Icon className="size-3.5" />
+                </ChatHeaderIconButton>
+              }
+            />
+            <TooltipPopup side="bottom">Open editor workspace</TooltipPopup>
           </Tooltip>
         ) : null}
 

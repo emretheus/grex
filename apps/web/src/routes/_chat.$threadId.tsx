@@ -29,6 +29,8 @@ import { Schema } from "effect";
 import ChatView from "../components/ChatView";
 import BrowserPanel from "../components/BrowserPanel";
 import { ProviderIcon } from "../components/ProviderIcon";
+import { EditorWorkspaceView } from "../components/EditorWorkspaceView";
+import { useEditorStore } from "../editorStore";
 import { ChatPaneDropOverlay } from "../components/chat-drop-overlay/ChatPaneDropOverlay";
 import { DiffWorkerPoolProvider } from "../components/DiffWorkerPoolProvider";
 import {
@@ -91,6 +93,7 @@ import { toastManager } from "../components/ui/toast";
 import { useStore } from "../store";
 import {
   createAllThreadsSelector,
+  createProjectSelector,
   createSidebarThreadSummariesSelector,
   createThreadExistsSelector,
   createThreadProjectIdSelector,
@@ -120,7 +123,7 @@ import {
   CHAT_ROUTE_INSET_SHELL_CLASS_NAME,
 } from "../components/chat/composerPickerStyles";
 import { cn } from "~/lib/utils";
-import { SidebarInset } from "~/components/ui/sidebar";
+import { SidebarInset, useSidebar } from "~/components/ui/sidebar";
 
 const DiffPanel = lazy(() => import("../components/DiffPanel"));
 // Open the dock as a true 50/50 split of the chat area: `50vw - 8rem` is half the
@@ -138,6 +141,17 @@ const SPLIT_RATIO_MAX = 0.75;
 
 const allowAnySplitDirection = (_direction: SplitDirection) => true;
 const noop = () => {};
+
+// Static panel state for the editor-workspace embedded chat: it owns no
+// right-side panels (diff/browser live in the editor shell), so every field is
+// inert. Module-scoped so the reference stays stable across renders.
+const EDITOR_CHAT_PANEL_STATE: SplitViewPanePanelState = {
+  panel: null,
+  diffTurnId: null,
+  diffFilePath: null,
+  hasOpenedPanel: false,
+  lastOpenPanel: "browser",
+};
 
 function clampSplitRatio(value: number): number {
   if (!Number.isFinite(value)) return 0.5;
@@ -625,6 +639,8 @@ function DeferredChatView(props: {
   onChangeThread?: () => void;
   onCloseThreadPane?: () => void;
   onMounted?: () => void;
+  onOpenEditorView?: () => void;
+  editorPresentation?: boolean;
 }) {
   const onMounted = props.onMounted ?? noop;
   const mountKey = `${props.paneScopeId}:${props.threadId}`;
@@ -675,6 +691,8 @@ function DeferredChatView(props: {
       {...(props.onMaximize ? { onMaximizeSurface: props.onMaximize } : {})}
       {...(props.onChangeThread ? { onChangeThreadInSplitPane: props.onChangeThread } : {})}
       {...(props.onCloseThreadPane ? { onCloseThreadPane: props.onCloseThreadPane } : {})}
+      {...(props.onOpenEditorView ? { onOpenEditorView: props.onOpenEditorView } : {})}
+      {...(props.editorPresentation ? { editorPresentation: true } : {})}
     />
   );
 }
@@ -1412,6 +1430,15 @@ function SingleChatSurface(props: {
     });
   }, [createSplitView, navigate, props.projectId, props.threadId]);
 
+  const handleOpenEditorView = useCallback(() => {
+    void navigate({
+      to: "/$threadId",
+      params: { threadId: props.threadId },
+      replace: true,
+      search: (previous) => ({ ...previous, view: "editor" as const }),
+    });
+  }, [navigate, props.threadId]);
+
   const handleDropThread = useCallback(
     (payload: { threadId: ThreadIdType; direction: SplitDirection; side: SplitDropSide }) => {
       if (!props.projectId) return;
@@ -1722,6 +1749,7 @@ function SingleChatSurface(props: {
             onOpenBrowserUrl={handleOpenBrowserUrl}
             onOpenTurnDiff={handleOpenTurnDiff}
             onSplitSurface={handleSplitSurface}
+            onOpenEditorView={handleOpenEditorView}
           />
         </SidebarInset>
       </ChatPaneDropOverlay>
@@ -1743,6 +1771,101 @@ function SingleChatSurface(props: {
         renderPane={renderDockPane}
       />
     </div>
+  );
+}
+
+// Thin wrapper that renders the full-screen editor workspace with the standard
+// chat surface as the right-side chat panel.
+function EditorWorkspaceSurface(props: {
+  threadId: ThreadIdType;
+  projectId: ProjectId | null;
+  search: DiffRouteSearch;
+}) {
+  const navigate = useNavigate();
+  const openFile = useEditorStore((s) => s.openFile);
+
+  // The editor workspace is full-bleed: collapse the app (Threads/Projects)
+  // sidebar while it's open and restore whatever state it had on exit, so the
+  // three editor panes own the whole window like a dedicated IDE view.
+  const { open: appSidebarOpen, setOpen: setAppSidebarOpen } = useSidebar();
+  const restoreAppSidebarOpenRef = useRef(appSidebarOpen);
+  useEffect(() => {
+    const restore = restoreAppSidebarOpenRef.current;
+    setAppSidebarOpen(false);
+    return () => setAppSidebarOpen(restore);
+    // Snapshot the entry state once; we deliberately do not re-run on toggles.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [setAppSidebarOpen]);
+
+  const threadSelector = useMemo(() => createProjectSelector(props.projectId), [props.projectId]);
+  const project = useStore(threadSelector);
+  // For the worktree path we read directly from thread state; worktreePath is
+  // set on the thread shell when the provider opens a worktree.
+  const worktreePath = useStore(
+    useCallback(
+      (state) => {
+        const shellById = state.threadShellById ?? {};
+        const threadShell = shellById[props.threadId];
+        return threadShell?.worktreePath ?? null;
+      },
+      [props.threadId],
+    ),
+  );
+
+  const workspaceRoot = worktreePath ?? project?.cwd ?? null;
+  const projectName = project?.name ?? null;
+
+  const handleExitEditorView = useCallback(() => {
+    void navigate({
+      to: "/$threadId",
+      params: { threadId: props.threadId },
+      replace: true,
+      search: (previous) => ({ ...previous, view: undefined, editorFilePath: undefined }),
+    });
+  }, [navigate, props.threadId]);
+
+  const handleSelectFile = useCallback(
+    (path: string) => {
+      openFile(props.threadId, path);
+      void navigate({
+        to: "/$threadId",
+        params: { threadId: props.threadId },
+        replace: true,
+        search: (previous) => ({ ...previous, editorFilePath: path }),
+      });
+    },
+    [navigate, openFile, props.threadId],
+  );
+
+  // Slim, embedded chat: render ChatView directly in editor presentation so it
+  // drops the full-width chrome (Environment overlay, split/maximize/dock
+  // toggles) and reads as a Cursor-style transcript+composer column.
+  const chatPanel = (
+    <DeferredChatView
+      threadId={props.threadId}
+      paneScopeId={`editor:${props.threadId}`}
+      deferMount={false}
+      surfaceMode="single"
+      isFocusedPane
+      panelState={EDITOR_CHAT_PANEL_STATE}
+      onToggleDiff={noop}
+      onToggleBrowser={noop}
+      onOpenBrowserUrl={noop}
+      onOpenTurnDiff={noop}
+      editorPresentation
+    />
+  );
+
+  return (
+    <EditorWorkspaceView
+      threadId={props.threadId}
+      workspaceRoot={workspaceRoot}
+      projectName={projectName}
+      selectedFilePath={props.search.editorFilePath ?? null}
+      chatPanel={chatPanel}
+      onSelectFile={handleSelectFile}
+      onExitEditorView={handleExitEditorView}
+    />
   );
 }
 
@@ -1815,6 +1938,13 @@ function ChatThreadRouteView() {
 
   if (!routeThreadExists) {
     return <ChatMountSkeleton />;
+  }
+
+  // Full-screen editor workspace view
+  if (search.view === "editor") {
+    return (
+      <EditorWorkspaceSurface threadId={threadId} projectId={activeProjectId} search={search} />
+    );
   }
 
   return <SingleChatSurface threadId={threadId} search={search} projectId={activeProjectId} />;

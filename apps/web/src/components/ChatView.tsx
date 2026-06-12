@@ -269,6 +269,7 @@ import {
   useComposerThreadDraft,
   useEffectiveComposerModelState,
 } from "../composerDraftStore";
+import { useComposerFocusRequestStore } from "../composerFocusRequestStore";
 import {
   appendOriginalTerminalContextBlock,
   appendTerminalContextsToPrompt,
@@ -777,6 +778,14 @@ interface ChatViewProps {
   onMaximizeSurface?: () => void;
   onChangeThreadInSplitPane?: () => void;
   onCloseThreadPane?: () => void;
+  /** When provided, the header renders an "Editor view" toggle button. */
+  onOpenEditorView?: () => void;
+  /**
+   * Renders the chat as a slim transcript+composer column for embedding inside
+   * the editor workspace's right pane: suppresses the Environment overlay and
+   * the layout chrome (split/maximize/dock toggles) that assume full width.
+   */
+  editorPresentation?: boolean;
 }
 
 export default function ChatView({
@@ -793,6 +802,8 @@ export default function ChatView({
   onMaximizeSurface,
   onChangeThreadInSplitPane,
   onCloseThreadPane,
+  onOpenEditorView,
+  editorPresentation = false,
 }: ChatViewProps) {
   const markThreadVisited = useStore((store) => store.markThreadVisited);
   const syncServerShellSnapshot = useStore((store) => store.syncServerShellSnapshot);
@@ -3124,6 +3135,16 @@ export default function ChatView({
       focusComposer();
     });
   }, [focusComposer]);
+  // External panels (diff headers, file explorer, editor preview) bump this nonce
+  // after inserting a reference so the composer visibly receives the text.
+  const composerFocusRequestNonce = useComposerFocusRequestStore((store) =>
+    activeThreadId ? (store.requestsByThreadId[activeThreadId] ?? 0) : 0,
+  );
+  useEffect(() => {
+    if (composerFocusRequestNonce > 0) {
+      scheduleComposerFocus();
+    }
+  }, [composerFocusRequestNonce, scheduleComposerFocus]);
   // Context gate is intentionally prompt-independent so the suggestion list stays
   // mounted while the user types — that lets us animate it closed instead of an
   // abrupt unmount (which jolted the centered composer).
@@ -3555,7 +3576,9 @@ export default function ChatView({
   // The Environment panel replaces the old header diff toggle + footer pickers for normal
   // threads; disposable (temporary/draft) threads keep the legacy inline controls.
   const isDisposableThread = useIsDisposableThread(threadId);
-  const environmentEnabled = !isDisposableThread;
+  // In editor-workspace presentation the chat is a slim embedded column, so the
+  // full-width Environment overlay is suppressed (the editor shell owns layout).
+  const environmentEnabled = !isDisposableThread && !editorPresentation;
   const environmentDefaultOpen = resolveDefaultEnvironmentPanelOpen({
     environmentEnabled,
     isCenteredEmptyLanding,
@@ -7810,6 +7833,7 @@ export default function ChatView({
     onRenamePinnedMessage: handleRenamePinnedMessage,
     onNotesChange: handleNotesChange,
     onClose: () => setEnvironmentPanelOpen(false),
+    ...(onOpenEditorView ? { onOpenEditorView } : {}),
     activeProvider: selectedProvider,
     issueLinkControl: {
       threadId: activeThread.id,
@@ -8387,6 +8411,7 @@ export default function ChatView({
           onNavigateToThread={onNavigateToThread}
           onRenameThread={() => setRenameDialogOpen(true)}
           {...(onCloseThreadPane ? { onCloseThreadPane } : {})}
+          {...(onOpenEditorView ? { onOpenEditorView } : {})}
         />
       </header>
 
