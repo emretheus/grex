@@ -4,9 +4,9 @@
 
 **One minimal desktop app for every AI coding agent.**
 
-Codewit is an open, multi-provider GUI for coding agents — run Claude Code, Codex,
-Cursor, Gemini, Grok, Kilo Code, OpenCode and Pi from a single clean, local-first
-interface, with built-in chat, diff review, a file explorer + editor, and terminals.
+Codewit is an open, multi-provider GUI for coding agents — run Claude Code, Codex, and
+OpenCode from a single clean, local-first interface, with built-in chat, diff review,
+a file explorer + editor, and terminals.
 
 [![Latest release](https://img.shields.io/github/v/release/emretheus/codewit?label=release&labelColor=1c2933&color=0158fd)](https://github.com/emretheus/codewit/releases)
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-1c2933.svg?labelColor=1c2933&color=666)](./LICENSE)
