@@ -34,9 +34,9 @@ const MODEL_SLUG_SET_BY_PROVIDER: Record<ProviderKind, ReadonlySet<ModelSlug>> =
   kilo: new Set(MODEL_OPTIONS_BY_PROVIDER.kilo.map((option) => option.slug)),
   opencode: new Set(MODEL_OPTIONS_BY_PROVIDER.opencode.map((option) => option.slug)),
   pi: new Set<ModelSlug>(),
-  qwenCode: new Set<ModelSlug>(),
-  auggie: new Set<ModelSlug>(),
-  goose: new Set<ModelSlug>(),
+  qwenCode: new Set(MODEL_OPTIONS_BY_PROVIDER.qwenCode.map((option) => option.slug)),
+  auggie: new Set(MODEL_OPTIONS_BY_PROVIDER.auggie.map((option) => option.slug)),
+  goose: new Set(MODEL_OPTIONS_BY_PROVIDER.goose.map((option) => option.slug)),
 };
 
 export interface SelectableModelOption {

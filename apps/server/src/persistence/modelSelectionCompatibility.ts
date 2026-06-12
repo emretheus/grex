@@ -11,7 +11,10 @@ type ModelProviderKind =
   | "grok"
   | "kilo"
   | "opencode"
-  | "pi";
+  | "pi"
+  | "qwenCode"
+  | "auggie"
+  | "goose";
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
@@ -65,7 +68,10 @@ function inferLegacyModelProvider(provider: unknown, model: string): ModelProvid
     provider === "grok" ||
     provider === "kilo" ||
     provider === "opencode" ||
-    provider === "pi"
+    provider === "pi" ||
+    provider === "qwenCode" ||
+    provider === "auggie" ||
+    provider === "goose"
   ) {
     return provider;
   }

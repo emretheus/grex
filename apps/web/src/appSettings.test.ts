@@ -682,15 +682,15 @@ describe("provider-indexed custom model settings", () => {
     expect(modelOptionsByProvider.pi.some((option) => option.slug === "anthropic/custom-pi")).toBe(
       true,
     );
-    // qwenCode and auggie each ship a single built-in default model; goose has no
-    // model options. None had custom models configured.
+    // qwenCode, auggie, and goose each ship a single built-in default model; none
+    // had custom models configured.
     expect(modelOptionsByProvider.qwenCode.some((option) => option.slug === "qwen3-coder")).toBe(
       true,
     );
     expect(modelOptionsByProvider.auggie.some((option) => option.slug === "auggie-auto")).toBe(
       true,
     );
-    expect(modelOptionsByProvider.goose).toEqual([]);
+    expect(modelOptionsByProvider.goose.some((option) => option.slug === "goose-auto")).toBe(true);
   });
 
   it("normalizes and deduplicates custom model options per provider", () => {

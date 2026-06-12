@@ -528,7 +528,19 @@ export const MODEL_OPTIONS_BY_PROVIDER = {
       },
     },
   ],
-  goose: [],
+  goose: [
+    {
+      slug: "goose-auto",
+      name: "Goose",
+      capabilities: {
+        reasoningEffortLevels: [],
+        supportsFastMode: false,
+        supportsThinkingToggle: false,
+        promptInjectedEffortLevels: [],
+        contextWindowOptions: [],
+      },
+    },
+  ],
   cursor: [
     {
       slug: "auto",
