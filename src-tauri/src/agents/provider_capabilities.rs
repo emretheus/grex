@@ -93,6 +93,21 @@ pub fn capabilities_for_provider(provider: &str) -> ProviderCapabilities {
             supports_slash_commands: true,
             requires_api_key: false,
         },
+        // Gemini CLI via ACP (Agent Client Protocol). First-cut flags are
+        // intentionally conservative — only features proven against the live
+        // `gemini --acp` bridge are enabled. Plan mode (ACP session modes),
+        // mid-turn steer, slash commands, and context usage are left off until
+        // the bridge is runtime-validated; flip them on with a matrix update.
+        "gemini" => ProviderCapabilities {
+            provider: "gemini".into(),
+            display_name: "Gemini".into(),
+            supports_plan_mode: false,
+            supports_active_goal: false,
+            supports_context_usage: false,
+            supports_steer: false,
+            supports_slash_commands: false,
+            requires_api_key: false,
+        },
         // Default arm covers "claude" and anything we haven't onboarded
         // yet — keeping the safe defaults equal to Claude's behaviour
         // means an unknown id never accidentally disables the
@@ -113,7 +128,7 @@ pub fn capabilities_for_provider(provider: &str) -> ProviderCapabilities {
 /// Convenience: list every provider Codewit ships today. Frontends use
 /// this to render the capability table in settings (eventually), and
 /// tests use it to assert there are no holes in the matrix.
-pub const KNOWN_PROVIDERS: &[&str] = &["claude", "codex", "cursor", "opencode"];
+pub const KNOWN_PROVIDERS: &[&str] = &["claude", "codex", "cursor", "opencode", "gemini"];
 
 #[cfg(test)]
 mod tests {
@@ -202,6 +217,20 @@ mod tests {
         assert!(caps.supports_steer);
         assert!(caps.supports_slash_commands);
         assert!(!caps.requires_api_key, "opencode uses embedded login");
+    }
+
+    #[test]
+    fn gemini_capabilities() {
+        let caps = capabilities_for_provider("gemini");
+        assert_eq!(caps.provider, "gemini");
+        assert_eq!(caps.display_name, "Gemini", "must not fall back to Claude");
+        // First-cut: conservative until the ACP bridge is runtime-validated.
+        assert!(!caps.supports_plan_mode);
+        assert!(!caps.supports_active_goal);
+        assert!(!caps.supports_context_usage);
+        assert!(!caps.supports_steer);
+        assert!(!caps.supports_slash_commands);
+        assert!(!caps.requires_api_key, "Gemini uses embedded Google login");
     }
 
     #[test]

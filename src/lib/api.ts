@@ -159,7 +159,12 @@ export type DataInfo = {
 	archiveRoot: string;
 };
 
-export type AgentProvider = "claude" | "codex" | "cursor" | "opencode";
+export type AgentProvider =
+	| "claude"
+	| "codex"
+	| "cursor"
+	| "opencode"
+	| "gemini";
 
 export type LocalLlmStatus = {
 	enabled: boolean;

@@ -16,6 +16,7 @@ import { ClaudeSessionManager } from "./claude-session-manager.js";
 import { CodexAppServerManager } from "./codex-app-server-manager.js";
 import { CursorSessionManager } from "./cursor-session-manager.js";
 import { createSidecarEmitter } from "./emitter.js";
+import { GeminiAcpManager } from "./gemini-acp-manager.js";
 import { resolveHostResponse, setHostWriter } from "./host-bridge.js";
 import { errorDetails, logger } from "./logger.js";
 import { OpencodeSessionManager } from "./opencode-session-manager.js";
@@ -44,11 +45,13 @@ const claudeManager = new ClaudeSessionManager();
 const codexManager = new CodexAppServerManager();
 const cursorManager = new CursorSessionManager();
 const opencodeManager = new OpencodeSessionManager();
+const geminiManager = new GeminiAcpManager();
 const managers: Record<Provider, SessionManager> = {
 	claude: claudeManager,
 	codex: codexManager,
 	cursor: cursorManager,
 	opencode: opencodeManager,
+	gemini: geminiManager,
 };
 
 // `parentGone` flips to true only when stdin EOFs — that's the
@@ -256,7 +259,8 @@ function parseTitleAttempts(raw: unknown): TitleAttempt[] {
 				obj.provider === "claude" ||
 				obj.provider === "codex" ||
 				obj.provider === "cursor" ||
-				obj.provider === "opencode"
+				obj.provider === "opencode" ||
+				obj.provider === "gemini"
 					? obj.provider
 					: null;
 			if (!provider) continue;
@@ -645,6 +649,8 @@ for await (const line of rl) {
 					codexManager.resolvePermission(permissionId, behavior);
 				} else if (permissionId.startsWith("opencode-")) {
 					opencodeManager.resolvePermission(permissionId, behavior);
+				} else if (permissionId.startsWith("gemini-")) {
+					geminiManager.resolvePermission(permissionId, behavior);
 				} else {
 					claudeManager.resolvePermission(
 						permissionId,
@@ -686,7 +692,8 @@ for await (const line of rl) {
 				const claimed =
 					claudeManager.resolveUserInput(userInputId, resolution) ||
 					codexManager.resolveUserInput(userInputId, resolution) ||
-					opencodeManager.resolveUserInput(userInputId, resolution);
+					opencodeManager.resolveUserInput(userInputId, resolution) ||
+					geminiManager.resolveUserInput(userInputId, resolution);
 				if (!claimed) {
 					// No live waiter — the parked promise was lost (sidecar
 					// restart, session ended, or duplicate submit). Surface
