@@ -407,7 +407,11 @@ export const DEFAULT_SETTINGS: AppSettings = {
 	defaultEffort: "high",
 	defaultFastMode: false,
 	zoomLevel: 1.0,
-	followUpBehavior: "steer",
+	// Default to queueing follow-ups while the agent runs (stacked above the
+	// composer with per-item Steer / Edit / Delete) so users can line up the
+	// next tasks without interrupting the active turn. Switch to "steer" in
+	// Settings → Follow-up behavior to inject into the running turn instead.
+	followUpBehavior: "queue",
 	claudeThinkingDisplay: "summarized",
 	alwaysShowContextUsage: true,
 	showUsageStats: true,
