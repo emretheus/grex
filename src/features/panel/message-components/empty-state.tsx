@@ -7,7 +7,7 @@ import {
 	Orbit,
 	Play,
 } from "lucide-react";
-import { CodewitLogoAnimated } from "@/components/codewit-logo-animated";
+import { GrexLogoAnimated } from "@/components/grex-logo-animated";
 import {
 	Empty,
 	EmptyContent,
@@ -73,7 +73,7 @@ export function EmptyState({
 				{showEmptyStateMedia ? (
 					<EmptyMedia className="mb-1 text-muted-foreground [&_svg:not([class*='size-'])]:size-7">
 						{isCreatingWorkspace ? (
-							<CodewitLogoAnimated size={28} className="opacity-85" />
+							<GrexLogoAnimated size={28} className="opacity-85" />
 						) : (
 							<MessageSquareText strokeWidth={1.7} />
 						)}
@@ -94,7 +94,7 @@ export function EmptyState({
 				</EmptyTitle>
 				<EmptyDescription>
 					{isCreatingWorkspace ? (
-						"Codewit is still preparing this workspace. Messaging will unlock automatically when setup finishes."
+						"Grex is still preparing this workspace. Messaging will unlock automatically when setup finishes."
 					) : hasSession ? (
 						workspaceName ? (
 							<span className="inline-flex items-center justify-center gap-1 whitespace-nowrap text-muted-foreground/75">

@@ -243,7 +243,7 @@ export function useAppShellState({
 		queryClient,
 		processPendingCliSends: data.pendingQueueActions.processPendingCliSends,
 		reloadSettings: () => publishShellEvent({ type: "reload-settings" }),
-		// Quick-panel "Open in Codewit": only the main window navigates.
+		// Quick-panel "Open in Grex": only the main window navigates.
 		onWorkspaceReveal: isQuickPanelWindow ? undefined : handleWorkspaceReveal,
 	});
 	// Event-fresh threads (`staleTime: Infinity`) get a focus-time backstop

@@ -3,7 +3,7 @@
 // list, the workspace detail's `activeSessionTitle`, and the matching row
 // in the navigation sidebar groups. Pure function — no React state.
 import type { QueryClient } from "@tanstack/react-query";
-import { codewitQueryKeys } from "@/lib/query-client";
+import { grexQueryKeys } from "@/lib/query-client";
 
 /** Provisional session title from a prompt: first line, whitespace-collapsed,
  * clamped to 36 chars. Shared by the GUI send path and Terminal Mode so both
@@ -33,7 +33,7 @@ export function seedSessionTitle(
 	title: string,
 ): void {
 	queryClient.setQueryData(
-		codewitQueryKeys.workspaceSessions(workspaceId ?? "__none__"),
+		grexQueryKeys.workspaceSessions(workspaceId ?? "__none__"),
 		(current: Array<Record<string, unknown>> | undefined) =>
 			(current ?? []).map((session) =>
 				session.id === sessionId ? { ...session, title } : session,
@@ -41,7 +41,7 @@ export function seedSessionTitle(
 	);
 	if (workspaceId) {
 		queryClient.setQueryData(
-			codewitQueryKeys.workspaceDetail(workspaceId),
+			grexQueryKeys.workspaceDetail(workspaceId),
 			(current: Record<string, unknown> | undefined) => {
 				if (!current || current.activeSessionId !== sessionId) {
 					return current;
@@ -53,7 +53,7 @@ export function seedSessionTitle(
 			},
 		);
 		queryClient.setQueryData(
-			codewitQueryKeys.workspaceGroups,
+			grexQueryKeys.workspaceGroups,
 			(current: Array<Record<string, unknown>> | undefined) =>
 				(current ?? []).map((group) => ({
 					...group,

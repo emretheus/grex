@@ -60,7 +60,7 @@ export function DevToolsPanel() {
 					}
 					description={
 						<>
-							Mark onboarding as incomplete so it appears the next time Codewit
+							Mark onboarding as incomplete so it appears the next time Grex
 							starts.
 							{onboardingReset ? (
 								<SettingsNotice tone="ok">

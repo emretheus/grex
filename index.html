@@ -7,21 +7,21 @@
       name="viewport"
       content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content"
     />
-    <title>Codewit</title>
+    <title>Grex</title>
     <script>
       ;(() => {
         var root = document.documentElement
         var ls = localStorage
-        var t = ls.getItem('codewit-theme') || 'system'
+        var t = ls.getItem('grex-theme') || 'system'
         var dark = t === 'dark' || (t === 'system' && window.matchMedia('(prefers-color-scheme:dark)').matches)
         if (dark) root.classList.add('dark')
         root.style.colorScheme = dark ? 'dark' : 'light'
-        var ct = ls.getItem(dark ? 'codewit-dark-theme' : 'codewit-light-theme') || 'default'
+        var ct = ls.getItem(dark ? 'grex-dark-theme' : 'grex-light-theme') || 'default'
         if (ct !== 'default') root.classList.add(`theme-${ct}`)
         // User font overrides
-        var ui = ls.getItem('codewit-ui-font-family')
+        var ui = ls.getItem('grex-ui-font-family')
         if (ui) root.style.setProperty('--font-sans-user', ui)
-        var mono = ls.getItem('codewit-code-font-family')
+        var mono = ls.getItem('grex-code-font-family')
         if (mono) root.style.setProperty('--font-mono-user', mono)
       })()
     </script>
@@ -31,7 +31,7 @@
       /* Quick panel window (class injected via initialization script in
          src-tauri/src/quick_panel.rs): the window is transparent and the
          rounded card paints its own background. */
-      html.codewit-quick-window body { background-color: transparent; }
+      html.grex-quick-window body { background-color: transparent; }
     </style>
   </head>
 

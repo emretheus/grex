@@ -70,7 +70,7 @@ function isForgeKindEnabled(
 /** Matches the constant in App.tsx — keep these in sync (one of two
  * dispatchers in the codebase). Centralising would require a new shared
  * module just for one string; for now we duplicate. */
-const OPEN_SETTINGS_EVENT = "codewit:open-settings";
+const OPEN_SETTINGS_EVENT = "grex:open-settings";
 
 function openInboxSettings() {
 	window.dispatchEvent(

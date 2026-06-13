@@ -63,7 +63,7 @@ describe("vendor platform boundary", () => {
 	test("keeps non-macOS and unsupported targets out of vendor staging", () => {
 		expect(() =>
 			resolveVendorTarget({ hostPlatform: "linux", hostArch: "x64", env: {} }),
-		).toThrow("Codewit only builds on macOS");
+		).toThrow("Grex only builds on macOS");
 		expect(() =>
 			resolveVendorTarget({
 				hostPlatform: "darwin",

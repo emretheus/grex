@@ -1,5 +1,5 @@
-//! `codewit github pr` — workspace-scoped PR operations. Auth lives in the
-//! bundled `gh` CLI auth state; Codewit binds the right account
+//! `grex github pr` — workspace-scoped PR operations. Auth lives in the
+//! bundled `gh` CLI auth state; Grex binds the right account
 //! per-repo automatically.
 
 use anyhow::Result;

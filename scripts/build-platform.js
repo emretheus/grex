@@ -47,7 +47,7 @@ export function resolveTargetTriple(options = {}) {
 }
 
 export function cliBinaryNameForPlatform(platform = process.platform) {
-	return platform === "win32" ? "codewit-cli.exe" : "codewit-cli";
+	return platform === "win32" ? "grex-cli.exe" : "grex-cli";
 }
 
 export function resolveBundleArtifacts(options) {
@@ -69,18 +69,18 @@ export function resolveBundleArtifacts(options) {
 	return {
 		targetTriple,
 		profile,
-		sidecarSource: resolve(sidecarDir, "dist", `codewit-sidecar${exe}`),
+		sidecarSource: resolve(sidecarDir, "dist", `grex-sidecar${exe}`),
 		sidecarExternalBin: resolve(
 			sidecarDir,
 			"dist",
-			`codewit-sidecar-${targetTriple}${exe}`,
+			`grex-sidecar-${targetTriple}${exe}`,
 		),
 		cliSource,
 		cliExternalBin: resolve(
 			srcTauriDir,
 			"target",
 			"bundled",
-			`codewit-cli-${targetTriple}${exe}`,
+			`grex-cli-${targetTriple}${exe}`,
 		),
 	};
 }

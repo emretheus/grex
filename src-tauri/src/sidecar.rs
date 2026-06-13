@@ -90,11 +90,11 @@ pub struct BundledAgentPaths {
 
 /// Resolve the bundled Claude/Codex CLI binaries shipped inside the
 /// `.app` (release builds only — returns empty in dev). Used both by
-/// the sidecar boot path (to pass `CODEWIT_*_BIN_PATH` env vars) and by
+/// the sidecar boot path (to pass `GREX_*_BIN_PATH` env vars) and by
 /// onboarding so login-status checks + login terminals don't depend on
 /// the user having the CLIs on PATH.
 ///
-/// Dev intentionally returns empty so callers fall back to PATH — Codewit
+/// Dev intentionally returns empty so callers fall back to PATH — Grex
 /// should not silently prefer one of the sidecar's `node_modules`
 /// binaries over whatever the developer has installed.
 pub fn resolve_bundled_agent_paths() -> BundledAgentPaths {
@@ -190,12 +190,12 @@ impl SidecarProcess {
 
         // Pass log config to the sidecar process
         if let Ok(dir) = crate::data_dir::logs_dir() {
-            cmd.env("CODEWIT_LOG_DIR", dir);
+            cmd.env("GREX_LOG_DIR", dir);
         }
-        if let Ok(level) = std::env::var("CODEWIT_LOG") {
-            cmd.env("CODEWIT_LOG", level);
+        if let Ok(level) = std::env::var("GREX_LOG") {
+            cmd.env("GREX_LOG", level);
         } else if crate::data_dir::is_dev() {
-            cmd.env("CODEWIT_LOG", "debug");
+            cmd.env("GREX_LOG", "debug");
         }
 
         if !is_dev {
@@ -211,22 +211,22 @@ impl SidecarProcess {
                 "Resolved bundled agent paths"
             );
             if let Some(path) = bundled_paths.claude_bin {
-                cmd.env("CODEWIT_CLAUDE_CODE_BIN_PATH", &path);
+                cmd.env("GREX_CLAUDE_CODE_BIN_PATH", &path);
             }
             if let Some(path) = bundled_paths.codex_bin {
-                cmd.env("CODEWIT_CODEX_BIN_PATH", &path);
+                cmd.env("GREX_CODEX_BIN_PATH", &path);
             }
             if let Some(path) = bundled_paths.opencode_bin {
-                cmd.env("CODEWIT_OPENCODE_BIN_PATH", &path);
+                cmd.env("GREX_OPENCODE_BIN_PATH", &path);
             }
             // Cursor runs in a Node child process spawned by the sidecar; point
             // it at the bundled Node + worker entry. Dev resolves both itself
             // (node on PATH, sidecar/dist/cursor-worker.mjs).
             if let Some(path) = bundled_paths.node_bin {
-                cmd.env("CODEWIT_NODE_BIN_PATH", &path);
+                cmd.env("GREX_NODE_BIN_PATH", &path);
             }
             if let Some(path) = bundled_paths.cursor_worker {
-                cmd.env("CODEWIT_CURSOR_WORKER_PATH", &path);
+                cmd.env("GREX_CURSOR_WORKER_PATH", &path);
             }
         }
         // Cursor key is NOT env-passed — pushed via `updateConfig` RPC
@@ -780,7 +780,7 @@ fn dispatch_event(listeners: &Listeners, event: SidecarEvent, raw: &str) -> bool
 
 fn resolve_sidecar_path() -> Result<PathBuf> {
     // 1. Environment variable override
-    if let Ok(path) = std::env::var("CODEWIT_SIDECAR_PATH") {
+    if let Ok(path) = std::env::var("GREX_SIDECAR_PATH") {
         let p = PathBuf::from(path);
         if p.is_file() {
             return Ok(p);
@@ -800,16 +800,16 @@ fn resolve_sidecar_path() -> Result<PathBuf> {
 
     // 3. Production: compiled binary placed by Tauri externalBin.
     //    Tauri puts external binaries next to the main executable
-    //    (e.g. Codewit.app/Contents/MacOS/codewit-sidecar on macOS,
-    //     C:\Program Files\Codewit\codewit-sidecar.exe on Windows).
+    //    (e.g. Grex.app/Contents/MacOS/grex-sidecar on macOS,
+    //     C:\Program Files\Grex\grex-sidecar.exe on Windows).
     if let Ok(exe) = std::env::current_exe() {
         if let Some(exe_dir) = exe.parent() {
             // Windows: Tauri CLI emits externalBins with the same .exe suffix
-            // as the parent Codewit binary. On Unix, no extension.
+            // as the parent Grex binary. On Unix, no extension.
             let binary_name = if cfg!(windows) {
-                "codewit-sidecar.exe"
+                "grex-sidecar.exe"
             } else {
-                "codewit-sidecar"
+                "grex-sidecar"
             };
             let binary = exe_dir.join(binary_name);
             if binary.is_file() {
@@ -818,7 +818,7 @@ fn resolve_sidecar_path() -> Result<PathBuf> {
         }
     }
 
-    bail!("Sidecar not found. In dev, ensure sidecar/src/index.ts exists. Set CODEWIT_SIDECAR_PATH to override.")
+    bail!("Sidecar not found. In dev, ensure sidecar/src/index.ts exists. Set GREX_SIDECAR_PATH to override.")
 }
 
 #[cfg(test)]
@@ -1014,8 +1014,8 @@ mod tests {
         };
 
         let root = tempfile::tempdir().unwrap();
-        let exe = root.path().join("Codewit.app/Contents/MacOS/Codewit");
-        let resources = root.path().join("Codewit.app/Contents/Resources/vendor");
+        let exe = root.path().join("Grex.app/Contents/MacOS/Grex");
+        let resources = root.path().join("Grex.app/Contents/Resources/vendor");
         std::fs::create_dir_all(resources.join("claude-code")).unwrap();
         std::fs::create_dir_all(resources.join("codex")).unwrap();
         std::fs::create_dir_all(resources.join("opencode")).unwrap();

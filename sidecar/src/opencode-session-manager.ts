@@ -37,7 +37,7 @@ interface TurnSettle {
 }
 
 interface SessionCtx {
-	readonly codewitSessionId: string;
+	readonly grexSessionId: string;
 	openCodeSessionId: string;
 	directory: string;
 	activeRequestId: string | null;
@@ -270,7 +270,7 @@ export function buildPermissionRules(): PermissionRuleset {
 }
 
 // opencode pins permission rules on the session at creation. A session created
-// by an older Codewit (default/acceptEdits → ask rules) keeps them on resume, so
+// by an older Grex (default/acceptEdits → ask rules) keeps them on resume, so
 // full access wouldn't take effect. Reassert the current rules when reusing an
 // existing session. Best-effort — a failed update must not block the turn.
 export async function reapplySessionPermission(
@@ -493,7 +493,7 @@ export class OpencodeSessionManager implements SessionManager {
 				try {
 					const created = await client.session.create({
 						directory,
-						title: `Codewit ${params.sessionId}`,
+						title: `Grex ${params.sessionId}`,
 						permission: buildPermissionRules(),
 					});
 					openCodeSessionId = created.data?.id ?? null;
@@ -515,7 +515,7 @@ export class OpencodeSessionManager implements SessionManager {
 				return;
 			}
 			ctx = {
-				codewitSessionId: params.sessionId,
+				grexSessionId: params.sessionId,
 				openCodeSessionId,
 				directory,
 				activeRequestId: null,
@@ -870,7 +870,7 @@ export class OpencodeSessionManager implements SessionManager {
 		}
 		emitter.contextUsageUpdated(
 			requestId,
-			ctx.codewitSessionId,
+			ctx.grexSessionId,
 			buildContextUsageMeta({
 				modelId,
 				usedTokens: ctx.contextTokens,
@@ -1012,7 +1012,7 @@ export class OpencodeSessionManager implements SessionManager {
 			client = handle.client;
 			const created = await client.session.create({
 				directory,
-				title: "Codewit title",
+				title: "Grex title",
 				permission: [{ permission: "*", pattern: "*", action: "allow" }],
 			});
 			sessionID = created.data?.id ?? null;
@@ -1241,7 +1241,7 @@ export class OpencodeSessionManager implements SessionManager {
 
 	async shutdown(): Promise<void> {
 		for (const ctx of this.byOpencodeId.values()) {
-			this.turns.requestStop(ctx.codewitSessionId);
+			this.turns.requestStop(ctx.grexSessionId);
 		}
 		this.sessions.clear();
 		this.byOpencodeId.clear();

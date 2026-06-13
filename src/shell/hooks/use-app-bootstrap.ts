@@ -3,7 +3,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { hydrateDraftCache } from "@/features/composer/draft-storage";
 import type { ContextProviderTab, SettingsSection } from "@/features/settings";
 import { exitOnboardingWindowMode } from "@/lib/api";
-import { createCodewitQueryClient } from "@/lib/query-client";
+import { createGrexQueryClient } from "@/lib/query-client";
 import {
 	type AppSettings,
 	DEFAULT_SETTINGS,
@@ -54,7 +54,7 @@ export function useAppBootstrap(): AppBootstrap {
 		useState<SettingsSection>();
 	const [settingsInitialInboxProvider, setSettingsInitialInboxProvider] =
 		useState<ContextProviderTab | undefined>();
-	const [queryClient] = useState(() => createCodewitQueryClient());
+	const [queryClient] = useState(() => createGrexQueryClient());
 	const preloadSettings = useMemo<AppSettings>(
 		() => getPreloadedSettings(),
 		[],

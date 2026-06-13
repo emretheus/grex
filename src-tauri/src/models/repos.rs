@@ -678,7 +678,7 @@ pub struct ForgeBoundRepo {
 /// Repos with a non-NULL `forge_login` and a known forge provider.
 /// Companion to [`list_repos_needing_forge_binding`] for the second
 /// pass of the backfill — a binding can rot if the user runs
-/// `gh auth logout octocat` outside of Codewit; this query surfaces
+/// `gh auth logout octocat` outside of Grex; this query surfaces
 /// those rows so the sweep can re-evaluate them.
 pub fn list_forge_bound_repos() -> Result<Vec<ForgeBoundRepo>> {
     let connection = db::read_conn()?;
@@ -819,11 +819,11 @@ pub struct RunAction {
     /// other regardless of mode.
     pub mode: String,
     /// True when this action's name/command/mode come from a
-    /// `codewit.json` declaration (settings UI shows the row read-only).
+    /// `grex.json` declaration (settings UI shows the row read-only).
     pub from_project: bool,
     /// Optional graceful-stop command. When set, clicking Stop runs this
     /// shell snippet (same env + cwd as `command`) to completion before
-    /// codewit signals the main process. The user can short-circuit a
+    /// grex signals the main process. The user can short-circuit a
     /// long-running cleanup by re-clicking Stop ("Force Stop"). `None`
     /// preserves today's behavior exactly. JSON field name: `stopCommand`.
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -836,16 +836,16 @@ pub struct RepoScripts {
     pub setup_script: Option<String>,
     pub archive_script: Option<String>,
     pub setup_from_project: bool,
-    /// True when *any* run action came from `codewit.json` (the entire run
+    /// True when *any* run action came from `grex.json` (the entire run
     /// list is project-owned when this is true — we don't mix DB and
     /// project-defined actions in the same response).
     pub run_from_project: bool,
     pub archive_from_project: bool,
     /// Auto-run setup on workspace creation. DB-only — not configurable
-    /// from `codewit.json`. Defaults to true.
+    /// from `grex.json`. Defaults to true.
     pub auto_run_setup: bool,
     /// All run actions for this repo, in display order. May come from
-    /// `codewit.json` (locked) or from the `repo_run_actions` table. The
+    /// `grex.json` (locked) or from the `repo_run_actions` table. The
     /// list is empty when neither source declares a run script.
     pub run_actions: Vec<RunAction>,
 }
@@ -863,10 +863,10 @@ pub struct RepoPreferences {
 
 /// Resolve repo scripts using a fixed priority:
 ///
-///   1. The workspace's worktree `codewit.json` — highest priority, only
+///   1. The workspace's worktree `grex.json` — highest priority, only
 ///      consulted when `workspace_id` is supplied AND the worktree dir
 ///      exists on disk.
-///   2. The source repo root's `codewit.json` — used whenever (1) can't
+///   2. The source repo root's `grex.json` — used whenever (1) can't
 ///      apply: no `workspace_id`, unknown workspace, or worktree missing
 ///      (archived / broken / pre-Phase-2 creation).
 ///   3. DB-level config (`repos.setup_script/archive_script` for
@@ -876,24 +876,24 @@ pub struct RepoPreferences {
 /// page, script execution, archive hook) — there is no special-case
 /// branch for "creation in flight" or "no workspace context".
 pub fn load_repo_scripts(repo_id: &str, workspace_id: Option<&str>) -> Result<RepoScripts> {
-    // Priority 1: workspace worktree codewit.json.
+    // Priority 1: workspace worktree grex.json.
     let worktree_project = workspace_id.and_then(|ws_id| {
         crate::models::workspaces::load_workspace_record_by_id(ws_id)
             .ok()
             .flatten()
             .and_then(|ws| crate::workspace::helpers::workspace_path(&ws).ok())
             .filter(|dir| dir.is_dir())
-            .and_then(|dir| load_codewit_json_scripts(&dir, repo_id))
+            .and_then(|dir| load_grex_json_scripts(&dir, repo_id))
     });
 
-    // Priority 2: source repo root codewit.json (worktree missing or no
+    // Priority 2: source repo root grex.json (worktree missing or no
     // workspace context at all).
     let project = worktree_project.or_else(|| {
         load_repository_by_id(repo_id)
             .ok()
             .flatten()
             .and_then(|repo| {
-                load_codewit_json_scripts(&PathBuf::from(repo.root_path.trim()), repo_id)
+                load_grex_json_scripts(&PathBuf::from(repo.root_path.trim()), repo_id)
             })
     });
 
@@ -974,17 +974,17 @@ fn pick_script(project_value: Option<&str>, db_value: Option<String>) -> (Option
     }
 }
 
-struct CodewitJsonScripts {
+struct GrexJsonScripts {
     setup: Option<String>,
     run: Vec<RunAction>,
     archive: Option<String>,
 }
 
-fn load_codewit_json_scripts(root_path: &Path, repo_id: &str) -> Option<CodewitJsonScripts> {
-    parse_project_config_scripts(&root_path.join("codewit.json"), repo_id)
+fn load_grex_json_scripts(root_path: &Path, repo_id: &str) -> Option<GrexJsonScripts> {
+    parse_project_config_scripts(&root_path.join("grex.json"), repo_id)
 }
 
-fn parse_project_config_scripts(config_path: &Path, repo_id: &str) -> Option<CodewitJsonScripts> {
+fn parse_project_config_scripts(config_path: &Path, repo_id: &str) -> Option<GrexJsonScripts> {
     if !config_path.is_file() {
         return None;
     }
@@ -1003,7 +1003,7 @@ fn parse_project_config_scripts(config_path: &Path, repo_id: &str) -> Option<Cod
         }
     };
     let scripts = json.get("scripts")?;
-    Some(CodewitJsonScripts {
+    Some(GrexJsonScripts {
         setup: scripts
             .get("setup")
             .and_then(Value::as_str)
@@ -1025,7 +1025,7 @@ fn parse_project_config_scripts(config_path: &Path, repo_id: &str) -> Option<Cod
 ///   - `"run": [{"name": "…", "command": "…", "mode"?: "…"}]` — array of
 ///     fully-specified actions. **Both `name` and `command` are required
 ///     and must be non-blank**; entries missing either are skipped. We
-///     deliberately don't synthesise a fallback name here — codewit.json
+///     deliberately don't synthesise a fallback name here — grex.json
 ///     is checked-in project config, ambiguity should fail loudly (or at
 ///     least invisibly) rather than land in the UI as "Default 3".
 ///
@@ -1142,7 +1142,7 @@ fn validate_run_mode(mode: &str) -> Result<&str> {
 /// Append a new run action to the end of the repo's list and return the
 /// resulting row. The new id is server-generated so callers can't collide
 /// with the deterministic `legacy:` / `project:` ids reserved for
-/// fallback and codewit.json actions.
+/// fallback and grex.json actions.
 pub fn create_repo_run_action(
     repo_id: &str,
     name: &str,

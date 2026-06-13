@@ -1530,7 +1530,7 @@ mod tests {
     }
 
     fn setup_test_db(dir: &std::path::Path) {
-        let db_path = dir.join("codewit.db");
+        let db_path = dir.join("grex.db");
         let conn = rusqlite::Connection::open(&db_path).unwrap();
         crate::schema::ensure_schema(&conn).unwrap();
         drop(conn);
@@ -1538,7 +1538,7 @@ mod tests {
     }
 
     fn insert_repo(repo_id: &str, root_path: &str) {
-        let db_path = crate::data_dir::data_dir().unwrap().join("codewit.db");
+        let db_path = crate::data_dir::data_dir().unwrap().join("grex.db");
         let conn = rusqlite::Connection::open(&db_path).unwrap();
         conn.execute(
             "INSERT INTO repos (id, name, root_path) VALUES (?1, 'test-repo', ?2)",
@@ -1551,7 +1551,7 @@ mod tests {
     fn fallback_resolves_to_repo_root_path() {
         let dir = tempfile::tempdir().unwrap();
         let _guard = crate::data_dir::TEST_ENV_LOCK.lock().unwrap();
-        std::env::set_var("CODEWIT_DATA_DIR", dir.path());
+        std::env::set_var("GREX_DATA_DIR", dir.path());
 
         setup_test_db(dir.path());
         let repo_root = dir.path().join("repo-root");
@@ -1565,33 +1565,33 @@ mod tests {
             Some(repo_root.to_str().unwrap())
         );
 
-        std::env::remove_var("CODEWIT_DATA_DIR");
+        std::env::remove_var("GREX_DATA_DIR");
     }
 
     #[test]
     fn fallback_noop_when_repo_root_path_does_not_exist() {
         let dir = tempfile::tempdir().unwrap();
         let _guard = crate::data_dir::TEST_ENV_LOCK.lock().unwrap();
-        std::env::set_var("CODEWIT_DATA_DIR", dir.path());
+        std::env::set_var("GREX_DATA_DIR", dir.path());
 
         setup_test_db(dir.path());
         // Insert a repo whose root_path points at a directory that doesn't
         // exist — guards the start-page case where the user deleted the
-        // working tree behind Codewit's back.
+        // working tree behind Grex's back.
         insert_repo("r1", "/nonexistent/path/for/test");
 
         let req = make_request(None, Some("r1"));
         let resolved = resolve_repo_fallback_cwd(req);
         assert_eq!(resolved.working_directory, None);
 
-        std::env::remove_var("CODEWIT_DATA_DIR");
+        std::env::remove_var("GREX_DATA_DIR");
     }
 
     #[test]
     fn fallback_noop_when_repo_not_in_db() {
         let dir = tempfile::tempdir().unwrap();
         let _guard = crate::data_dir::TEST_ENV_LOCK.lock().unwrap();
-        std::env::set_var("CODEWIT_DATA_DIR", dir.path());
+        std::env::set_var("GREX_DATA_DIR", dir.path());
 
         setup_test_db(dir.path());
         // No insert_repo — DB lookup returns Ok(None).
@@ -1600,14 +1600,14 @@ mod tests {
         let resolved = resolve_repo_fallback_cwd(req);
         assert_eq!(resolved.working_directory, None);
 
-        std::env::remove_var("CODEWIT_DATA_DIR");
+        std::env::remove_var("GREX_DATA_DIR");
     }
 
     #[test]
     fn detect_title_providers_dedupes_in_priority_order() {
         let dir = tempfile::tempdir().unwrap();
         let _guard = crate::data_dir::TEST_ENV_LOCK.lock().unwrap();
-        std::env::set_var("CODEWIT_DATA_DIR", dir.path());
+        std::env::set_var("GREX_DATA_DIR", dir.path());
         setup_test_db(dir.path());
 
         // Nothing configured → [claude].
@@ -1643,14 +1643,14 @@ mod tests {
             vec!["claude".to_string(), "cursor".to_string()]
         );
 
-        std::env::remove_var("CODEWIT_DATA_DIR");
+        std::env::remove_var("GREX_DATA_DIR");
     }
 
     #[test]
     fn build_title_attempts_chains_providers_without_custom() {
         let dir = tempfile::tempdir().unwrap();
         let _guard = crate::data_dir::TEST_ENV_LOCK.lock().unwrap();
-        std::env::set_var("CODEWIT_DATA_DIR", dir.path());
+        std::env::set_var("GREX_DATA_DIR", dir.path());
         setup_test_db(dir.path());
 
         // pr=codex, default=cursor → providers [codex, cursor]; no custom set.
@@ -1667,6 +1667,6 @@ mod tests {
         // No custom configured → no attempt carries an explicit model.
         assert!(attempts.iter().all(|a| a.get("model").is_none()));
 
-        std::env::remove_var("CODEWIT_DATA_DIR");
+        std::env::remove_var("GREX_DATA_DIR");
     }
 }

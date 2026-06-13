@@ -27,8 +27,8 @@ PY
 )"
 
 required_vars=(
-  CODEWIT_UPDATER_ENDPOINTS
-  CODEWIT_UPDATER_PUBKEY
+  GREX_UPDATER_ENDPOINTS
+  GREX_UPDATER_PUBKEY
   TAURI_SIGNING_PRIVATE_KEY
   APPLE_CERTIFICATE
   APPLE_CERTIFICATE_PASSWORD
@@ -84,10 +84,10 @@ fi
 echo "Checking notarization tool availability..."
 xcrun notarytool --version >/dev/null
 
-echo "Building Codewit macOS release..."
+echo "Building Grex macOS release..."
 bun x tauri build --bundles app,dmg --ci
 
-APP_BUNDLE="${ROOT_DIR}/src-tauri/target/release/bundle/macos/Codewit.app"
+APP_BUNDLE="${ROOT_DIR}/src-tauri/target/release/bundle/macos/Grex.app"
 echo "Verifying bundled CLI..."
 bash "${ROOT_DIR}/scripts/verify-bundled-cli.sh" "${APP_BUNDLE}"
 
@@ -96,7 +96,7 @@ echo
 echo "Expected artifacts:"
 echo "  - src-tauri/target/release/bundle/dmg/"
 echo "  - src-tauri/target/release/bundle/macos/"
-echo "  - src-tauri/target/release/bundle/macos/Codewit.app.tar.gz"
-echo "  - src-tauri/target/release/bundle/macos/Codewit.app.tar.gz.sig"
+echo "  - src-tauri/target/release/bundle/macos/Grex.app.tar.gz"
+echo "  - src-tauri/target/release/bundle/macos/Grex.app.tar.gz.sig"
 echo
 echo "latest.json is published in CI by tauri-action using these updater artifacts."

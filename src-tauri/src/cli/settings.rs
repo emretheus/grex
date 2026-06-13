@@ -1,4 +1,4 @@
-//! `codewit settings` — read/write entries in the `settings` table.
+//! `grex settings` — read/write entries in the `settings` table.
 
 use std::collections::BTreeMap;
 

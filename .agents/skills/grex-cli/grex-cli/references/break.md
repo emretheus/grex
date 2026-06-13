@@ -1,4 +1,4 @@
-# `/codewit-cli break` — split an existing change into a stack
+# `/grex-cli break` — split an existing change into a stack
 
 `break` is the mirror of `stack`: instead of planning a stack from scratch, it
 takes the change you've **already written** in the current workspace and carves
@@ -12,7 +12,7 @@ rewrite anything:
 ```bash
 git commit -am "WIP: snapshot before break"   # only if the working tree is dirty
 ORIG=$(git rev-parse HEAD)                      # the full change you're slicing
-git branch codewit/break-backup "$ORIG"          # named recovery point
+git branch grex/break-backup "$ORIG"          # named recovery point
 ```
 Source every slice below from `$ORIG` (not the branch name) — once the root is
 reset, the branch no longer points at the full change.
@@ -62,7 +62,7 @@ For each slice K, from the bottom up:
      git rm <slice-1 deleted files>           # if any
      git commit -m "<slice 1 title>"
      ```
-   - **every higher slice**: `codewit workspace new --parent <slice K-1 workspace>`
+   - **every higher slice**: `grex workspace new --parent <slice K-1 workspace>`
      (the first higher layer's `--parent` is your current workspace).
 2. Apply **only slice K's files** onto that layer (it already contains slices
    1..K-1 because it forked off the layer below), sourcing from `$ORIG`:
@@ -71,9 +71,9 @@ For each slice K, from the bottom up:
    - then commit with the slice title.
 
    Drive each higher layer with a focused dispatch so it works inside its own
-   worktree (pass `$ORIG`'s SHA explicitly; `codewit/break-backup` resolves it too):
+   worktree (pass `$ORIG`'s SHA explicitly; `grex/break-backup` resolves it too):
    ```bash
-   codewit send --workspace <id> --plan "Apply ONLY these files from <ORIG-sha>: <list>. \
+   grex send --workspace <id> --plan "Apply ONLY these files from <ORIG-sha>: <list>. \
    Added/modified: git checkout <ORIG-sha> -- <files>. Deleted: git rm <files>. \
    Commit as '<title>'. Do not touch anything else."
    ```
@@ -88,14 +88,14 @@ git diff "$ORIG" <top-layer-branch>
 ```
 **This must be empty.** Empty = the top of the stack has the same tree as the
 original → nothing was dropped or duplicated. If it is **not** empty, STOP and
-report the difference — and restore the root with `git reset --hard codewit/break-backup`.
+report the difference — and restore the root with `git reset --hard grex/break-backup`.
 
 ### 6. Hand off
 Your current workspace is now the stack's **root**; the higher layers are the
-only new workspaces (`codewit workspace stack <top>` shows the chain; the sidebar
+only new workspaces (`grex workspace stack <top>` shows the chain; the sidebar
 nests them). Open PRs bottom-up. Consider retitling the root to its slice-1
 title. Once you've confirmed the split is faithful, the recovery branch is yours
-to keep or drop (`git branch -D codewit/break-backup`).
+to keep or drop (`git branch -D grex/break-backup`).
 
 ## Limits (v1)
 - **File-level slices only**: a file goes wholesale into one slice. Splitting a
@@ -104,7 +104,7 @@ to keep or drop (`git branch -D codewit/break-backup`).
 - Slices must **partition** all changed files; the step-5 lossless check
   enforces it.
 - **Root = your current workspace**: its branch is rewritten in place to become
-  slice 1. The full change stays recoverable at `codewit/break-backup` (and is
+  slice 1. The full change stays recoverable at `grex/break-backup` (and is
   reproduced at the stack tip + checked in step 5), so it's safe — but unlike a
   fresh-stack build, the starting branch *is* rewritten. Higher layers are new
   workspaces.

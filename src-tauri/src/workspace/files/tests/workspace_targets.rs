@@ -12,7 +12,7 @@ use super::{
 
 #[test]
 fn parse_workspace_path_normal() {
-    let path = Path::new("/Users/x/codewit-dev/workspaces/my-repo/feature-branch");
+    let path = Path::new("/Users/x/grex-dev/workspaces/my-repo/feature-branch");
     let (repo, dir) = parse_workspace_path(path).unwrap();
     assert_eq!(repo, "my-repo");
     assert_eq!(dir, "feature-branch");
@@ -184,7 +184,7 @@ fn resolve_target_ref_uses_configured_target_branch() {
     fs::create_dir_all(&repo_root).unwrap();
     git_ops::run_git(["init", "-b", "main"], Some(&repo_root)).unwrap();
     git_ops::run_git(
-        ["config", "user.email", "test@codewit.test"],
+        ["config", "user.email", "test@grex.test"],
         Some(&repo_root),
     )
     .unwrap();
@@ -247,7 +247,7 @@ fn resolve_target_ref_uses_local_workspace_root_target() {
     fs::create_dir_all(&repo_root).unwrap();
     git_ops::run_git(["init", "-b", "main"], Some(&repo_root)).unwrap();
     git_ops::run_git(
-        ["config", "user.email", "test@codewit.test"],
+        ["config", "user.email", "test@grex.test"],
         Some(&repo_root),
     )
     .unwrap();
@@ -293,7 +293,7 @@ fn resolve_target_ref_uses_workspace_id_when_local_roots_are_shared() {
     fs::create_dir_all(&repo_root).unwrap();
     git_ops::run_git(["init", "-b", "main"], Some(&repo_root)).unwrap();
     git_ops::run_git(
-        ["config", "user.email", "test@codewit.test"],
+        ["config", "user.email", "test@grex.test"],
         Some(&repo_root),
     )
     .unwrap();

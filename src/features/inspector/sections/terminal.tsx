@@ -123,9 +123,9 @@ export function TerminalInstancePanel({
 	useEffect(() => {
 		if (!isActive) return;
 		const handler = () => termRef.current?.focus();
-		window.addEventListener("codewit:focus-active-terminal", handler);
+		window.addEventListener("grex:focus-active-terminal", handler);
 		return () =>
-			window.removeEventListener("codewit:focus-active-terminal", handler);
+			window.removeEventListener("grex:focus-active-terminal", handler);
 	}, [isActive]);
 
 	const handleData = useCallback(

@@ -148,10 +148,10 @@ mod tests {
             "-Users-me-conductor-workspaces-repo-ws"
         );
 
-        let path2 = PathBuf::from("/Users/me/codewit-dev/workspaces/repo/ws");
+        let path2 = PathBuf::from("/Users/me/grex-dev/workspaces/repo/ws");
         assert_eq!(
             encode_project_dir(&path2),
-            "-Users-me-codewit-dev-workspaces-repo-ws"
+            "-Users-me-grex-dev-workspaces-repo-ws"
         );
     }
 

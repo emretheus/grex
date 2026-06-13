@@ -1,6 +1,6 @@
 import type { QueryClient } from "@tanstack/react-query";
 import type { WorkspaceDetail, WorkspaceSessionSummary } from "@/lib/api";
-import { codewitQueryKeys } from "@/lib/query-client";
+import { grexQueryKeys } from "@/lib/query-client";
 
 export function buildOptimisticSession(
 	workspaceId: string,
@@ -61,7 +61,7 @@ export function seedNewSessionInCache({
 	);
 
 	queryClient.setQueryData(
-		codewitQueryKeys.workspaceDetail(workspaceId),
+		grexQueryKeys.workspaceDetail(workspaceId),
 		(current: WorkspaceDetail | null | undefined) => {
 			const base = current ?? workspace;
 			if (!base) {
@@ -82,7 +82,7 @@ export function seedNewSessionInCache({
 		},
 	);
 	queryClient.setQueryData(
-		codewitQueryKeys.workspaceSessions(workspaceId),
+		grexQueryKeys.workspaceSessions(workspaceId),
 		(current: WorkspaceSessionSummary[] | undefined) => {
 			const resolvedSessions = current ?? existingSessions ?? [];
 			if (resolvedSessions.some((session) => session.id === sessionId)) {
@@ -102,7 +102,7 @@ export function seedNewSessionInCache({
 		},
 	);
 	queryClient.setQueryData(
-		[...codewitQueryKeys.sessionMessages(sessionId), "thread"],
+		[...grexQueryKeys.sessionMessages(sessionId), "thread"],
 		[],
 	);
 

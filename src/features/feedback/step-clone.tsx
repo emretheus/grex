@@ -5,10 +5,10 @@ import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { cloneRepositoryFromUrl, forkCodewitUpstream } from "@/lib/api";
+import { cloneRepositoryFromUrl, forkGrexUpstream } from "@/lib/api";
 import { describeUnknownError } from "@/lib/workspace-helpers";
 
-import { CODEWIT_UPSTREAM_SLUG } from "./constants";
+import { GREX_UPSTREAM_SLUG } from "./constants";
 
 type ClonePhase = "idle" | "forking" | "picking" | "cloning";
 
@@ -45,14 +45,14 @@ export function StepClone({
 		let cancelled = false;
 		void (async () => {
 			try {
-				const fork = await forkCodewitUpstream();
+				const fork = await forkGrexUpstream();
 				if (!cancelled) {
 					onForkSucceeded(fork.cloneUrl);
 				}
 			} catch (error) {
 				if (!cancelled) {
 					onFailed(
-						describeUnknownError(error, "Failed to fork codewit on GitHub."),
+						describeUnknownError(error, "Failed to fork grex on GitHub."),
 					);
 				}
 			}
@@ -108,7 +108,7 @@ export function StepClone({
 							strokeWidth={2.1}
 						/>
 						<span className="text-muted-foreground">
-							Forking {CODEWIT_UPSTREAM_SLUG} to your GitHub account…
+							Forking {GREX_UPSTREAM_SLUG} to your GitHub account…
 						</span>
 					</>
 				) : forkedCloneUrl ? (
@@ -117,7 +117,7 @@ export function StepClone({
 					</span>
 				) : (
 					<span className="text-muted-foreground">
-						We'll fork the upstream Codewit repo into your GitHub account.
+						We'll fork the upstream Grex repo into your GitHub account.
 					</span>
 				)}
 			</div>

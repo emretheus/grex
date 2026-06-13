@@ -1,25 +1,25 @@
 <div align="center">
 
-# Codewit
+# Grex
 
 **One minimal desktop app for every AI coding agent.**
 
-Codewit is an open, multi-provider GUI for coding agents — run Claude Code, Codex, and
+Grex is an open, multi-provider GUI for coding agents — run Claude Code, Codex, and
 OpenCode from a single clean, local-first interface, with built-in chat, diff review,
 a file explorer + editor, and terminals.
 
-[![Latest release](https://img.shields.io/github/v/release/emretheus/codewit?label=release&labelColor=1c2933&color=0158fd)](https://github.com/emretheus/codewit/releases)
+[![Latest release](https://img.shields.io/github/v/release/emretheus/grex?label=release&labelColor=1c2933&color=0158fd)](https://github.com/emretheus/grex/releases)
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-1c2933.svg?labelColor=1c2933&color=666)](./LICENSE)
-[![CI](https://img.shields.io/github/actions/workflow/status/emretheus/codewit/ci.yml?branch=main&labelColor=1c2933)](https://github.com/emretheus/codewit/actions)
+[![CI](https://img.shields.io/github/actions/workflow/status/emretheus/grex/ci.yml?branch=main&labelColor=1c2933)](https://github.com/emretheus/grex/actions)
 
-[Download](https://github.com/emretheus/codewit/releases) ·
+[Download](https://github.com/emretheus/grex/releases) ·
 [Contributing](./CONTRIBUTING.md)
 
 </div>
 
-## Why Codewit
+## Why Grex
 
-Most coding-agent tools lock you into a single model. Codewit is **multi-provider by
+Most coding-agent tools lock you into a single model. Grex is **multi-provider by
 design** — pick the agent that fits the task, switch between them without losing your
 conversation, and keep everything in one fast, local-first desktop app.
 
@@ -30,7 +30,7 @@ conversation, and keep everything in one fast, local-first desktop app.
 
 ## Supported agents
 
-Codewit auto-detects the provider CLIs you already have installed:
+Grex auto-detects the provider CLIs you already have installed:
 
 | Agent | Provider |
 | --- | --- |
@@ -44,8 +44,8 @@ Codewit auto-detects the provider CLIs you already have installed:
 
 | Platform | Download |
 | --- | --- |
-| **macOS** (Apple Silicon / Intel) | [Releases page](https://github.com/emretheus/codewit/releases/latest) |
-| **Windows** | [Releases page](https://github.com/emretheus/codewit/releases/latest) |
+| **macOS** (Apple Silicon / Intel) | [Releases page](https://github.com/emretheus/grex/releases/latest) |
+| **Windows** | [Releases page](https://github.com/emretheus/grex/releases/latest) |
 
 ## Features
 
@@ -62,7 +62,7 @@ Tauri · React · TypeScript · Vite · Tailwind · Monaco · SQLite · Bun.
 
 ## Lineage
 
-Codewit is a fork of [Helmor](https://github.com/dohooo/helmor), an open-source local
+Grex is a fork of [Helmor](https://github.com/dohooo/helmor), an open-source local
 workbench for multi-agent software development created by Caspian Zhao and Nathan Lian.
 We're grateful to the Helmor project, whose Apache 2.0-licensed work made this possible.
 

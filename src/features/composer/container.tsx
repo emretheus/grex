@@ -37,7 +37,7 @@ import type {
 import {
 	agentModelSectionsQueryOptions,
 	autoCloseActionKindsQueryOptions,
-	codewitQueryKeys,
+	grexQueryKeys,
 	providerCapabilitiesQueryOptions,
 	sessionCodexGoalQueryOptions,
 	slashCommandsQueryOptions,
@@ -421,7 +421,7 @@ export const WorkspaceComposerContainer = memo(
 			onSuccess: (returned) => {
 				if (!displayedWorkspaceId) return;
 				queryClient.setQueryData(
-					codewitQueryKeys.workspaceLinkedDirectories(displayedWorkspaceId),
+					grexQueryKeys.workspaceLinkedDirectories(displayedWorkspaceId),
 					returned,
 				);
 				void queryClient.invalidateQueries({
@@ -521,7 +521,7 @@ export const WorkspaceComposerContainer = memo(
 			(s) => s.id === "opencode",
 		);
 		const opencodeCustomProvidersQuery = useQuery({
-			queryKey: codewitQueryKeys.opencodeCustomProviders,
+			queryKey: grexQueryKeys.opencodeCustomProviders,
 			queryFn: getOpencodeCustomProviders,
 			enabled: opencodeSectionPresent,
 		});
@@ -662,7 +662,7 @@ export const WorkspaceComposerContainer = memo(
 				await saveAutoCloseActionKinds(nextKinds);
 			} finally {
 				queryClient.invalidateQueries({
-					queryKey: codewitQueryKeys.autoCloseActionKinds,
+					queryKey: grexQueryKeys.autoCloseActionKinds,
 				});
 			}
 		}, [
@@ -694,12 +694,12 @@ export const WorkspaceComposerContainer = memo(
 						await Promise.all([
 							queryClient.invalidateQueries({
 								queryKey:
-									codewitQueryKeys.workspaceSessions(displayedWorkspaceId),
+									grexQueryKeys.workspaceSessions(displayedWorkspaceId),
 							}),
 							...(workspaceDetailQuery.data?.repoId
 								? [
 										queryClient.invalidateQueries({
-											queryKey: codewitQueryKeys.repoScripts(
+											queryKey: grexQueryKeys.repoScripts(
 												workspaceDetailQuery.data.repoId,
 												displayedWorkspaceId,
 											),
@@ -770,7 +770,7 @@ export const WorkspaceComposerContainer = memo(
 		const slashCommandsResponse = slashCommandsQuery.data;
 		const agentSlashCommands =
 			slashCommandsResponse?.commands ?? EMPTY_SLASH_COMMANDS;
-		// Prepend Codewit's host-app commands (e.g. /add-dir) so they always
+		// Prepend Grex's host-app commands (e.g. /add-dir) so they always
 		// show at the top of the popup, even before the agent-supplied list
 		// has loaded.
 		const slashCommands = useMemo<readonly SlashCommandEntry[]>(() => {
@@ -1051,7 +1051,7 @@ export const WorkspaceComposerContainer = memo(
 		}, [handleComposerSubmitInner]);
 
 		// Quick-action tag clicked above the composer — fire its preset prompt
-		// straight through the normal submit path (e.g. `/codewit-cli restack`).
+		// straight through the normal submit path (e.g. `/grex-cli restack`).
 		const handleQuickAction = useCallback(
 			(action: ComposerQuickAction) => {
 				handleComposerSubmitInner(action.prompt, [], [], []);

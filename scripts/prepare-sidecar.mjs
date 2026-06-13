@@ -4,9 +4,9 @@
  *
  * Steps:
  * 1. `cd sidecar && bun install --frozen-lockfile` (so CI runners have deps).
- * 2. `bun run build` — produces `sidecar/dist/codewit-sidecar` plus the
+ * 2. `bun run build` — produces `sidecar/dist/grex-sidecar` plus the
  *    `sidecar/dist/vendor/` tree that Tauri bundles as resources.
- * 3. `cargo build --bin codewit-cli --release --target <triple>` — produces
+ * 3. `cargo build --bin grex-cli --release --target <triple>` — produces
  *    the CLI companion binary that ships inside the desktop app bundle.
  * 4. Copy the compiled sidecar / CLI to target-suffixed names so Tauri's
  *    `externalBin` entries can find the artifacts they expect.
@@ -100,11 +100,11 @@ function main() {
 
 	// Tauri validates every `externalBin` during `cargo build`, including the
 	// sidecar companion. Stage the target-suffixed sidecar first so a clean CI
-	// checkout can compile `codewit-cli` without depending on stale artifacts.
+	// checkout can compile `grex-cli` without depending on stale artifacts.
 	copyFileSync(artifacts.sidecarSource, artifacts.sidecarExternalBin);
 
 	run(
-		`cargo build --manifest-path ${resolve(srcTauriDir, "Cargo.toml")} --bin codewit-cli --release --target ${triple}`,
+		`cargo build --manifest-path ${resolve(srcTauriDir, "Cargo.toml")} --bin grex-cli --release --target ${triple}`,
 		repoRoot,
 	);
 

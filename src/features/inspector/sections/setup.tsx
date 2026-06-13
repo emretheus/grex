@@ -6,7 +6,7 @@ import {
 	TerminalOutput,
 } from "@/components/terminal-output";
 import { Button } from "@/components/ui/button";
-import { codewitQueryKeys } from "@/lib/query-client";
+import { grexQueryKeys } from "@/lib/query-client";
 import { useSettings } from "@/lib/settings";
 import { cn } from "@/lib/utils";
 import { TABS_EASING, TABS_HOVER_TRANSITION_MS, useTabsZoom } from "../layout";
@@ -87,7 +87,7 @@ export function SetupTab({
 					const state = getScriptState(workspaceId, "setup");
 					if (state?.exitCode === 0) {
 						queryClient.invalidateQueries({
-							queryKey: codewitQueryKeys.workspaceDetail(workspaceId),
+							queryKey: grexQueryKeys.workspaceDetail(workspaceId),
 						});
 					}
 				}

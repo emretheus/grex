@@ -1,6 +1,6 @@
 import {
 	FALLBACK_ISSUE_TITLE,
-	CODEWIT_UPSTREAM_SLUG,
+	GREX_UPSTREAM_SLUG,
 	ISSUE_TITLE_MAX_CHARS,
 } from "./constants";
 
@@ -35,7 +35,7 @@ export function splitIssueTitleAndBody(input: string): {
  */
 export function buildPromptTemplate(input: string): string {
 	return [
-		`I'm contributing to ${CODEWIT_UPSTREAM_SLUG}. Please help me ship this.`,
+		`I'm contributing to ${GREX_UPSTREAM_SLUG}. Please help me ship this.`,
 		"",
 		"## My feedback",
 		input.trim(),
@@ -43,7 +43,7 @@ export function buildPromptTemplate(input: string): string {
 		"## How to handle this",
 		"1. Explore the code, ask anything unclear, propose a minimal change.",
 		'2. Implement once I agree. Do not commit, push, or open a PR before I say "go ahead".',
-		`3. After my "go ahead": commit, push to origin, then \`gh pr create --repo ${CODEWIT_UPSTREAM_SLUG} --base main\` with a title and body generated from the diff.`,
+		`3. After my "go ahead": commit, push to origin, then \`gh pr create --repo ${GREX_UPSTREAM_SLUG} --base main\` with a title and body generated from the diff.`,
 		"",
 		'Reply using the same language I used in the "## My feedback" section above.',
 	].join("\n");

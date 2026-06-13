@@ -1,6 +1,6 @@
-# Codewit Release Format
+# Grex Release Format
 
-Use this reference when preparing a Codewit changeset or walking the user through release prep.
+Use this reference when preparing a Grex changeset or walking the user through release prep.
 
 ## Normal Iteration Flow
 

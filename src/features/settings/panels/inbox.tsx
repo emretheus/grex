@@ -181,7 +181,7 @@ const DRAFT_OPTIONS: Option<InboxDraftFilter>[] = [
  * route is single-source. */
 function openAccountSettings() {
 	window.dispatchEvent(
-		new CustomEvent("codewit:open-settings", {
+		new CustomEvent("grex:open-settings", {
 			detail: { section: "account" },
 		}),
 	);

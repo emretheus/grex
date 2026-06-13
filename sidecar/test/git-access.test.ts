@@ -24,7 +24,7 @@ describe("resolveGitAccessDirectories", () => {
 	});
 
 	test("returns no extra directories for a regular repository", async () => {
-		const workspaceDir = makeTempDir("codewit-git-access-");
+		const workspaceDir = makeTempDir("grex-git-access-");
 		mkdirSync(join(workspaceDir, ".git"));
 
 		await expect(resolveGitAccessDirectories(workspaceDir)).resolves.toEqual(
@@ -33,8 +33,8 @@ describe("resolveGitAccessDirectories", () => {
 	});
 
 	test("returns gitdir and commondir for a worktree pointer", async () => {
-		const workspaceDir = makeTempDir("codewit-worktree-");
-		const repoRoot = makeTempDir("codewit-repo-");
+		const workspaceDir = makeTempDir("grex-worktree-");
+		const repoRoot = makeTempDir("grex-repo-");
 		const gitCommonDir = join(repoRoot, ".git");
 		const gitDir = join(gitCommonDir, "worktrees", "alnitak");
 

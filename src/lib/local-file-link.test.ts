@@ -30,16 +30,16 @@ describe("parseLocalFileLink", () => {
 
 	it("resolves workspace-relative file links", () => {
 		expect(
-			parseLocalFileLink("src-tauri/src/lib.rs#L12", "/tmp/codewit"),
+			parseLocalFileLink("src-tauri/src/lib.rs#L12", "/tmp/grex"),
 		).toEqual({
-			path: "/tmp/codewit/src-tauri/src/lib.rs",
+			path: "/tmp/grex/src-tauri/src/lib.rs",
 			line: 12,
 		});
 	});
 
 	it("ignores external urls", () => {
 		expect(
-			parseLocalFileLink("https://example.com/src/App.tsx#L10", "/tmp/codewit"),
+			parseLocalFileLink("https://example.com/src/App.tsx#L10", "/tmp/grex"),
 		).toBeNull();
 	});
 

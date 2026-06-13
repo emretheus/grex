@@ -37,7 +37,7 @@ import {
 } from "@/lib/editor-session";
 import { isImageExtensionPath } from "@/lib/path-util";
 import {
-	codewitQueryKeys,
+	grexQueryKeys,
 	workspaceChangesQueryOptions,
 	workspaceFilesQueryOptions,
 } from "@/lib/query-client";
@@ -1101,7 +1101,7 @@ export function WorkspaceEditorSurface({
 			});
 			if (workspaceRootPath) {
 				void queryClient.invalidateQueries({
-					queryKey: codewitQueryKeys.workspaceChanges(
+					queryKey: grexQueryKeys.workspaceChanges(
 						workspaceRootPath,
 						workspaceId,
 					),

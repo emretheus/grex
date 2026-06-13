@@ -16,7 +16,7 @@
 //!     `Channel<AssetEvent>` registered through `subscribe()`.
 //!
 //! Designed to grow into the single place every long-running download
-//! in Codewit flows through (local AI weights, STT models, in-app
+//! in Grex flows through (local AI weights, STT models, in-app
 //! updates that we control directly, future plugin packs, etc).
 
 mod hf;

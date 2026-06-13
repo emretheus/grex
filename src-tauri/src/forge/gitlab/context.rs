@@ -300,11 +300,11 @@ mod tests {
         )
         .unwrap();
         git_ops::run_git(
-            ["config", "user.email", "codewit@example.com"],
+            ["config", "user.email", "grex@example.com"],
             Some(&workspace_dir),
         )
         .unwrap();
-        git_ops::run_git(["config", "user.name", "Codewit Test"], Some(&workspace_dir)).unwrap();
+        git_ops::run_git(["config", "user.name", "Grex Test"], Some(&workspace_dir)).unwrap();
         git_ops::run_git(
             ["checkout", "-b", "feature/local-name"],
             Some(&workspace_dir),
@@ -365,11 +365,11 @@ mod tests {
         )
         .unwrap();
         git_ops::run_git(
-            ["config", "user.email", "codewit@example.com"],
+            ["config", "user.email", "grex@example.com"],
             Some(&workspace_dir),
         )
         .unwrap();
-        git_ops::run_git(["config", "user.name", "Codewit Test"], Some(&workspace_dir)).unwrap();
+        git_ops::run_git(["config", "user.name", "Grex Test"], Some(&workspace_dir)).unwrap();
         git_ops::run_git(
             ["checkout", "-b", "feature/published"],
             Some(&workspace_dir),

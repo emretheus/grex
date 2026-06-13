@@ -1,7 +1,7 @@
 import type { QueryClient } from "@tanstack/react-query";
 import { permanentlyDeleteWorkspace } from "@/lib/api";
 import { extractError } from "@/lib/errors";
-import { codewitQueryKeys } from "@/lib/query-client";
+import { grexQueryKeys } from "@/lib/query-client";
 import { requestSidebarReconcile } from "@/lib/sidebar-mutation-gate";
 import type { PushWorkspaceToast } from "@/lib/workspace-toast-context";
 
@@ -43,10 +43,10 @@ export function showWorkspaceBrokenToast({
 						.then(() => {
 							requestSidebarReconcile(queryClient);
 							void queryClient.removeQueries({
-								queryKey: codewitQueryKeys.workspaceDetail(workspaceId),
+								queryKey: grexQueryKeys.workspaceDetail(workspaceId),
 							});
 							void queryClient.removeQueries({
-								queryKey: codewitQueryKeys.workspaceSessions(workspaceId),
+								queryKey: grexQueryKeys.workspaceSessions(workspaceId),
 							});
 						})
 						.catch((error) => {

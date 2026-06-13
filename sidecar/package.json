@@ -1,11 +1,11 @@
 {
-	"name": "@codewit/sidecar",
-	"description": "Codewit's agent-orchestration sidecar process (Claude Agent SDK + Codex SDK).",
+	"name": "@grex/sidecar",
+	"description": "Grex's agent-orchestration sidecar process (Claude Agent SDK + Codex SDK).",
 	"version": "0.1.0",
 	"private": true,
 	"type": "module",
 	"scripts": {
-		"build": "CODEWIT_STAGE_CURSOR_WORKER=1 bun run scripts/stage-vendor.ts && bun run scripts/build.ts",
+		"build": "GREX_STAGE_CURSOR_WORKER=1 bun run scripts/stage-vendor.ts && bun run scripts/build.ts",
 		"dev:prepare": "bun run stage-vendor && bun run build:worker",
 		"stage-vendor": "bun run scripts/stage-vendor.ts",
 		"build:worker": "bun run scripts/build-worker.ts",

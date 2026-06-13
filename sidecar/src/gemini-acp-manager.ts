@@ -10,7 +10,7 @@
 //     `gemini/<type>` passthrough. The Rust pipeline has no Gemini adapter yet,
 //     so rich rendering (tool cards, plan, thoughts) is a follow-up; plain
 //     assistant text rides `gemini/agent_message_chunk`.
-//   - Permission requests are AUTO-APPROVED (Codewit runs full-access by
+//   - Permission requests are AUTO-APPROVED (Grex runs full-access by
 //     default; Gemini's plan mode is disabled in the capability matrix).
 //   - Resume across sidecar restarts is not reattached (new ACP session each
 //     process); within a process, session continuity holds.
@@ -35,17 +35,17 @@ import type {
 } from "./session-manager.js";
 
 const GEMINI_PERMISSION_PREFIX = "gemini-";
-/** ACP protocol version Codewit speaks. */
+/** ACP protocol version Grex speaks. */
 const ACP_PROTOCOL_VERSION = 1;
 
 // ── Spawn resolution ─────────────────────────────────────────────────────────
-// 1. `CODEWIT_GEMINI_BIN_PATH` — set by the Tauri host in release builds,
+// 1. `GREX_GEMINI_BIN_PATH` — set by the Tauri host in release builds,
 //    pointing at the staged Gemini CLI launcher under the app's vendor tree.
 // 2. `@google/gemini-cli` resolved from node_modules, run under the current
 //    runtime (bun) — dev + `bun test`.
 // 3. Fall back to `gemini` on PATH.
 export function resolveGeminiSpawn(): { command: string; args: string[] } {
-	const override = process.env.CODEWIT_GEMINI_BIN_PATH;
+	const override = process.env.GREX_GEMINI_BIN_PATH;
 	if (override) {
 		return { command: override, args: ["--experimental-acp"] };
 	}
@@ -234,7 +234,7 @@ class AcpConnection {
 // ── Session bookkeeping ──────────────────────────────────────────────────────
 
 interface GeminiSessionCtx {
-	readonly codewitSessionId: string;
+	readonly grexSessionId: string;
 	acpSessionId: string;
 	cwd: string;
 	activeRequestId: string | null;
@@ -292,7 +292,7 @@ export class GeminiAcpManager implements SessionManager {
 			clientCapabilities: {
 				fs: { readTextFile: true, writeTextFile: true },
 			},
-			clientInfo: { name: "codewit_desktop", version: "0.1.0" },
+			clientInfo: { name: "grex_desktop", version: "0.1.0" },
 		});
 	}
 
@@ -412,7 +412,7 @@ export class GeminiAcpManager implements SessionManager {
 		const acpSessionId = result?.sessionId;
 		if (!acpSessionId) throw new Error("session/new returned no sessionId");
 		const created: GeminiSessionCtx = {
-			codewitSessionId: params.sessionId,
+			grexSessionId: params.sessionId,
 			acpSessionId,
 			cwd,
 			activeRequestId: null,

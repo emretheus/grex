@@ -118,7 +118,7 @@ export function MockInspector({
 				/>
 				<InspectorTabsLogsUI
 					entries={[
-						{ kind: "cmd", text: "codewit scripts run setup" },
+						{ kind: "cmd", text: "grex scripts run setup" },
 						{ kind: "step", text: "pnpm install (312 pkg, 2.4s)" },
 						{ kind: "step", text: "Running drizzle-kit migrate" },
 						{ kind: "success", text: "Database migrated" },

@@ -15,7 +15,7 @@ import {
 	setWorkspaceActiveRunAction,
 } from "@/lib/api";
 import type { ActiveEditorTarget, DiffOpenOptions } from "@/lib/editor-session";
-import { codewitQueryKeys } from "@/lib/query-client";
+import { grexQueryKeys } from "@/lib/query-client";
 import { useSettings } from "@/lib/settings";
 import { cn } from "@/lib/utils";
 import { useWorkspaceInspectorSidebar } from "./hooks/use-inspector";
@@ -48,7 +48,7 @@ import {
 const CREATE_RUN_ACTION_PREFILL = {
 	intro: "I want to create a run action that ",
 	body: [
-		"Please add a new run action to this workspace by editing `codewit.json`.",
+		"Please add a new run action to this workspace by editing `grex.json`.",
 		"",
 		"Required shape — `scripts.run` is an array. Each entry MUST have a non-blank `name` and a non-blank `command`:",
 		"",
@@ -63,13 +63,13 @@ const CREATE_RUN_ACTION_PREFILL = {
 		"```",
 		"",
 		"Rules:",
-		"- If `codewit.json` does not exist, create it with the shape above.",
-		'- If `codewit.json.scripts.run` is the legacy string form (e.g. `"run": "npm dev"`), convert it to the array form first (preserve the old command under `{ "name": "Default", "command": "<old string>" }`), then append the new one.',
+		"- If `grex.json` does not exist, create it with the shape above.",
+		'- If `grex.json.scripts.run` is the legacy string form (e.g. `"run": "npm dev"`), convert it to the array form first (preserve the old command under `{ "name": "Default", "command": "<old string>" }`), then append the new one.',
 		"- If `scripts.run` already contains an entry with the same name, ask me before overwriting.",
-		"- For dev servers / local services, prefer `$CODEWIT_PORT` over hardcoded port defaults so parallel workspaces don't collide.",
+		"- For dev servers / local services, prefer `$GREX_PORT` over hardcoded port defaults so parallel workspaces don't collide.",
 		'- Action names should be short, capitalized, intent-describing (e.g. "Dev", "Tests", "Lint", "DB").',
 		"",
-		"Only modify `codewit.json`. Don't touch source files. End with a short summary of what you wrote.",
+		"Only modify `grex.json`. Don't touch source files. End with a short summary of what you wrote.",
 	].join("\n"),
 } as const;
 
@@ -212,7 +212,7 @@ export function WorkspaceInspectorSidebar({
 			// immediately; the backend doesn't emit a mutation event for
 			// active-id changes (workspace-local preference, not shared).
 			void queryClient.invalidateQueries({
-				queryKey: codewitQueryKeys.workspaceDetail(workspaceId),
+				queryKey: grexQueryKeys.workspaceDetail(workspaceId),
 			});
 		},
 		[workspaceId, setActiveTab, queryClient],
@@ -231,7 +231,7 @@ export function WorkspaceInspectorSidebar({
 			onOpenSettings?.();
 		}
 		requestAnimationFrame(() => {
-			window.dispatchEvent(new CustomEvent("codewit:scroll-to-repo-scripts"));
+			window.dispatchEvent(new CustomEvent("grex:scroll-to-repo-scripts"));
 		});
 	}, [onOpenSettings, repoId]);
 
@@ -248,7 +248,7 @@ export function WorkspaceInspectorSidebar({
 		// hit send — see the matching listener in
 		// `features/panel/container.tsx`.
 		window.dispatchEvent(
-			new CustomEvent("codewit:create-prefilled-session", {
+			new CustomEvent("grex:create-prefilled-session", {
 				detail: {
 					workspaceId,
 					intro: CREATE_RUN_ACTION_PREFILL.intro,
@@ -428,7 +428,7 @@ export function WorkspaceInspectorSidebar({
 			handleToggleTabs();
 		} else {
 			// 4. Pull focus into the existing, already-mounted xterm.
-			window.dispatchEvent(new Event("codewit:focus-active-terminal"));
+			window.dispatchEvent(new Event("grex:focus-active-terminal"));
 		}
 	}, [
 		terminalInstances,

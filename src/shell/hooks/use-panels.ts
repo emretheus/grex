@@ -67,7 +67,7 @@ export function useShellPanels() {
 			);
 		} catch (error) {
 			console.error(
-				`[codewit] sidebar width save failed for "${SIDEBAR_WIDTH_STORAGE_KEY}"`,
+				`[grex] sidebar width save failed for "${SIDEBAR_WIDTH_STORAGE_KEY}"`,
 				error,
 			);
 		}
@@ -81,7 +81,7 @@ export function useShellPanels() {
 			);
 		} catch (error) {
 			console.error(
-				`[codewit] inspector width save failed for "${INSPECTOR_WIDTH_STORAGE_KEY}"`,
+				`[grex] inspector width save failed for "${INSPECTOR_WIDTH_STORAGE_KEY}"`,
 				error,
 			);
 		}
@@ -152,7 +152,7 @@ export function useShellPanels() {
 			overlay.style.inset = "0";
 			overlay.style.zIndex = "2147483647";
 			overlay.style.cursor = "ew-resize";
-			overlay.setAttribute("data-codewit-resize-overlay", "");
+			overlay.setAttribute("data-grex-resize-overlay", "");
 			overlay.setAttribute("aria-hidden", "true");
 			document.body.appendChild(overlay);
 

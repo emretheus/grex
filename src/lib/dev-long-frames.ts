@@ -1,5 +1,5 @@
 /**
- * Long-frame / FPS telemetry for Codewit.
+ * Long-frame / FPS telemetry for Grex.
  *
  * Two collection paths:
  *
@@ -13,12 +13,12 @@
  *      between consecutive rAF callbacks. Anything noticeably above the
  *      monitor's frame budget is recorded as a long frame. This is the path
  *      that actually fires inside Tauri WKWebView and is therefore the source
- *      of truth for the "Codewit 60→40 fps drop" the user is hunting.
+ *      of truth for the "Grex 60→40 fps drop" the user is hunting.
  *
  * Both paths feed the same in-memory ring buffer and the same on-screen HUD.
  *
  * Gating: enabled iff `?perfHud=1` is in the URL OR
- * `VITE_CODEWIT_PERF_HUD=1` is set at build time. The flag is shared with
+ * `VITE_GREX_PERF_HUD=1` is set at build time. The flag is shared with
  * `dev-react-scan.ts` so a single param flips the entire perf overlay.
  *
  * The collector runs in BOTH dev mode and release mode — unlike most of our
@@ -73,7 +73,7 @@ let hudCleanup: (() => void) | null = null;
 
 declare global {
 	interface Window {
-		__CODEWIT_LONG_FRAMES__?: {
+		__GREX_LONG_FRAMES__?: {
 			enabled: () => boolean;
 			get: () => LongFrameEntry[];
 			clear: () => void;
@@ -87,7 +87,7 @@ declare global {
 
 function isEnabled(): boolean {
 	if (typeof window === "undefined") return false;
-	const envFlag = import.meta.env.VITE_CODEWIT_PERF_HUD === "1";
+	const envFlag = import.meta.env.VITE_GREX_PERF_HUD === "1";
 	let queryFlag = false;
 	try {
 		queryFlag =
@@ -245,7 +245,7 @@ function mountHud(): () => void {
 	if (typeof document === "undefined") return () => undefined;
 
 	const hud = document.createElement("div");
-	hud.id = "__codewit-perf-hud__";
+	hud.id = "__grex-perf-hud__";
 	hud.setAttribute(
 		"style",
 		[
@@ -315,7 +315,7 @@ export function initDevLongFrames(): void {
 	rafCleanup = startRafFallback();
 	hudCleanup = mountHud();
 
-	window.__CODEWIT_LONG_FRAMES__ = {
+	window.__GREX_LONG_FRAMES__ = {
 		enabled: () => true,
 		get: () => longFrameBuffer.slice(),
 		clear: () => {
@@ -336,13 +336,13 @@ export function initDevLongFrames(): void {
 			),
 		downloadJson: () => {
 			if (typeof window === "undefined") return;
-			const blob = new Blob([window.__CODEWIT_LONG_FRAMES__!.dumpJson()], {
+			const blob = new Blob([window.__GREX_LONG_FRAMES__!.dumpJson()], {
 				type: "application/json",
 			});
 			const url = URL.createObjectURL(blob);
 			const a = document.createElement("a");
 			a.href = url;
-			a.download = `codewit-long-frames-${Date.now()}.json`;
+			a.download = `grex-long-frames-${Date.now()}.json`;
 			document.body.appendChild(a);
 			a.click();
 			a.remove();
@@ -362,5 +362,5 @@ export function teardownDevLongFrames(): void {
 	rafCleanup = null;
 	hudCleanup?.();
 	hudCleanup = null;
-	delete window.__CODEWIT_LONG_FRAMES__;
+	delete window.__GREX_LONG_FRAMES__;
 }

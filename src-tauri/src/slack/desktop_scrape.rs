@@ -231,7 +231,7 @@ fn read_local_config_teams(leveldb_dir: &Path) -> Result<Vec<TeamFromLeveldb>> {
     // open fails we surface the dir path so a developer can inspect
     // it; that requires turning off auto-delete on that branch).
     let snapshot = tempfile::Builder::new()
-        .prefix("codewit-slack-leveldb-")
+        .prefix("grex-slack-leveldb-")
         .tempdir()
         .context("Failed to create tempdir for Slack leveldb snapshot")?;
     let copied = copy_leveldb_snapshot(leveldb_dir, snapshot.path()).with_context(|| {
@@ -489,7 +489,7 @@ fn read_d_cookie(cookies_path: &Path, data_dir: &Path) -> Result<String> {
 /// the `keyring` crate / Security Framework directly: the item's ACL
 /// is restricted to binaries Slack signed, so a direct SF call returns
 /// "no matching entry"; spawning `security` causes macOS to show a
-/// one-time "Allow Codewit to access 'Slack Safe Storage'?" prompt and
+/// one-time "Allow Grex to access 'Slack Safe Storage'?" prompt and
 /// remember the approval. That tradeoff is fine — the user just
 /// clicked "Import from Slack desktop".
 ///

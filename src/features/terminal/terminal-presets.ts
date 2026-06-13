@@ -64,7 +64,7 @@ function shellQuotePrompt(value: string): string {
 	return `$'${escaped}'`;
 }
 
-/** Codewit's catalog uses the literal id "default" for "follow the CLI's own
+/** Grex's catalog uses the literal id "default" for "follow the CLI's own
  * default model" — that placeholder must never reach a real --model flag. */
 function cliModelOrNull(modelId?: string | null): string | null {
 	const model = modelId?.trim();

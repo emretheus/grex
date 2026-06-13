@@ -827,7 +827,7 @@ fn create_workspace_from_repo_defers_setup_when_script_configured_by_default() {
 
     // Setup script configured. auto_run_setup defaults to true (DB default
     // 1), so the workspace defers to the frontend inspector for auto-run.
-    harness.commit_repo_files(&[("codewit.json", r#"{"scripts":{"setup":"echo hello"}}"#)]);
+    harness.commit_repo_files(&[("grex.json", r#"{"scripts":{"setup":"echo hello"}}"#)]);
 
     let response = workspaces::create_workspace_from_repo_impl(&harness.repo_id).unwrap();
 
@@ -851,7 +851,7 @@ fn create_workspace_from_repo_stays_ready_when_auto_run_setup_disabled() {
         .unwrap_or_else(|poisoned| poisoned.into_inner());
     let harness = CreateTestHarness::new();
 
-    harness.commit_repo_files(&[("codewit.json", r#"{"scripts":{"setup":"echo hello"}}"#)]);
+    harness.commit_repo_files(&[("grex.json", r#"{"scripts":{"setup":"echo hello"}}"#)]);
     repos::update_repo_auto_run_setup(&harness.repo_id, false).unwrap();
 
     let response = workspaces::create_workspace_from_repo_impl(&harness.repo_id).unwrap();
@@ -931,7 +931,7 @@ fn prepare_workspace_inserts_initializing_row_without_creating_worktree() {
     let harness = CreateTestHarness::new();
 
     harness.commit_repo_files(&[(
-        "codewit.json",
+        "grex.json",
         r#"{"scripts":{"setup":"bun install","run":"bun run dev"}}"#,
     )]);
 
@@ -979,7 +979,7 @@ fn prepare_workspace_inserts_initializing_row_without_creating_worktree() {
         "worktree mode prepare must not return a cwd before finalize",
     );
 
-    // Repo scripts came from the source repo root's codewit.json (worktree
+    // Repo scripts came from the source repo root's grex.json (worktree
     // is still missing, so the 3-tier priority falls back to repo root).
     assert_eq!(
         prepared.repo_scripts.setup_script.as_deref(),
@@ -1044,15 +1044,15 @@ fn finalize_workspace_transitions_initializing_to_ready_and_creates_worktree() {
 }
 
 #[test]
-fn finalize_workspace_reports_setup_pending_when_codewit_json_has_setup() {
+fn finalize_workspace_reports_setup_pending_when_grex_json_has_setup() {
     let _guard = TEST_LOCK
         .lock()
         .unwrap_or_else(|poisoned| poisoned.into_inner());
     let harness = CreateTestHarness::new();
 
-    // Default behavior: auto_run_setup=true, codewit.json sets a setup script
+    // Default behavior: auto_run_setup=true, grex.json sets a setup script
     // → workspace defers to frontend inspector.
-    harness.commit_repo_files(&[("codewit.json", r#"{"scripts":{"setup":"echo hi"}}"#)]);
+    harness.commit_repo_files(&[("grex.json", r#"{"scripts":{"setup":"echo hi"}}"#)]);
 
     let prepared = workspaces::prepare_workspace_from_repo_impl(
         &harness.repo_id,
@@ -1068,13 +1068,13 @@ fn finalize_workspace_reports_setup_pending_when_codewit_json_has_setup() {
 }
 
 #[test]
-fn finalize_workspace_stays_ready_when_codewit_json_has_setup_but_auto_run_disabled() {
+fn finalize_workspace_stays_ready_when_grex_json_has_setup_but_auto_run_disabled() {
     let _guard = TEST_LOCK
         .lock()
         .unwrap_or_else(|poisoned| poisoned.into_inner());
     let harness = CreateTestHarness::new();
 
-    harness.commit_repo_files(&[("codewit.json", r#"{"scripts":{"setup":"echo hi"}}"#)]);
+    harness.commit_repo_files(&[("grex.json", r#"{"scripts":{"setup":"echo hi"}}"#)]);
     repos::update_repo_auto_run_setup(&harness.repo_id, false).unwrap();
 
     let prepared = workspaces::prepare_workspace_from_repo_impl(
@@ -1679,21 +1679,21 @@ fn pr_lookups_short_circuit_for_initializing_workspace_without_network() {
 
 // ---------------------------------------------------------------------------
 // `load_repo_scripts` three-tier priority
-// (worktree codewit.json > source repo root codewit.json > DB override)
+// (worktree grex.json > source repo root grex.json > DB override)
 // ---------------------------------------------------------------------------
 
 #[test]
-fn load_repo_scripts_priority_1_worktree_codewit_json_wins() {
+fn load_repo_scripts_priority_1_worktree_grex_json_wins() {
     let _guard = TEST_LOCK
         .lock()
         .unwrap_or_else(|poisoned| poisoned.into_inner());
     let harness = CreateTestHarness::new();
 
-    // Commit a repo-root codewit.json and seed DB-level script overrides
+    // Commit a repo-root grex.json and seed DB-level script overrides
     // (both `setup_script` and a `repo_run_actions` row) — every one
-    // should be SHADOWED by the worktree's own codewit.json.
+    // should be SHADOWED by the worktree's own grex.json.
     harness.commit_repo_files(&[(
-        "codewit.json",
+        "grex.json",
         r#"{"scripts":{"setup":"source-root-setup","run":"source-root-run"}}"#,
     )]);
     Connection::open(harness.db_path())
@@ -1707,7 +1707,7 @@ fn load_repo_scripts_priority_1_worktree_codewit_json_wins() {
         .unwrap();
 
     // Finalize so the worktree exists, then rewrite the worktree's
-    // codewit.json to a distinctly different value.
+    // grex.json to a distinctly different value.
     let prepared = workspaces::prepare_workspace_from_repo_impl(
         &harness.repo_id,
         None,
@@ -1719,7 +1719,7 @@ fn load_repo_scripts_priority_1_worktree_codewit_json_wins() {
     workspaces::finalize_workspace_from_repo_impl(&prepared.workspace_id).unwrap();
     let worktree_dir = harness.workspace_dir(&prepared.directory_name);
     fs::write(
-        worktree_dir.join("codewit.json"),
+        worktree_dir.join("grex.json"),
         r#"{"scripts":{"setup":"worktree-setup","run":"worktree-run"}}"#,
     )
     .unwrap();
@@ -1742,10 +1742,10 @@ fn load_repo_scripts_priority_2_repo_root_wins_when_worktree_missing() {
         .unwrap_or_else(|poisoned| poisoned.into_inner());
     let harness = CreateTestHarness::new();
 
-    // Repo root has codewit.json, DB has its own overrides. Workspace is
+    // Repo root has grex.json, DB has its own overrides. Workspace is
     // still in Phase 1 — worktree directory does not exist yet.
     harness.commit_repo_files(&[(
-        "codewit.json",
+        "grex.json",
         r#"{"scripts":{"setup":"source-root-setup"}}"#,
     )]);
     Connection::open(harness.db_path())
@@ -1783,13 +1783,13 @@ fn load_repo_scripts_priority_2_repo_root_wins_when_worktree_missing() {
 }
 
 #[test]
-fn load_repo_scripts_priority_3_falls_through_to_db_when_no_codewit_json_anywhere() {
+fn load_repo_scripts_priority_3_falls_through_to_db_when_no_grex_json_anywhere() {
     let _guard = TEST_LOCK
         .lock()
         .unwrap_or_else(|poisoned| poisoned.into_inner());
     let harness = CreateTestHarness::new();
 
-    // Neither repo root nor worktree has a codewit.json — DB override is
+    // Neither repo root nor worktree has a grex.json — DB override is
     // the only source.
     Connection::open(harness.db_path())
         .unwrap()
@@ -2276,9 +2276,9 @@ fn finalize_workspace_from_branch_falls_back_to_local_ref_when_remote_missing() 
             "-c",
             "commit.gpgsign=false",
             "-c",
-            "user.name=Codewit",
+            "user.name=Grex",
             "-c",
-            "user.email=codewit@example.com",
+            "user.email=grex@example.com",
             "commit",
             "-m",
             "wip",

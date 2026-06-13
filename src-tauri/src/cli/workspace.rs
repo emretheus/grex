@@ -1,4 +1,4 @@
-//! `codewit workspace` — workspace CRUD, git, archive, linked dirs.
+//! `grex workspace` — workspace CRUD, git, archive, linked dirs.
 
 use anyhow::{bail, Context, Result};
 
@@ -278,7 +278,7 @@ struct StackSpecLayer {
 }
 
 /// JSON shape matching the stacked-pr renderer's input (layers tip → root),
-/// so `codewit workspace stack <ws> --json | render_stack.py -` draws the
+/// so `grex workspace stack <ws> --json | render_stack.py -` draws the
 /// canonical diagram with no second source of truth.
 #[derive(serde::Serialize)]
 struct StackSpec {
@@ -733,7 +733,7 @@ mod tests {
             |id: &str, ws: &str, parent: Option<&str>, pr_url: Option<&str>, state: PrSyncState| {
                 workspace_models::StackLayer {
                     id: id.to_string(),
-                    repo_name: "codewit".to_string(),
+                    repo_name: "grex".to_string(),
                     directory_name: ws.to_string(),
                     title: None,
                     branch: Some(format!("demo/{ws}")),
@@ -766,7 +766,7 @@ mod tests {
         let spec = build_stack_spec(&chain).expect("non-empty chain");
 
         assert_eq!(spec.name, "theme-schema");
-        assert_eq!(spec.repo, "codewit");
+        assert_eq!(spec.repo, "grex");
         assert_eq!(spec.base, "main");
         // Rendered tip -> root.
         let ws: Vec<&str> = spec.layers.iter().map(|layer| layer.ws.as_str()).collect();

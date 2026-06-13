@@ -5,8 +5,8 @@
 mod common;
 
 use common::*;
-use codewit_lib::agents::{bridge_user_input_request_event, AgentStreamEvent};
-use codewit_lib::pipeline::PipelineEmit;
+use grex_lib::agents::{bridge_user_input_request_event, AgentStreamEvent};
+use grex_lib::pipeline::PipelineEmit;
 use insta::assert_yaml_snapshot;
 use serde::Serialize;
 use serde_json::{json, Value};
@@ -35,7 +35,7 @@ fn replay_stream(lines: &[Value]) -> StreamBridgeSnapshot {
                 "opus-1m",
                 "claude-opus-4-20250514",
                 Some("provider-session-1".to_string()),
-                "/tmp/codewit",
+                "/tmp/grex",
                 None,
                 value,
             )));

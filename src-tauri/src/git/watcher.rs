@@ -839,7 +839,7 @@ mod tests {
         let dir = tempfile::tempdir().unwrap();
         git(dir.path(), &["init"]);
         git(dir.path(), &["checkout", "-b", "main"]);
-        git(dir.path(), &["config", "user.email", "test@codewit.dev"]);
+        git(dir.path(), &["config", "user.email", "test@grex.dev"]);
         git(dir.path(), &["config", "user.name", "Test"]);
         git(dir.path(), &["config", "commit.gpgsign", "false"]);
         std::fs::write(dir.path().join("f.txt"), "init\n").unwrap();

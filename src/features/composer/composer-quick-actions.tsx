@@ -6,7 +6,7 @@ export type ComposerQuickAction = {
 	id: string;
 	label: string;
 	/** Prompt sent verbatim when the tag is clicked — typically a slash
-	 *  command that triggers the matching skill (e.g. `/codewit-cli restack`). */
+	 *  command that triggers the matching skill (e.g. `/grex-cli restack`). */
 	prompt: string;
 	icon?: ComponentType<{ className?: string; strokeWidth?: number }>;
 };
@@ -17,7 +17,7 @@ const DEFAULT_QUICK_ACTIONS: ComposerQuickAction[] = [
 	{
 		id: "restack",
 		label: "Restack",
-		prompt: "/codewit-cli restack",
+		prompt: "/grex-cli restack",
 		icon: ListTree,
 	},
 ];

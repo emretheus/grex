@@ -5,7 +5,7 @@
 //!     `https://<random>.trycloudflare.com` URL. Default before the user opts
 //!     into a stable URL.
 //!   - **named tunnel** (`cloudflared tunnel run …`): a permanent
-//!     `remote-<random>.codewit.ai` URL backed by the user's Cloudflare account
+//!     `remote-<random>.grex.ai` URL backed by the user's Cloudflare account
 //!     (see `sign_in_cloudflare` / `create_named_tunnel` + the registry).
 //!
 //! Process supervision mirrors `sidecar.rs`: children are spawned into their
@@ -86,7 +86,7 @@ impl TunnelState {
 
     /// Start a named tunnel (stable URL) pointing at `http://127.0.0.1:<port>`
     /// and block until a connection registers. `hostname` is the known
-    /// `remote-<random>.codewit.ai`; we return `https://<hostname>`.
+    /// `remote-<random>.grex.ai`; we return `https://<hostname>`.
     pub fn start_named(
         &self,
         port: u16,
@@ -322,7 +322,7 @@ fn cloudflared_home() -> Option<PathBuf> {
 
 /// Resolve the cloudflared binary: env override → bundled vendor copy → PATH.
 fn resolve_cloudflared() -> PathBuf {
-    if let Ok(path) = std::env::var("CODEWIT_CLOUDFLARED_PATH") {
+    if let Ok(path) = std::env::var("GREX_CLOUDFLARED_PATH") {
         let pb = PathBuf::from(path);
         if pb.is_file() {
             return pb;
@@ -427,7 +427,7 @@ mod tests {
     #[test]
     fn parses_tunnel_uuid_from_create_output() {
         let out = "Tunnel credentials written to /Users/x/.cloudflared/2f9a…json\n\
-                   Created tunnel codewit-abc with id 2f9a1b2c-3d4e-5f60-7081-92a3b4c5d6e7";
+                   Created tunnel grex-abc with id 2f9a1b2c-3d4e-5f60-7081-92a3b4c5d6e7";
         assert_eq!(
             parse_tunnel_uuid(out).as_deref(),
             Some("2f9a1b2c-3d4e-5f60-7081-92a3b4c5d6e7")

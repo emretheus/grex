@@ -1,7 +1,7 @@
 import { QueryClientProvider } from "@tanstack/react-query";
 import { act, cleanup, render, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { createCodewitQueryClient } from "@/lib/query-client";
+import { createGrexQueryClient } from "@/lib/query-client";
 import { useUiSyncBridge } from "@/shell/hooks/use-ui-sync-bridge";
 
 // Stubs for the two API surfaces the ring + bridge use. We swap
@@ -37,7 +37,7 @@ function Harness({
 	sessionId: string;
 	composerModelId?: string | null;
 }) {
-	const queryClient = createCodewitQueryClient();
+	const queryClient = createGrexQueryClient();
 	queryClient.setDefaultOptions({ queries: { retry: false } });
 	return (
 		<QueryClientProvider client={queryClient}>
@@ -57,7 +57,7 @@ function Harness({
 function BridgeHost({
 	queryClient,
 }: {
-	queryClient: ReturnType<typeof createCodewitQueryClient>;
+	queryClient: ReturnType<typeof createGrexQueryClient>;
 }) {
 	useUiSyncBridge({
 		queryClient,

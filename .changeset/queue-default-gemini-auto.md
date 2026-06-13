@@ -1,5 +1,5 @@
 ---
-"codewit": minor
+"grex": minor
 ---
 
 Queue follow-up prompts by default while an agent is working, surface an explicit Auto mode in the composer, and add an experimental Gemini provider.

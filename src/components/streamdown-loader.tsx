@@ -15,14 +15,14 @@ const LazyStreamdown = lazy(async () => {
 		React.ComponentProps<typeof Streamdown>["rehypePlugins"]
 	>[number];
 
-	// Default sanitize schema only allows http(s) for img src — opt in our Tauri schemes (codewit-attachment, slack-file, asset).
-	const codewitSanitizeSchema = {
+	// Default sanitize schema only allows http(s) for img src — opt in our Tauri schemes (grex-attachment, slack-file, asset).
+	const grexSanitizeSchema = {
 		...defaultSchema,
 		protocols: {
 			...defaultSchema.protocols,
 			src: [
 				...(defaultSchema.protocols?.src ?? []),
-				"codewit-attachment",
+				"grex-attachment",
 				"slack-file",
 				"asset",
 			],
@@ -30,7 +30,7 @@ const LazyStreamdown = lazy(async () => {
 	};
 	const customRehypePlugins: Pluggable[] = [
 		defaultRehypePlugins.raw as Pluggable,
-		[rehypeSanitize, codewitSanitizeSchema] as Pluggable,
+		[rehypeSanitize, grexSanitizeSchema] as Pluggable,
 		defaultRehypePlugins.harden as Pluggable,
 	];
 

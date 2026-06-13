@@ -44,7 +44,7 @@ describe("buildPromptTemplate", () => {
 	it("includes the user input + the full contribution lifecycle", () => {
 		const prompt = buildPromptTemplate("Button is stuck");
 		expect(prompt).toMatchInlineSnapshot(`
-			"I'm contributing to emretheus/codewit. Please help me ship this.
+			"I'm contributing to emretheus/grex. Please help me ship this.
 
 			## My feedback
 			Button is stuck
@@ -52,7 +52,7 @@ describe("buildPromptTemplate", () => {
 			## How to handle this
 			1. Explore the code, ask anything unclear, propose a minimal change.
 			2. Implement once I agree. Do not commit, push, or open a PR before I say "go ahead".
-			3. After my "go ahead": commit, push to origin, then \`gh pr create --repo emretheus/codewit --base main\` with a title and body generated from the diff.
+			3. After my "go ahead": commit, push to origin, then \`gh pr create --repo emretheus/grex --base main\` with a title and body generated from the diff.
 
 			Reply using the same language I used in the "## My feedback" section above."
 		`);

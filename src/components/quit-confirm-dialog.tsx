@@ -25,7 +25,7 @@ export function QuitConfirmDialog({
 		// Rust intercepts every OS-level exit path (close button, Cmd+Q,
 		// app-menu Quit, programmatic ExitRequested) and emits this
 		// event. We're the only gate that knows about in-flight tasks.
-		void listen("codewit://quit-requested", () => {
+		void listen("grex://quit-requested", () => {
 			if (runningRef.current.size === 0) {
 				void requestQuit(false);
 				return;
@@ -51,7 +51,7 @@ export function QuitConfirmDialog({
 		<ConfirmDialog
 			open={open}
 			onOpenChange={setOpen}
-			title="Quit Codewit?"
+			title="Quit Grex?"
 			description={
 				count === 1
 					? "There is 1 task in progress. Quitting now will cancel it."

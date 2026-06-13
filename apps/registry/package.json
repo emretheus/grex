@@ -1,6 +1,6 @@
 {
-	"name": "@codewit/registry",
-	"description": "Codewit companion device registry — writes remote-*.codewit.ai CNAMEs for paired desktops.",
+	"name": "@grex/registry",
+	"description": "Grex companion device registry — writes remote-*.grex.ai CNAMEs for paired desktops.",
 	"private": true,
 	"version": "0.0.0",
 	"type": "module",

@@ -4,7 +4,7 @@
 
 ### Initial Release
 
-Forked from [Helmor](https://github.com/dohooo/helmor) (v0.37.0) and rebranded as Codewit — a local-first desktop IDE for coding agent orchestration.
+Forked from [Helmor](https://github.com/dohooo/helmor) (v0.37.0) and rebranded as Grex — a local-first desktop IDE for coding agent orchestration.
 
 - **Multi-agent support**: Claude Code, Codex, Cursor, Gemini, Grok, Kilo Code, OpenCode, and Pi from a single interface
 - **Tauri desktop shell**: Native macOS (aarch64 + x86_64) and Windows (x64) builds

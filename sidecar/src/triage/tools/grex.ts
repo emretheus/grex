@@ -8,7 +8,7 @@ export interface PropositionBudget {
 	readonly max: number;
 }
 
-/// Repair a model-supplied branch slug to Codewit's `[a-z0-9-]` rule. Returns
+/// Repair a model-supplied branch slug to Grex's `[a-z0-9-]` rule. Returns
 /// "" when nothing usable survives, so the caller can fall back.
 export function slugifyBranch(input: string | undefined | null): string {
 	return (input ?? "")
@@ -51,9 +51,9 @@ export class ProposalAccumulator {
 export function buildListReposTool(repos: readonly TriageRepo[]) {
 	return {
 		name: "list_repos",
-		label: "List Codewit Repos",
+		label: "List Grex Repos",
 		description:
-			"List all repos the user has registered in Codewit. Use the returned id field when calling propose_workspace.",
+			"List all repos the user has registered in Grex. Use the returned id field when calling propose_workspace.",
 		parameters: Type.Object({}),
 		execute: async () => ({
 			content: [
@@ -82,14 +82,14 @@ export function buildProposeWorkspaceTool(
 				description:
 					"Stable id of the anchor message / issue / pr that this task is about. For Lark/Slack messages, use the message id (e.g. `om_xxx`, the slack `ts`). Used for dedup AND surfaced in next tick's chat file under `last_proposed_anchors` so you don't re-propose the same task.",
 			}),
-			repo_id: Type.String({ description: "Codewit repo id from list_repos." }),
+			repo_id: Type.String({ description: "Grex repo id from list_repos." }),
 			title: Type.String({
 				description:
 					'Short human-readable label, max ~50 chars, no quotes. Use the user\'s language. Becomes the session title in the sidebar — make it scannable (e.g. "修复 9B 模型加载视觉编码器崩溃").',
 			}),
 			branch_name: Type.String({
 				description:
-					"Lowercase-hyphen English slug for the git branch, max ~40 chars. No prefix (Codewit adds your username/). Examples: `fix-vision-loader-crash`, `triage-feedback-button`.",
+					"Lowercase-hyphen English slug for the git branch, max ~40 chars. No prefix (Grex adds your username/). Examples: `fix-vision-loader-crash`, `triage-feedback-button`.",
 			}),
 			plan_message: Type.String({
 				description:
@@ -188,7 +188,7 @@ export function buildMarkNotActionableTool(accumulator: ProposalAccumulator) {
 		name: "mark_not_actionable",
 		label: "Mark Candidate Skipped",
 		description:
-			"Mark this candidate (entire chat / issue) as having nothing actionable RIGHT NOW. For IM chats this means: you read the recent messages and there's no task buried in there. The decision is NOT terminal for chats — if new messages arrive in this chat later, Codewit will surface it again. So this is safe to use liberally.",
+			"Mark this candidate (entire chat / issue) as having nothing actionable RIGHT NOW. For IM chats this means: you read the recent messages and there's no task buried in there. The decision is NOT terminal for chats — if new messages arrive in this chat later, Grex will surface it again. So this is safe to use liberally.",
 		parameters: Type.Object({
 			candidate_id: Type.String({
 				description: "Id of the candidate.",

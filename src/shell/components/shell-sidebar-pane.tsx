@@ -122,7 +122,7 @@ export function ShellSidebarPane({
 			ref={asideRef}
 			aria-hidden={collapsed}
 			aria-label="Workspace sidebar"
-			data-codewit-sidebar-root
+			data-grex-sidebar-root
 			data-shell-pane="sidebar"
 			className={cn(
 				"group/sidebar relative flex h-full shrink-0 flex-col overflow-hidden bg-sidebar max-[960px]:absolute max-[960px]:bottom-[18px] max-[960px]:left-0 max-[960px]:top-9 max-[960px]:z-50 max-[960px]:h-auto max-[960px]:!w-6 max-[960px]:!max-w-[calc(100vw-12px)] max-[960px]:overflow-visible max-[960px]:rounded-xl max-[960px]:border max-[960px]:border-transparent max-[960px]:bg-transparent max-[960px]:shadow-none max-[960px]:ring-0",

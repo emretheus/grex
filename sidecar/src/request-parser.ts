@@ -203,7 +203,7 @@ export function parseGetContextUsageParams(
 	params: Record<string, unknown>,
 ): GetContextUsageParams {
 	return {
-		codewitSessionId: requireString(params, "sessionId"),
+		grexSessionId: requireString(params, "sessionId"),
 		providerSessionId: optionalString(params, "providerSessionId") ?? null,
 		model: requireString(params, "model"),
 		cwd: optionalString(params, "cwd"),

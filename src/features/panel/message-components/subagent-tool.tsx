@@ -5,7 +5,7 @@
  * Visual style: inline text + indented body with a left rule, matching
  *   1. Codex's own client (header "Spawned N agents" + indented "Created
  *      <Nickname> (<role>) with the instructions: <prompt>" rows), and
- *   2. Codewit's existing `AgentChildrenBlock` for Claude's Task tool —
+ *   2. Grex's existing `AgentChildrenBlock` for Claude's Task tool —
  *      so all Codex/Claude sub-agent surfaces share one rhythm. No card
  *      wrappers, no muted backgrounds.
  *

@@ -330,7 +330,7 @@ fn fetch_canonical_glab_username(host: &str) -> Option<String> {
 /// frontend: `forgeAccountsQueryOptions` caches forever
 /// (`staleTime: Infinity`) but refetches on every window focus
 /// (`refetchOnWindowFocus: "always"`), so a `glab auth logout`
-/// outside Codewit surfaces on the next focus. `invalidate()` is
+/// outside Grex surfaces on the next focus. `invalidate()` is
 /// exposed for explicit eviction (logout / unbind paths) but the
 /// TTL covers the common case.
 mod profile_cache {

@@ -152,7 +152,7 @@ export function AppUpdatesPanel() {
 							.then((nextStatus) => {
 								setStatus(nextStatus);
 								if (nextStatus.stage === "idle") {
-									toast.success("Codewit is up to date");
+									toast.success("Grex is up to date");
 								}
 								if (nextStatus.stage === "error") {
 									toast.error("Update check failed", {

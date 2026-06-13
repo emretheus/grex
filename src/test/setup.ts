@@ -68,9 +68,9 @@ if (typeof window !== "undefined" && !window.localStorage) {
 // as before.
 if (
 	typeof process !== "undefined" &&
-	!process.env.CODEWIT_REACT_SCHEDULER_FILTER_INSTALLED
+	!process.env.GREX_REACT_SCHEDULER_FILTER_INSTALLED
 ) {
-	process.env.CODEWIT_REACT_SCHEDULER_FILTER_INSTALLED = "1";
+	process.env.GREX_REACT_SCHEDULER_FILTER_INSTALLED = "1";
 	const isBenignReactSchedulerTeardown = (error: unknown) =>
 		error instanceof ReferenceError &&
 		/window is not defined/.test(error.message) &&
@@ -177,13 +177,13 @@ vi.mock("@tauri-apps/api/core", () => ({
 					buildMode: "development",
 					installState: "missing",
 				};
-			case "get_codewit_skills_status":
+			case "get_grex_skills_status":
 				return {
 					installed: false,
 					claude: false,
 					codex: false,
 					command:
-						"npx --yes skills add emretheus/codewit/.agents/skills/codewit-cli -g -s codewit-cli -y --copy -a claude-code -a codex",
+						"npx --yes skills add emretheus/grex/.agents/skills/grex-cli -g -s grex-cli -y --copy -a claude-code -a codex",
 				};
 			case "get_app_update_status":
 				return {
@@ -195,7 +195,7 @@ vi.mock("@tauri-apps/api/core", () => ({
 					lastAttemptAt: null,
 					downloadedAt: null,
 				};
-			case "get_codewit_components_update_check":
+			case "get_grex_components_update_check":
 				return {
 					cli: {
 						installed: false,
@@ -208,7 +208,7 @@ vi.mock("@tauri-apps/api/core", () => ({
 						claude: false,
 						codex: false,
 						command:
-							"npx --yes skills add emretheus/codewit/.agents/skills/codewit-cli -g -s codewit-cli -y --copy -a claude-code -a codex",
+							"npx --yes skills add emretheus/grex/.agents/skills/grex-cli -g -s grex-cli -y --copy -a claude-code -a codex",
 					},
 					lastCheckedVersion: null,
 					currentVersion: "0.0.0-test",

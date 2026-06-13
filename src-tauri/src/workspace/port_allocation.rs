@@ -2,7 +2,7 @@
 //!
 //! Each workspace gets a deterministic, non-overlapping block of TCP ports
 //! that scripts and embedded terminals can bind without clashing with other
-//! workspaces. The range is exposed as `CODEWIT_PORT` / `CODEWIT_PORT_COUNT`
+//! workspaces. The range is exposed as `GREX_PORT` / `GREX_PORT_COUNT`
 //! in the script env (see [`crate::workspace::scripts`]).
 //!
 //! Allocation is **lazy** and **stable**:
@@ -22,8 +22,8 @@ use crate::models::db;
 
 /// First port handed out to the first workspace that asks. Chosen high
 /// enough to clear common dev-server defaults (3000/5173/8080/etc.) so
-/// `CODEWIT_PORT` is unlikely to collide with whatever the user is also
-/// running outside Codewit.
+/// `GREX_PORT` is unlikely to collide with whatever the user is also
+/// running outside Grex.
 pub const DEFAULT_PORT_BASE: u16 = 55_100;
 
 /// Default size of a workspace's port block. Matches the
@@ -188,7 +188,7 @@ mod tests {
     fn allocation_survives_intermediate_workspace_archival() {
         // Archiving a workspace must not free its range — otherwise a
         // restore would collide with whichever new workspace took its
-        // ports, and CODEWIT_PORT stops being stable.
+        // ports, and GREX_PORT stops being stable.
         let env = TestEnv::new("port-alloc-archive");
         seed_ws(&env, "r1", "w1");
         seed_ws(&env, "r1", "w2");

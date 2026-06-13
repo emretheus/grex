@@ -1,5 +1,5 @@
 {
-	// Codewit companion device registry. Deploy with `bun run deploy`.
+	// Grex companion device registry. Deploy with `bun run deploy`.
 	//
 	// Non-secret IDs (KV id, zone id) are intentionally left as placeholders so
 	// the repo stays fork-friendly — fill them in locally (they are identifiers,
@@ -7,15 +7,15 @@
 	//   wrangler secret put CF_API_TOKEN
 	// account_id is read from the CLOUDFLARE_ACCOUNT_ID env var.
 	"$schema": "node_modules/wrangler/config-schema.json",
-	"name": "codewit-registry",
+	"name": "grex-registry",
 	"main": "src/index.ts",
 	"compatibility_date": "2026-06-01",
 	"workers_dev": false,
-	"routes": [{ "pattern": "registry.codewit.ai", "custom_domain": true }],
+	"routes": [{ "pattern": "registry.grex.ai", "custom_domain": true }],
 	"kv_namespaces": [{ "binding": "DEVICES", "id": "<YOUR_KV_NAMESPACE_ID>" }],
 	"vars": {
-		"CF_ZONE_ID": "<YOUR_CODEWIT_AI_ZONE_ID>",
-		"ROOT_DOMAIN": "codewit.ai",
+		"CF_ZONE_ID": "<YOUR_GREX_AI_ZONE_ID>",
+		"ROOT_DOMAIN": "grex.ai",
 		"HOSTNAME_PREFIX": "remote-",
 		"REGISTER_RATE_LIMIT": "10"
 	}

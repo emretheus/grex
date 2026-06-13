@@ -33,7 +33,7 @@ import {
 	isActionSessionMode,
 } from "@/lib/commit-button-prompts";
 import {
-	codewitQueryKeys,
+	grexQueryKeys,
 	workspaceForgeQueryOptions,
 } from "@/lib/query-client";
 import {
@@ -72,25 +72,25 @@ function applyOptimisticWorkspaceStatus(
 	nextStatus: WorkspaceStatus,
 ): () => void {
 	const previousGroups = queryClient.getQueryData<WorkspaceGroup[]>(
-		codewitQueryKeys.workspaceGroups,
+		grexQueryKeys.workspaceGroups,
 	);
 	const previousDetail = queryClient.getQueryData<WorkspaceDetail | null>(
-		codewitQueryKeys.workspaceDetail(workspaceId),
+		grexQueryKeys.workspaceDetail(workspaceId),
 	);
 
 	queryClient.setQueryData<WorkspaceGroup[] | undefined>(
-		codewitQueryKeys.workspaceGroups,
+		grexQueryKeys.workspaceGroups,
 		(current) => moveWorkspaceToGroup(current, workspaceId, nextStatus),
 	);
 	queryClient.setQueryData<WorkspaceDetail | null | undefined>(
-		codewitQueryKeys.workspaceDetail(workspaceId),
+		grexQueryKeys.workspaceDetail(workspaceId),
 		(detail) => (detail ? { ...detail, status: nextStatus } : detail),
 	);
 
 	return () => {
-		queryClient.setQueryData(codewitQueryKeys.workspaceGroups, previousGroups);
+		queryClient.setQueryData(grexQueryKeys.workspaceGroups, previousGroups);
 		queryClient.setQueryData(
-			codewitQueryKeys.workspaceDetail(workspaceId),
+			grexQueryKeys.workspaceDetail(workspaceId),
 			previousDetail,
 		);
 	};
@@ -273,13 +273,13 @@ export function useWorkspaceCommitLifecycle({
 	const refreshWorkspaceRemoteStatus = useCallback(
 		(workspaceId: string) => {
 			void queryClient.invalidateQueries({
-				queryKey: codewitQueryKeys.workspaceGitActionStatus(workspaceId),
+				queryKey: grexQueryKeys.workspaceGitActionStatus(workspaceId),
 			});
 			void queryClient.invalidateQueries({
-				queryKey: codewitQueryKeys.workspaceForgeActionStatus(workspaceId),
+				queryKey: grexQueryKeys.workspaceForgeActionStatus(workspaceId),
 			});
 			void queryClient.invalidateQueries({
-				queryKey: codewitQueryKeys.workspaceDetail(workspaceId),
+				queryKey: grexQueryKeys.workspaceDetail(workspaceId),
 			});
 			requestSidebarReconcile(queryClient);
 		},
@@ -338,7 +338,7 @@ export function useWorkspaceCommitLifecycle({
 						);
 						// Trigger a refresh so the status resolves sooner
 						void queryClient.invalidateQueries({
-							queryKey: codewitQueryKeys.workspaceForgeActionStatus(workspaceId),
+							queryKey: grexQueryKeys.workspaceForgeActionStatus(workspaceId),
 						});
 						return;
 					}
@@ -356,7 +356,7 @@ export function useWorkspaceCommitLifecycle({
 							);
 							void queryClient.invalidateQueries({
 								queryKey:
-									codewitQueryKeys.workspaceForgeActionStatus(workspaceId),
+									grexQueryKeys.workspaceForgeActionStatus(workspaceId),
 							});
 							return;
 						}
@@ -376,7 +376,7 @@ export function useWorkspaceCommitLifecycle({
 							);
 							void queryClient.invalidateQueries({
 								queryKey:
-									codewitQueryKeys.workspaceForgeActionStatus(workspaceId),
+									grexQueryKeys.workspaceForgeActionStatus(workspaceId),
 							});
 							return;
 						}
@@ -385,7 +385,7 @@ export function useWorkspaceCommitLifecycle({
 
 				const cachedChangeRequest =
 					queryClient.getQueryData<ChangeRequestInfo | null>(
-						codewitQueryKeys.workspaceChangeRequest(workspaceId),
+						grexQueryKeys.workspaceChangeRequest(workspaceId),
 					);
 				const optimisticChangeRequest: ChangeRequestInfo | null =
 					cachedChangeRequest
@@ -403,7 +403,7 @@ export function useWorkspaceCommitLifecycle({
 					changeRequest: optimisticChangeRequest,
 				});
 				queryClient.setQueryData(
-					codewitQueryKeys.workspaceChangeRequest(workspaceId),
+					grexQueryKeys.workspaceChangeRequest(workspaceId),
 					optimisticChangeRequest,
 				);
 				// Move the workspace to its target sidebar group + flip the
@@ -426,7 +426,7 @@ export function useWorkspaceCommitLifecycle({
 							? await mergeWorkspaceChangeRequest(workspaceId)
 							: await closeWorkspaceChangeRequest(workspaceId);
 						queryClient.setQueryData(
-							codewitQueryKeys.workspaceChangeRequest(workspaceId),
+							grexQueryKeys.workspaceChangeRequest(workspaceId),
 							result,
 						);
 					} catch (error) {
@@ -437,7 +437,7 @@ export function useWorkspaceCommitLifecycle({
 							"destructive",
 						);
 						queryClient.setQueryData(
-							codewitQueryKeys.workspaceChangeRequest(workspaceId),
+							grexQueryKeys.workspaceChangeRequest(workspaceId),
 							cachedChangeRequest,
 						);
 						restoreWorkspaceStatus();
@@ -446,7 +446,7 @@ export function useWorkspaceCommitLifecycle({
 						// `unauthenticated` (401) and flips the Connect CTA — no
 						// extra precheck round-trip on the happy path.
 						void queryClient.invalidateQueries({
-							queryKey: codewitQueryKeys.workspaceForgeActionStatus(workspaceId),
+							queryKey: grexQueryKeys.workspaceForgeActionStatus(workspaceId),
 						});
 						patchLifecycle(workspaceId, (prev) => ({
 							...prev,
@@ -533,7 +533,7 @@ export function useWorkspaceCommitLifecycle({
 				console.log("[commitButton] session created", { sessionId });
 
 				await queryClient.invalidateQueries({
-					queryKey: codewitQueryKeys.workspaceSessions(workspaceId),
+					queryKey: grexQueryKeys.workspaceSessions(workspaceId),
 				});
 
 				patchLifecycle(workspaceId, (current) =>
@@ -608,7 +608,7 @@ export function useWorkspaceCommitLifecycle({
 			const target = workspaceId
 				? queryClient
 						.getQueryData<WorkspaceSessionSummary[]>(
-							codewitQueryKeys.workspaceSessions(workspaceId),
+							grexQueryKeys.workspaceSessions(workspaceId),
 						)
 						?.find((session) => session.id === request.sessionId)
 				: undefined;
@@ -617,7 +617,7 @@ export function useWorkspaceCommitLifecycle({
 					try {
 						const { sessionId } = await createSession(workspaceId);
 						await queryClient.invalidateQueries({
-							queryKey: codewitQueryKeys.workspaceSessions(workspaceId),
+							queryKey: grexQueryKeys.workspaceSessions(workspaceId),
 						});
 						setPendingPromptForSession({ ...request, sessionId });
 						onSelectSession(sessionId);
@@ -682,7 +682,7 @@ export function useWorkspaceCommitLifecycle({
 					selectedWorkspaceRemote,
 				);
 				await queryClient.invalidateQueries({
-					queryKey: codewitQueryKeys.workspaceSessions(workspaceId),
+					queryKey: grexQueryKeys.workspaceSessions(workspaceId),
 				});
 				setPendingPromptForSession({ sessionId, prompt });
 				onSelectSession(sessionId);
@@ -799,7 +799,7 @@ export function useWorkspaceCommitLifecycle({
 					// lane / inspector header reflect the PR state on the same
 					// frame as the lifecycle transition.
 					queryClient.setQueryData(
-						codewitQueryKeys.workspaceChangeRequest(workspaceId),
+						grexQueryKeys.workspaceChangeRequest(workspaceId),
 						currentChangeRequest ?? null,
 					);
 					const optimisticStatus = deriveStatusFromChangeRequest(
@@ -878,10 +878,10 @@ export function useWorkspaceCommitLifecycle({
 						await hideSession(trackedSessionId);
 						await Promise.all([
 							queryClient.invalidateQueries({
-								queryKey: codewitQueryKeys.workspaceSessions(workspaceId),
+								queryKey: grexQueryKeys.workspaceSessions(workspaceId),
 							}),
 							queryClient.invalidateQueries({
-								queryKey: codewitQueryKeys.workspaceDetail(workspaceId),
+								queryKey: grexQueryKeys.workspaceDetail(workspaceId),
 							}),
 						]);
 						// Never hijack selection when the user has navigated to another
@@ -890,7 +890,7 @@ export function useWorkspaceCommitLifecycle({
 						// the session we just hid).
 						if (getSelectedWorkspaceIdRef.current() !== workspaceId) return;
 						const detail = queryClient.getQueryData<WorkspaceDetail | null>(
-							codewitQueryKeys.workspaceDetail(workspaceId),
+							grexQueryKeys.workspaceDetail(workspaceId),
 						);
 						onSelectSession(detail?.activeSessionId ?? null);
 					} catch (error) {

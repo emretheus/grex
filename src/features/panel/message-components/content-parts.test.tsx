@@ -38,11 +38,11 @@ describe("WorkflowCard", () => {
 		const { container: runningC } = render(
 			<WorkflowCard part={workflow({ status: "running" })} />,
 		);
-		expect(runningC.querySelector(".codewit-shimmer-text")).not.toBeNull();
+		expect(runningC.querySelector(".grex-shimmer-text")).not.toBeNull();
 
 		const { container: doneC } = render(<WorkflowCard part={workflow()} />);
 		// A completed run is a static label — no looping shimmer animation.
-		expect(doneC.querySelector(".codewit-shimmer-text")).toBeNull();
+		expect(doneC.querySelector(".grex-shimmer-text")).toBeNull();
 	});
 
 	it("shows the status word for the run", () => {

@@ -1,11 +1,11 @@
 ---
-name: codewit-release
-description: Prepare Codewit releases by inspecting the current branch, drafting a concise user-facing Changesets entry first (bump + body — keep it as short as possible), creating any needed pending in-app release announcement under `.announcements/`, and then showing the user the result with a short menu of adjustments they can pick from. Use when the user wants to cut a release, write a changeset, decide patch/minor/major, draft GitHub release notes, create a release announcement, or summarize branch changes into release-ready language.
+name: grex-release
+description: Prepare Grex releases by inspecting the current branch, drafting a concise user-facing Changesets entry first (bump + body — keep it as short as possible), creating any needed pending in-app release announcement under `.announcements/`, and then showing the user the result with a short menu of adjustments they can pick from. Use when the user wants to cut a release, write a changeset, decide patch/minor/major, draft GitHub release notes, create a release announcement, or summarize branch changes into release-ready language.
 ---
 
-# Codewit Release
+# Grex Release
 
-Use this skill to turn a branch's real changes into release metadata for Codewit:
+Use this skill to turn a branch's real changes into release metadata for Grex:
 
 - a clean `.changeset/*.md` entry
 - a pending `.announcements/*.json` fragment when the change deserves an in-app "New in vX" toast
@@ -125,7 +125,7 @@ Decision rule: if you find yourself writing a summary that just restates the one
 
 ```md
 ---
-"codewit": patch
+"grex": patch
 ---
 
 Fix a Chinese IME regression in the composer so pressing Enter to confirm an IME candidate no longer accidentally sends the message.
@@ -137,13 +137,13 @@ First line is a prose summary ending with `:`. Bullets start from the next line:
 
 ```md
 ---
-"codewit": minor
+"grex": minor
 ---
 
 Ship a round of release and auto-update improvements:
 - Add in-app update checks that download updates in the background and prompt once the update is ready to install.
 - Add a signed and notarized macOS release pipeline for GitHub Releases.
-- Add release planning automation so Codewit can publish user-facing release notes through Changesets.
+- Add release planning automation so Grex can publish user-facing release notes through Changesets.
 ```
 
 This renders cleanly as:
@@ -163,7 +163,7 @@ If the user wants credits, append a final bullet such as:
 
 ## GitHub Release Notes
 
-Codewit already uses `@changesets/changelog-github` in `.changeset/config.json`.
+Grex already uses `@changesets/changelog-github` in `.changeset/config.json`.
 
 That means:
 
@@ -254,9 +254,9 @@ Recommend:
 - `minor` for new user-visible features or workflows
 - `major` only when behavior changes incompatibly
 
-For Codewit's current early lifecycle, prefer `patch` or `minor`. Escalate to `major` only with a concrete breaking change.
+For Grex's current early lifecycle, prefer `patch` or `minor`. Escalate to `major` only with a concrete breaking change.
 
 ## Resources
 
 - Use `scripts/collect_release_context.py` to inspect the current branch before drafting the changeset.
-- Use `references/release-format.md` if you need the exact Codewit release flow or writing guidance.
+- Use `references/release-format.md` if you need the exact Grex release flow or writing guidance.

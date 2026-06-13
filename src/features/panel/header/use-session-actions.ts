@@ -14,7 +14,7 @@ import {
 	type WorkspaceDetail,
 	type WorkspaceSessionSummary,
 } from "@/lib/api";
-import { codewitQueryKeys } from "@/lib/query-client";
+import { grexQueryKeys } from "@/lib/query-client";
 import type { PushWorkspaceToast } from "@/lib/workspace-toast-context";
 import { seedNewSessionInCache } from "../session-cache";
 import { closeWorkspaceSession } from "../session-close";
@@ -77,7 +77,7 @@ export function useSessionActions({
 				createdAt: new Date().toISOString(),
 			});
 			void queryClient.invalidateQueries({
-				queryKey: codewitQueryKeys.repoScripts(workspace.repoId, workspace.id),
+				queryKey: grexQueryKeys.repoScripts(workspace.repoId, workspace.id),
 			});
 			onSessionsChanged?.();
 			onSelectSession?.(result.sessionId);

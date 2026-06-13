@@ -34,7 +34,7 @@ import {
 	type WorkspaceMode,
 } from "@/lib/api";
 import { extractError } from "@/lib/errors";
-import { codewitQueryKeys } from "@/lib/query-client";
+import { grexQueryKeys } from "@/lib/query-client";
 import { sessionThreadCacheKey } from "@/lib/session-thread-cache";
 import {
 	type AppSettings,
@@ -443,7 +443,7 @@ export function useStartSurfaceController(
 				.then(() => {
 					requestSidebarReconcile(queryClient);
 					void queryClient.invalidateQueries({
-						queryKey: codewitQueryKeys.workspaceDetail(workspaceId),
+						queryKey: grexQueryKeys.workspaceDetail(workspaceId),
 					});
 				})
 				.catch((error) => {
@@ -555,7 +555,7 @@ export function useStartSurfaceController(
 						activeSessionId: sessionId,
 					};
 					queryClient.setQueryData<WorkspaceDetail | null>(
-						codewitQueryKeys.workspaceDetail(workspaceId),
+						grexQueryKeys.workspaceDetail(workspaceId),
 						(existing) => existing ?? synthetic,
 					);
 					// Seed an empty thread so the panel's

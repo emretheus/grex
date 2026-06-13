@@ -13,10 +13,10 @@ import {
 	useState,
 } from "react";
 import { useStickToBottom } from "use-stick-to-bottom";
-import { CodewitLogoAnimated } from "@/components/codewit-logo-animated";
+import { GrexLogoAnimated } from "@/components/grex-logo-animated";
 import { Button } from "@/components/ui/button";
 import type { ThreadMessageLike } from "@/lib/api";
-import { CodewitProfiler } from "@/lib/dev-react-profiler";
+import { GrexProfiler } from "@/lib/dev-react-profiler";
 import { estimateThreadRowHeights } from "@/lib/message-layout-estimator";
 import { measureSync } from "@/lib/perf-marks";
 import { hasUnresolvedPlanReview } from "@/lib/plan-review";
@@ -404,7 +404,7 @@ function ChatThread({
 	);
 
 	return (
-		<CodewitProfiler id="ChatThread">
+		<GrexProfiler id="ChatThread">
 			<UserMessageExpansionProvider sessionId={sessionId}>
 				<ConversationViewport
 					contentRef={contentRef}
@@ -439,7 +439,7 @@ function ChatThread({
 					</Button>
 				</ConversationViewport>
 			</UserMessageExpansionProvider>
-		</CodewitProfiler>
+		</GrexProfiler>
 	);
 }
 
@@ -1342,7 +1342,7 @@ function StreamingFooter({ startTime }: { startTime: number }) {
 			data-testid="streaming-footer"
 			className="flex items-center gap-1.5 px-5 py-3 text-small tabular-nums text-muted-foreground"
 		>
-			<CodewitLogoAnimated size={14} className="opacity-80" />
+			<GrexLogoAnimated size={14} className="opacity-80" />
 			{display}
 		</div>
 	);

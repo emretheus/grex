@@ -26,7 +26,7 @@ export const ShimmerText = memo(function ShimmerText({
 	return (
 		<span
 			className={cn(
-				"codewit-shimmer-text inline-flex items-center whitespace-nowrap",
+				"grex-shimmer-text inline-flex items-center whitespace-nowrap",
 				className,
 			)}
 			style={shimmerStyle}

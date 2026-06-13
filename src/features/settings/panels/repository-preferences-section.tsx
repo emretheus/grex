@@ -15,7 +15,7 @@ import {
 	type RepoPreferences,
 	updateRepoPreferences,
 } from "@/lib/api";
-import { codewitQueryKeys } from "@/lib/query-client";
+import { grexQueryKeys } from "@/lib/query-client";
 import {
 	REPO_PREFERENCE_DESCRIPTIONS,
 	REPO_PREFERENCE_LABELS,
@@ -35,7 +35,7 @@ const PREFERENCE_KEYS: RepoPreferenceKey[] = [
 export function RepositoryPreferencesSection({ repoId }: { repoId: string }) {
 	const queryClient = useQueryClient();
 	const preferencesQuery = useQuery({
-		queryKey: codewitQueryKeys.repoPreferences(repoId),
+		queryKey: grexQueryKeys.repoPreferences(repoId),
 		queryFn: () => loadRepoPreferences(repoId),
 		staleTime: 0,
 	});
@@ -63,7 +63,7 @@ export function RepositoryPreferencesSection({ repoId }: { repoId: string }) {
 					Preferences
 				</div>
 				<div className="mt-1 text-small leading-snug text-muted-foreground">
-					Repo-level built-in prompts used by Codewit actions and new chats.
+					Repo-level built-in prompts used by Grex actions and new chats.
 				</div>
 				<div className="mt-4 divide-y divide-app-border/20">
 					{PREFERENCE_KEYS.map((key) => {
@@ -134,7 +134,7 @@ export function RepositoryPreferencesSection({ repoId }: { repoId: string }) {
 														.then(async () => {
 															await queryClient.invalidateQueries({
 																queryKey:
-																	codewitQueryKeys.repoPreferences(repoId),
+																	grexQueryKeys.repoPreferences(repoId),
 															});
 														})
 														.finally(() => setSavingKey(null));

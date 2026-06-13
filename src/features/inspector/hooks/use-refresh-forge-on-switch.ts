@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import type { ForgeActionStatus } from "@/lib/api";
 import {
 	forgeActionStatusRefetchInterval,
-	codewitQueryKeys,
+	grexQueryKeys,
 } from "@/lib/query-client";
 
 // On workspace switch, force-refresh when cached CI is still in flight.
@@ -19,7 +19,7 @@ export function useRefreshForgeOnWorkspaceSwitch(
 	useEffect(() => {
 		if (!selectedWorkspaceId) return;
 		const queryKey =
-			codewitQueryKeys.workspaceForgeActionStatus(selectedWorkspaceId);
+			grexQueryKeys.workspaceForgeActionStatus(selectedWorkspaceId);
 		const cached = queryClient.getQueryData<ForgeActionStatus>(queryKey);
 		if (!cached) return; // first visit — useQuery will fetch
 		const interval = forgeActionStatusRefetchInterval(cached);

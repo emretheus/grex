@@ -103,7 +103,7 @@ import { UsageStatsIndicator } from "./usage-stats-indicator";
 import type { UserInputResponseHandler } from "./user-input";
 import { UserInputPanel } from "./user-input-panel";
 
-const OPEN_SETTINGS_EVENT = "codewit:open-settings";
+const OPEN_SETTINGS_EVENT = "grex:open-settings";
 
 type WorkspaceComposerProps = {
 	contextKey: string;
@@ -198,7 +198,7 @@ type WorkspaceComposerProps = {
 	 *  When false (the default), the ring auto-reveals only after usage
 	 *  crosses the threshold defined inside the ring component. */
 	alwaysShowContextUsage?: boolean;
-	/** Codewit session id for the context-usage ring. */
+	/** Grex session id for the context-usage ring. */
 	sessionId?: string | null;
 	/** Provider's own session id (Claude Code UUID). Threaded into the
 	 *  context-usage ring for its hover-triggered live fetch. */
@@ -387,9 +387,9 @@ export const WorkspaceComposer = memo(function WorkspaceComposer({
 				?.focus();
 		};
 
-		window.addEventListener("codewit:focus-composer", handleFocusComposer);
+		window.addEventListener("grex:focus-composer", handleFocusComposer);
 		return () =>
-			window.removeEventListener("codewit:focus-composer", handleFocusComposer);
+			window.removeEventListener("grex:focus-composer", handleFocusComposer);
 	}, [disabled]);
 
 	// Apply a one-shot composer prefill (e.g. from the Inspector's
@@ -494,10 +494,10 @@ export const WorkspaceComposer = memo(function WorkspaceComposer({
 			if (toolbarDisabled) return;
 			setModelPickerOpen(true);
 		};
-		window.addEventListener("codewit:open-model-picker", handleOpenModelPicker);
+		window.addEventListener("grex:open-model-picker", handleOpenModelPicker);
 		return () =>
 			window.removeEventListener(
-				"codewit:open-model-picker",
+				"grex:open-model-picker",
 				handleOpenModelPicker,
 			);
 	}, [toolbarDisabled]);

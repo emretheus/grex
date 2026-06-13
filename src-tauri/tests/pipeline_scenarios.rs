@@ -1754,7 +1754,7 @@ fn codex_image_generation_saved_path_renders_as_file_image() {
             "id": "img_2",
             "type": "image_generation",
             "status": "completed",
-            "saved_path": "/tmp/codewit/generated-images/session/img_2.png"
+            "saved_path": "/tmp/grex/generated-images/session/img_2.png"
         }
     });
     let msgs = vec![make_record(
@@ -2193,7 +2193,7 @@ fn stream_subagent_partial_tagged_as_child() {
     // The finalized render keeps a single top-level Task message with the
     // subagent work folded into the tool call's children — no standalone
     // bubble. Pin the nesting itself so a grouping regression is caught.
-    use codewit_lib::pipeline::types::{ExtendedMessagePart, MessagePart};
+    use grex_lib::pipeline::types::{ExtendedMessagePart, MessagePart};
     assert_eq!(
         fp.historical_render.len(),
         1,

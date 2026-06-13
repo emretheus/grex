@@ -25,7 +25,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import type { PendingPermission } from "@/features/conversation/hooks/use-streaming";
 import type { PendingUserInput } from "@/features/conversation/pending-user-input";
 import type { AgentModelSection } from "@/lib/api";
-import { createCodewitQueryClient } from "@/lib/query-client";
+import { createGrexQueryClient } from "@/lib/query-client";
 import { WorkspaceComposer } from "./index";
 
 // ── Mock fixtures ─────────────────────────────────────────────────────
@@ -64,7 +64,7 @@ const MOCK_FORM_USER_INPUT: PendingUserInput = {
 	modelId: "sonnet-4-5",
 	resolvedModel: "claude-sonnet-4-5",
 	providerSessionId: null,
-	workingDirectory: "/tmp/codewit",
+	workingDirectory: "/tmp/grex",
 	permissionMode: null,
 	userInputId: "user-input-mock-form",
 	source: "vercel",
@@ -113,14 +113,14 @@ const MOCK_URL_USER_INPUT: PendingUserInput = {
 	modelId: "sonnet-4-5",
 	resolvedModel: "claude-sonnet-4-5",
 	providerSessionId: null,
-	workingDirectory: "/tmp/codewit",
+	workingDirectory: "/tmp/grex",
 	permissionMode: null,
 	userInputId: "user-input-mock-url",
 	source: "auth-server",
 	message: "Finish signing in in the browser to continue.",
 	payload: {
 		kind: "url",
-		url: "https://example.com/oauth/authorize?client_id=codewit&state=abc",
+		url: "https://example.com/oauth/authorize?client_id=grex&state=abc",
 	},
 };
 
@@ -129,7 +129,7 @@ const MOCK_ASK_USER_QUESTION: PendingUserInput = {
 	modelId: "sonnet-4-5",
 	resolvedModel: "claude-sonnet-4-5",
 	providerSessionId: null,
-	workingDirectory: "/tmp/codewit",
+	workingDirectory: "/tmp/grex",
 	permissionMode: null,
 	userInputId: "tool-ask-1",
 	source: "Claude",
@@ -193,7 +193,7 @@ function baseComposerProps(contextKey: string): ComposerProps {
 		restoreCustomTags: [],
 		restoreNonce: 0,
 		slashCommands: [],
-		workspaceRootPath: "/tmp/codewit",
+		workspaceRootPath: "/tmp/grex",
 		pendingUserInput: null,
 		pendingPermission: null,
 		hasPlanReview: false,
@@ -207,7 +207,7 @@ function baseComposerProps(contextKey: string): ComposerProps {
 let sharedQueryClient: QueryClient | null = null;
 function getQueryClient(): QueryClient {
 	if (sharedQueryClient == null) {
-		sharedQueryClient = createCodewitQueryClient();
+		sharedQueryClient = createGrexQueryClient();
 	}
 	return sharedQueryClient;
 }

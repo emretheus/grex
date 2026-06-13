@@ -1,4 +1,4 @@
-// Minimum set of IPC command responses needed to boot the Codewit React shell
+// Minimum set of IPC command responses needed to boot the Grex React shell
 // in a browser without a Rust backend.
 //
 // Mirrors the switch in src/test/setup.ts — keep them in sync when the boot
@@ -20,14 +20,14 @@ export const defaultInvokeHandlers: Record<string, InvokeHandler> = {
 		buildMode: "development",
 		installState: "missing",
 	}),
-	get_codewit_skills_status: () => ({
+	get_grex_skills_status: () => ({
 		installed: false,
 		claude: false,
 		codex: false,
 		command:
-			"npx --yes skills add emretheus/codewit/.agents/skills/codewit-cli -g -s codewit-cli -y --copy -a claude-code -a codex",
+			"npx --yes skills add emretheus/grex/.agents/skills/grex-cli -g -s grex-cli -y --copy -a claude-code -a codex",
 	}),
-	get_codewit_components_update_check: () => ({
+	get_grex_components_update_check: () => ({
 		cli: {
 			installed: false,
 			installPath: null,
@@ -39,7 +39,7 @@ export const defaultInvokeHandlers: Record<string, InvokeHandler> = {
 			claude: false,
 			codex: false,
 			command:
-				"npx --yes skills add emretheus/codewit/.agents/skills/codewit-cli -g -s codewit-cli -y --copy -a claude-code -a codex",
+				"npx --yes skills add emretheus/grex/.agents/skills/grex-cli -g -s grex-cli -y --copy -a claude-code -a codex",
 		},
 		lastCheckedVersion: null,
 		currentVersion: "0.0.0-test",
@@ -105,7 +105,7 @@ type Overrides = Record<string, InvokeHandler>;
 
 declare global {
 	interface Window {
-		__CODEWIT_E2E__?: {
+		__GREX_E2E__?: {
 			invokeOverrides?: Overrides;
 		};
 	}
@@ -115,12 +115,12 @@ export async function runInvoke(
 	command: string,
 	args?: unknown,
 ): Promise<unknown> {
-	const overrides = globalThis.window?.__CODEWIT_E2E__?.invokeOverrides;
+	const overrides = globalThis.window?.__GREX_E2E__?.invokeOverrides;
 	const handler = overrides?.[command] ?? defaultInvokeHandlers[command];
 	if (!handler) {
 		// Unknown commands are a common footgun — log once so devs notice
 		// missing stubs instead of chasing a silent `undefined`.
-		console.warn(`[codewit-e2e] unstubbed invoke: ${command}`, args);
+		console.warn(`[grex-e2e] unstubbed invoke: ${command}`, args);
 		return undefined;
 	}
 	return await handler(args);

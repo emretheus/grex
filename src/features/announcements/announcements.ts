@@ -1,7 +1,7 @@
 import type { SettingsSection } from "@/features/settings";
 import type { WorkspaceRightSidebarMode } from "@/lib/settings";
 
-export const GITHUB_RELEASES_URL = "https://github.com/emretheus/codewit/releases";
+export const GITHUB_RELEASES_URL = "https://github.com/emretheus/grex/releases";
 
 export type ReleaseAnnouncementAction =
 	| {
@@ -48,7 +48,7 @@ export type ReleaseAnnouncement = {
 /**
  * Parse "X.Y.Z" into a tuple of numbers for ordering. Non-numeric or
  * missing parts collapse to 0 — defensive against malformed input from
- * the JSON file, but Codewit itself only ships plain three-part semver.
+ * the JSON file, but Grex itself only ships plain three-part semver.
  */
 function parseSemver(version: string): [number, number, number] {
 	const parts = version.split(".");
@@ -86,8 +86,8 @@ export function selectReleaseAnnouncement(args: {
 	currentVersion: string;
 	lastSeenVersion: string | null;
 	/**
-	 * Whether this device has never run Codewit before. The caller decides
-	 * what counts as "fresh" — usually "no other `codewit-*` localStorage
+	 * Whether this device has never run Grex before. The caller decides
+	 * what counts as "fresh" — usually "no other `grex-*` localStorage
 	 * key exists either".
 	 *
 	 * Disambiguates two `lastSeenVersion === null` cases that look
@@ -98,7 +98,7 @@ export function selectReleaseAnnouncement(args: {
 	 *             the first time (the storage key itself is new), so
 	 *             replay the full catalog backlog into one toast.
 	 */
-	isFirstCodewitBoot: boolean;
+	isFirstGrexBoot: boolean;
 	/**
 	 * Highest release version the user has already dismissed. Treated as
 	 * "dismissed everything ≤ this", so older catalog entries are skipped
@@ -110,17 +110,17 @@ export function selectReleaseAnnouncement(args: {
 	const {
 		catalog,
 		currentVersion,
-		isFirstCodewitBoot,
+		isFirstGrexBoot,
 		lastDismissedReleaseVersion,
 	} = args;
 	let { lastSeenVersion } = args;
 
 	if (lastSeenVersion === null) {
-		// Genuinely first time Codewit is opened — the catalog has nothing
+		// Genuinely first time Grex is opened — the catalog has nothing
 		// to teach a user who hasn't even used the previous version.
-		if (isFirstCodewitBoot) return null;
+		if (isFirstGrexBoot) return null;
 		// Existing user, but this is the first build that ships the
-		// announcement system, so `codewit:last-seen-install-version` was
+		// announcement system, so `grex:last-seen-install-version` was
 		// never written before. Pretend they were on a very old version
 		// and replay every published entry up to `currentVersion`.
 		lastSeenVersion = "0.0.0";

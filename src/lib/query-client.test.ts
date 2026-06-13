@@ -8,7 +8,7 @@ import type {
 } from "./api";
 import {
 	changeRequestRefetchInterval,
-	createCodewitQueryClient,
+	createGrexQueryClient,
 	forgeActionStatusRefetchInterval,
 	PERSIST_META,
 	sessionThreadMessagesQueryOptions,
@@ -262,7 +262,7 @@ describe("sessionThreadMessagesQueryOptions — warm revisit stays IPC-free", ()
 
 	it("does not refire the thread queryFn on a warm revisit, even long after the fetch", async () => {
 		vi.useFakeTimers();
-		const client = createCodewitQueryClient();
+		const client = createGrexQueryClient();
 
 		await client.fetchQuery(sessionThreadMessagesQueryOptions("session-1"));
 		expect(apiMocks.loadSessionThreadMessages).toHaveBeenCalledTimes(1);
@@ -279,9 +279,9 @@ describe("sessionThreadMessagesQueryOptions — warm revisit stays IPC-free", ()
 	});
 });
 
-describe("createCodewitQueryClient dehydrate filter", () => {
+describe("createGrexQueryClient dehydrate filter", () => {
 	it("only persists queries that opt in via meta.persist", () => {
-		const client = createCodewitQueryClient();
+		const client = createGrexQueryClient();
 		// Two queries explicitly opted in.
 		client
 			.getQueryCache()
@@ -309,7 +309,7 @@ describe("createCodewitQueryClient dehydrate filter", () => {
 	});
 
 	it("skips pending queries even when meta.persist is set", () => {
-		const client = createCodewitQueryClient();
+		const client = createGrexQueryClient();
 		// A query that's never been fulfilled stays in `pending` state; the
 		// default hydration contract drops those, and our override must too.
 		client.getQueryCache().build(client, {
@@ -323,7 +323,7 @@ describe("createCodewitQueryClient dehydrate filter", () => {
 	});
 
 	it("ignores meta values that are not the literal `{ persist: true }`", () => {
-		const client = createCodewitQueryClient();
+		const client = createGrexQueryClient();
 		// `meta: {}` and absent meta both fall through.
 		client
 			.getQueryCache()

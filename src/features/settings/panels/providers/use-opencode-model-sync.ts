@@ -5,7 +5,7 @@ import {
 	getOpencodeCustomProviders,
 	listOpencodeModels,
 } from "@/lib/api";
-import { codewitQueryKeys } from "@/lib/query-client";
+import { grexQueryKeys } from "@/lib/query-client";
 import {
 	OPENCODE_CACHE_VERSION,
 	type OpencodeCachedModel,
@@ -66,13 +66,13 @@ export function useOpencodeModelSync(): OpencodeModelSync {
 				updateSettings({ opencodeProvider: { ...opencode, ...patch } }),
 			);
 			queryClient.invalidateQueries({
-				queryKey: codewitQueryKeys.agentModelSections,
+				queryKey: grexQueryKeys.agentModelSections,
 			});
 			// Flip opencode's flag in the login-status cache directly so its Ready
 			// badge updates the instant the sync lands — invalidating would re-run
 			// the slow claude/codex CLI checks bundled in the same command.
 			queryClient.setQueryData<AgentLoginStatusResult>(
-				codewitQueryKeys.agentLoginStatus,
+				grexQueryKeys.agentLoginStatus,
 				(old) => (old ? { ...old, opencode: cached.length > 0 } : old),
 			);
 		},

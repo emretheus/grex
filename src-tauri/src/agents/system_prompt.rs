@@ -1,10 +1,10 @@
-//! Codewit-aware system prompt prepended to every user turn.
+//! Grex-aware system prompt prepended to every user turn.
 //!
 //! ## What the agent sees
 //!
 //! Every send to Claude Code / Codex (and any future SDK we route
 //! through `streaming::stream_via_sidecar`) gets a small "you are
-//! inside Codewit" preamble stitched onto the front of the user's
+//! inside Grex" preamble stitched onto the front of the user's
 //! prompt. The preamble:
 //!
 //! - Names the workspace the agent is running on (so an agent
@@ -13,10 +13,10 @@
 //!   plus any `/add-dir`-linked directories.
 //! - Points at the `.agent-contexts/` scratch dir as the canonical
 //!   place to leave files for other sessions.
-//! - Tells the agent it can drive Codewit itself via the bundled CLI,
+//! - Tells the agent it can drive Grex itself via the bundled CLI,
 //!   and points it at the CLI's own `--help` for the full command
 //!   surface (clap's `after_help` blocks own the examples). The
-//!   `codewit-cli` skill is still auto-loaded on demand for prose
+//!   `grex-cli` skill is still auto-loaded on demand for prose
 //!   context, but the prompt never duplicates the command list — the
 //!   CLI's `--help` is the single source of truth, which means dev
 //!   and release stay in sync automatically without us re-injecting
@@ -29,18 +29,18 @@
 //! `streaming::stream_via_sidecar` already supports a hidden preamble
 //! (`AgentSendRequest::prompt_prefix`). The wire payload to the SDK
 //! sees the combined string; the chat bubble + DB row persist only the
-//! user's typed text. Codewit's system prompt is appended in front of
+//! user's typed text. Grex's system prompt is appended in front of
 //! whatever caller-supplied prefix already exists, so e.g. the
 //! repo-preferences preamble from `use-streaming.ts` remains visible
-//! to the agent as task-level guidance after Codewit's container-level
+//! to the agent as task-level guidance after Grex's container-level
 //! framing.
 //!
 //! ## Why we re-inject every turn
 //!
 //! SDK conversation history persists across turns, but only the
-//! agent's internal context window — not Codewit's contract with the
+//! agent's internal context window — not Grex's contract with the
 //! agent. Re-injecting per turn is cheap (~600 chars / ~150 tokens),
-//! immune to context-window truncation, and keeps the codewit-cli
+//! immune to context-window truncation, and keeps the grex-cli
 //! skill cue visible at turn N when the user finally asks for
 //! orchestration.
 
@@ -48,7 +48,7 @@ use std::fmt::Write;
 
 /// Context the prompt template consumes. Construct once per send.
 #[derive(Debug, Clone)]
-pub struct CodewitSystemPromptContext {
+pub struct GrexSystemPromptContext {
     /// Human-friendly label for the current workspace. Format
     /// `<repo>/<workspace-directory>` so the agent's self-locating
     /// statement matches what the user sees in the sidebar.
@@ -68,13 +68,13 @@ pub struct CodewitSystemPromptContext {
     /// elides the entire linked-directories paragraph.
     pub linked_directories: Vec<String>,
     /// The CLI invocation string the agent should use to talk to
-    /// THIS Codewit instance.
+    /// THIS Grex instance.
     ///
-    /// - Release builds: `codewit` (the stable on-PATH symlink).
-    /// - Dev builds: the absolute path of `codewit-cli` next to the
-    ///   currently-running Codewit executable. Bare `codewit-dev` would
+    /// - Release builds: `grex` (the stable on-PATH symlink).
+    /// - Dev builds: the absolute path of `grex-cli` next to the
+    ///   currently-running Grex executable. Bare `grex-dev` would
     ///   be ambiguous under the worktree-based dev workflow — multiple
-    ///   Codewit dev instances coexist and a shared symlink can only
+    ///   Grex dev instances coexist and a shared symlink can only
     ///   point at one of them, so we hand the agent an absolute path
     ///   that's unambiguously tied to this instance.
     ///
@@ -108,9 +108,9 @@ pub struct StackContext {
 /// doesn't apply — we surface a smaller preamble that only carries
 /// the bits a "Just Chat" agent actually needs.
 #[derive(Debug, Clone)]
-pub struct CodewitChatPromptContext {
+pub struct GrexChatPromptContext {
     /// Same CLI invocation rules as
-    /// [`CodewitSystemPromptContext::cli_command_name`].
+    /// [`GrexSystemPromptContext::cli_command_name`].
     pub cli_command_name: String,
 }
 
@@ -118,14 +118,14 @@ pub struct CodewitChatPromptContext {
 /// safe to call from any context. The result already trims trailing
 /// whitespace so the consumer can `format!("{prefix}\n\n{rest}")`
 /// without doubling up newlines.
-pub fn build_codewit_system_prompt(ctx: &CodewitSystemPromptContext) -> String {
+pub fn build_grex_system_prompt(ctx: &GrexSystemPromptContext) -> String {
     let mut out = String::with_capacity(640);
 
-    out.push_str("<codewit_context>\n");
-    out.push_str("You are running inside Codewit, a Mac app that lets the user run many coding agents in parallel.\n");
+    out.push_str("<grex_context>\n");
+    out.push_str("You are running inside Grex, a Mac app that lets the user run many coding agents in parallel.\n");
     let _ = writeln!(
         out,
-        "You are working on the workspace `{}`. The user is watching this conversation live in Codewit's GUI.",
+        "You are working on the workspace `{}`. The user is watching this conversation live in Grex's GUI.",
         ctx.workspace_label,
     );
     let _ = writeln!(
@@ -159,7 +159,7 @@ pub fn build_codewit_system_prompt(ctx: &CodewitSystemPromptContext) -> String {
         }
         let _ = writeln!(
             out,
-            ". The layers below you are already in your branch — implement only THIS layer's slice, not the lower layers (already done) or the layer above (another agent's). Run `{cli} workspace stack` for the full chain; after a lower layer changes or merges, run `/codewit-cli restack` to re-sync the stack.",
+            ". The layers below you are already in your branch — implement only THIS layer's slice, not the lower layers (already done) or the layer above (another agent's). Run `{cli} workspace stack` for the full chain; after a lower layer changes or merges, run `/grex-cli restack` to re-sync the stack.",
             cli = ctx.cli_command_name,
         );
     }
@@ -188,15 +188,15 @@ pub fn build_codewit_system_prompt(ctx: &CodewitSystemPromptContext) -> String {
 
     let _ = write!(
         out,
-        "\nCodewit itself is scriptable via `{cli}`. When you need to operate Codewit (spawn workspaces, dispatch ship actions, read other agents' sessions, etc.), run `{cli} --help` or `{cli} <subcommand> --help` — each subcommand's help block includes examples you can copy. Invoke `{cli}` verbatim; do NOT verify it first with `which`, `file`, `--version`, or by searching `target/debug` — it is already the binary this Codewit instance owns, and pre-verifying eats your turn.\n",
+        "\nGrex itself is scriptable via `{cli}`. When you need to operate Grex (spawn workspaces, dispatch ship actions, read other agents' sessions, etc.), run `{cli} --help` or `{cli} <subcommand> --help` — each subcommand's help block includes examples you can copy. Invoke `{cli}` verbatim; do NOT verify it first with `which`, `file`, `--version`, or by searching `target/debug` — it is already the binary this Grex instance owns, and pre-verifying eats your turn.\n",
         cli = ctx.cli_command_name,
     );
 
     out.push_str(
-        "\nIf the user asks for help with Codewit itself, point them at the feedback button at the bottom of Codewit's sidebar.\n",
+        "\nIf the user asks for help with Grex itself, point them at the feedback button at the bottom of Grex's sidebar.\n",
     );
 
-    out.push_str("</codewit_context>");
+    out.push_str("</grex_context>");
     out
 }
 
@@ -204,28 +204,28 @@ pub fn build_codewit_system_prompt(ctx: &CodewitSystemPromptContext) -> String {
 /// `WorkspaceMode::Chat` sessions that have no repo / no worktree /
 /// no target branch — the workspace-bound prompt's workspace label,
 /// working directory, target branch, and `.agent-contexts/` lines
-/// would all be either wrong or misleading there. Same `<codewit_context>`
-/// envelope so logs / SDK clients can spot Codewit's preamble at a glance.
-pub fn build_codewit_chat_prompt(ctx: &CodewitChatPromptContext) -> String {
+/// would all be either wrong or misleading there. Same `<grex_context>`
+/// envelope so logs / SDK clients can spot Grex's preamble at a glance.
+pub fn build_grex_chat_prompt(ctx: &GrexChatPromptContext) -> String {
     let mut out = String::with_capacity(384);
 
-    out.push_str("<codewit_context>\n");
-    out.push_str("You are running inside Codewit, a Mac app that lets the user run many coding agents in parallel.\n");
+    out.push_str("<grex_context>\n");
+    out.push_str("You are running inside Grex, a Mac app that lets the user run many coding agents in parallel.\n");
     out.push_str(
         "This is a \"Just Chat\" session — it is not bound to any repository or workspace, so there is no working directory, no target branch, and no git context. Do not assume a project structure, and do not run commands that need one (no `git`, no project-relative file edits, no PRs) unless the user explicitly points you at one.\n",
     );
 
     let _ = write!(
         out,
-        "\nCodewit itself is scriptable via `{cli}`. When you need to operate Codewit (spawn workspaces, dispatch ship actions, read other agents' sessions, etc.), run `{cli} --help` or `{cli} <subcommand> --help` — each subcommand's help block includes examples you can copy. Invoke `{cli}` verbatim; do NOT verify it first with `which`, `file`, `--version`, or by searching `target/debug` — it is already the binary this Codewit instance owns, and pre-verifying eats your turn.\n",
+        "\nGrex itself is scriptable via `{cli}`. When you need to operate Grex (spawn workspaces, dispatch ship actions, read other agents' sessions, etc.), run `{cli} --help` or `{cli} <subcommand> --help` — each subcommand's help block includes examples you can copy. Invoke `{cli}` verbatim; do NOT verify it first with `which`, `file`, `--version`, or by searching `target/debug` — it is already the binary this Grex instance owns, and pre-verifying eats your turn.\n",
         cli = ctx.cli_command_name,
     );
 
     out.push_str(
-        "\nIf the user asks for help with Codewit itself, point them at the feedback button at the bottom of Codewit's sidebar.\n",
+        "\nIf the user asks for help with Grex itself, point them at the feedback button at the bottom of Grex's sidebar.\n",
     );
 
-    out.push_str("</codewit_context>");
+    out.push_str("</grex_context>");
     out
 }
 
@@ -233,14 +233,14 @@ pub fn build_codewit_chat_prompt(ctx: &CodewitChatPromptContext) -> String {
 mod tests {
     use super::*;
 
-    fn ctx_with_defaults() -> CodewitSystemPromptContext {
-        CodewitSystemPromptContext {
+    fn ctx_with_defaults() -> GrexSystemPromptContext {
+        GrexSystemPromptContext {
             workspace_label: "dohooo/feature-x".to_string(),
-            workspace_root_path: "/Users/me/codewit/workspaces/dohooo/feature-x".to_string(),
+            workspace_root_path: "/Users/me/grex/workspaces/dohooo/feature-x".to_string(),
             target_branch: Some("origin/main".to_string()),
             base_branch: Some("main".to_string()),
             linked_directories: Vec::new(),
-            cli_command_name: "codewit".to_string(),
+            cli_command_name: "grex".to_string(),
             stack: None,
         }
     }
@@ -249,9 +249,9 @@ mod tests {
     /// so the agent can self-locate.
     #[test]
     fn renders_workspace_label_and_root_path() {
-        let prompt = build_codewit_system_prompt(&ctx_with_defaults());
+        let prompt = build_grex_system_prompt(&ctx_with_defaults());
         assert!(prompt.contains("`dohooo/feature-x`"));
-        assert!(prompt.contains("`/Users/me/codewit/workspaces/dohooo/feature-x`"));
+        assert!(prompt.contains("`/Users/me/grex/workspaces/dohooo/feature-x`"));
     }
 
     /// Resolved target + base branch → the diff/PR commands are
@@ -259,7 +259,7 @@ mod tests {
     /// bearing line the agent uses to decide where to base PRs.
     #[test]
     fn target_branch_block_includes_diff_and_pr_commands() {
-        let prompt = build_codewit_system_prompt(&ctx_with_defaults());
+        let prompt = build_grex_system_prompt(&ctx_with_defaults());
         assert!(prompt.contains("`origin/main`"));
         assert!(prompt.contains("git diff origin/main..."));
         assert!(prompt.contains("gh pr create --base main"));
@@ -274,7 +274,7 @@ mod tests {
         let mut ctx = ctx_with_defaults();
         ctx.target_branch = None;
         ctx.base_branch = None;
-        let prompt = build_codewit_system_prompt(&ctx);
+        let prompt = build_grex_system_prompt(&ctx);
         assert!(prompt.contains("not configured"));
         assert!(!prompt.contains("git diff"));
         assert!(!prompt.contains("gh pr create"));
@@ -285,7 +285,7 @@ mod tests {
     /// "you also have access to:" sentence with no bullets.
     #[test]
     fn linked_directories_paragraph_is_elided_when_list_empty() {
-        let prompt = build_codewit_system_prompt(&ctx_with_defaults());
+        let prompt = build_grex_system_prompt(&ctx_with_defaults());
         assert!(!prompt.contains("linked directories"));
     }
 
@@ -299,19 +299,19 @@ mod tests {
             total: 3,
             parent_branch: Some("demo/theme-schema".to_string()),
         });
-        let prompt = build_codewit_system_prompt(&ctx);
+        let prompt = build_grex_system_prompt(&ctx);
         assert!(prompt.contains("layer 2 of 3"));
         assert!(prompt.contains("`demo/theme-schema`"));
         assert!(prompt.contains("workspace stack"));
-        assert!(prompt.contains("/codewit-cli restack"));
+        assert!(prompt.contains("/grex-cli restack"));
     }
 
     /// A non-stacked workspace gets no stack block at all.
     #[test]
     fn non_stacked_workspace_has_no_stack_block() {
-        let prompt = build_codewit_system_prompt(&ctx_with_defaults());
+        let prompt = build_grex_system_prompt(&ctx_with_defaults());
         assert!(!prompt.contains("Stacked PR:"));
-        assert!(!prompt.contains("/codewit-cli restack"));
+        assert!(!prompt.contains("/grex-cli restack"));
     }
 
     /// Non-empty list → the paragraph appears with each entry on its
@@ -321,7 +321,7 @@ mod tests {
     fn linked_directories_paragraph_renders_each_entry() {
         let mut ctx = ctx_with_defaults();
         ctx.linked_directories = vec!["/Users/me/lib-a".to_string(), "/Users/me/lib-b".to_string()];
-        let prompt = build_codewit_system_prompt(&ctx);
+        let prompt = build_grex_system_prompt(&ctx);
         assert!(prompt.contains("linked directories"));
         assert!(prompt.contains("- /Users/me/lib-a"));
         assert!(prompt.contains("- /Users/me/lib-b"));
@@ -333,7 +333,7 @@ mod tests {
     /// refactor that moves it behind a flag breaks loudly here.
     #[test]
     fn agent_contexts_scratch_paragraph_is_always_present() {
-        let prompt = build_codewit_system_prompt(&ctx_with_defaults());
+        let prompt = build_grex_system_prompt(&ctx_with_defaults());
         assert!(prompt.contains(".agent-contexts/"));
         assert!(prompt.contains("gitignored"));
         assert!(prompt.contains("web-research notes"));
@@ -348,13 +348,13 @@ mod tests {
     /// Pin so a future refactor that re-inlines a command list breaks
     /// loudly here.
     #[test]
-    fn codewit_cli_paragraph_points_at_help_not_inlined_commands() {
-        let prompt = build_codewit_system_prompt(&ctx_with_defaults());
+    fn grex_cli_paragraph_points_at_help_not_inlined_commands() {
+        let prompt = build_grex_system_prompt(&ctx_with_defaults());
         // The CLI name must be paired with `--help` so the agent
         // knows where to look.
         assert!(
-            prompt.contains("`codewit --help`"),
-            "release prompt should tell the agent to run `codewit --help`"
+            prompt.contains("`grex --help`"),
+            "release prompt should tell the agent to run `grex --help`"
         );
         // We deliberately don't list subcommand recipes — that's
         // clap `after_help`'s job, lazily read when the agent
@@ -375,55 +375,55 @@ mod tests {
     /// the fix for the "agent spent 14 commands introspecting the
     /// CLI before doing anything" failure mode.
     #[test]
-    fn codewit_cli_paragraph_tells_agent_not_to_pre_verify() {
-        let prompt = build_codewit_system_prompt(&ctx_with_defaults());
+    fn grex_cli_paragraph_tells_agent_not_to_pre_verify() {
+        let prompt = build_grex_system_prompt(&ctx_with_defaults());
         assert!(
             prompt.contains("do NOT verify"),
             "prompt must explicitly forbid pre-verification of the CLI binary"
         );
     }
 
-    /// Dev builds hand the agent an absolute path so each Codewit
+    /// Dev builds hand the agent an absolute path so each Grex
     /// instance's agent talks to the exact CLI binary that belongs to
     /// it — required under the worktree-based dev workflow where
     /// multiple dev instances coexist. Pin the substitution so a
-    /// future "always use the bare `codewit-dev` name" regression
+    /// future "always use the bare `grex-dev` name" regression
     /// breaks here.
     #[test]
     fn cli_command_name_is_threaded_through_for_dev_builds() {
         let mut ctx = ctx_with_defaults();
         ctx.cli_command_name =
-            "/Users/me/codewit-wt/feature-x/src-tauri/target/debug/codewit-cli".to_string();
-        let prompt = build_codewit_system_prompt(&ctx);
+            "/Users/me/grex-wt/feature-x/src-tauri/target/debug/grex-cli".to_string();
+        let prompt = build_grex_system_prompt(&ctx);
         assert!(
-            prompt.contains("`/Users/me/codewit-wt/feature-x/src-tauri/target/debug/codewit-cli`"),
+            prompt.contains("`/Users/me/grex-wt/feature-x/src-tauri/target/debug/grex-cli`"),
             "dev builds must surface the absolute CLI path"
         );
         // And the `--help` pairing must use the same path so the
         // agent can copy-paste it directly.
         assert!(
             prompt.contains(
-                "`/Users/me/codewit-wt/feature-x/src-tauri/target/debug/codewit-cli --help`"
+                "`/Users/me/grex-wt/feature-x/src-tauri/target/debug/grex-cli --help`"
             ),
             "dev `--help` invocation must use the same absolute path"
         );
     }
 
-    /// Release builds use the canonical `codewit` name. Pin so a
+    /// Release builds use the canonical `grex` name. Pin so a
     /// future refactor that always emits an absolute path (or
-    /// `codewit-dev`) regardless of build doesn't silently misadvise
+    /// `grex-dev`) regardless of build doesn't silently misadvise
     /// release agents.
     #[test]
     fn cli_command_name_uses_release_binary_in_release_builds() {
-        let prompt = build_codewit_system_prompt(&ctx_with_defaults());
-        assert!(prompt.contains("`codewit`"));
-        assert!(prompt.contains("`codewit --help`"));
+        let prompt = build_grex_system_prompt(&ctx_with_defaults());
+        assert!(prompt.contains("`grex`"));
+        assert!(prompt.contains("`grex --help`"));
         assert!(
-            !prompt.contains("target/debug/codewit-cli"),
+            !prompt.contains("target/debug/grex-cli"),
             "release prompt must not mention dev-only paths"
         );
         assert!(
-            !prompt.contains("codewit-dev"),
+            !prompt.contains("grex-dev"),
             "release prompt must not surface the dev binary name"
         );
     }
@@ -434,28 +434,28 @@ mod tests {
     /// exist.
     #[test]
     fn feedback_pointer_points_at_sidebar_button() {
-        let prompt = build_codewit_system_prompt(&ctx_with_defaults());
+        let prompt = build_grex_system_prompt(&ctx_with_defaults());
         assert!(prompt.contains("feedback button"));
         assert!(prompt.contains("sidebar"));
     }
 
-    /// The whole thing is wrapped in a single `<codewit_context>` tag
-    /// so the SDK / log viewer can spot Codewit's preamble at a glance.
+    /// The whole thing is wrapped in a single `<grex_context>` tag
+    /// so the SDK / log viewer can spot Grex's preamble at a glance.
     /// Keeping it as one block (not split between system + user) means
     /// the agent treats it as additional context, not an authoritative
     /// instruction, which is what we want.
     #[test]
-    fn output_is_wrapped_in_codewit_context_tag() {
-        let prompt = build_codewit_system_prompt(&ctx_with_defaults());
-        assert!(prompt.starts_with("<codewit_context>"));
-        assert!(prompt.ends_with("</codewit_context>"));
+    fn output_is_wrapped_in_grex_context_tag() {
+        let prompt = build_grex_system_prompt(&ctx_with_defaults());
+        assert!(prompt.starts_with("<grex_context>"));
+        assert!(prompt.ends_with("</grex_context>"));
     }
 
     // ── Chat-mode preamble ────────────────────────────────────────────
 
-    fn chat_ctx() -> CodewitChatPromptContext {
-        CodewitChatPromptContext {
-            cli_command_name: "codewit".to_string(),
+    fn chat_ctx() -> GrexChatPromptContext {
+        GrexChatPromptContext {
+            cli_command_name: "grex".to_string(),
         }
     }
 
@@ -466,7 +466,7 @@ mod tests {
     /// for a git context that doesn't exist.
     #[test]
     fn chat_prompt_omits_workspace_bound_lines() {
-        let prompt = build_codewit_chat_prompt(&chat_ctx());
+        let prompt = build_grex_chat_prompt(&chat_ctx());
         assert!(
             !prompt.contains("You are working on the workspace"),
             "chat prompt must not pin a workspace (chat sessions aren't bound to one)"
@@ -499,28 +499,28 @@ mod tests {
     /// silently drop the disclosure.
     #[test]
     fn chat_prompt_states_it_is_chat_and_warns_against_assuming_repo() {
-        let prompt = build_codewit_chat_prompt(&chat_ctx());
+        let prompt = build_grex_chat_prompt(&chat_ctx());
         assert!(prompt.contains("Just Chat"));
         assert!(prompt.contains("not bound to any repository"));
     }
 
     /// CLI section + feedback pointer apply to chat sessions too —
-    /// they can still drive Codewit and still need to report bugs.
+    /// they can still drive Grex and still need to report bugs.
     #[test]
     fn chat_prompt_keeps_cli_and_feedback_sections() {
-        let prompt = build_codewit_chat_prompt(&chat_ctx());
-        assert!(prompt.contains("`codewit`"));
-        assert!(prompt.contains("`codewit --help`"));
+        let prompt = build_grex_chat_prompt(&chat_ctx());
+        assert!(prompt.contains("`grex`"));
+        assert!(prompt.contains("`grex --help`"));
         assert!(prompt.contains("do NOT verify"));
         assert!(prompt.contains("feedback button"));
     }
 
-    /// Same `<codewit_context>` envelope so log viewers / SDK clients
+    /// Same `<grex_context>` envelope so log viewers / SDK clients
     /// can spot the preamble regardless of which template emitted it.
     #[test]
-    fn chat_prompt_is_wrapped_in_codewit_context_tag() {
-        let prompt = build_codewit_chat_prompt(&chat_ctx());
-        assert!(prompt.starts_with("<codewit_context>"));
-        assert!(prompt.ends_with("</codewit_context>"));
+    fn chat_prompt_is_wrapped_in_grex_context_tag() {
+        let prompt = build_grex_chat_prompt(&chat_ctx());
+        assert!(prompt.starts_with("<grex_context>"));
+        assert!(prompt.ends_with("</grex_context>"));
     }
 }

@@ -547,7 +547,7 @@ export function WorkspaceStartPage({
 							>
 								{repositories.length === 0 ? (
 									// No repos → swap the repo-bound modes for an "Add a
-									// repository" CTA that fires `codewit:open-add-repository`
+									// repository" CTA that fires `grex:open-add-repository`
 									// (sidebar listener opens its add-repo sub-menu).
 									<>
 										<DropdownMenuItem

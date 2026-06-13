@@ -502,7 +502,7 @@ mod tests {
         let mut cache_paths = HashMap::new();
         cache_paths.insert(
             "F1".to_string(),
-            PathBuf::from("/tmp/codewit/cache/slack-files/abc.png"),
+            PathBuf::from("/tmp/grex/cache/slack-files/abc.png"),
         );
         let out = format_thread_for_agent(
             &detail,
@@ -520,7 +520,7 @@ mod tests {
         // NOT tell the agent to "Use the Read tool" — that would
         // imply Read is required, which is wrong now.
         assert!(
-            out.contains("Attached as image (local path: /tmp/codewit/cache/slack-files/abc.png)",)
+            out.contains("Attached as image (local path: /tmp/grex/cache/slack-files/abc.png)",)
         );
         assert!(!out.contains("Use the Read tool"));
     }

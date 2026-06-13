@@ -48,7 +48,7 @@ impl Fetcher for GithubFetcher {
     }
 }
 
-/// Codewit repo target; deduped on lowercased path.
+/// Grex repo target; deduped on lowercased path.
 #[derive(Debug, Clone)]
 struct RepoTarget {
     login: String,

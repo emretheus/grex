@@ -113,14 +113,14 @@ describe("QuickSwitchOverlay", () => {
 	});
 
 	it("prefers session title over branch-derived row.title (no duplication)", () => {
-		// Mirrors a real Codewit row where `row.title` is itself derived from
+		// Mirrors a real Grex row where `row.title` is itself derived from
 		// the branch — without the shared title chain we'd render
 		// "Cmd Tab Switcher" twice (once as title, once as subtitle).
 		const rows = new Map([
 			[
 				"a",
 				row("a", "Cmd Tab Switcher", {
-					repoName: "codewit",
+					repoName: "grex",
 					branch: "feature/cmd-tab-switcher",
 					primarySessionTitle: "Designing the overlay",
 				}),
@@ -138,7 +138,7 @@ describe("QuickSwitchOverlay", () => {
 		// Title comes from the session, not the redundant row.title.
 		expect(screen.getByText("Designing the overlay")).toBeTruthy();
 		// Subtitle: repo › branch.
-		expect(screen.getByText("codewit › feature/cmd-tab-switcher")).toBeTruthy();
+		expect(screen.getByText("grex › feature/cmd-tab-switcher")).toBeTruthy();
 	});
 
 	it("falls back to humanized branch when no PR / session title is available", () => {

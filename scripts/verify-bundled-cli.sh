@@ -2,12 +2,12 @@
 set -euo pipefail
 
 if [[ $# -ne 1 ]]; then
-  echo "Usage: $0 <Codewit.app path>"
+  echo "Usage: $0 <Grex.app path>"
   exit 1
 fi
 
 APP_BUNDLE="$1"
-CLI_PATH="${APP_BUNDLE}/Contents/MacOS/codewit-cli"
+CLI_PATH="${APP_BUNDLE}/Contents/MacOS/grex-cli"
 
 if [[ ! -d "${APP_BUNDLE}" ]]; then
   echo "App bundle not found: ${APP_BUNDLE}"
@@ -36,7 +36,7 @@ fi
 echo "Bundled CLI smoke check passed."
 
 # ----- Vendor binary architecture check -----------------------------------
-# codewit-cli is built per-arch via cargo --target, so its lipo arch is the
+# grex-cli is built per-arch via cargo --target, so its lipo arch is the
 # source of truth for what this bundle is targeting. Every vendored binary
 # must match — otherwise an x64 .dmg ends up shipping arm64 `gh` and Intel
 # users see "bad CPU type in executable" (#293).
@@ -44,7 +44,7 @@ EXPECTED_ARCH="$(lipo -archs "${CLI_PATH}")"
 case "${EXPECTED_ARCH}" in
   arm64|x86_64) ;;
   *)
-    echo "Unexpected codewit-cli arch '${EXPECTED_ARCH}' (want arm64 or x86_64)"
+    echo "Unexpected grex-cli arch '${EXPECTED_ARCH}' (want arm64 or x86_64)"
     exit 1
     ;;
 esac

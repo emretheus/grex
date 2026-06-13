@@ -3,20 +3,20 @@ import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
-	getCodewitComponentsUpdateCheck,
-	type CodewitComponentsUpdateCheck,
+	getGrexComponentsUpdateCheck,
+	type GrexComponentsUpdateCheck,
 	installCli,
-	installCodewitSkills,
-	recheckCodewitComponents,
+	installGrexSkills,
+	recheckGrexComponents,
 } from "@/lib/api";
 import { cn } from "@/lib/utils";
 import { SettingsRow } from "../components/settings-row";
 
 /**
- * Settings → General "Codewit components" row.
+ * Settings → General "Grex components" row.
  *
- * Surfaces the per-version silent startup re-check of the Codewit CLI
- * symlink and the Codewit Skills package. Steady state: green check on
+ * Surfaces the per-version silent startup re-check of the Grex CLI
+ * symlink and the Grex Skills package. Steady state: green check on
  * each, no controls. When the silent pass deferred work to the user
  * (CLI needs sudo, skills install errored), the affected row shows a
  * red mark + per-component Retry button. A "Re-check now" button
@@ -26,7 +26,7 @@ import { SettingsRow } from "../components/settings-row";
  * this panel is purely a presentation layer over the IPC snapshot.
  */
 export function ComponentsPanel() {
-	const [snapshot, setSnapshot] = useState<CodewitComponentsUpdateCheck | null>(
+	const [snapshot, setSnapshot] = useState<GrexComponentsUpdateCheck | null>(
 		null,
 	);
 	const [rechecking, setRechecking] = useState(false);
@@ -35,13 +35,13 @@ export function ComponentsPanel() {
 
 	const refresh = useCallback(async () => {
 		try {
-			const next = await getCodewitComponentsUpdateCheck();
+			const next = await getGrexComponentsUpdateCheck();
 			setSnapshot(next);
 		} catch (error) {
 			// Reading the snapshot is a pure DB read; a failure here means
 			// something is genuinely wrong with the install. Surface it
 			// instead of swallowing.
-			toast.error("Unable to read Codewit components status", {
+			toast.error("Unable to read Grex components status", {
 				description: error instanceof Error ? error.message : String(error),
 			});
 		}
@@ -54,10 +54,10 @@ export function ComponentsPanel() {
 	const handleRecheck = useCallback(async () => {
 		setRechecking(true);
 		try {
-			const next = await recheckCodewitComponents();
+			const next = await recheckGrexComponents();
 			setSnapshot(next);
 			if (!next.cliError && !next.skillsError) {
-				toast.success("Codewit components are up to date");
+				toast.success("Grex components are up to date");
 			}
 		} catch (error) {
 			toast.error("Re-check failed", {
@@ -87,7 +87,7 @@ export function ComponentsPanel() {
 	const handleRetrySkills = useCallback(async () => {
 		setRetryingSkills(true);
 		try {
-			await installCodewitSkills();
+			await installGrexSkills();
 			await refresh();
 		} catch (error) {
 			toast.error("Skills install failed", {
@@ -109,9 +109,9 @@ export function ComponentsPanel() {
 		if (cliOk && skillsOk) {
 			const checked = snapshot.lastCheckedVersion;
 			if (checked === snapshot.currentVersion) {
-				return `Codewit CLI and skills are up to date with ${snapshot.currentVersion}.`;
+				return `Grex CLI and skills are up to date with ${snapshot.currentVersion}.`;
 			}
-			return "Codewit CLI and skills look healthy.";
+			return "Grex CLI and skills look healthy.";
 		}
 		return "One or more components need attention.";
 	})();
@@ -119,14 +119,14 @@ export function ComponentsPanel() {
 	return (
 		<SettingsRow
 			align="start"
-			title="Codewit Components"
+			title="Grex Components"
 			description={
 				<>
 					<div>{summary}</div>
 					{snapshot ? (
 						<div className="mt-3 grid gap-2">
 							<ComponentLine
-								label="Codewit CLI"
+								label="Grex CLI"
 								ok={cliOk}
 								busy={cliBusy}
 								onRetry={handleRetryCli}
@@ -134,7 +134,7 @@ export function ComponentsPanel() {
 								state={describeCliState(snapshot)}
 							/>
 							<ComponentLine
-								label="Codewit Skills"
+								label="Grex Skills"
 								ok={skillsOk}
 								busy={skillsBusy}
 								onRetry={handleRetrySkills}
@@ -209,7 +209,7 @@ function ComponentLine({
 	);
 }
 
-function describeCliState(snapshot: CodewitComponentsUpdateCheck): string {
+function describeCliState(snapshot: GrexComponentsUpdateCheck): string {
 	switch (snapshot.cli.installState) {
 		case "managed":
 			return snapshot.cli.installPath
@@ -224,7 +224,7 @@ function describeCliState(snapshot: CodewitComponentsUpdateCheck): string {
 	}
 }
 
-function describeSkillsState(snapshot: CodewitComponentsUpdateCheck): string {
+function describeSkillsState(snapshot: GrexComponentsUpdateCheck): string {
 	if (snapshot.skills.installed) {
 		const parts: string[] = [];
 		if (snapshot.skills.claude) parts.push("Claude Code");

@@ -56,7 +56,7 @@ pub struct ProviderCapabilities {
     pub requires_api_key: bool,
 }
 
-/// Capabilities for the providers Codewit ships today.
+/// Capabilities for the providers Grex ships today.
 ///
 /// New providers (e.g. Copilot via #511, Pi via #321) land here with a
 /// matrix entry in [`tests::capabilities_table`] documenting every
@@ -125,7 +125,7 @@ pub fn capabilities_for_provider(provider: &str) -> ProviderCapabilities {
     }
 }
 
-/// Convenience: list every provider Codewit ships today. Frontends use
+/// Convenience: list every provider Grex ships today. Frontends use
 /// this to render the capability table in settings (eventually), and
 /// tests use it to assert there are no holes in the matrix.
 pub const KNOWN_PROVIDERS: &[&str] = &["claude", "codex", "cursor", "opencode", "gemini"];

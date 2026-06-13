@@ -41,7 +41,7 @@ describe("createWorkspaceFromStartComposer", () => {
 		preparedWorkingDirectory: string | null = null,
 		finalizedWorkingDirectory:
 			| string
-			| undefined = "/Users/me/codewit/workspaces/foo/bar",
+			| undefined = "/Users/me/grex/workspaces/foo/bar",
 	) {
 		apiMocks.prepareWorkspaceFromRepo.mockReset();
 		apiMocks.finalizeWorkspaceFromRepo.mockReset();

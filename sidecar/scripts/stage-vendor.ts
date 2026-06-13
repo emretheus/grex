@@ -77,11 +77,11 @@ const BUNDLE_CACHE = join(SIDECAR_ROOT, ".bundle-cache");
 // inside the PROJECT (the main worktree's `sidecar/.bundle-cache`) rather than a
 // global user dir — found via git's common dir, which every linked worktree
 // shares. Archive filenames are version-keyed, so different version pins coexist
-// safely. Override with CODEWIT_BUNDLE_CACHE (CI pins it per-job).
+// safely. Override with GREX_BUNDLE_CACHE (CI pins it per-job).
 const ARCHIVE_CACHE = resolveArchiveCache();
 
 function resolveArchiveCache(): string {
-	const override = process.env.CODEWIT_BUNDLE_CACHE?.trim();
+	const override = process.env.GREX_BUNDLE_CACHE?.trim();
 	if (override) return resolve(override);
 	const mainRoot = mainWorktreeRoot();
 	// Fall back to the local scratch dir when not in a git checkout (e.g. a
@@ -887,7 +887,7 @@ function stageCursorWorkerDeps(target: TargetInfo): string {
 		join(dest, "package.json"),
 		`${JSON.stringify(
 			{
-				name: "codewit-cursor-worker",
+				name: "grex-cursor-worker",
 				private: true,
 				dependencies: { "@cursor/sdk": version },
 				// Lets Bun run sqlite3's node-pre-gyp install (fetches the native
@@ -1100,7 +1100,7 @@ stageOptional("llama-cpp", () => stageLlamaCppBinaries(target));
 // ----- Cursor worker deps — release builds only (set by the `build` script).
 // Dev resolves @cursor/sdk from sidecar/node_modules, so `dev:prepare` skips
 // this ~minute-long install. Node runtime is staged separately (see CI). -----
-if (process.env.CODEWIT_STAGE_CURSOR_WORKER === "1") {
+if (process.env.GREX_STAGE_CURSOR_WORKER === "1") {
 	stageNodeRuntime(target);
 	stageCursorWorkerDeps(target);
 }
@@ -1114,7 +1114,7 @@ console.log(`  gh          ${humanSize(join(DIST_VENDOR, "gh"))}`);
 console.log(`  glab        ${humanSize(join(DIST_VENDOR, "glab"))}`);
 console.log(`  cloudflared ${humanSize(join(DIST_VENDOR, "cloudflared"))}`);
 console.log(`  llama-cpp   ${humanSize(join(DIST_VENDOR, "llama-cpp"))}`);
-if (process.env.CODEWIT_STAGE_CURSOR_WORKER === "1") {
+if (process.env.GREX_STAGE_CURSOR_WORKER === "1") {
 	console.log(`  node        ${humanSize(join(DIST_VENDOR, "node"))}`);
 	console.log(
 		`  cursor-worker ${humanSize(join(DIST_VENDOR, "cursor-worker"))}`,

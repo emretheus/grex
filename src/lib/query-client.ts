@@ -50,7 +50,7 @@ import {
 // mobile browser companion too (not just the Tauri webview).
 import { invoke } from "./ipc";
 import { parsePrUrl } from "./pr-url";
-// Lazy-cycle-safe: session-thread-cache imports `codewitQueryKeys` from this
+// Lazy-cycle-safe: session-thread-cache imports `grexQueryKeys` from this
 // module, but both sides only dereference inside function bodies.
 import { shareMessages } from "./session-thread-cache";
 import {
@@ -65,7 +65,7 @@ const DEFAULT_GC_TIME = 30 * 60_000;
 const SESSION_GC_TIME = 60 * 60_000;
 const PERSIST_GC_TIME = 24 * 60 * 60_000; // 24h — persisted entries live this long
 
-export const codewitQueryKeys = {
+export const grexQueryKeys = {
 	workspaceGroups: ["workspaceGroups"] as const,
 	archivedWorkspaces: ["archivedWorkspaces"] as const,
 	repositories: ["repositories"] as const,
@@ -174,7 +174,7 @@ export const QUERY_CACHE_BUSTER = "v3-meta";
 
 export const PERSIST_META = { persist: true } as const;
 
-export function createCodewitQueryClient() {
+export function createGrexQueryClient() {
 	// Replace React Query's default focus listener (browser visibilitychange)
 	// with Tauri's native window focus/blur events. This is the official
 	// pattern for non-browser environments (cf. React Native AppState in
@@ -221,7 +221,7 @@ export function createCodewitQueryClient() {
 	});
 }
 
-/** AsyncStorage adapter backed by Tauri-managed files in the codewit data
+/** AsyncStorage adapter backed by Tauri-managed files in the grex data
  * dir. Replaces the prior `window.localStorage` backend so the React
  * Query persister isn't bound by the webview's ~5–10 MB quota. The
  * three helper IPC commands (`read_query_cache` / `write_query_cache` /
@@ -234,11 +234,11 @@ export function createCodewitQueryClient() {
  * convention the persister was written against.
  *
  * Boot-time migration: if `localStorage` still has the legacy
- * `codewit-query-cache` blob from older versions, copy it into the new
+ * `grex-query-cache` blob from older versions, copy it into the new
  * file-backed location once and clear it from localStorage. Idempotent
  * — runs every boot, no-ops once the localStorage key is gone.
  */
-const QUERY_CACHE_KEY = "codewit-query-cache";
+const QUERY_CACHE_KEY = "grex-query-cache";
 let migrationPromise: Promise<void> | null = null;
 
 async function migrateLegacyLocalStorageQueryCache(): Promise<void> {
@@ -261,11 +261,11 @@ async function migrateLegacyLocalStorageQueryCache(): Promise<void> {
 			/* keep going — DB has it */
 		}
 		console.info(
-			`[codewit] migrated localStorage query cache (${(legacy.length / 1024).toFixed(1)} KB) into data dir`,
+			`[grex] migrated localStorage query cache (${(legacy.length / 1024).toFixed(1)} KB) into data dir`,
 		);
 	} catch (error) {
 		console.error(
-			"[codewit] failed to migrate legacy localStorage query cache",
+			"[grex] failed to migrate legacy localStorage query cache",
 			error,
 		);
 	}
@@ -285,7 +285,7 @@ const tauriFsQueryCacheStorage = {
 			const value = await invoke<string | null>("read_query_cache", { key });
 			return value ?? null;
 		} catch (error) {
-			console.error(`[codewit] read_query_cache failed for "${key}"`, error);
+			console.error(`[grex] read_query_cache failed for "${key}"`, error);
 			return null;
 		}
 	},
@@ -295,7 +295,7 @@ const tauriFsQueryCacheStorage = {
 		} catch (error) {
 			const sizeKb = (value.length / 1024).toFixed(1);
 			console.error(
-				`[codewit] write_query_cache failed for "${key}" (${sizeKb} KB)`,
+				`[grex] write_query_cache failed for "${key}" (${sizeKb} KB)`,
 				error,
 			);
 			throw error;
@@ -305,19 +305,19 @@ const tauriFsQueryCacheStorage = {
 		try {
 			await invoke<void>("delete_query_cache", { key });
 		} catch (error) {
-			console.error(`[codewit] delete_query_cache failed for "${key}"`, error);
+			console.error(`[grex] delete_query_cache failed for "${key}"`, error);
 		}
 	},
 };
 
-export const codewitQueryPersister = createAsyncStoragePersister({
+export const grexQueryPersister = createAsyncStoragePersister({
 	storage: tauriFsQueryCacheStorage,
 	key: QUERY_CACHE_KEY,
 });
 
 export function workspaceGroupsQueryOptions() {
 	return queryOptions({
-		queryKey: codewitQueryKeys.workspaceGroups,
+		queryKey: grexQueryKeys.workspaceGroups,
 		queryFn: loadWorkspaceGroups,
 		initialData: DEFAULT_WORKSPACE_GROUPS,
 		initialDataUpdatedAt: 0,
@@ -328,7 +328,7 @@ export function workspaceGroupsQueryOptions() {
 
 export function archivedWorkspacesQueryOptions() {
 	return queryOptions({
-		queryKey: codewitQueryKeys.archivedWorkspaces,
+		queryKey: grexQueryKeys.archivedWorkspaces,
 		queryFn: loadArchivedWorkspaces,
 		initialData: [],
 		initialDataUpdatedAt: 0,
@@ -339,7 +339,7 @@ export function archivedWorkspacesQueryOptions() {
 
 export function repositoriesQueryOptions() {
 	return queryOptions({
-		queryKey: codewitQueryKeys.repositories,
+		queryKey: grexQueryKeys.repositories,
 		queryFn: listRepositories,
 		initialData: [],
 		initialDataUpdatedAt: 0,
@@ -355,7 +355,7 @@ export function repositoriesQueryOptions() {
  *  rehydrating stale state across restarts would mislead the UI. */
 export function activeStreamsQueryOptions() {
 	return queryOptions({
-		queryKey: codewitQueryKeys.activeStreams,
+		queryKey: grexQueryKeys.activeStreams,
 		queryFn: listActiveStreams,
 		initialData: [],
 		initialDataUpdatedAt: 0,
@@ -375,7 +375,7 @@ export function forgeLabelsQueryOptions(args: {
 	const sortedRepos = [...args.repos].sort();
 	const host = args.host ?? "";
 	return queryOptions({
-		queryKey: codewitQueryKeys.forgeLabels(
+		queryKey: grexQueryKeys.forgeLabels(
 			args.provider,
 			host,
 			args.login,
@@ -402,7 +402,7 @@ export function forgeLabelsQueryOptions(args: {
 /// requests" string is owned by the Forge layer.
 export function inboxKindLabelsQueryOptions(provider: ForgeProvider) {
 	return queryOptions({
-		queryKey: codewitQueryKeys.inboxKindLabels(provider),
+		queryKey: grexQueryKeys.inboxKindLabels(provider),
 		queryFn: () => listInboxKindLabels(provider),
 		staleTime: Number.POSITIVE_INFINITY,
 		gcTime: Number.POSITIVE_INFINITY,
@@ -411,7 +411,7 @@ export function inboxKindLabelsQueryOptions(provider: ForgeProvider) {
 
 export function agentModelSectionsQueryOptions() {
 	return queryOptions({
-		queryKey: codewitQueryKeys.agentModelSections,
+		queryKey: grexQueryKeys.agentModelSections,
 		queryFn: loadAgentModelSections,
 		// Catalog is cheap (synchronous Rust read of static + settings).
 		// `staleTime: 0` means every mount re-fetches; the persisted disk
@@ -443,7 +443,7 @@ export function agentModelSectionsQueryOptions() {
  *  mirror and the live Rust table is corrected on the next mount. */
 export function providerCapabilitiesQueryOptions() {
 	return queryOptions({
-		queryKey: codewitQueryKeys.providerCapabilities,
+		queryKey: grexQueryKeys.providerCapabilities,
 		queryFn: loadProviderCapabilities,
 		initialData: DEFAULT_PROVIDER_CAPABILITIES,
 		initialDataUpdatedAt: 0,
@@ -457,7 +457,7 @@ export function providerCapabilitiesQueryOptions() {
 
 export function workspaceDetailQueryOptions(workspaceId: string) {
 	return queryOptions({
-		queryKey: codewitQueryKeys.workspaceDetail(workspaceId),
+		queryKey: grexQueryKeys.workspaceDetail(workspaceId),
 		queryFn: () => loadWorkspaceDetail(workspaceId),
 		staleTime: 0,
 	});
@@ -465,7 +465,7 @@ export function workspaceDetailQueryOptions(workspaceId: string) {
 
 export function workspaceForgeQueryOptions(workspaceId: string) {
 	return queryOptions({
-		queryKey: codewitQueryKeys.workspaceForge(workspaceId),
+		queryKey: grexQueryKeys.workspaceForge(workspaceId),
 		queryFn: () => getWorkspaceForge(workspaceId),
 		// Same identity-info contract: cache forever, refetch on focus.
 		// `refetchInterval` keeps the active workspace's chip in sync
@@ -508,7 +508,7 @@ export function workspaceAccountProfileQueryOptions(
 ) {
 	return queryOptions<ForgeAccount | null>({
 		queryKey: workspaceId
-			? codewitQueryKeys.workspaceAccountProfile(workspaceId)
+			? grexQueryKeys.workspaceAccountProfile(workspaceId)
 			: ["workspaceAccountProfile", "__none__"],
 		queryFn: () =>
 			workspaceId
@@ -525,7 +525,7 @@ export function workspaceAccountProfileQueryOptions(
 
 export function forgeAccountsQueryOptions(gitlabHosts: string[]) {
 	return queryOptions<ForgeAccount[]>({
-		queryKey: codewitQueryKeys.forgeAccounts(gitlabHosts),
+		queryKey: grexQueryKeys.forgeAccounts(gitlabHosts),
 		queryFn: () => listForgeAccounts(gitlabHosts),
 		// Same cache contract as `workspaceAccountProfileQueryOptions`:
 		// cache forever, refetch on every window focus. Backend
@@ -547,7 +547,7 @@ export function workspaceSessionsQueryOptions(
 	overrides: { staleTime?: number } = {},
 ) {
 	return queryOptions({
-		queryKey: codewitQueryKeys.workspaceSessions(workspaceId),
+		queryKey: grexQueryKeys.workspaceSessions(workspaceId),
 		queryFn: () => loadWorkspaceSessions(workspaceId),
 		staleTime: overrides.staleTime ?? 0,
 	});
@@ -557,7 +557,7 @@ export function workspaceSessionsQueryOptions(
  *  invalidates → observer refetches from DB. Same pattern as rate limits. */
 export function sessionContextUsageQueryOptions(sessionId: string) {
 	return queryOptions({
-		queryKey: codewitQueryKeys.sessionContextUsage(sessionId),
+		queryKey: grexQueryKeys.sessionContextUsage(sessionId),
 		queryFn: () => getSessionContextUsage(sessionId),
 		staleTime: 0,
 	});
@@ -566,7 +566,7 @@ export function sessionContextUsageQueryOptions(sessionId: string) {
 /** Active Codex `/goal` payload. Event-driven via `CodexGoalChanged`. */
 export function sessionCodexGoalQueryOptions(sessionId: string) {
 	return queryOptions({
-		queryKey: codewitQueryKeys.sessionCodexGoal(sessionId),
+		queryKey: grexQueryKeys.sessionCodexGoal(sessionId),
 		queryFn: () => getSessionCodexGoal(sessionId),
 		staleTime: 0,
 	});
@@ -577,7 +577,7 @@ export function sessionCodexGoalQueryOptions(sessionId: string) {
  *  need to dedupe — the bridge invalidates and the observer refetches. */
 export function sessionPlanStateQueryOptions(sessionId: string) {
 	return queryOptions({
-		queryKey: codewitQueryKeys.sessionPlanState(sessionId),
+		queryKey: grexQueryKeys.sessionPlanState(sessionId),
 		queryFn: () => getSessionPlanState(sessionId),
 		staleTime: 0,
 	});
@@ -590,7 +590,7 @@ const RATE_LIMITS_STALE_TIME = 2 * 60_000;
 // hit the cached body, so we can be eager here.
 export function codexRateLimitsQueryOptions(enabled: boolean) {
 	return queryOptions({
-		queryKey: codewitQueryKeys.codexRateLimits,
+		queryKey: grexQueryKeys.codexRateLimits,
 		queryFn: getCodexRateLimits,
 		staleTime: RATE_LIMITS_STALE_TIME,
 		refetchInterval: enabled ? RATE_LIMITS_STALE_TIME : false,
@@ -600,7 +600,7 @@ export function codexRateLimitsQueryOptions(enabled: boolean) {
 }
 export function claudeRateLimitsQueryOptions(enabled: boolean) {
 	return queryOptions({
-		queryKey: codewitQueryKeys.claudeRateLimits,
+		queryKey: grexQueryKeys.claudeRateLimits,
 		queryFn: getClaudeRateLimits,
 		staleTime: RATE_LIMITS_STALE_TIME,
 		refetchInterval: enabled ? RATE_LIMITS_STALE_TIME : false,
@@ -621,7 +621,7 @@ export function claudeRichContextUsageQueryOptions(params: {
 	enabled: boolean;
 }) {
 	return queryOptions({
-		queryKey: codewitQueryKeys.claudeRichContextUsage(
+		queryKey: grexQueryKeys.claudeRichContextUsage(
 			params.sessionId,
 			params.providerSessionId,
 			params.model,
@@ -642,7 +642,7 @@ export function claudeRichContextUsageQueryOptions(params: {
 /** `/add-dir` linked directories, workspace-scoped. */
 export function workspaceLinkedDirectoriesQueryOptions(workspaceId: string) {
 	return queryOptions({
-		queryKey: codewitQueryKeys.workspaceLinkedDirectories(workspaceId),
+		queryKey: grexQueryKeys.workspaceLinkedDirectories(workspaceId),
 		queryFn: () => listWorkspaceLinkedDirectories(workspaceId),
 		staleTime: 0,
 	});
@@ -657,7 +657,7 @@ export function workspaceCandidateDirectoriesQueryOptions(
 	excludeWorkspaceId: string | null,
 ) {
 	return queryOptions({
-		queryKey: codewitQueryKeys.workspaceCandidateDirectories(excludeWorkspaceId),
+		queryKey: grexQueryKeys.workspaceCandidateDirectories(excludeWorkspaceId),
 		queryFn: () => listWorkspaceCandidateDirectories({ excludeWorkspaceId }),
 		staleTime: 0,
 	});
@@ -679,7 +679,7 @@ export function workspaceCandidateDirectoriesQueryOptions(
  */
 export function sessionThreadMessagesQueryOptions(sessionId: string) {
 	return queryOptions({
-		queryKey: [...codewitQueryKeys.sessionMessages(sessionId), "thread"],
+		queryKey: [...grexQueryKeys.sessionMessages(sessionId), "thread"],
 		// `loadSessionThreadMessages` updates the pagination store as a
 		// side effect — going through it (rather than the raw page fetch)
 		// keeps existing test mocks (`apiMocks.loadSessionThreadMessages`)
@@ -752,7 +752,7 @@ export async function expandSessionThread(
 	});
 
 	const cacheKey = [
-		...codewitQueryKeys.sessionMessages(sessionId),
+		...grexQueryKeys.sessionMessages(sessionId),
 		"thread",
 	] as const;
 	client.setQueryData<ThreadMessageLike[]>(cacheKey, (prev) => {
@@ -798,7 +798,7 @@ export function slashCommandsQueryOptions(
 	workspaceId: string | null,
 ) {
 	return queryOptions({
-		queryKey: codewitQueryKeys.slashCommands(
+		queryKey: grexQueryKeys.slashCommands(
 			provider,
 			workingDirectory,
 			workspaceId,
@@ -822,7 +822,7 @@ export function slashCommandsQueryOptions(
 
 export function autoCloseActionKindsQueryOptions() {
 	return queryOptions({
-		queryKey: codewitQueryKeys.autoCloseActionKinds,
+		queryKey: grexQueryKeys.autoCloseActionKinds,
 		queryFn: loadAutoCloseActionKinds,
 		initialData: [] as ActionKind[],
 		initialDataUpdatedAt: 0,
@@ -832,7 +832,7 @@ export function autoCloseActionKindsQueryOptions() {
 
 export function autoCloseOptInAskedQueryOptions() {
 	return queryOptions({
-		queryKey: codewitQueryKeys.autoCloseOptInAsked,
+		queryKey: grexQueryKeys.autoCloseOptInAsked,
 		queryFn: loadAutoCloseOptInAsked,
 		initialData: [] as ActionKind[],
 		initialDataUpdatedAt: 0,
@@ -850,7 +850,7 @@ export function autoCloseOptInAskedQueryOptions() {
  */
 export function detectedEditorsQueryOptions() {
 	return queryOptions({
-		queryKey: codewitQueryKeys.detectedEditors,
+		queryKey: grexQueryKeys.detectedEditors,
 		queryFn: detectInstalledEditors,
 		initialData: [] as DetectedEditor[],
 		initialDataUpdatedAt: 0,
@@ -928,7 +928,7 @@ export function workspaceChangeRequestQueryOptions(
 ) {
 	const placeholder = changeRequestPlaceholder(seed);
 	return queryOptions({
-		queryKey: codewitQueryKeys.workspaceChangeRequest(workspaceId),
+		queryKey: grexQueryKeys.workspaceChangeRequest(workspaceId),
 		queryFn: () => refreshWorkspaceChangeRequest(workspaceId),
 		staleTime: 30_000,
 		gcTime: DEFAULT_GC_TIME,
@@ -943,7 +943,7 @@ export function workspaceChangeRequestQueryOptions(
 
 export function workspaceGitActionStatusQueryOptions(workspaceId: string) {
 	return queryOptions({
-		queryKey: codewitQueryKeys.workspaceGitActionStatus(workspaceId),
+		queryKey: grexQueryKeys.workspaceGitActionStatus(workspaceId),
 		queryFn: () => loadWorkspaceGitActionStatus(workspaceId),
 		staleTime: CHANGES_STALE_TIME,
 		gcTime: DEFAULT_GC_TIME,
@@ -955,7 +955,7 @@ export function workspaceGitActionStatusQueryOptions(workspaceId: string) {
 
 export function workspaceForgeActionStatusQueryOptions(workspaceId: string) {
 	return queryOptions({
-		queryKey: codewitQueryKeys.workspaceForgeActionStatus(workspaceId),
+		queryKey: grexQueryKeys.workspaceForgeActionStatus(workspaceId),
 		queryFn: () => loadWorkspaceForgeActionStatus(workspaceId),
 		// `staleTime: Infinity` + focus/mount `"always"` baseline shared
 		// with the other identity-info queries. CI-progress refetch on
@@ -989,7 +989,7 @@ export function workspaceChangesQueryOptions(
 	workspaceId?: string | null,
 ) {
 	return queryOptions({
-		queryKey: codewitQueryKeys.workspaceChanges(workspaceRootPath, workspaceId),
+		queryKey: grexQueryKeys.workspaceChanges(workspaceRootPath, workspaceId),
 		queryFn: () => listWorkspaceChanges(workspaceRootPath, workspaceId),
 		staleTime: CHANGES_STALE_TIME,
 		refetchOnWindowFocus: true,
@@ -1006,7 +1006,7 @@ export function workspaceChangesQueryOptions(
  */
 export function workspaceFilesQueryOptions(workspaceRootPath: string) {
 	return queryOptions({
-		queryKey: codewitQueryKeys.workspaceFiles(workspaceRootPath),
+		queryKey: grexQueryKeys.workspaceFiles(workspaceRootPath),
 		queryFn: () => listWorkspaceFiles(workspaceRootPath),
 		staleTime: 60_000,
 		gcTime: DEFAULT_GC_TIME,

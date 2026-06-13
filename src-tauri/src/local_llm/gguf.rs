@@ -32,7 +32,7 @@ const MAX_METADATA_KV_COUNT: u64 = 10_000;
 /// Cumulative metadata-bytes cap (256 MB) — corrupted files can't OOM the host.
 const MAX_METADATA_TOTAL_BYTES: u64 = 256 * 1024 * 1024;
 
-/// Subset of GGUF metadata Codewit consumes. Other 30+ keys (rope params,
+/// Subset of GGUF metadata Grex consumes. Other 30+ keys (rope params,
 /// quantization metadata, tokenizer vocab, ...) are read off the wire
 /// then dropped — we only keep what drives the context-window UI.
 #[derive(Debug, Clone)]
@@ -83,7 +83,7 @@ impl ModelMetadata {
 }
 
 /// One typed metadata value as parsed from the GGUF KV stream. We only
-/// expose the variants Codewit reads (scalar ints, strings); anything
+/// expose the variants Grex reads (scalar ints, strings); anything
 /// else is parsed and dropped silently so the cursor advances past it.
 #[derive(Debug, Clone)]
 enum MetaValue {
@@ -139,7 +139,7 @@ pub fn read_metadata(path: &Path) -> Result<ModelMetadata> {
     let version = read_u32(&mut reader)?;
     if !(2..=3).contains(&version) {
         return Err(anyhow!(
-            "unsupported GGUF version {version} (Codewit reads v2 and v3)"
+            "unsupported GGUF version {version} (Grex reads v2 and v3)"
         ));
     }
     // v2/v3 both use u64 counts here. v1 used u32, but we bail above.
@@ -435,7 +435,7 @@ mod tests {
 
     #[test]
     fn rejects_missing_files() {
-        let path = std::path::PathBuf::from("/tmp/codewit-does-not-exist-xyzzy.gguf");
+        let path = std::path::PathBuf::from("/tmp/grex-does-not-exist-xyzzy.gguf");
         let err = read_metadata(&path).unwrap_err();
         assert!(
             err.to_string().contains("File not found"),

@@ -13,7 +13,7 @@
  * back to hard-coded defaults below. The page never renders blank.
  */
 
-const REPO = "emretheus/codewit";
+const REPO = "emretheus/grex";
 const API = "https://api.github.com";
 const REVALIDATE_SECONDS = 3600;
 
@@ -77,7 +77,7 @@ async function ghFetch<T>(path: string): Promise<T | null> {
 	const headers: Record<string, string> = {
 		Accept: "application/vnd.github+json",
 		"X-GitHub-Api-Version": "2022-11-28",
-		"User-Agent": "codewit-marketing",
+		"User-Agent": "grex-marketing",
 	};
 	const token = process.env.GITHUB_TOKEN;
 	if (token) headers.Authorization = `Bearer ${token}`;

@@ -1,16 +1,16 @@
 import { describe, expect, test } from "bun:test";
 import { matchesOrphanedServe, matchesServeOnPort } from "./opencode-server.js";
 
-const CODEWIT_BIN =
-	"/Applications/Codewit.app/Contents/Resources/vendor/opencode/opencode";
+const GREX_BIN =
+	"/Applications/Grex.app/Contents/Resources/vendor/opencode/opencode";
 const USER_BIN = "/opt/homebrew/bin/opencode";
 
 describe("matchesServeOnPort (teardown reaper)", () => {
 	test("matches our serve pinned by the exact port", () => {
 		expect(
 			matchesServeOnPort({
-				command: `${CODEWIT_BIN} serve --hostname=127.0.0.1 --port=51234`,
-				binaryPath: CODEWIT_BIN,
+				command: `${GREX_BIN} serve --hostname=127.0.0.1 --port=51234`,
+				binaryPath: GREX_BIN,
 				hostname: "127.0.0.1",
 				port: 51234,
 			}),
@@ -20,8 +20,8 @@ describe("matchesServeOnPort (teardown reaper)", () => {
 	test("rejects a different port", () => {
 		expect(
 			matchesServeOnPort({
-				command: `${CODEWIT_BIN} serve --hostname=127.0.0.1 --port=49999`,
-				binaryPath: CODEWIT_BIN,
+				command: `${GREX_BIN} serve --hostname=127.0.0.1 --port=49999`,
+				binaryPath: GREX_BIN,
 				hostname: "127.0.0.1",
 				port: 51234,
 			}),
@@ -31,8 +31,8 @@ describe("matchesServeOnPort (teardown reaper)", () => {
 	test("rejects a non-serve command on the same port string", () => {
 		expect(
 			matchesServeOnPort({
-				command: `${CODEWIT_BIN} run --port=51234`,
-				binaryPath: CODEWIT_BIN,
+				command: `${GREX_BIN} run --port=51234`,
+				binaryPath: GREX_BIN,
 				hostname: "127.0.0.1",
 				port: 51234,
 			}),
@@ -44,19 +44,19 @@ describe("matchesOrphanedServe (startup reaper — no friendly fire)", () => {
 	test("matches an orphaned (ppid=1) serve from our binary path", () => {
 		expect(
 			matchesOrphanedServe({
-				command: `${CODEWIT_BIN} serve --hostname=127.0.0.1 --port=51234`,
+				command: `${GREX_BIN} serve --hostname=127.0.0.1 --port=51234`,
 				ppid: 1,
-				binaryPath: CODEWIT_BIN,
+				binaryPath: GREX_BIN,
 			}),
 		).toBe(true);
 	});
 
-	test("rejects a live sibling Codewit's server (ppid != 1)", () => {
+	test("rejects a live sibling Grex's server (ppid != 1)", () => {
 		expect(
 			matchesOrphanedServe({
-				command: `${CODEWIT_BIN} serve --hostname=127.0.0.1 --port=51234`,
+				command: `${GREX_BIN} serve --hostname=127.0.0.1 --port=51234`,
 				ppid: 4242,
-				binaryPath: CODEWIT_BIN,
+				binaryPath: GREX_BIN,
 			}),
 		).toBe(false);
 	});
@@ -66,7 +66,7 @@ describe("matchesOrphanedServe (startup reaper — no friendly fire)", () => {
 			matchesOrphanedServe({
 				command: `${USER_BIN} serve --hostname=127.0.0.1 --port=51234`,
 				ppid: 1,
-				binaryPath: CODEWIT_BIN,
+				binaryPath: GREX_BIN,
 			}),
 		).toBe(false);
 	});
@@ -74,9 +74,9 @@ describe("matchesOrphanedServe (startup reaper — no friendly fire)", () => {
 	test("rejects a non-serve command", () => {
 		expect(
 			matchesOrphanedServe({
-				command: `${CODEWIT_BIN} tui`,
+				command: `${GREX_BIN} tui`,
 				ppid: 1,
-				binaryPath: CODEWIT_BIN,
+				binaryPath: GREX_BIN,
 			}),
 		).toBe(false);
 	});

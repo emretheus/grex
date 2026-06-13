@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { Clock3, ExternalLink } from "lucide-react";
 import { AppendContextButton } from "@/components/append-context-button";
-import { CodewitLogoAnimated } from "@/components/codewit-logo-animated";
+import { GrexLogoAnimated } from "@/components/grex-logo-animated";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -14,7 +14,7 @@ import { SourceIcon } from "@/features/inbox/source-icon";
 import { useSlackEmojiMap } from "@/features/inbox/use-slack-emoji-map";
 import { slackGetThreadDetail } from "@/lib/api";
 import { openUrl } from "@/lib/platform-bridge";
-import { codewitQueryKeys } from "@/lib/query-client";
+import { grexQueryKeys } from "@/lib/query-client";
 import type { SourceDetailProps } from "../common";
 import { formatRelativeTime, RefreshButton, toRefreshControl } from "../common";
 import { SlackMessageBubble } from "./message";
@@ -35,7 +35,7 @@ export function SlackThreadView({
 	const emoji = useSlackEmojiMap(parsed?.teamId ?? null);
 	const detailQuery = useQuery({
 		queryKey: parsed
-			? codewitQueryKeys.slackThread(parsed.teamId, parsed.channelId, parsed.ts)
+			? grexQueryKeys.slackThread(parsed.teamId, parsed.channelId, parsed.ts)
 			: ["slackThread", "missing", card.id],
 		queryFn: () =>
 			slackGetThreadDetail({
@@ -142,7 +142,7 @@ export function SlackThreadView({
 			<div className="min-h-0 flex-1 py-2">
 				{detailQuery.isLoading ? (
 					<div className="flex h-full items-center justify-center">
-						<CodewitLogoAnimated size={42} className="opacity-30" />
+						<GrexLogoAnimated size={42} className="opacity-30" />
 					</div>
 				) : detailQuery.error ? (
 					<div className="flex h-full items-center justify-center text-ui text-muted-foreground">

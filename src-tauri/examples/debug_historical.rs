@@ -1,8 +1,8 @@
 //! Debug: run convert_historical on a pipeline fixture and dump part lists.
 //! Usage: cargo run --example debug_historical -- <fixture-dir-or-input.json>
 
-use codewit_lib::pipeline::types::HistoricalRecord;
-use codewit_lib::pipeline::MessagePipeline;
+use grex_lib::pipeline::types::HistoricalRecord;
+use grex_lib::pipeline::MessagePipeline;
 use serde_json::Value;
 
 fn part_brief(p: &Value) -> String {

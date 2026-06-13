@@ -177,7 +177,7 @@ describe("buildSystemPrompt: source-family gating", () => {
 			// INTENT-vs-COMPLETION distinction without listing phrases to match.
 			expect(prompt).toMatch(/Intent|INTENT/);
 			expect(prompt).toMatch(/completion|COMPLETION|shipped/);
-			// The cap is enforced in code (tools/codewit.ts), so the prompt must
+			// The cap is enforced in code (tools/grex.ts), so the prompt must
 			// NOT couple skip-policy to a CAP REACHED / LAST RESORT escape hatch.
 			expect(prompt).not.toMatch(/LAST\s+RESORT/);
 			expect(prompt).not.toMatch(/CAP\s+REACHED/);

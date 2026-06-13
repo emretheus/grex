@@ -220,7 +220,7 @@ export function resolveVendorTarget(options?: {
 
 	if (hostPlatform !== "darwin") {
 		throw new Error(
-			`[stage-vendor] Codewit only builds on macOS and Windows; host platform is ${hostPlatform}`,
+			`[stage-vendor] Grex only builds on macOS and Windows; host platform is ${hostPlatform}`,
 		);
 	}
 

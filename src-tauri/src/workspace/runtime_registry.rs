@@ -1,5 +1,5 @@
 //! Runtime process registry — tracks every PTY-backed script /
-//! terminal Codewit spawns so a crash recovery sweep can identify
+//! terminal Grex spawns so a crash recovery sweep can identify
 //! stale processes on the next launch.
 //!
 //! Design goals (conservative-on-purpose):

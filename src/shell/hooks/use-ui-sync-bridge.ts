@@ -7,7 +7,7 @@ import {
 	subscribeUiMutations,
 	type UiMutationEvent,
 } from "@/lib/api";
-import { codewitQueryKeys } from "@/lib/query-client";
+import { grexQueryKeys } from "@/lib/query-client";
 import { requestSidebarReconcile } from "@/lib/sidebar-mutation-gate";
 
 type Options = {
@@ -15,7 +15,7 @@ type Options = {
 	processPendingCliSends: () => Promise<void> | void;
 	reloadSettings: () => Promise<void> | void;
 	/**
-	 * "Open in Codewit" from the quick panel. Wired in the MAIN window only —
+	 * "Open in Grex" from the quick panel. Wired in the MAIN window only —
 	 * the event broadcasts to every webview, and the quick panel must not
 	 * navigate itself.
 	 */
@@ -51,24 +51,24 @@ function handleUiMutation(
 		case "workspaceChanged":
 			requestSidebarReconcile(queryClient);
 			void queryClient.invalidateQueries({
-				queryKey: codewitQueryKeys.workspaceDetail(event.workspaceId),
+				queryKey: grexQueryKeys.workspaceDetail(event.workspaceId),
 			});
 			void queryClient.invalidateQueries({
-				queryKey: codewitQueryKeys.workspaceLinkedDirectories(event.workspaceId),
+				queryKey: grexQueryKeys.workspaceLinkedDirectories(event.workspaceId),
 			});
 			return;
 		case "sessionListChanged":
 			requestSidebarReconcile(queryClient);
 			void queryClient.invalidateQueries({
-				queryKey: codewitQueryKeys.workspaceDetail(event.workspaceId),
+				queryKey: grexQueryKeys.workspaceDetail(event.workspaceId),
 			});
 			void queryClient.invalidateQueries({
-				queryKey: codewitQueryKeys.workspaceSessions(event.workspaceId),
+				queryKey: grexQueryKeys.workspaceSessions(event.workspaceId),
 			});
 			return;
 		case "contextUsageChanged":
 			void queryClient.invalidateQueries({
-				queryKey: codewitQueryKeys.sessionContextUsage(event.sessionId),
+				queryKey: grexQueryKeys.sessionContextUsage(event.sessionId),
 			});
 			void queryClient.invalidateQueries({
 				predicate: (query) =>
@@ -78,17 +78,17 @@ function handleUiMutation(
 			return;
 		case "codexGoalChanged":
 			void queryClient.invalidateQueries({
-				queryKey: codewitQueryKeys.sessionCodexGoal(event.sessionId),
+				queryKey: grexQueryKeys.sessionCodexGoal(event.sessionId),
 			});
 			return;
 		case "sessionPlanChanged":
 			void queryClient.invalidateQueries({
-				queryKey: codewitQueryKeys.sessionPlanState(event.sessionId),
+				queryKey: grexQueryKeys.sessionPlanState(event.sessionId),
 			});
 			return;
 		case "sessionMessagesAppended":
 			void queryClient.invalidateQueries({
-				queryKey: codewitQueryKeys.sessionMessages(event.sessionId),
+				queryKey: grexQueryKeys.sessionMessages(event.sessionId),
 			});
 			return;
 		case "sessionTurnPersisted": {
@@ -111,14 +111,14 @@ function handleUiMutation(
 			// no observers anyway, and a late event for the on-screen session
 			// must not flash it. The next mount refetches.
 			void queryClient.invalidateQueries({
-				queryKey: codewitQueryKeys.sessionMessages(event.sessionId),
+				queryKey: grexQueryKeys.sessionMessages(event.sessionId),
 				refetchType: "none",
 			});
 			return;
 		}
 		case "workspaceFilesChanged":
 			void queryClient.invalidateQueries({
-				queryKey: codewitQueryKeys.workspaceGitActionStatus(event.workspaceId),
+				queryKey: grexQueryKeys.workspaceGitActionStatus(event.workspaceId),
 			});
 			invalidateAllWorkspaceChanges(queryClient);
 			return;
@@ -129,19 +129,19 @@ function handleUiMutation(
 			// happens when the hold releases.
 			requestSidebarReconcile(queryClient);
 			void queryClient.invalidateQueries({
-				queryKey: codewitQueryKeys.workspaceDetail(event.workspaceId),
+				queryKey: grexQueryKeys.workspaceDetail(event.workspaceId),
 			});
 			void queryClient.invalidateQueries({
-				queryKey: codewitQueryKeys.workspaceGitActionStatus(event.workspaceId),
+				queryKey: grexQueryKeys.workspaceGitActionStatus(event.workspaceId),
 			});
 			void queryClient.invalidateQueries({
-				queryKey: codewitQueryKeys.workspaceForgeActionStatus(event.workspaceId),
+				queryKey: grexQueryKeys.workspaceForgeActionStatus(event.workspaceId),
 			});
 			invalidateAllWorkspaceChanges(queryClient);
 			return;
 		case "workspaceForgeChanged":
 			void queryClient.invalidateQueries({
-				queryKey: codewitQueryKeys.workspaceForge(event.workspaceId),
+				queryKey: grexQueryKeys.workspaceForge(event.workspaceId),
 			});
 			// Auth verdicts are per (host, login) and shared repo-wide:
 			// when one workspace flips to unauthenticated, siblings on the
@@ -156,24 +156,24 @@ function handleUiMutation(
 			// Per-account roster (Settings → Account) re-renders too, since
 			// auth flips can mean a new login appeared / disappeared.
 			void queryClient.invalidateQueries({
-				queryKey: codewitQueryKeys.forgeAccountsAll,
+				queryKey: grexQueryKeys.forgeAccountsAll,
 			});
 			return;
 		case "workspaceChangeRequestChanged":
 			requestSidebarReconcile(queryClient);
 			void queryClient.invalidateQueries({
-				queryKey: codewitQueryKeys.workspaceDetail(event.workspaceId),
+				queryKey: grexQueryKeys.workspaceDetail(event.workspaceId),
 			});
 			void queryClient.invalidateQueries({
-				queryKey: codewitQueryKeys.workspaceChangeRequest(event.workspaceId),
+				queryKey: grexQueryKeys.workspaceChangeRequest(event.workspaceId),
 			});
 			void queryClient.invalidateQueries({
-				queryKey: codewitQueryKeys.workspaceForgeActionStatus(event.workspaceId),
+				queryKey: grexQueryKeys.workspaceForgeActionStatus(event.workspaceId),
 			});
 			return;
 		case "repositoryListChanged":
 			void queryClient.invalidateQueries({
-				queryKey: codewitQueryKeys.repositories,
+				queryKey: grexQueryKeys.repositories,
 			});
 			// Backfill phase 2 also emits this when it clears /
 			// re-binds a stale `forge_login`. The chip header,
@@ -195,7 +195,7 @@ function handleUiMutation(
 			return;
 		case "repositoryChanged":
 			void queryClient.invalidateQueries({
-				queryKey: codewitQueryKeys.repositories,
+				queryKey: grexQueryKeys.repositories,
 			});
 			void queryClient.invalidateQueries({
 				predicate: (query) =>
@@ -203,7 +203,7 @@ function handleUiMutation(
 					query.queryKey[1] === event.repoId,
 			});
 			void queryClient.invalidateQueries({
-				queryKey: codewitQueryKeys.repoPreferences(event.repoId),
+				queryKey: grexQueryKeys.repoPreferences(event.repoId),
 			});
 			void queryClient.invalidateQueries({
 				predicate: (query) => query.queryKey[0] === "workspaceDetail",
@@ -214,7 +214,7 @@ function handleUiMutation(
 			// Settings UI edits + dropdown reorder + create / delete all
 			// land here. Invalidate every `repoScripts` query for this
 			// repo (one per workspace context — the loader merges DB
-			// + codewit.json + workspace overrides per call).
+			// + grex.json + workspace overrides per call).
 			void queryClient.invalidateQueries({
 				predicate: (query) =>
 					query.queryKey[0] === "repoScripts" &&
@@ -235,10 +235,10 @@ function handleUiMutation(
 				event.key === "auto_close_opt_in_asked"
 			) {
 				void queryClient.invalidateQueries({
-					queryKey: codewitQueryKeys.autoCloseActionKinds,
+					queryKey: grexQueryKeys.autoCloseActionKinds,
 				});
 				void queryClient.invalidateQueries({
-					queryKey: codewitQueryKeys.autoCloseOptInAsked,
+					queryKey: grexQueryKeys.autoCloseOptInAsked,
 				});
 			}
 			return;
@@ -247,12 +247,12 @@ function handleUiMutation(
 			return;
 		case "activeStreamsChanged":
 			void queryClient.invalidateQueries({
-				queryKey: codewitQueryKeys.activeStreams,
+				queryKey: grexQueryKeys.activeStreams,
 			});
 			return;
 		case "slackWorkspacesChanged":
 			void queryClient.invalidateQueries({
-				queryKey: codewitQueryKeys.slackWorkspaces,
+				queryKey: grexQueryKeys.slackWorkspaces,
 			});
 			// New connections also affect the activity feed (now has data)
 			// and disconnections clear the cached items — kill every
@@ -267,31 +267,31 @@ function handleUiMutation(
 			// inbox UI re-fetches and surfaces the auth error state /
 			// "Reconnect" affordance.
 			void queryClient.invalidateQueries({
-				queryKey: codewitQueryKeys.slackInbox(event.teamId),
+				queryKey: grexQueryKeys.slackInbox(event.teamId),
 			});
 			void queryClient.invalidateQueries({
-				queryKey: codewitQueryKeys.slackWorkspaces,
+				queryKey: grexQueryKeys.slackWorkspaces,
 			});
 			return;
 		case "triageConfigChanged":
 			void queryClient.invalidateQueries({
-				queryKey: codewitQueryKeys.triageConfig,
+				queryKey: grexQueryKeys.triageConfig,
 			});
 			return;
 		case "triageActiveStatusChanged":
 			void queryClient.invalidateQueries({
-				queryKey: codewitQueryKeys.triageActiveStatus,
+				queryKey: grexQueryKeys.triageActiveStatus,
 			});
 			return;
 		case "triageWorkspaceCreated":
 			requestSidebarReconcile(queryClient);
 			void queryClient.invalidateQueries({
-				queryKey: codewitQueryKeys.triageActiveStatus,
+				queryKey: grexQueryKeys.triageActiveStatus,
 			});
 			return;
 		case "pairedDevicesChanged":
 			void queryClient.invalidateQueries({
-				queryKey: codewitQueryKeys.pairedDevices,
+				queryKey: grexQueryKeys.pairedDevices,
 			});
 			return;
 		case "terminalSessionIdle":
@@ -299,7 +299,7 @@ function handleUiMutation(
 			// window event the read-state controller already listens on, so
 			// the shared completion path (unread + notification) fires.
 			window.dispatchEvent(
-				new CustomEvent("codewit:terminal-session-idle", {
+				new CustomEvent("grex:terminal-session-idle", {
 					detail: {
 						sessionId: event.sessionId,
 						workspaceId: event.workspaceId,
@@ -310,10 +310,10 @@ function handleUiMutation(
 			// refetch now or it shows 'streaming' until some other event lands
 			// (the sidebar uses activeStreams and was already instant).
 			void queryClient.invalidateQueries({
-				queryKey: codewitQueryKeys.workspaceSessions(event.workspaceId),
+				queryKey: grexQueryKeys.workspaceSessions(event.workspaceId),
 			});
 			void queryClient.invalidateQueries({
-				queryKey: codewitQueryKeys.workspaceDetail(event.workspaceId),
+				queryKey: grexQueryKeys.workspaceDetail(event.workspaceId),
 			});
 			return;
 		case "terminalPromptCaptured": {
@@ -329,10 +329,10 @@ function handleUiMutation(
 					if (result?.title || result?.branchRenamed) {
 						requestSidebarReconcile(queryClient);
 						void queryClient.invalidateQueries({
-							queryKey: codewitQueryKeys.workspaceSessions(workspaceId),
+							queryKey: grexQueryKeys.workspaceSessions(workspaceId),
 						});
 						void queryClient.invalidateQueries({
-							queryKey: codewitQueryKeys.workspaceDetail(workspaceId),
+							queryKey: grexQueryKeys.workspaceDetail(workspaceId),
 						});
 					}
 				},

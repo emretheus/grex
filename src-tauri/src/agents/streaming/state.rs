@@ -182,9 +182,9 @@ pub(super) struct TurnContext {
     pub permission_mode: Option<String>,
     pub fast_mode: bool,
 
-    /// Codewit's session id (the DB primary key), if the request had one.
+    /// Grex's session id (the DB primary key), if the request had one.
     /// `None` for transient turns that don't persist (e.g., title gen).
-    pub codewit_session_id: Option<String>,
+    pub grex_session_id: Option<String>,
 
     /// Provider-issued session id (Claude conversation id, Codex thread id).
     /// Adopted from `system.init` per the rules in
@@ -580,11 +580,11 @@ mod tests {
         TurnContext {
             provider: "claude".into(),
             model_id: "opus-1m".into(),
-            working_directory: "/tmp/codewit".into(),
+            working_directory: "/tmp/grex".into(),
             effort_level: None,
             permission_mode: None,
             fast_mode: false,
-            codewit_session_id: Some("session-1".into()),
+            grex_session_id: Some("session-1".into()),
             resolved_session_id: None,
             resolved_model: "claude-opus-4".into(),
             persisted_turn_count: 0,

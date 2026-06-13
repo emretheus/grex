@@ -263,7 +263,7 @@ function createWorkspaceDetail(
 		id: workspaceId,
 		title: workspaceId,
 		repoId: `repo-${workspaceId}`,
-		repoName: "codewit",
+		repoName: "grex",
 		directoryName: workspaceId,
 		state: archived ? "archived" : "ready",
 		hasUnread: false,
@@ -489,7 +489,7 @@ describe("App global navigation shortcuts", () => {
 					{
 						id: WORKSPACE_IDS.done,
 						title: "Done workspace",
-						repoName: "codewit",
+						repoName: "grex",
 						state: "ready",
 					},
 				],
@@ -502,7 +502,7 @@ describe("App global navigation shortcuts", () => {
 					{
 						id: WORKSPACE_IDS.review,
 						title: "Review workspace",
-						repoName: "codewit",
+						repoName: "grex",
 						state: "ready",
 					},
 				],
@@ -515,7 +515,7 @@ describe("App global navigation shortcuts", () => {
 					{
 						id: WORKSPACE_IDS.progress,
 						title: "Progress workspace",
-						repoName: "codewit",
+						repoName: "grex",
 						state: "ready",
 					},
 				],
@@ -538,7 +538,7 @@ describe("App global navigation shortcuts", () => {
 				id: WORKSPACE_IDS.archived1,
 				title: "Archived workspace 1",
 				directoryName: "archived-workspace-1",
-				repoName: "codewit",
+				repoName: "grex",
 				repoIconSrc: null,
 				repoInitials: "H",
 				state: "archived",
@@ -559,7 +559,7 @@ describe("App global navigation shortcuts", () => {
 				id: WORKSPACE_IDS.archived2,
 				title: "Archived workspace 2",
 				directoryName: "archived-workspace-2",
-				repoName: "codewit",
+				repoName: "grex",
 				repoIconSrc: null,
 				repoInitials: "H",
 				state: "archived",
@@ -594,7 +594,7 @@ describe("App global navigation shortcuts", () => {
 		apiMocks.listRepositories.mockResolvedValue([
 			{
 				id: "repo-1",
-				name: "codewit",
+				name: "grex",
 				defaultBranch: "main",
 				repoInitials: "H",
 			},
@@ -1157,8 +1157,8 @@ describe("App global navigation shortcuts", () => {
 		apiMocks.requestQuit.mockReset();
 		await renderAppReady();
 
-		await waitForTauriEventListener("codewit://quit-requested");
-		emitTauriEvent("codewit://quit-requested");
+		await waitForTauriEventListener("grex://quit-requested");
+		emitTauriEvent("grex://quit-requested");
 
 		await waitFor(() => {
 			expect(apiMocks.requestQuit).toHaveBeenCalledWith(false);
@@ -1182,10 +1182,10 @@ describe("App global navigation shortcuts", () => {
 		try {
 			apiMocks.requestQuit.mockReset();
 			render(<App />);
-			await screen.findByLabelText("Codewit onboarding");
+			await screen.findByLabelText("Grex onboarding");
 
-			await waitForTauriEventListener("codewit://quit-requested");
-			emitTauriEvent("codewit://quit-requested");
+			await waitForTauriEventListener("grex://quit-requested");
+			emitTauriEvent("grex://quit-requested");
 
 			await waitFor(() => {
 				expect(apiMocks.requestQuit).toHaveBeenCalledWith(false);
@@ -1198,8 +1198,8 @@ describe("App global navigation shortcuts", () => {
 	it("closes the current session when macOS emits the close-current-session event", async () => {
 		await renderAppReady();
 
-		await waitForTauriEventListener("codewit://close-current-session");
-		emitTauriEvent("codewit://close-current-session");
+		await waitForTauriEventListener("grex://close-current-session");
+		emitTauriEvent("grex://close-current-session");
 
 		await waitFor(() => {
 			expectSelectedSession("Done session 2");

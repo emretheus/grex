@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { GithubBrandIcon } from "@/components/brand-icon";
-import { CodewitLogoAnimated } from "@/components/codewit-logo-animated";
+import { GrexLogoAnimated } from "@/components/grex-logo-animated";
 import { Button } from "@/components/ui/button";
 import {
 	GITHUB_RELEASES_URL,
@@ -23,7 +23,7 @@ import {
 import releaseAnnouncementCatalog from "@/features/announcements/release-announcement-catalog.json";
 import {
 	dismissReleaseAnnouncement,
-	isFirstCodewitBoot,
+	isFirstGrexBoot,
 	readLastDismissedReleaseVersion,
 	readLastSeenInstallVersion,
 	writeLastSeenInstallVersion,
@@ -60,13 +60,13 @@ export function ReleaseAnnouncementToastHost({
 			catalog: RELEASE_ANNOUNCEMENT_CATALOG,
 			currentVersion: APP_VERSION,
 			lastSeenVersion: readLastSeenInstallVersion(),
-			// Distinguish "never used Codewit" (suppress) from "existing
+			// Distinguish "never used Grex" (suppress) from "existing
 			// user picking up the announcement system for the first time"
 			// (replay backlog). Without this check, every existing user's
 			// upgrade to the launch version of this feature gets silently
 			// classified as a fresh install — meaning the very toast that
 			// introduces the announcement system is never seen by anyone.
-			isFirstCodewitBoot: isFirstCodewitBoot(),
+			isFirstGrexBoot: isFirstGrexBoot(),
 			lastDismissedReleaseVersion: readLastDismissedReleaseVersion(),
 		});
 		// Always advance: bootstraps first-install (so we never re-evaluate
@@ -140,7 +140,7 @@ function ReleaseAnnouncementToast({
 		<div className="w-[410px] max-w-[calc(100vw-32px)] rounded-lg border border-border/70 bg-popover p-3.5 text-popover-foreground shadow-2xl">
 			<div className="flex items-center justify-between gap-3">
 				<div className="flex min-w-0 items-center gap-2">
-					<CodewitLogoAnimated
+					<GrexLogoAnimated
 						size={18}
 						autoplay={false}
 						className="shrink-0 opacity-90"

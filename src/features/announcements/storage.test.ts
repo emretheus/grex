@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
 	dismissReleaseAnnouncement,
-	isFirstCodewitBoot,
+	isFirstGrexBoot,
 	LAST_DISMISSED_RELEASE_VERSION_STORAGE_KEY,
 	LAST_SEEN_INSTALL_VERSION_STORAGE_KEY,
 	readLastDismissedReleaseVersion,
@@ -113,7 +113,7 @@ describe("last-seen-install-version storage", () => {
 	});
 });
 
-describe("isFirstCodewitBoot", () => {
+describe("isFirstGrexBoot", () => {
 	beforeEach(() => {
 		window.localStorage.clear();
 	});
@@ -122,18 +122,18 @@ describe("isFirstCodewitBoot", () => {
 		vi.restoreAllMocks();
 	});
 
-	it("reports true when no codewit-* keys exist", () => {
-		expect(isFirstCodewitBoot()).toBe(true);
+	it("reports true when no grex-* keys exist", () => {
+		expect(isFirstGrexBoot()).toBe(true);
 	});
 
-	it("reports false when codewit-theme is set (existing user)", () => {
-		window.localStorage.setItem("codewit-theme", "dark");
-		expect(isFirstCodewitBoot()).toBe(false);
+	it("reports false when grex-theme is set (existing user)", () => {
+		window.localStorage.setItem("grex-theme", "dark");
+		expect(isFirstGrexBoot()).toBe(false);
 	});
 
-	it("reports false when codewit-dark-theme is set (existing user)", () => {
-		window.localStorage.setItem("codewit-dark-theme", "midnight");
-		expect(isFirstCodewitBoot()).toBe(false);
+	it("reports false when grex-dark-theme is set (existing user)", () => {
+		window.localStorage.setItem("grex-dark-theme", "midnight");
+		expect(isFirstGrexBoot()).toBe(false);
 	});
 
 	it("reports false (fail-closed) when localStorage access throws", () => {
@@ -143,6 +143,6 @@ describe("isFirstCodewitBoot", () => {
 		vi.spyOn(Storage.prototype, "getItem").mockImplementation(() => {
 			throw new Error("blocked");
 		});
-		expect(isFirstCodewitBoot()).toBe(false);
+		expect(isFirstGrexBoot()).toBe(false);
 	});
 });

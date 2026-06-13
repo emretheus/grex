@@ -14,15 +14,15 @@ Configure these GitHub repository secrets before running the macOS release workf
   - Contents of your Tauri updater private key
 - `TAURI_SIGNING_PRIVATE_KEY_PASSWORD`
   - Password used when generating the updater private key
-- `CODEWIT_UPDATER_PUBKEY`
+- `GREX_UPDATER_PUBKEY`
   - Public key embedded into the app at build time
-- `CODEWIT_UPDATER_ENDPOINTS`
+- `GREX_UPDATER_ENDPOINTS`
   - Comma-separated updater endpoint list
   - Stable-only default:
-    - `https://github.com/emretheus/codewit/releases/latest/download/latest.json`
+    - `https://github.com/emretheus/grex/releases/latest/download/latest.json`
 
 macOS release publication uses the official `tauri-action`. It uploads the signed
-updater bundle and generates the `latest.json` manifest consumed by Codewit's updater.
+updater bundle and generates the `latest.json` manifest consumed by Grex's updater.
 
 ## Required for macOS signing and notarization
 

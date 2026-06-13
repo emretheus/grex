@@ -9,33 +9,33 @@ import { useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
 	getCliStatus,
-	getCodewitSkillsStatus,
+	getGrexSkillsStatus,
 	installCli,
-	installCodewitSkills,
+	installGrexSkills,
 } from "@/lib/api";
 import { SetupItem } from "../components/setup-item";
 import type { OnboardingStep } from "../types";
 
 const SETUP_FAILED_MESSAGE =
-	"Something went wrong — don't worry, Codewit will work fine without it.";
+	"Something went wrong — don't worry, Grex will work fine without it.";
 
 /**
- * The CLI binary name to show in the "Power up Codewit" mockup
+ * The CLI binary name to show in the "Power up Grex" mockup
  * terminal. Mirrors the Rust-side `installed_cli_name()` decision:
- * release builds install the canonical `codewit`, dev builds install
- * `codewit-dev` (so they don't shadow a release install on the same
+ * release builds install the canonical `grex`, dev builds install
+ * `grex-dev` (so they don't shadow a release install on the same
  * machine). Driven by `import.meta.env.DEV` rather than an IPC call
  * because (a) it's known at build time, (b) we don't want a flash of
  * the wrong name while a status query resolves, (c) this is purely
  * cosmetic — actual CLI invocation is handled by the install flow.
  */
-const ONBOARDING_CLI_NAME = import.meta.env.DEV ? "codewit-dev" : "codewit";
+const ONBOARDING_CLI_NAME = import.meta.env.DEV ? "grex-dev" : "grex";
 
 /**
- * Onboarding "Power up Codewit" step.
+ * Onboarding "Power up Grex" step.
  *
  * Behaviour contract:
- * - On entry the step kicks off Codewit CLI + Codewit Skills install in
+ * - On entry the step kicks off Grex CLI + Grex Skills install in
  *   the background. The user sees a spinner per item that flips to a
  *   ready check when each finishes.
  * - The user never has to click "Set up" — that primary path is the
@@ -83,7 +83,7 @@ export function SkillsStep({
 		setIsInstallingSkills(true);
 		setSkillsInstallFailed(false);
 		try {
-			const status = await installCodewitSkills();
+			const status = await installGrexSkills();
 			setSkillsInstalled(status.installed);
 		} catch {
 			setSkillsInstallFailed(true);
@@ -99,7 +99,7 @@ export function SkillsStep({
 			// re-entering onboarding with everything already installed.
 			const [cliStatus, skillsStatus] = await Promise.all([
 				getCliStatus().catch(() => null),
-				getCodewitSkillsStatus().catch(() => null),
+				getGrexSkillsStatus().catch(() => null),
 			]);
 			if (cancelled) return;
 
@@ -174,7 +174,7 @@ export function SkillsStep({
 							<pre className="whitespace-pre-wrap break-words font-mono">
 								<span className="text-foreground">{`$ ${ONBOARDING_CLI_NAME} --help`}</span>
 								{`
-Remote-control Codewit from the terminal.
+Remote-control Grex from the terminal.
 Works against the same SQLite database the desktop app uses.
 
 Usage: ${ONBOARDING_CLI_NAME} [OPTIONS] <COMMAND>
@@ -190,10 +190,10 @@ Commands:
   models       List available AI models
   github       GitHub integration - auth, PR lookup, merge
   scripts      Inspect repo-level setup/run/archive scripts
-  conductor    Migrate from Codewit v1 (Conductor)
+  conductor    Migrate from Grex v1 (Conductor)
   completions  Shell completion scripts
   cli-status   Report whether ${ONBOARDING_CLI_NAME} is installed to PATH
-  quit         Ask a running Codewit app to quit
+  quit         Ask a running Grex app to quit
   mcp          Run as an MCP server over stdio
   help         Print this message
 
@@ -210,10 +210,10 @@ Options:
 
 				<div className="w-full text-center">
 					<h2 className="text-3xl font-semibold tracking-normal text-foreground">
-						Power up Codewit
+						Power up Grex
 					</h2>
 					<p className="mx-auto mt-3 max-w-md text-body leading-6 text-muted-foreground">
-						Codewit is installing the CLI and skills in the background so it can
+						Grex is installing the CLI and skills in the background so it can
 						split work, run agents, call tools, and carry context across your
 						workspaces.
 					</p>
@@ -222,8 +222,8 @@ Options:
 				<div className="mt-7 grid w-full gap-3">
 					<SetupItem
 						icon={<Terminal className="size-5" />}
-						label="Codewit CLI"
-						description="Control Codewit from your terminal: create workspaces, send prompts, inspect files, and script repeatable flows."
+						label="Grex CLI"
+						description="Control Grex from your terminal: create workspaces, send prompts, inspect files, and script repeatable flows."
 						actionLabel={isInstallingCli ? "Installing" : "Retry"}
 						onAction={runInstallCli}
 						busy={isInstallingCli}
@@ -232,8 +232,8 @@ Options:
 					/>
 					<SetupItem
 						icon={<PackageCheck className="size-5" />}
-						label="Codewit Skills (Beta)"
-						description="Install skills so Codewit can help with more workflows across every workspace."
+						label="Grex Skills (Beta)"
+						description="Install skills so Grex can help with more workflows across every workspace."
 						actionLabel={isInstallingSkills ? "Installing" : "Retry"}
 						onAction={runInstallSkills}
 						busy={isInstallingSkills}

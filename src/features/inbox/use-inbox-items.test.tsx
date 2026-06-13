@@ -35,7 +35,7 @@ function wrapperFor(
 				"github:dohooo": {
 					...DEFAULT_INBOX_ACCOUNT_TOGGLES,
 					repos: {
-						"emretheus/codewit": {
+						"emretheus/grex": {
 							...DEFAULT_INBOX_REPO_CONFIG,
 							enabled: true,
 						},
@@ -79,7 +79,7 @@ describe("useInboxItems", () => {
 		});
 
 		const { result } = renderHook(
-			() => useInboxItems("issues", "emretheus/codewit", null),
+			() => useInboxItems("issues", "emretheus/grex", null),
 			{ wrapper: wrapperFor(queryClient) },
 		);
 
@@ -100,7 +100,7 @@ describe("useInboxItems", () => {
 		});
 
 		const { result } = renderHook(
-			() => useInboxItems("issues", "emretheus/codewit", { state: null }),
+			() => useInboxItems("issues", "emretheus/grex", { state: null }),
 			{ wrapper: wrapperFor(queryClient) },
 		);
 
@@ -123,7 +123,7 @@ describe("useInboxItems", () => {
 		});
 
 		const { result } = renderHook(
-			() => useInboxItems("issues", "emretheus/codewit", null),
+			() => useInboxItems("issues", "emretheus/grex", null),
 			{
 				wrapper: wrapperFor(queryClient, {
 					...DEFAULT_SETTINGS,
@@ -132,7 +132,7 @@ describe("useInboxItems", () => {
 							"github:dohooo": {
 								...DEFAULT_INBOX_ACCOUNT_TOGGLES,
 								repos: {
-									"emretheus/codewit": {
+									"emretheus/grex": {
 										...DEFAULT_INBOX_REPO_CONFIG,
 										enabled: false,
 										issues: true,

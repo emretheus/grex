@@ -1,4 +1,4 @@
-//! `codewit session` — session CRUD and thread messages.
+//! `grex session` — session CRUD and thread messages.
 
 use anyhow::Result;
 use rusqlite::params;

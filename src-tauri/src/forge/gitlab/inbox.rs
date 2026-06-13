@@ -77,7 +77,7 @@ pub fn list_inbox_items(
     };
 
     tracing::debug!(
-        target: "codewit::inbox",
+        target: "grex::inbox",
         host = %host,
         login,
         ?toggles,
@@ -99,7 +99,7 @@ pub fn list_inbox_items(
             per_page,
         )? {
             FetchOutcome::Auth => {
-                tracing::warn!(target: "codewit::inbox", host = %host, login, "issues fetch: auth required");
+                tracing::warn!(target: "grex::inbox", host = %host, login, "issues fetch: auth required");
                 return Ok(InboxPage {
                     items: Vec::new(),
                     next_cursor: None,
@@ -123,7 +123,7 @@ pub fn list_inbox_items(
             per_page,
         )? {
             FetchOutcome::Auth => {
-                tracing::warn!(target: "codewit::inbox", host = %host, login, "mrs fetch: auth required");
+                tracing::warn!(target: "grex::inbox", host = %host, login, "mrs fetch: auth required");
                 return Ok(InboxPage {
                     items: Vec::new(),
                     next_cursor: None,
@@ -150,7 +150,7 @@ pub fn list_inbox_items(
     };
 
     tracing::debug!(
-        target: "codewit::inbox",
+        target: "grex::inbox",
         host = %host,
         login,
         returned = items.len(),
@@ -211,7 +211,7 @@ pub fn list_repo_labels(
             Ok(output) => output,
             Err(error) => {
                 tracing::warn!(
-                    target: "codewit::inbox",
+                    target: "grex::inbox",
                     host,
                     repo,
                     error = %format!("{error:#}"),
@@ -226,7 +226,7 @@ pub fn list_repo_labels(
             // shouldn't fail because one project is private or missing.
             if looks_like_auth_error(&detail) || looks_like_missing_error(&detail) {
                 tracing::warn!(
-                    target: "codewit::inbox",
+                    target: "grex::inbox",
                     host,
                     repo,
                     detail = %detail,
@@ -235,7 +235,7 @@ pub fn list_repo_labels(
                 continue;
             }
             tracing::warn!(
-                target: "codewit::inbox",
+                target: "grex::inbox",
                 host,
                 repo,
                 detail = %detail,
@@ -247,7 +247,7 @@ pub fn list_repo_labels(
             Ok(labels) => labels,
             Err(error) => {
                 tracing::warn!(
-                    target: "codewit::inbox",
+                    target: "grex::inbox",
                     host,
                     repo,
                     error = %error,

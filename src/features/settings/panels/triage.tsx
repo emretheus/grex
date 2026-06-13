@@ -55,7 +55,7 @@ import {
 	triggerTriageTickNow,
 	updateTriageConfig,
 } from "@/lib/api";
-import { codewitQueryKeys } from "@/lib/query-client";
+import { grexQueryKeys } from "@/lib/query-client";
 import { cn } from "@/lib/utils";
 import { publishShellEvent } from "@/shell/event-bus";
 import { SettingsReleaseBadge } from "../components/release-marker";
@@ -120,11 +120,11 @@ export function TriagePanel() {
 		refetchInterval: 2000,
 	});
 	const config = useQuery({
-		queryKey: codewitQueryKeys.triageConfig,
+		queryKey: grexQueryKeys.triageConfig,
 		queryFn: getTriageConfig,
 	});
 	const status = useQuery({
-		queryKey: codewitQueryKeys.triageActiveStatus,
+		queryKey: grexQueryKeys.triageActiveStatus,
 		queryFn: getTriageActiveStatus,
 		refetchInterval: 1000,
 	});
@@ -151,7 +151,7 @@ export function TriagePanel() {
 		mutationFn: (next: TriageConfig) => updateTriageConfig(next),
 		onSuccess: () => {
 			void queryClient.invalidateQueries({
-				queryKey: codewitQueryKeys.triageConfig,
+				queryKey: grexQueryKeys.triageConfig,
 			});
 		},
 	});
@@ -160,7 +160,7 @@ export function TriagePanel() {
 		mutationFn: () => triggerTriageTickNow(),
 		onSuccess: () => {
 			void queryClient.invalidateQueries({
-				queryKey: codewitQueryKeys.triageActiveStatus,
+				queryKey: grexQueryKeys.triageActiveStatus,
 			});
 		},
 	});
@@ -169,7 +169,7 @@ export function TriagePanel() {
 		mutationFn: () => cancelTriageTick(),
 		onSuccess: () => {
 			void queryClient.invalidateQueries({
-				queryKey: codewitQueryKeys.triageActiveStatus,
+				queryKey: grexQueryKeys.triageActiveStatus,
 			});
 		},
 	});
@@ -225,7 +225,7 @@ export function TriagePanel() {
 
 					<Field
 						label="Sources"
-						hint="Where Codewit pulls triage candidates from. Incremental fetch every 5 minutes."
+						hint="Where Grex pulls triage candidates from. Incremental fetch every 5 minutes."
 					>
 						<div className="flex flex-col divide-y divide-border/40 rounded-md border border-border/60 bg-background/30">
 							{sourceHealth.data?.map((row) => (

@@ -8,11 +8,11 @@
 //!   so it can read and write that item without prompting.
 //! - Claude CLI talks to Anthropic with its own refresh_token, then
 //!   writes the new credentials back to the same keychain item.
-//! - Codewit then re-reads the keychain via `/usr/bin/security` (fast,
+//! - Grex then re-reads the keychain via `/usr/bin/security` (fast,
 //!   no UI) to pick up the fresh tokens.
 //!
 //! The point of this whole dance: Anthropic rotates `refresh_token`
-//! values per OAuth best practice. If Codewit refreshed directly using
+//! values per OAuth best practice. If Grex refreshed directly using
 //! the refresh_token from Claude CLI's keychain, the server would
 //! invalidate it and Claude CLI's next run would fail with "please
 //! log in again". Routing the refresh through the CLI process keeps

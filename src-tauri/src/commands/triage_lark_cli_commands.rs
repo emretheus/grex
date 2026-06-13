@@ -7,7 +7,7 @@ use crate::workspace::scripts::{ScriptContext, ScriptEvent, ScriptProcessManager
 
 use super::common::CmdResult;
 
-const LARK_AUTH_REPO_ID: &str = "__codewit_triage_lark__";
+const LARK_AUTH_REPO_ID: &str = "__grex_triage_lark__";
 
 #[derive(Debug, Clone, Copy, Deserialize)]
 #[serde(rename_all = "camelCase")]

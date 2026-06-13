@@ -74,7 +74,7 @@ pub struct PrepareWorkspaceResponse {
     pub default_branch: String,
     pub state: WorkspaceState,
     /// DB-level repo scripts. After Phase 2 (worktree creation) the frontend
-    /// may refetch to pick up any `codewit.json` overrides copied into the
+    /// may refetch to pick up any `grex.json` overrides copied into the
     /// worktree, but for a freshly cloned workspace these match exactly.
     pub repo_scripts: repos::RepoScripts,
     /// CWD the agent CLI should run in for the very first turn. Local mode
@@ -228,7 +228,7 @@ pub fn prepare_workspace_from_repo_impl(
 
     // `load_repo_scripts` is the single truth source. The worktree
     // doesn't exist yet, but the function knows to fall back to the
-    // source repo root's `codewit.json` when the worktree dir is missing
+    // source repo root's `grex.json` when the worktree dir is missing
     // — so the frontend gets the correct "missing script" count from
     // the first paint.
     let repo_scripts = match repos::load_repo_scripts(repo_id, Some(&workspace_id)) {
@@ -500,7 +500,7 @@ pub fn prepare_chat_workspace_impl(
 }
 
 /// Phase 2 of workspace creation: creates the git worktree, probes
-/// `codewit.json` for a setup script, and
+/// `grex.json` for a setup script, and
 /// upgrades the workspace row from `Initializing` to `Ready` /
 /// `SetupPending`. On failure, cleans up the worktree + DB rows so the
 /// caller can surface the error without leaving a broken workspace
@@ -959,7 +959,7 @@ pub fn cleanup_orphaned_initializing_workspaces(max_age_seconds: i64) -> Result<
         let repo_root = PathBuf::from(repo_root_value);
         // Local-mode orphans: never touch the worktree path (it's the
         // user's actual repo). Chat-mode orphans: the scratch dir is
-        // owned by codewit, but the cleanup logic below targets git
+        // owned by grex, but the cleanup logic below targets git
         // worktrees only, so skip it too — the empty scratch dir is
         // cheap to GC out-of-band.
         if record.mode != crate::workspace_state::WorkspaceMode::Worktree {
@@ -1117,11 +1117,11 @@ pub(crate) fn run_archive_hook_inner(
         .arg(shell_flag)
         .arg(&script)
         .current_dir(workspace_dir)
-        .env("CODEWIT_ROOT_PATH", repo_root.display().to_string())
-        .env("CODEWIT_WORKSPACE_PATH", workspace_dir.display().to_string())
-        .env("CODEWIT_WORKSPACE_NAME", &record.directory_name)
+        .env("GREX_ROOT_PATH", repo_root.display().to_string())
+        .env("GREX_WORKSPACE_PATH", workspace_dir.display().to_string())
+        .env("GREX_WORKSPACE_NAME", &record.directory_name)
         .env(
-            "CODEWIT_DEFAULT_BRANCH",
+            "GREX_DEFAULT_BRANCH",
             record.default_branch.as_deref().unwrap_or("main"),
         );
     let status = crate::platform::process::configure_background_cli(&mut command).status();
@@ -1237,7 +1237,7 @@ pub fn execute_archive_plan(plan: &ArchivePreparedPlan) -> Result<ArchiveWorkspa
 
     // CRITICAL safety check: for non-worktree workspaces, `workspace_dir`
     // points at something we must not blow away (Local: the user's repo;
-    // Chat: codewit's scratch dir). The downstream `remove_worktree`
+    // Chat: grex's scratch dir). The downstream `remove_worktree`
     // would rename + delete it. Short-circuit to a DB-only flip here
     // BEFORE we touch anything on disk. The frontend's
     // `archive_workspace_impl` already does this; this is a second
@@ -1697,7 +1697,7 @@ fn resolve_setup_hook(
 }
 
 fn load_setup_script_from_project_config(workspace_dir: &Path) -> Result<Option<String>> {
-    let config_path = workspace_dir.join("codewit.json");
+    let config_path = workspace_dir.join("grex.json");
     if !config_path.is_file() {
         return Ok(None);
     }

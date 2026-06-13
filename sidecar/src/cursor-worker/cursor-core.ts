@@ -1,4 +1,4 @@
-/** SessionManager backed by @cursor/sdk. One Agent per Codewit session;
+/** SessionManager backed by @cursor/sdk. One Agent per Grex session;
  * stream events forwarded with `type` namespaced as `cursor/<original>`
  * so Rust dispatch doesn't collide with claude/codex event types. */
 

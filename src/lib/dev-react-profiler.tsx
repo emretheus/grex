@@ -1,5 +1,5 @@
 /**
- * React Profiler aggregator for Codewit.
+ * React Profiler aggregator for Grex.
  *
  * Wraps the per-render data that React's <Profiler> emits into a long-lived
  * in-memory summary keyed by Profiler `id`. The summary is the source of
@@ -14,19 +14,19 @@
  *
  * Usage:
  *
- *   import { CodewitProfiler } from "@/lib/dev-react-profiler";
+ *   import { GrexProfiler } from "@/lib/dev-react-profiler";
  *
- *   <CodewitProfiler id="WorkspacePanel">
+ *   <GrexProfiler id="WorkspacePanel">
  *     <WorkspacePanel ... />
- *   </CodewitProfiler>
+ *   </GrexProfiler>
  *
- * When the flag is off, <CodewitProfiler> is a passthrough: it returns
+ * When the flag is off, <GrexProfiler> is a passthrough: it returns
  * `children` directly with zero React.Profiler overhead.
  *
  * Programmatic readback:
  *
- *   window.__CODEWIT_PROFILER__.summary()  // sorted by total mount+update ms
- *   window.__CODEWIT_PROFILER__.clear()    // reset between scenarios
+ *   window.__GREX_PROFILER__.summary()  // sorted by total mount+update ms
+ *   window.__GREX_PROFILER__.clear()    // reset between scenarios
  */
 
 import { Profiler, type ProfilerOnRenderCallback, type ReactNode } from "react";
@@ -98,7 +98,7 @@ const onRender: ProfilerOnRenderCallback = (
 
 declare global {
 	interface Window {
-		__CODEWIT_PROFILER__?: {
+		__GREX_PROFILER__?: {
 			enabled: () => boolean;
 			summary: () => ProfilerAggregate[];
 			clear: () => void;
@@ -117,7 +117,7 @@ export function clearProfilerSummary(): void {
 }
 
 if (typeof window !== "undefined" && isEnabled()) {
-	window.__CODEWIT_PROFILER__ = {
+	window.__GREX_PROFILER__ = {
 		enabled: () => true,
 		summary: getProfilerSummary,
 		clear: clearProfilerSummary,
@@ -128,7 +128,7 @@ if (typeof window !== "undefined" && isEnabled()) {
  * Conditional <Profiler> wrapper. When `?profile=1` is off this returns
  * `children` directly with zero overhead.
  */
-export function CodewitProfiler({
+export function GrexProfiler({
 	id,
 	children,
 }: {

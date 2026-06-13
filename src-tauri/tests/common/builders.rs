@@ -2,8 +2,8 @@
 //! from `content`. Mirrors the production loader in
 //! `sessions.rs::list_session_*`.
 
-use codewit_lib::pipeline::types::HistoricalRecord;
-use codewit_lib::pipeline::MessagePipeline;
+use grex_lib::pipeline::types::HistoricalRecord;
+use grex_lib::pipeline::MessagePipeline;
 use serde_json::{json, Value};
 
 use super::normalize::{normalize_all, NormThreadMessage};

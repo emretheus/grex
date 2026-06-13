@@ -1,5 +1,5 @@
-//! CLI launcher install seam — *where* and *how* Codewit installs its managed
-//! `codewit` CLI launcher for the current OS.
+//! CLI launcher install seam — *where* and *how* Grex installs its managed
+//! `grex` CLI launcher for the current OS.
 //!
 //! The macOS/Unix implementation is the reference behavior: a symlink at
 //! `/usr/local/bin/<name>` pointing at the CLI binary inside the app bundle.
@@ -130,14 +130,14 @@ mod windows_impl {
         shim_dir().join(format!("{cli_name}.cmd"))
     }
 
-    /// `%LOCALAPPDATA%\Codewit\bin` — beside the NSIS per-user install root, so a
-    /// user-scope uninstall that clears `%LOCALAPPDATA%\Codewit` removes it too.
+    /// `%LOCALAPPDATA%\Grex\bin` — beside the NSIS per-user install root, so a
+    /// user-scope uninstall that clears `%LOCALAPPDATA%\Grex` removes it too.
     fn shim_dir() -> PathBuf {
         std::env::var_os("LOCALAPPDATA")
             .map(PathBuf::from)
             .or_else(crate::platform::paths::home_dir)
             .unwrap_or_else(|| PathBuf::from("."))
-            .join("Codewit")
+            .join("Grex")
             .join("bin")
     }
 
@@ -167,7 +167,7 @@ mod windows_impl {
         Ok(())
     }
 
-    /// Extract the forwarding target from a Codewit `.cmd` shim, if it is one.
+    /// Extract the forwarding target from a Grex `.cmd` shim, if it is one.
     fn read_shim_target(install_path: &Path) -> Option<PathBuf> {
         let content = std::fs::read_to_string(install_path).ok()?;
         for line in content.lines() {
@@ -249,8 +249,8 @@ mod tests {
     fn install_target_uses_unix_bin_path() {
         #[cfg(not(windows))]
         assert_eq!(
-            install_target("codewit"),
-            PathBuf::from("/usr/local/bin/codewit")
+            install_target("grex"),
+            PathBuf::from("/usr/local/bin/grex")
         );
     }
 
@@ -258,9 +258,9 @@ mod tests {
     #[test]
     fn classify_reports_missing_managed_and_stale() {
         let dir = tempfile::tempdir().unwrap();
-        let bundled = dir.path().join("codewit-cli");
+        let bundled = dir.path().join("grex-cli");
         std::fs::write(&bundled, b"bin").unwrap();
-        let install_path = dir.path().join("codewit");
+        let install_path = dir.path().join("grex");
 
         // Missing: nothing there yet.
         assert_eq!(classify(&install_path, &bundled), ManagedCliStatus::Missing);
@@ -281,14 +281,14 @@ mod tests {
     #[cfg(windows)]
     #[test]
     fn classify_reads_cmd_shim_target() {
-        assert!(install_target("codewit")
+        assert!(install_target("grex")
             .to_string_lossy()
-            .ends_with("codewit.cmd"));
+            .ends_with("grex.cmd"));
 
         let dir = tempfile::tempdir().unwrap();
-        let bundled = dir.path().join("codewit-cli.exe");
+        let bundled = dir.path().join("grex-cli.exe");
         std::fs::write(&bundled, b"bin").unwrap();
-        let shim = dir.path().join("codewit.cmd");
+        let shim = dir.path().join("grex.cmd");
 
         assert_eq!(classify(&shim, &bundled), ManagedCliStatus::Missing);
 

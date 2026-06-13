@@ -64,13 +64,13 @@ describe("build platform boundary", () => {
 		).toEqual({
 			targetTriple: "aarch64-apple-darwin",
 			profile: "release",
-			sidecarSource: "/repo/sidecar/dist/codewit-sidecar",
+			sidecarSource: "/repo/sidecar/dist/grex-sidecar",
 			sidecarExternalBin:
-				"/repo/sidecar/dist/codewit-sidecar-aarch64-apple-darwin",
+				"/repo/sidecar/dist/grex-sidecar-aarch64-apple-darwin",
 			cliSource:
-				"/repo/src-tauri/target/aarch64-apple-darwin/release/codewit-cli",
+				"/repo/src-tauri/target/aarch64-apple-darwin/release/grex-cli",
 			cliExternalBin:
-				"/repo/src-tauri/target/bundled/codewit-cli-aarch64-apple-darwin",
+				"/repo/src-tauri/target/bundled/grex-cli-aarch64-apple-darwin",
 		});
 	});
 
@@ -83,9 +83,9 @@ describe("build platform boundary", () => {
 				platform: "darwin",
 			}),
 		).toMatchObject({
-			cliSource: "/repo/src-tauri/target/debug/codewit-cli",
+			cliSource: "/repo/src-tauri/target/debug/grex-cli",
 			cliExternalBin:
-				"/repo/src-tauri/target/bundled/codewit-cli-aarch64-apple-darwin",
+				"/repo/src-tauri/target/bundled/grex-cli-aarch64-apple-darwin",
 		});
 	});
 
@@ -98,8 +98,8 @@ describe("build platform boundary", () => {
 			"node scripts/prepare-sidecar.mjs && bun run build",
 		);
 		expect(config.bundle.externalBin).toEqual([
-			"../sidecar/dist/codewit-sidecar",
-			"./target/bundled/codewit-cli",
+			"../sidecar/dist/grex-sidecar",
+			"./target/bundled/grex-cli",
 		]);
 		expect(config.bundle.resources).toEqual({
 			"../sidecar/dist/vendor/": "vendor",
@@ -113,7 +113,7 @@ describe("build platform boundary", () => {
 			pubkey:
 				"dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDM5QkE5MEUwRjc5N0EzQ0QKUldUTm81ZjM0SkM2T2RweXFnOTYvanRkSENTRW9Zc25sMXRmeFlxazN1MFNZdjZPb2crVWNISzMK",
 			endpoints: [
-				"https://github.com/emretheus/codewit/releases/latest/download/latest.json",
+				"https://github.com/emretheus/grex/releases/latest/download/latest.json",
 			],
 		});
 	});

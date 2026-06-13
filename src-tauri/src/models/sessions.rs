@@ -282,7 +282,7 @@ pub fn set_session_status(session_id: &str, status: &str) -> Result<()> {
 }
 
 /// Persist the agent's real session id (from a Terminal-Mode agent hook) so a
-/// later relaunch can `--resume`. Written by `codewit terminal-hook`.
+/// later relaunch can `--resume`. Written by `grex terminal-hook`.
 pub fn set_provider_session_id(session_id: &str, provider_session_id: &str) -> Result<()> {
     let connection = db::write_conn()?;
     connection
@@ -296,7 +296,7 @@ pub fn set_provider_session_id(session_id: &str, provider_session_id: &str) -> R
     Ok(())
 }
 
-/// The workspace a session belongs to. Used by `codewit terminal-hook` to route
+/// The workspace a session belongs to. Used by `grex terminal-hook` to route
 /// its busy/idle signal to the right workspace.
 pub fn workspace_id_for_session(session_id: &str) -> Result<Option<String>> {
     let connection = db::read_conn()?;

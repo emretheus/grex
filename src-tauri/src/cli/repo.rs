@@ -1,4 +1,4 @@
-//! `codewit repo` — repository management.
+//! `grex repo` — repository management.
 
 use anyhow::Result;
 
@@ -193,7 +193,7 @@ fn show_scripts(repo_ref: &str, workspace: Option<&str>, cli: &Cli) -> Result<()
 /// the repo's first DB-owned run action: `--run "cmd"` updates an
 /// existing first action's command (or creates a "Default" action when
 /// none exists yet); `clear run` deletes the first action if present.
-/// codewit.json-owned actions are read-only here — modify them by
+/// grex.json-owned actions are read-only here — modify them by
 /// editing the JSON file.
 fn update_scripts(
     repo_ref: &str,
@@ -232,7 +232,7 @@ fn update_scripts(
     if let Some(next_run) = run_pending {
         if existing.run_from_project {
             anyhow::bail!(
-                "Run actions for this repo are defined in codewit.json — edit that file instead"
+                "Run actions for this repo are defined in grex.json — edit that file instead"
             );
         }
         let first_db = existing

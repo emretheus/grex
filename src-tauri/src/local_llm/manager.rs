@@ -196,7 +196,7 @@ impl Drop for StartingFlag<'_> {
     }
 }
 
-/// Reap an orphan llama-server left by a prior Codewit process.
+/// Reap an orphan llama-server left by a prior Grex process.
 pub fn sweep_orphan_server() {
     let Ok(data_dir) = crate::data_dir::data_dir() else {
         return;

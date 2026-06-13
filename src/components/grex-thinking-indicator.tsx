@@ -1,26 +1,26 @@
-import { CodewitLogoAnimated } from "@/components/codewit-logo-animated";
+import { GrexLogoAnimated } from "@/components/grex-logo-animated";
 import { cn } from "@/lib/utils";
 
-type CodewitThinkingIndicatorProps = {
+type GrexThinkingIndicatorProps = {
 	size?: number | string;
 	className?: string;
 };
 
-export function CodewitThinkingIndicator({
+export function GrexThinkingIndicator({
 	size = 14,
 	className,
-}: CodewitThinkingIndicatorProps) {
+}: GrexThinkingIndicatorProps) {
 	return (
 		<span
 			aria-hidden="true"
-			data-slot="codewit-thinking-indicator"
+			data-slot="grex-thinking-indicator"
 			className={cn(
 				"inline-flex shrink-0 items-center justify-center",
 				className,
 			)}
 			style={{ width: size, height: size }}
 		>
-			<CodewitLogoAnimated size={size} className="shrink-0 opacity-80" />
+			<GrexLogoAnimated size={size} className="shrink-0 opacity-80" />
 		</span>
 	);
 }

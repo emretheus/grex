@@ -14,7 +14,7 @@ the base-most PR last.
 ```json
 {
   "name": "dark-mode",
-  "repo": "codewit/uranus",
+  "repo": "grex/uranus",
   "base": "main",
   "layers": [
     {"pr": "483", "title": "feat: dark mode toggle",  "state": "draft",  "ws": "dark-mode-ui"},
@@ -33,7 +33,7 @@ the base-most PR last.
 | `layers[].pr`    | PR number as a string. Empty/omitted = no PR opened yet (lazy growth) → renders as `—`. |
 | `layers[].title` | The PR / commit title. |
 | `layers[].state` | One of `merged` · `open` · `draft` · `closed` · `none`. |
-| `layers[].ws`    | The Codewit workspace (directory) name for this layer. |
+| `layers[].ws`    | The Grex workspace (directory) name for this layer. |
 
 The `base ◂` pointer for each layer is **derived**: it points at the PR of the
 layer immediately below, and the bottom layer points at `base`. The `← HEAD`
@@ -53,7 +53,7 @@ marker is always on `layers[0]` (the tip).
 Running the spec above produces exactly:
 
 ```text
-stack: dark-mode · codewit/uranus · 3 PRs
+stack: dark-mode · grex/uranus · 3 PRs
 
 ◉ #483  feat: dark mode toggle      draft    ← HEAD
 │  └ ws: dark-mode-ui      base ◂ #482
@@ -68,5 +68,5 @@ stack: dark-mode · codewit/uranus · 3 PRs
 
 Read it top-down: the tip (`#483`, newest) is on top and sorts into the
 sidebar normally; each lower PR is the base of the one above it; `main` is the
-stack's foundation at the bottom. This is the textual twin of how the Codewit
+stack's foundation at the bottom. This is the textual twin of how the Grex
 sidebar groups the stack's workspaces.

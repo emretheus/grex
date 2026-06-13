@@ -29,18 +29,18 @@ describe("ContextBar", () => {
 		render(
 			<ContextBar
 				directories={[
-					{ path: "/code/sdk", name: "codewit-sdk", branch: "main" },
+					{ path: "/code/sdk", name: "grex-sdk", branch: "main" },
 					{
 						path: "/code/sidecar",
-						name: "codewit-sidecar",
+						name: "grex-sidecar",
 						branch: "feat/cli",
 					},
 				]}
 				onRemove={() => {}}
 			/>,
 		);
-		expect(screen.getByText("codewit-sdk")).toBeInTheDocument();
-		expect(screen.getByText("codewit-sidecar")).toBeInTheDocument();
+		expect(screen.getByText("grex-sdk")).toBeInTheDocument();
+		expect(screen.getByText("grex-sidecar")).toBeInTheDocument();
 		// Branch labels and full paths are intentionally NOT shown on chips —
 		// the chip is just "this workspace is linked" and the branch/path
 		// come from the popup / hover tooltip respectively.

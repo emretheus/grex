@@ -1,17 +1,17 @@
-//! Client for the Codewit companion registry Worker (`apps/registry`).
+//! Client for the Grex companion registry Worker (`apps/registry`).
 //!
 //! Called exactly twice per stable-URL lifecycle: once to allocate a
-//! `remote-<random>.codewit.ai` hostname for this desktop's tunnel, and once to
-//! tear it down. The Worker writes the CNAME; Codewit never sees user traffic.
+//! `remote-<random>.grex.ai` hostname for this desktop's tunnel, and once to
+//! tear it down. The Worker writes the CNAME; Grex never sees user traffic.
 
 use anyhow::{anyhow, Result};
 use serde::Deserialize;
 
-const DEFAULT_API: &str = "https://registry.codewit.ai";
+const DEFAULT_API: &str = "https://registry.grex.ai";
 
 /// Registry base URL. Overridable for self-hosting / local dev.
 fn api_base() -> String {
-    std::env::var("CODEWIT_COMPANION_API_URL").unwrap_or_else(|_| DEFAULT_API.to_string())
+    std::env::var("GREX_COMPANION_API_URL").unwrap_or_else(|_| DEFAULT_API.to_string())
 }
 
 /// The hostname + revocation secret allocated for a tunnel.
@@ -63,7 +63,7 @@ mod tests {
                 post(|| async {
                     Json(serde_json::json!({
                         "deviceId": "dev_1",
-                        "hostname": "remote-abcd2345.codewit.ai",
+                        "hostname": "remote-abcd2345.grex.ai",
                         "secret": "hsec_stub",
                     }))
                 }),
@@ -83,17 +83,17 @@ mod tests {
     #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
     async fn register_then_revoke() {
         let base = spawn_stub().await;
-        std::env::set_var("CODEWIT_COMPANION_API_URL", &base);
+        std::env::set_var("GREX_COMPANION_API_URL", &base);
 
         let host = register("12345678-1234-1234-1234-123456789abc")
             .await
             .expect("register");
-        assert_eq!(host.hostname, "remote-abcd2345.codewit.ai");
+        assert_eq!(host.hostname, "remote-abcd2345.grex.ai");
         assert_eq!(host.device_id, "dev_1");
         assert_eq!(host.secret, "hsec_stub");
 
         revoke(&host.device_id, &host.secret).await.expect("revoke");
 
-        std::env::remove_var("CODEWIT_COMPANION_API_URL");
+        std::env::remove_var("GREX_COMPANION_API_URL");
     }
 }

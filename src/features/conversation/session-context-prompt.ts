@@ -20,7 +20,7 @@ function escapeText(value: string): string {
 }
 
 function buildCommand(command: string): string {
-	return `the exact Codewit CLI invocation shown in <codewit_context>, followed by \`${command}\``;
+	return `the exact Grex CLI invocation shown in <grex_context>, followed by \`${command}\``;
 }
 
 export function buildSessionContextPrompt(
@@ -42,24 +42,24 @@ export function buildSessionContextPrompt(
 			const workspaceId = escapeAttribute(reference.workspaceId);
 			const label = escapeText(title);
 			return [
-				`<codewit-session-ref session-id="${sessionId}" workspace-id="${workspaceId}" title="${escapeAttribute(title)}">`,
+				`<grex-session-ref session-id="${sessionId}" workspace-id="${workspaceId}" title="${escapeAttribute(title)}">`,
 				`The user selected prior session "${label}" as reference context. Its transcript is not included here.`,
 				`Start by reading the latest window with ${buildCommand(`session get-messages ${reference.id} --position tail --limit 12 --body-limit 2000 --json`)}.`,
 				`If that does not reveal the original goal or constraints, read the beginning with ${buildCommand(`session get-messages ${reference.id} --position head --limit 8 --body-limit 2000 --json`)}.`,
 				`The JSON output is an envelope; inspect its \`messages\` array plus \`windowHasMore\`, \`bodyHasMore\`, \`bodyOffset\`, and \`bodyTotal\`. If a relevant message is truncated, do one targeted refetch, for example ${buildCommand(`session get-messages ${reference.id} --position tail --limit 5 --body-limit 4000 --body-position end --json`)}.`,
 				`If command syntax is unclear, run ${buildCommand("session get-messages --help")}.`,
-				"</codewit-session-ref>",
+				"</grex-session-ref>",
 			].join("\n");
 		})
 		.join("\n");
 
 	return [
-		"<codewit-session-context>",
-		"The user explicitly selected prior Codewit sessions to inject as context for this new session. Their transcripts are not included in this prompt. Before giving a substantive answer for this turn, inspect the selected sessions with the Codewit CLI; do not answer from memory, the workspace preamble, or visible session titles alone.",
+		"<grex-session-context>",
+		"The user explicitly selected prior Grex sessions to inject as context for this new session. Their transcripts are not included in this prompt. Before giving a substantive answer for this turn, inspect the selected sessions with the Grex CLI; do not answer from memory, the workspace preamble, or visible session titles alone.",
 		tags,
 		"<read-strategy>",
 		"For each selected session, read the minimum bounded slices needed to answer or continue the work. Start with the tail to recover current state, completed work, blockers, and next likely step. Read the head when you need the original goal or constraints. Continue with targeted slices until you can state the prior goal, important decisions, completed work, unresolved blockers, and next concrete action. Stop once you have enough context; do not dump entire transcripts by default. If selected sessions conflict or remain unclear after targeted reads, say what you could verify and ask the user what should carry over.",
 		"</read-strategy>",
-		"</codewit-session-context>",
+		"</grex-session-context>",
 	].join("\n");
 }

@@ -15,12 +15,12 @@ import {
 	buildProposeWorkspaceTool,
 	buildReadCandidateTool,
 	ProposalAccumulator,
-} from "./tools/codewit";
+} from "./tools/grex";
 import type { TriageProposal, TriageTickParams } from "./types";
 
 registerBuiltInApiProviders();
 
-const PROVIDER_ID = "codewit-local";
+const PROVIDER_ID = "grex-local";
 const PREVIEW_CHARS = 240;
 
 function buildLocalModel(

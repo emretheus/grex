@@ -1,11 +1,11 @@
-# Codewit CLI Top-Level Help
+# Grex CLI Top-Level Help
 
-Captured from `codewit --help`.
+Captured from `grex --help`.
 
 ```text
-Remote-control Codewit from the terminal. Works against the same SQLite database the desktop app uses — run commands even while the app is running.
+Remote-control Grex from the terminal. Works against the same SQLite database the desktop app uses — run commands even while the app is running.
 
-Usage: codewit [OPTIONS] <COMMAND>
+Usage: grex [OPTIONS] <COMMAND>
 
 Commands:
   data         Data directory, database, and mode info
@@ -18,10 +18,10 @@ Commands:
   models       List available AI models
   github       GitHub integration — auth, PR lookup, merge
   scripts      Inspect repo-level setup/run/archive scripts
-  conductor    Migrate from Codewit v1 (Conductor)
+  conductor    Migrate from Grex v1 (Conductor)
   completions  Shell completion scripts
-  cli-status   Report whether the current Codewit CLI entrypoint is installed to PATH and which data mode it uses
-  quit         Ask a running Codewit app to quit (noop when it isn't running)
+  cli-status   Report whether the current Grex CLI entrypoint is installed to PATH and which data mode it uses
+  quit         Ask a running Grex app to quit (noop when it isn't running)
   mcp          Run as an MCP (Model Context Protocol) server over stdio
   help         Print this message or the help of the given subcommand(s)
 
@@ -33,7 +33,7 @@ Options:
           Reduce output to IDs / nothing. Useful for scripting
 
       --data-dir <DIR>
-          Override the data directory (default: ~/codewit or ~/codewit-dev)
+          Override the data directory (default: ~/grex or ~/grex-dev)
 
   -h, --help
           Print help (see a summary with '-h')

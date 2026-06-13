@@ -60,7 +60,7 @@ import {
 } from "@/lib/editor-session";
 import { openUrl } from "@/lib/platform-bridge";
 import {
-	codewitQueryKeys,
+	grexQueryKeys,
 	workspaceForgeActionStatusQueryOptions,
 	workspaceForgeQueryOptions,
 } from "@/lib/query-client";
@@ -186,7 +186,7 @@ function ChangesSectionImpl({
 	});
 	const cachedForgeDetection = workspaceId
 		? queryClient.getQueryData<ForgeDetection>(
-				codewitQueryKeys.workspaceForge(workspaceId),
+				grexQueryKeys.workspaceForge(workspaceId),
 			)
 		: null;
 	const forgeDetection = forgeQuery.data ?? cachedForgeDetection ?? null;

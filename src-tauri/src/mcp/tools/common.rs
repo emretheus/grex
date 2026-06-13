@@ -38,7 +38,7 @@ pub(super) fn parse_workspace_ship_action(action: &str) -> Result<WorkspaceShipA
         "fix_errors" => Ok(WorkspaceShipActionKind::FixErrors),
         "resolve_conflicts" => Ok(WorkspaceShipActionKind::ResolveConflicts),
         other => anyhow::bail!(
-            "codewit_workspace_run_action: unknown action `{other}`. \
+            "grex_workspace_run_action: unknown action `{other}`. \
              Valid: merge_pr, pull_latest, commit_and_push, create_pr, \
              fix_errors, resolve_conflicts."
         ),

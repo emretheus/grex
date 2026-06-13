@@ -1,5 +1,5 @@
 import type { QueryClient } from "@tanstack/react-query";
-import { codewitQueryKeys } from "./query-client";
+import { grexQueryKeys } from "./query-client";
 
 // Module-level counter shared across the app. Any code path about to
 // mutate the sidebar lists (archive, restore, create, delete, pin,
@@ -124,10 +124,10 @@ export function requestSidebarReconcile(queryClient: QueryClient): void {
 
 function reconcileSidebarListsInternal(queryClient: QueryClient): void {
 	void queryClient.invalidateQueries({
-		queryKey: codewitQueryKeys.workspaceGroups,
+		queryKey: grexQueryKeys.workspaceGroups,
 	});
 	void queryClient.invalidateQueries({
-		queryKey: codewitQueryKeys.archivedWorkspaces,
+		queryKey: grexQueryKeys.archivedWorkspaces,
 	});
 }
 

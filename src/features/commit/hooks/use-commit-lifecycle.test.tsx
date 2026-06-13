@@ -9,7 +9,7 @@ import type {
 	WorkspaceGitActionStatus,
 	WorkspaceGroup,
 } from "@/lib/api";
-import { codewitQueryKeys } from "@/lib/query-client";
+import { grexQueryKeys } from "@/lib/query-client";
 import { useWorkspaceCommitLifecycle } from "./use-commit-lifecycle";
 
 const apiMocks = vi.hoisted(() => ({
@@ -190,7 +190,7 @@ describe("useWorkspaceCommitLifecycle", () => {
 		});
 		const invalidateQueriesSpy = vi.spyOn(queryClient, "invalidateQueries");
 		queryClient.setQueryData<WorkspaceDetail | null>(
-			codewitQueryKeys.workspaceDetail("workspace-1"),
+			grexQueryKeys.workspaceDetail("workspace-1"),
 			{
 				id: "workspace-1",
 				activeSessionId: "session-after-close",
@@ -199,7 +199,7 @@ describe("useWorkspaceCommitLifecycle", () => {
 		);
 		// Seed the sidebar so we can assert the optimistic move to "review".
 		queryClient.setQueryData<WorkspaceGroup[]>(
-			codewitQueryKeys.workspaceGroups,
+			grexQueryKeys.workspaceGroups,
 			[
 				{
 					id: "progress",
@@ -306,16 +306,16 @@ describe("useWorkspaceCommitLifecycle", () => {
 			// from the awaited refresh result, not invalidated (which would
 			// trigger a duplicate `gh pr view`).
 			const cached = queryClient.getQueryData<ChangeRequestInfo | null>(
-				codewitQueryKeys.workspaceChangeRequest("workspace-1"),
+				grexQueryKeys.workspaceChangeRequest("workspace-1"),
 			);
 			expect(cached).toMatchObject({ state: "OPEN", number: 53 });
 		});
 		expect(invalidateQueriesSpy).not.toHaveBeenCalledWith({
-			queryKey: codewitQueryKeys.workspaceChangeRequest("workspace-1"),
+			queryKey: grexQueryKeys.workspaceChangeRequest("workspace-1"),
 		});
 		await waitFor(() => {
 			expect(invalidateQueriesSpy).toHaveBeenCalledWith({
-				queryKey: codewitQueryKeys.workspaceForgeActionStatus("workspace-1"),
+				queryKey: grexQueryKeys.workspaceForgeActionStatus("workspace-1"),
 			});
 		});
 		// Optimistic group + detail moves: workspace-1 should now sit in the
@@ -323,7 +323,7 @@ describe("useWorkspaceCommitLifecycle", () => {
 		// event-driven invalidation has had a chance to refetch.
 		await waitFor(() => {
 			const groups = queryClient.getQueryData<WorkspaceGroup[]>(
-				codewitQueryKeys.workspaceGroups,
+				grexQueryKeys.workspaceGroups,
 			);
 			const reviewIds = groups
 				?.find((g) => g.id === "review")
@@ -336,7 +336,7 @@ describe("useWorkspaceCommitLifecycle", () => {
 		});
 		await waitFor(() => {
 			const detail = queryClient.getQueryData<WorkspaceDetail | null>(
-				codewitQueryKeys.workspaceDetail("workspace-1"),
+				grexQueryKeys.workspaceDetail("workspace-1"),
 			);
 			expect(detail?.status).toBe("review");
 		});
@@ -353,7 +353,7 @@ describe("useWorkspaceCommitLifecycle", () => {
 			defaultOptions: { queries: { retry: false } },
 		});
 		queryClient.setQueryData<WorkspaceDetail | null>(
-			codewitQueryKeys.workspaceDetail("workspace-1"),
+			grexQueryKeys.workspaceDetail("workspace-1"),
 			{
 				id: "workspace-1",
 				activeSessionId: "session-after-close",
@@ -435,7 +435,7 @@ describe("useWorkspaceCommitLifecycle", () => {
 		});
 		for (const id of ["workspace-1", "workspace-2"]) {
 			queryClient.setQueryData<WorkspaceDetail | null>(
-				codewitQueryKeys.workspaceDetail(id),
+				grexQueryKeys.workspaceDetail(id),
 				{
 					id,
 					activeSessionId: `${id}-after-close`,
@@ -653,16 +653,16 @@ describe("useWorkspaceCommitLifecycle", () => {
 
 		await waitFor(() => {
 			expect(invalidateQueriesSpy).toHaveBeenCalledWith({
-				queryKey: codewitQueryKeys.workspaceGitActionStatus("workspace-1"),
+				queryKey: grexQueryKeys.workspaceGitActionStatus("workspace-1"),
 			});
 			expect(invalidateQueriesSpy).toHaveBeenCalledWith({
-				queryKey: codewitQueryKeys.workspaceForgeActionStatus("workspace-1"),
+				queryKey: grexQueryKeys.workspaceForgeActionStatus("workspace-1"),
 			});
 			expect(invalidateQueriesSpy).toHaveBeenCalledWith({
-				queryKey: codewitQueryKeys.workspaceDetail("workspace-1"),
+				queryKey: grexQueryKeys.workspaceDetail("workspace-1"),
 			});
 			expect(invalidateQueriesSpy).toHaveBeenCalledWith({
-				queryKey: codewitQueryKeys.workspaceGroups,
+				queryKey: grexQueryKeys.workspaceGroups,
 			});
 			expect(invalidateQueriesSpy).toHaveBeenCalledWith({
 				queryKey: ["workspaceChanges"],
@@ -671,7 +671,7 @@ describe("useWorkspaceCommitLifecycle", () => {
 		// Push doesn't change PR state — no workspaceChangeRequest invalidation
 		// (which would trigger a redundant `gh pr view`).
 		expect(invalidateQueriesSpy).not.toHaveBeenCalledWith({
-			queryKey: codewitQueryKeys.workspaceChangeRequest("workspace-1"),
+			queryKey: grexQueryKeys.workspaceChangeRequest("workspace-1"),
 		});
 		expect(pushToast).not.toHaveBeenCalled();
 	});
@@ -776,7 +776,7 @@ describe("useWorkspaceCommitLifecycle", () => {
 			defaultOptions: { queries: { retry: false } },
 		});
 		queryClient.setQueryData<ChangeRequestInfo | null>(
-			codewitQueryKeys.workspaceChangeRequest("workspace-1"),
+			grexQueryKeys.workspaceChangeRequest("workspace-1"),
 			() => ({
 				number: 53,
 				title: "Fix overflow",
@@ -786,14 +786,14 @@ describe("useWorkspaceCommitLifecycle", () => {
 			}),
 		);
 		queryClient.setQueryData<WorkspaceDetail | null>(
-			codewitQueryKeys.workspaceDetail("workspace-1"),
+			grexQueryKeys.workspaceDetail("workspace-1"),
 			{
 				id: "workspace-1",
 				status: "review",
 			} as unknown as WorkspaceDetail,
 		);
 		queryClient.setQueryData<WorkspaceGroup[]>(
-			codewitQueryKeys.workspaceGroups,
+			grexQueryKeys.workspaceGroups,
 			[
 				{
 					id: "review",
@@ -855,7 +855,7 @@ describe("useWorkspaceCommitLifecycle", () => {
 
 		// Optimistic move happens synchronously in handleInspectorCommitAction.
 		const groups = queryClient.getQueryData<WorkspaceGroup[]>(
-			codewitQueryKeys.workspaceGroups,
+			grexQueryKeys.workspaceGroups,
 		);
 		expect(groups?.find((g) => g.id === "done")?.rows.map((r) => r.id)).toEqual(
 			["workspace-1"],
@@ -865,12 +865,12 @@ describe("useWorkspaceCommitLifecycle", () => {
 		).toEqual([]);
 		expect(
 			queryClient.getQueryData<WorkspaceDetail | null>(
-				codewitQueryKeys.workspaceDetail("workspace-1"),
+				grexQueryKeys.workspaceDetail("workspace-1"),
 			)?.status,
 		).toBe("done");
 		expect(
 			queryClient.getQueryData<ChangeRequestInfo | null>(
-				codewitQueryKeys.workspaceChangeRequest("workspace-1"),
+				grexQueryKeys.workspaceChangeRequest("workspace-1"),
 			),
 		).toMatchObject({ state: "MERGED", isMerged: true });
 
@@ -953,7 +953,7 @@ describe("useWorkspaceCommitLifecycle", () => {
 		expect(apiMocks.mergeWorkspaceChangeRequest).not.toHaveBeenCalled();
 		await waitFor(() => {
 			expect(invalidateQueriesSpy).toHaveBeenCalledWith({
-				queryKey: codewitQueryKeys.workspaceForgeActionStatus("workspace-1"),
+				queryKey: grexQueryKeys.workspaceForgeActionStatus("workspace-1"),
 			});
 		});
 	});
@@ -1025,7 +1025,7 @@ describe("useWorkspaceCommitLifecycle", () => {
 		});
 		expect(
 			queryClient.getQueryData<ChangeRequestInfo | null>(
-				codewitQueryKeys.workspaceChangeRequest("workspace-1"),
+				grexQueryKeys.workspaceChangeRequest("workspace-1"),
 			),
 		).toMatchObject({ state: "MERGED", isMerged: true });
 	});
@@ -1148,7 +1148,7 @@ describe("useWorkspaceCommitLifecycle", () => {
 		expect(apiMocks.mergeWorkspaceChangeRequest).not.toHaveBeenCalled();
 		await waitFor(() => {
 			expect(invalidateQueriesSpy).toHaveBeenCalledWith({
-				queryKey: codewitQueryKeys.workspaceForgeActionStatus("workspace-1"),
+				queryKey: grexQueryKeys.workspaceForgeActionStatus("workspace-1"),
 			});
 		});
 	});
@@ -1178,10 +1178,10 @@ describe("useWorkspaceCommitLifecycle", () => {
 			{ id: "done", label: "Done", tone: "done", rows: [] },
 		] as WorkspaceGroup[];
 		queryClient.setQueryData(
-			codewitQueryKeys.workspaceDetail("workspace-1"),
+			grexQueryKeys.workspaceDetail("workspace-1"),
 			initialDetail,
 		);
-		queryClient.setQueryData(codewitQueryKeys.workspaceGroups, initialGroups);
+		queryClient.setQueryData(grexQueryKeys.workspaceGroups, initialGroups);
 
 		apiMocks.mergeWorkspaceChangeRequest.mockRejectedValueOnce(
 			new Error("GitHub merge failed"),
@@ -1221,7 +1221,7 @@ describe("useWorkspaceCommitLifecycle", () => {
 
 		await waitFor(() => {
 			const groups = queryClient.getQueryData<WorkspaceGroup[]>(
-				codewitQueryKeys.workspaceGroups,
+				grexQueryKeys.workspaceGroups,
 			);
 			expect(
 				groups?.find((g) => g.id === "review")?.rows.map((r) => r.id),
@@ -1232,7 +1232,7 @@ describe("useWorkspaceCommitLifecycle", () => {
 		});
 		expect(
 			queryClient.getQueryData<WorkspaceDetail | null>(
-				codewitQueryKeys.workspaceDetail("workspace-1"),
+				grexQueryKeys.workspaceDetail("workspace-1"),
 			)?.status,
 		).toBe("review");
 	});

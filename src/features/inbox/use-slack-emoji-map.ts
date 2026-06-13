@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { slackListEmoji } from "@/lib/api";
-import { codewitQueryKeys } from "@/lib/query-client";
+import { grexQueryKeys } from "@/lib/query-client";
 import { BUILTIN_EMOJI } from "@/lib/slack-emoji-builtin";
 import type { SlackEmoji } from "@/lib/slack-text";
 
@@ -23,7 +23,7 @@ export function useSlackEmojiMap(
 ): Record<string, SlackEmoji> {
 	const customQuery = useQuery({
 		queryKey: teamId
-			? codewitQueryKeys.slackEmojiMap(teamId)
+			? grexQueryKeys.slackEmojiMap(teamId)
 			: ["slackEmojiMap", "__none__"],
 		enabled: teamId !== null,
 		queryFn: async () => {

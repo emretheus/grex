@@ -4,9 +4,9 @@ import type {
 	WorkspaceSessionSummary,
 } from "@/lib/api";
 
-export const SIDEBAR_WIDTH_STORAGE_KEY = "codewit.workspaceSidebarWidth";
-export const INSPECTOR_WIDTH_STORAGE_KEY = "codewit.workspaceInspectorWidth";
-export const PREFERRED_EDITOR_STORAGE_KEY = "codewit.preferredEditorId";
+export const SIDEBAR_WIDTH_STORAGE_KEY = "grex.workspaceSidebarWidth";
+export const INSPECTOR_WIDTH_STORAGE_KEY = "grex.workspaceInspectorWidth";
+export const PREFERRED_EDITOR_STORAGE_KEY = "grex.preferredEditorId";
 export const DEFAULT_SIDEBAR_WIDTH = 336;
 export const MIN_SIDEBAR_WIDTH = 220;
 export const MAX_SIDEBAR_WIDTH = 520;

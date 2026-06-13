@@ -1,6 +1,6 @@
 //! Persistence for the stable (named-tunnel) companion URL.
 //!
-//! When the user allocates a permanent `remote-<random>.codewit.ai` hostname we
+//! When the user allocates a permanent `remote-<random>.grex.ai` hostname we
 //! persist everything needed to bring the same tunnel back up on the next app
 //! launch — so a paired phone keeps working at a fixed URL across restarts.
 //! Its mere presence is the auto-start signal (see `lib.rs` setup).
@@ -18,7 +18,7 @@ const KEY: &str = "app.companion_stable_url";
 pub struct StableUrl {
     /// Registry device id (used to revoke the hostname).
     pub device_id: String,
-    /// `remote-<random>.codewit.ai`.
+    /// `remote-<random>.grex.ai`.
     pub hostname: String,
     /// Registry revocation secret.
     pub secret: String,

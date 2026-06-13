@@ -1,7 +1,7 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { completeWorkspaceSetup } from "@/lib/api";
-import { codewitQueryKeys } from "@/lib/query-client";
+import { grexQueryKeys } from "@/lib/query-client";
 import { getScriptState, startScript } from "../script-store";
 
 type UseSetupAutoRunArgs = {
@@ -58,7 +58,7 @@ export function useSetupAutoRun({
 		}
 		void completeWorkspaceSetup(workspaceId).then(() => {
 			queryClient.invalidateQueries({
-				queryKey: codewitQueryKeys.workspaceDetail(workspaceId),
+				queryKey: grexQueryKeys.workspaceDetail(workspaceId),
 			});
 		});
 	}, [workspaceState, scriptsLoaded, hasScript, workspaceId, queryClient]);

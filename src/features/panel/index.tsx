@@ -7,7 +7,7 @@ import type {
 	WorkspaceDetail,
 	WorkspaceSessionSummary,
 } from "@/lib/api";
-import { CodewitProfiler } from "@/lib/dev-react-profiler";
+import { GrexProfiler } from "@/lib/dev-react-profiler";
 import type { ContextCard } from "@/lib/sources/types";
 import { cn } from "@/lib/utils";
 import type { WorkspaceScriptType } from "@/lib/workspace-script-actions";
@@ -147,7 +147,7 @@ export const WorkspacePanel = memo(function WorkspacePanel({
 	}, []);
 
 	return (
-		<CodewitProfiler id="WorkspacePanel">
+		<GrexProfiler id="WorkspacePanel">
 			<div className="flex min-h-0 flex-1 flex-col bg-panel">
 				<WorkspacePanelHeader
 					workspace={workspace}
@@ -224,6 +224,6 @@ export const WorkspacePanel = memo(function WorkspacePanel({
 					)}
 				</div>
 			</div>
-		</CodewitProfiler>
+		</GrexProfiler>
 	);
 });

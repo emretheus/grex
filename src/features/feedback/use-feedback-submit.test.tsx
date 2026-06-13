@@ -7,7 +7,7 @@ import type {
 	PendingCreatedWorkspaceSubmit,
 } from "@/features/conversation";
 import type { AgentModelOption, FinalizeWorkspaceResponse } from "@/lib/api";
-import { codewitQueryKeys } from "@/lib/query-client";
+import { grexQueryKeys } from "@/lib/query-client";
 import { DEFAULT_SETTINGS } from "@/lib/settings";
 
 vi.mock("@/features/workspace-start/create-workspace", () => ({
@@ -39,7 +39,7 @@ function setup({
 	const queryClient = new QueryClient({
 		defaultOptions: { queries: { retry: false } },
 	});
-	queryClient.setQueryData(codewitQueryKeys.agentModelSections, [
+	queryClient.setQueryData(grexQueryKeys.agentModelSections, [
 		{ id: "s", label: "Section", options: models },
 	]);
 	const selectWorkspace = vi.fn();

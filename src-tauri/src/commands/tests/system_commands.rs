@@ -9,13 +9,13 @@ use crate::commands::system_commands::{CliInstallState, CliStatus, DataInfo};
 fn cli_status_serializes_camel_case() {
     let status = CliStatus {
         installed: true,
-        install_path: Some("/usr/local/bin/codewit-dev".into()),
+        install_path: Some("/usr/local/bin/grex-dev".into()),
         build_mode: "development".into(),
         install_state: CliInstallState::Managed,
     };
     let value = serde_json::to_value(&status).unwrap();
     assert!(value.get("installed").is_some());
-    assert_eq!(value["installPath"], "/usr/local/bin/codewit-dev");
+    assert_eq!(value["installPath"], "/usr/local/bin/grex-dev");
     assert_eq!(value["buildMode"], "development");
     assert_eq!(value["installState"], "managed");
     assert!(value.get("install_path").is_none());
@@ -39,12 +39,12 @@ fn cli_status_missing_install_path_is_null() {
 fn data_info_serializes_camel_case() {
     let info = DataInfo {
         data_mode: "development".into(),
-        data_dir: "/tmp/codewit".into(),
-        db_path: "/tmp/codewit/codewit.db".into(),
+        data_dir: "/tmp/grex".into(),
+        db_path: "/tmp/grex/grex.db".into(),
     };
     let value = serde_json::to_value(&info).unwrap();
     assert_eq!(value["dataMode"], "development");
-    assert_eq!(value["dataDir"], "/tmp/codewit");
-    assert_eq!(value["dbPath"], "/tmp/codewit/codewit.db");
+    assert_eq!(value["dataDir"], "/tmp/grex");
+    assert_eq!(value["dbPath"], "/tmp/grex/grex.db");
     assert!(value.get("data_mode").is_none());
 }

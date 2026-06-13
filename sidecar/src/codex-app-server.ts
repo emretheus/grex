@@ -74,11 +74,11 @@ export interface CodexAppServerOptions {
 const DEFAULT_REQUEST_TIMEOUT_MS = 20_000;
 const CODEX_APP_SERVER_ARGS = [
 	"app-server",
-	// Codewit already owns session lifecycle + UI notifications. Inheriting the
+	// Grex already owns session lifecycle + UI notifications. Inheriting the
 	// user's global Codex `notify` config can launch SkyComputerUseClient from
 	// the bundled computer-use plugin, which crashes on some macOS versions with
 	// `CODESIGNING / Launch Constraint Violation`. Disable native notify hooks
-	// for Codewit's embedded app-server process only.
+	// for Grex's embedded app-server process only.
 	"-c",
 	"notify=[]",
 ] as const;

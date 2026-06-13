@@ -45,7 +45,7 @@ export function enqueueComposerPrefill(
 			try {
 				sub(prefill);
 			} catch (error) {
-				console.error("[codewit] composer prefill subscriber threw", error);
+				console.error("[grex] composer prefill subscriber threw", error);
 			}
 		}
 		return;

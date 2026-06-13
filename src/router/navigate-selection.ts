@@ -15,7 +15,7 @@ import {
 	selectionToPath,
 } from "./location-mapping";
 
-// Push/replace the selection into the router. Always `replace` — Codewit has no
+// Push/replace the selection into the router. Always `replace` — Grex has no
 // browser back/forward affordance and the memory history stack should not grow
 // (matches the Stage 1 mirror). The discriminated `to` union forces per-arm
 // dispatch so TanStack's `NavigateOptions` gets the matching `params`/`search`.
@@ -162,7 +162,7 @@ export function installLocationPersistence(
 			if (next) saveSettings(next);
 		}, PERSIST_DEBOUNCE_MS);
 	});
-	// A real app quit (Cmd+Q → `codewit://quit-requested` → process exit) never
+	// A real app quit (Cmd+Q → `grex://quit-requested` → process exit) never
 	// runs the cleanup below, so a navigation in the last PERSIST_DEBOUNCE_MS would
 	// never be written. `pagehide` / `visibilitychange → hidden` fire on webview
 	// teardown / backgrounding — flush the pending location synchronously there,

@@ -101,7 +101,7 @@ struct ProcessHandle {
     /// rerun / kill_others / kill_all paths) read this under lock and
     /// `killpg(SIGKILL)` it so the cleanup process doesn't outlive the
     /// user's intent — otherwise restarting a workspace or quitting
-    /// Codewit would leak the background sleep / docker compose down.
+    /// Grex would leak the background sleep / docker compose down.
     stop_pgid: Arc<Mutex<Option<Pid>>>,
 }
 
@@ -196,7 +196,7 @@ impl ScriptProcessManager {
 
     /// Signal every live script and terminal handle the manager currently
     /// owns. Used by the graceful-quit path so Run-tab scripts and
-    /// embedded-terminal PTY sessions don't outlive Codewit as orphan
+    /// embedded-terminal PTY sessions don't outlive Grex as orphan
     /// process trees. Returns the number of handles that were signaled.
     ///
     /// Mirrors `kill_others_in_repo`'s lock discipline: snapshot the
@@ -379,23 +379,23 @@ fn run_stop_command(
         .env("TERM", "xterm-256color")
         .env("FORCE_COLOR", "1")
         .env("CLICOLOR_FORCE", "1")
-        .env("CODEWIT_ROOT_PATH", &ctx.root_path)
+        .env("GREX_ROOT_PATH", &ctx.root_path)
         .stdin(Stdio::null())
         .stdout(Stdio::piped())
         .stderr(Stdio::piped());
 
     if let Some(wp) = &ctx.workspace_path {
-        cmd.env("CODEWIT_WORKSPACE_PATH", wp);
+        cmd.env("GREX_WORKSPACE_PATH", wp);
     }
     if let Some(wn) = &ctx.workspace_name {
-        cmd.env("CODEWIT_WORKSPACE_NAME", wn);
+        cmd.env("GREX_WORKSPACE_NAME", wn);
     }
     if let Some(db) = &ctx.default_branch {
-        cmd.env("CODEWIT_DEFAULT_BRANCH", db);
+        cmd.env("GREX_DEFAULT_BRANCH", db);
     }
     if let (Some(base), Some(count)) = (ctx.port_base, ctx.port_count) {
-        cmd.env("CODEWIT_PORT", base.to_string());
-        cmd.env("CODEWIT_PORT_COUNT", count.to_string());
+        cmd.env("GREX_PORT", base.to_string());
+        cmd.env("GREX_PORT_COUNT", count.to_string());
     }
 
     // Own process group (Unix) so a concurrent Force Stop can SIGKILL the whole
@@ -525,7 +525,7 @@ fn graceful_kill(handle: ProcessHandle) {
         let _ = stop.event_tx.send(ScriptEvent::Stopping);
         let _ = stop.event_tx.send(ScriptEvent::Stdout {
             data: format!(
-                "\r\n\x1b[2m[Codewit] Running stop.command: {}\x1b[0m\r\n",
+                "\r\n\x1b[2m[Grex] Running stop.command: {}\x1b[0m\r\n",
                 stop.command
             ),
         });
@@ -540,14 +540,14 @@ fn graceful_kill(handle: ProcessHandle) {
         let elapsed_ms = started.elapsed().as_millis();
         let footer = match outcome {
             StopOutcome::CleanExit => format!(
-                "\r\n\x1b[2m[Codewit] stop.command exited cleanly in {elapsed_ms}ms\x1b[0m\r\n"
+                "\r\n\x1b[2m[Grex] stop.command exited cleanly in {elapsed_ms}ms\x1b[0m\r\n"
             ),
             StopOutcome::NonZeroExit(code) => format!(
-                "\r\n\x1b[33m[Codewit] stop.command exited with code {} after {elapsed_ms}ms\x1b[0m\r\n",
+                "\r\n\x1b[33m[Grex] stop.command exited with code {} after {elapsed_ms}ms\x1b[0m\r\n",
                 code.map(|c| c.to_string()).unwrap_or_else(|| "?".to_string())
             ),
             StopOutcome::SpawnFailed(err) => format!(
-                "\r\n\x1b[33m[Codewit] stop.command failed to spawn ({err}) — proceeding with force-kill\x1b[0m\r\n"
+                "\r\n\x1b[33m[Grex] stop.command failed to spawn ({err}) — proceeding with force-kill\x1b[0m\r\n"
             ),
         };
         let _ = stop.event_tx.send(ScriptEvent::Stdout { data: footer });
@@ -564,12 +564,12 @@ pub struct ScriptContext {
     pub workspace_name: Option<String>,
     pub default_branch: Option<String>,
     /// First port in the workspace's deterministic port block.
-    /// Surfaces to scripts as `CODEWIT_PORT`. `None` for non-workspace
+    /// Surfaces to scripts as `GREX_PORT`. `None` for non-workspace
     /// runs (onboarding auth terminals, etc.) where there is no
     /// workspace to anchor a stable range to.
     pub port_base: Option<u16>,
     /// Size of the port block starting at `port_base`. Surfaces to
-    /// scripts as `CODEWIT_PORT_COUNT`. Always paired with `port_base`.
+    /// scripts as `GREX_PORT_COUNT`. Always paired with `port_base`.
     pub port_count: Option<u16>,
 }
 
@@ -595,19 +595,19 @@ fn wrapped_script_for_shell(shell_path: &str, script: &str) -> String {
 
     match shell_name {
         Some("fish") => format!(
-            "eval {}; set __codewit_ec $status; printf '\\r\\n\\033[2m[Completed with exit code %d]\\033[0m\\r\\n' $__codewit_ec; exit $__codewit_ec\n",
+            "eval {}; set __grex_ec $status; printf '\\r\\n\\033[2m[Completed with exit code %d]\\033[0m\\r\\n' $__grex_ec; exit $__grex_ec\n",
             fish_shell_escape(script),
         ),
         Some("powershell") | Some("pwsh") => format!(
             // Run the user's command, then capture the exit code. $LASTEXITCODE
             // is set by native executables; for pure-PowerShell statements it
             // stays null, so fall back to 0 on success ($?), 1 otherwise.
-            "{script}\r\n$__codewit_ec = if ($null -ne $LASTEXITCODE) {{ $LASTEXITCODE }} elseif ($?) {{ 0 }} else {{ 1 }}; Write-Host (\"`r`n{esc}[2m[Completed with exit code {{0}}]{esc}[0m`r`n\" -f $__codewit_ec); exit $__codewit_ec\r\n",
+            "{script}\r\n$__grex_ec = if ($null -ne $LASTEXITCODE) {{ $LASTEXITCODE }} elseif ($?) {{ 0 }} else {{ 1 }}; Write-Host (\"`r`n{esc}[2m[Completed with exit code {{0}}]{esc}[0m`r`n\" -f $__grex_ec); exit $__grex_ec\r\n",
             script = script,
             esc = "$([char]27)"
         ),
         _ => format!(
-            "eval {}; __codewit_ec=$?; printf '\\r\\n\\033[2m[Completed with exit code %d]\\033[0m\\r\\n' $__codewit_ec; exit $__codewit_ec\n",
+            "eval {}; __grex_ec=$?; printf '\\r\\n\\033[2m[Completed with exit code %d]\\033[0m\\r\\n' $__grex_ec; exit $__grex_ec\n",
             shell_escape(script),
         ),
     }
@@ -797,7 +797,7 @@ pub(crate) fn run_script_with_shell(
         .env("COLORTERM", "truecolor")
         .env("FORCE_COLOR", "3")
         .env("CLICOLOR_FORCE", "1")
-        .env("CODEWIT_ROOT_PATH", &context.root_path);
+        .env("GREX_ROOT_PATH", &context.root_path);
 
     // Prevent history pollution from the interactive shell (Unix shells only;
     // these variables are POSIX-shell concepts and the value is a Unix path).
@@ -809,20 +809,20 @@ pub(crate) fn run_script_with_shell(
     }
 
     if let Some(wp) = &context.workspace_path {
-        cmd.env("CODEWIT_WORKSPACE_PATH", wp);
+        cmd.env("GREX_WORKSPACE_PATH", wp);
     }
     if let Some(wn) = &context.workspace_name {
-        cmd.env("CODEWIT_WORKSPACE_NAME", wn);
+        cmd.env("GREX_WORKSPACE_NAME", wn);
     }
     if let Some(db) = &context.default_branch {
-        cmd.env("CODEWIT_DEFAULT_BRANCH", db);
+        cmd.env("GREX_DEFAULT_BRANCH", db);
     }
     // Per-workspace port range. Only emit both vars together so scripts
-    // can rely on `CODEWIT_PORT_COUNT` being present whenever `CODEWIT_PORT`
+    // can rely on `GREX_PORT_COUNT` being present whenever `GREX_PORT`
     // is. Both are absent for non-workspace runs (onboarding terminals).
     if let (Some(base), Some(count)) = (context.port_base, context.port_count) {
-        cmd.env("CODEWIT_PORT", base.to_string());
-        cmd.env("CODEWIT_PORT_COUNT", count.to_string());
+        cmd.env("GREX_PORT", base.to_string());
+        cmd.env("GREX_PORT_COUNT", count.to_string());
     }
 
     // Open a PTY, make the child a session + controlling-terminal leader, and
@@ -1822,12 +1822,12 @@ mod tests {
     }
 
     /// End-to-end: a script with a populated `ScriptContext.port_base`
-    /// sees `CODEWIT_PORT` / `CODEWIT_PORT_COUNT` in its env, and the
-    /// existing env vars (CODEWIT_ROOT_PATH, CODEWIT_WORKSPACE_NAME, …)
+    /// sees `GREX_PORT` / `GREX_PORT_COUNT` in its env, and the
+    /// existing env vars (GREX_ROOT_PATH, GREX_WORKSPACE_NAME, …)
     /// keep working alongside the new ones.
     #[test]
-    fn script_env_includes_codewit_port_vars_when_range_present() {
-        let _env = crate::testkit::TestEnv::new("script-env-includes-codewit-port-vars-whe");
+    fn script_env_includes_grex_port_vars_when_range_present() {
+        let _env = crate::testkit::TestEnv::new("script-env-includes-grex-port-vars-whe");
         let mgr = ScriptProcessManager::new();
         let dir = std::env::temp_dir();
         let ctx = ScriptContext {
@@ -1863,8 +1863,8 @@ mod tests {
             // PTY also writes to stdout.
             Some(
                 "printf 'PORT=%s|COUNT=%s|NAME=%s|ROOT=%s\\n' \
-                  \"$CODEWIT_PORT\" \"$CODEWIT_PORT_COUNT\" \
-                  \"$CODEWIT_WORKSPACE_NAME\" \"$CODEWIT_ROOT_PATH\"",
+                  \"$GREX_PORT\" \"$GREX_PORT_COUNT\" \
+                  \"$GREX_WORKSPACE_NAME\" \"$GREX_ROOT_PATH\"",
             ),
             dir.to_str().unwrap(),
             &ctx,
@@ -1893,20 +1893,20 @@ mod tests {
         }
         assert!(
             combined.contains("PORT=55100|COUNT=10|NAME=ws-port"),
-            "expected CODEWIT_PORT/CODEWIT_PORT_COUNT alongside legacy env; got: {combined:?}"
+            "expected GREX_PORT/GREX_PORT_COUNT alongside legacy env; got: {combined:?}"
         );
         assert!(
             combined.contains(&format!("ROOT={}", dir.display())),
-            "expected CODEWIT_ROOT_PATH still injected; got: {combined:?}"
+            "expected GREX_ROOT_PATH still injected; got: {combined:?}"
         );
     }
 
     /// When the workspace has no allocated range, the new env vars are
     /// absent (vs. set to empty strings) so scripts that fall back with
-    /// `${CODEWIT_PORT:-3000}` keep their default.
+    /// `${GREX_PORT:-3000}` keep their default.
     #[test]
-    fn script_env_omits_codewit_port_vars_when_range_missing() {
-        let _env = crate::testkit::TestEnv::new("script-env-omits-codewit-port-vars-when-r");
+    fn script_env_omits_grex_port_vars_when_range_missing() {
+        let _env = crate::testkit::TestEnv::new("script-env-omits-grex-port-vars-when-r");
         let mgr = ScriptProcessManager::new();
         let dir = std::env::temp_dir();
         let ctx = ScriptContext {
@@ -1942,7 +1942,7 @@ mod tests {
             // expansion between two delimiters so we can tell "unset"
             // (PORT[]COUNT[]) apart from "set to empty" (PORT[set]COUNT[set])
             // even after the wrapper echoes the literal source line back.
-            Some("printf 'PORT[%s]COUNT[%s]EOM\\n' \"${CODEWIT_PORT+set}\" \"${CODEWIT_PORT_COUNT+set}\""),
+            Some("printf 'PORT[%s]COUNT[%s]EOM\\n' \"${GREX_PORT+set}\" \"${GREX_PORT_COUNT+set}\""),
             dir.to_str().unwrap(),
             &ctx,
             ch,
@@ -1974,7 +1974,7 @@ mod tests {
         }
         assert!(
             combined.contains("PORT[]COUNT[]EOM"),
-            "expected CODEWIT_PORT/CODEWIT_PORT_COUNT to be unset; got: {combined:?}"
+            "expected GREX_PORT/GREX_PORT_COUNT to be unset; got: {combined:?}"
         );
     }
 
@@ -2062,7 +2062,7 @@ mod tests {
         let (ch, rx) = capture_events();
 
         let stop = ScriptStop {
-            command: "echo CODEWIT_STOP_CALLED".to_string(),
+            command: "echo GREX_STOP_CALLED".to_string(),
             event_tx: ch.clone(),
             ctx: ctx.clone(),
             working_dir: std::env::temp_dir().display().to_string(),
@@ -2248,7 +2248,7 @@ mod cross_platform_tests {
     fn wrapped_script_uses_fish_status_for_fish_shell() {
         assert_eq!(
             wrapped_script_for_shell("/opt/homebrew/bin/fish", "echo \"it's\""),
-            "eval \"echo \\\"it's\\\"\"; set __codewit_ec $status; printf '\\r\\n\\033[2m[Completed with exit code %d]\\033[0m\\r\\n' $__codewit_ec; exit $__codewit_ec\n",
+            "eval \"echo \\\"it's\\\"\"; set __grex_ec $status; printf '\\r\\n\\033[2m[Completed with exit code %d]\\033[0m\\r\\n' $__grex_ec; exit $__grex_ec\n",
         );
     }
 
@@ -2257,7 +2257,7 @@ mod cross_platform_tests {
         let w = wrapped_script_for_shell("C:/Program Files/PowerShell/7/pwsh.exe", "echo hi");
         assert!(w.starts_with("echo hi"));
         assert!(w.contains("$LASTEXITCODE"));
-        assert!(w.contains("exit $__codewit_ec"));
+        assert!(w.contains("exit $__grex_ec"));
     }
 
     // ── unknown-key operations are silent no-ops ───────────────────────────

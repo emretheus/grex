@@ -5,7 +5,7 @@
 //!
 //! ## Tool catalog (Phase B)
 //!
-//! This MCP surface exposes Codewit's domain operations that don't
+//! This MCP surface exposes Grex's domain operations that don't
 //! require Tauri runtime state (no `AppHandle`, no `ScriptProcessManager`,
 //! no `ActiveStreams`).
 //!
@@ -83,7 +83,7 @@ fn handle_initialize(request: &Value) -> Value {
             "protocolVersion": "2025-06-18",
             "capabilities": { "tools": {} },
             "serverInfo": {
-                "name": "codewit",
+                "name": "grex",
                 "version": "0.1.0"
             }
         }

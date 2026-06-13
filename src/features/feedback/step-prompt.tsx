@@ -3,14 +3,14 @@ import { useEffect, useMemo } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import type { ExistingCodewitRepo } from "@/lib/api";
+import type { ExistingGrexRepo } from "@/lib/api";
 
 import { buildPromptTemplate } from "./helpers";
 
 type StepPromptProps = {
 	input: string;
 	draftPrompt: string;
-	existing: ExistingCodewitRepo | null;
+	existing: ExistingGrexRepo | null;
 	onEditPrompt: (prompt: string) => void;
 	onSubmit: () => void;
 };
@@ -40,7 +40,7 @@ export function StepPrompt({
 		<div className="flex flex-col gap-3">
 			<p className="text-small leading-snug text-muted-foreground">
 				Tweak this if you want — it's what the agent starts with.
-				{existing ? " Reusing your local codewit repo." : null}
+				{existing ? " Reusing your local grex repo." : null}
 			</p>
 
 			<Textarea

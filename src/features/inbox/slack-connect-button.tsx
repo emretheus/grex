@@ -8,7 +8,7 @@ import {
 	slackImportFromDesktop,
 } from "@/lib/api";
 import { isMac } from "@/lib/platform";
-import { codewitQueryKeys } from "@/lib/query-client";
+import { grexQueryKeys } from "@/lib/query-client";
 import { cn } from "@/lib/utils";
 import { useWorkspaceToast } from "@/lib/workspace-toast-context";
 
@@ -157,10 +157,10 @@ export function useSlackImportMutation(opts?: {
 			for (const w of result.alreadyConnected) teamsToRefresh.add(w.teamId);
 			for (const teamId of teamsToRefresh) {
 				void queryClient.invalidateQueries({
-					queryKey: codewitQueryKeys.slackInbox(teamId),
+					queryKey: grexQueryKeys.slackInbox(teamId),
 				});
 				void queryClient.invalidateQueries({
-					queryKey: codewitQueryKeys.slackEmojiMap(teamId),
+					queryKey: grexQueryKeys.slackEmojiMap(teamId),
 				});
 			}
 			// `SlackWorkspacesChanged` already invalidates `slackWorkspaces`
@@ -168,7 +168,7 @@ export function useSlackImportMutation(opts?: {
 			// the success path self-contained regardless of event-bridge
 			// timing.
 			void queryClient.invalidateQueries({
-				queryKey: codewitQueryKeys.slackWorkspaces,
+				queryKey: grexQueryKeys.slackWorkspaces,
 			});
 			const first = result.imported[0] ?? result.alreadyConnected[0];
 			if (first) opts?.onImported?.(first);

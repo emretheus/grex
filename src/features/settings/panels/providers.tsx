@@ -8,7 +8,7 @@ import {
 } from "@/components/icons";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { getAgentLoginStatus, getAgentVersions } from "@/lib/api";
-import { codewitQueryKeys } from "@/lib/query-client";
+import { grexQueryKeys } from "@/lib/query-client";
 import { SettingsGroup } from "../components/settings-row";
 import { AgentProxyPanel, ClaudeCustomProvidersPanel } from "./model-providers";
 import { CursorCardBody } from "./providers/cursor-card-body";
@@ -22,13 +22,13 @@ import { ProviderConfigRow, ProviderRow } from "./providers/provider-row";
 // SettingsDialog renders outside AppShell's TooltipProvider, so wrap our own.
 export function ProvidersPanel() {
 	const statusQuery = useQuery({
-		queryKey: codewitQueryKeys.agentLoginStatus,
+		queryKey: grexQueryKeys.agentLoginStatus,
 		queryFn: getAgentLoginStatus,
 	});
 	const status = statusQuery.data;
 	// CLI versions change only across app builds — cache for the session.
 	const versionsQuery = useQuery({
-		queryKey: codewitQueryKeys.agentVersions,
+		queryKey: grexQueryKeys.agentVersions,
 		queryFn: getAgentVersions,
 		staleTime: Number.POSITIVE_INFINITY,
 	});

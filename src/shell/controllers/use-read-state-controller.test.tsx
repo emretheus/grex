@@ -7,7 +7,7 @@ import type {
 	WorkspaceGroup,
 	WorkspaceSessionSummary,
 } from "@/lib/api";
-import { codewitQueryKeys } from "@/lib/query-client";
+import { grexQueryKeys } from "@/lib/query-client";
 import { resetSidebarMutationGate } from "@/lib/sidebar-mutation-gate";
 import { useReadStateController } from "./use-read-state-controller";
 
@@ -64,7 +64,7 @@ function makeDetail(
 		id,
 		title: `Workspace ${id}`,
 		repoId: "repo-1",
-		repoName: "codewit",
+		repoName: "grex",
 		repoInitials: "HE",
 		repoIconSrc: null,
 		remote: "origin",
@@ -108,7 +108,7 @@ function makeGroups(rowOverrides: {
 				{
 					id: rowOverrides.id,
 					title: `Workspace ${rowOverrides.id}`,
-					repoName: "codewit",
+					repoName: "grex",
 					repoInitials: "HE",
 					state: "ready",
 					status: "in-progress",
@@ -143,11 +143,11 @@ function seedCacheForWorkspace(
 	detailOverrides: Partial<WorkspaceDetail> = {},
 ) {
 	queryClient.setQueryData<WorkspaceSessionSummary[]>(
-		codewitQueryKeys.workspaceSessions(workspaceId),
+		grexQueryKeys.workspaceSessions(workspaceId),
 		sessions,
 	);
 	queryClient.setQueryData<WorkspaceDetail>(
-		codewitQueryKeys.workspaceDetail(workspaceId),
+		grexQueryKeys.workspaceDetail(workspaceId),
 		makeDetail(workspaceId, {
 			hasUnread: true,
 			workspaceUnread: 1,
@@ -156,7 +156,7 @@ function seedCacheForWorkspace(
 		}),
 	);
 	queryClient.setQueryData<WorkspaceGroup[]>(
-		codewitQueryKeys.workspaceGroups,
+		grexQueryKeys.workspaceGroups,
 		makeGroups({
 			id: workspaceId,
 			hasUnread: true,
@@ -221,12 +221,12 @@ describe("useReadStateController mark-read effect", () => {
 
 		// Optimistic patches applied before the IPC resolved.
 		const sessions = queryClient.getQueryData<WorkspaceSessionSummary[]>(
-			codewitQueryKeys.workspaceSessions("ws-1"),
+			grexQueryKeys.workspaceSessions("ws-1"),
 		);
 		expect(sessions?.find((s) => s.id === "session-A")?.unreadCount).toBe(0);
 
 		const detail = queryClient.getQueryData<WorkspaceDetail>(
-			codewitQueryKeys.workspaceDetail("ws-1"),
+			grexQueryKeys.workspaceDetail("ws-1"),
 		);
 		expect(detail?.workspaceUnread).toBe(0);
 		expect(detail?.unreadSessionCount).toBe(0);
@@ -248,13 +248,13 @@ describe("useReadStateController mark-read effect", () => {
 		// Capture the exact previous snapshots the controller will save
 		// for rollback — the assertion is "post-rollback === pre-call".
 		const previousSessions = queryClient.getQueryData(
-			codewitQueryKeys.workspaceSessions("ws-1"),
+			grexQueryKeys.workspaceSessions("ws-1"),
 		);
 		const previousDetail = queryClient.getQueryData(
-			codewitQueryKeys.workspaceDetail("ws-1"),
+			grexQueryKeys.workspaceDetail("ws-1"),
 		);
 		const previousGroups = queryClient.getQueryData(
-			codewitQueryKeys.workspaceGroups,
+			grexQueryKeys.workspaceGroups,
 		);
 
 		// Silence the controller's `console.error` so the rejection
@@ -274,12 +274,12 @@ describe("useReadStateController mark-read effect", () => {
 		});
 
 		expect(
-			queryClient.getQueryData(codewitQueryKeys.workspaceSessions("ws-1")),
+			queryClient.getQueryData(grexQueryKeys.workspaceSessions("ws-1")),
 		).toEqual(previousSessions);
 		expect(
-			queryClient.getQueryData(codewitQueryKeys.workspaceDetail("ws-1")),
+			queryClient.getQueryData(grexQueryKeys.workspaceDetail("ws-1")),
 		).toEqual(previousDetail);
-		expect(queryClient.getQueryData(codewitQueryKeys.workspaceGroups)).toEqual(
+		expect(queryClient.getQueryData(grexQueryKeys.workspaceGroups)).toEqual(
 			previousGroups,
 		);
 
@@ -393,7 +393,7 @@ describe("useReadStateController mark-read effect", () => {
 		expect(apiMocks.markSessionRead).not.toHaveBeenCalled();
 		// No optimistic patch landed on the selected workspace's caches.
 		const sessions = queryClient.getQueryData<WorkspaceSessionSummary[]>(
-			codewitQueryKeys.workspaceSessions("ws-1"),
+			grexQueryKeys.workspaceSessions("ws-1"),
 		);
 		expect(sessions?.find((s) => s.id === "session-A")?.unreadCount).toBe(2);
 
@@ -407,7 +407,7 @@ describe("useReadStateController mark-read effect", () => {
 			expect(apiMocks.markSessionRead).toHaveBeenCalledWith("session-A"),
 		);
 		const patched = queryClient.getQueryData<WorkspaceSessionSummary[]>(
-			codewitQueryKeys.workspaceSessions("ws-1"),
+			grexQueryKeys.workspaceSessions("ws-1"),
 		);
 		expect(patched?.find((s) => s.id === "session-A")?.unreadCount).toBe(0);
 	});
@@ -484,7 +484,7 @@ describe("useReadStateController mark-read effect", () => {
 		await waitFor(() => expect(apiMocks.markSessionRead).toHaveBeenCalled());
 
 		const detail = queryClient.getQueryData<WorkspaceDetail>(
-			codewitQueryKeys.workspaceDetail("ws-1"),
+			grexQueryKeys.workspaceDetail("ws-1"),
 		);
 		// session-A is now read but session-B still unread.
 		expect(detail?.unreadSessionCount).toBe(1);

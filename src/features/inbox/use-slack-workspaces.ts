@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { slackListWorkspaces } from "@/lib/api";
-import { codewitQueryKeys, PERSIST_META } from "@/lib/query-client";
+import { grexQueryKeys, PERSIST_META } from "@/lib/query-client";
 
 /** Lightweight wrapper around `slack_list_workspaces`. Cache is bumped by
  *  the `slackWorkspacesChanged` UI-mutation event (Connect / Disconnect),
@@ -15,7 +15,7 @@ import { codewitQueryKeys, PERSIST_META } from "@/lib/query-client";
  *  background per `refetchOnWindowFocus`. */
 export function useSlackWorkspaces() {
 	return useQuery({
-		queryKey: codewitQueryKeys.slackWorkspaces,
+		queryKey: grexQueryKeys.slackWorkspaces,
 		queryFn: slackListWorkspaces,
 		staleTime: 0,
 		meta: PERSIST_META,

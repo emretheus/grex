@@ -3,8 +3,8 @@
 //! reload. Output is the raw `ThreadMessageLike` / JSON form — the
 //! `stabilize` sibling module converts it to snapshot-stable shape.
 
-use codewit_lib::pipeline::types::{HistoricalRecord, ThreadMessageLike};
-use codewit_lib::pipeline::MessagePipeline;
+use grex_lib::pipeline::types::{HistoricalRecord, ThreadMessageLike};
+use grex_lib::pipeline::MessagePipeline;
 use serde_json::Value;
 
 /// A single emission observed while replaying stream events. Kept in raw
@@ -36,7 +36,7 @@ pub struct StreamReplayFingerprint {
 }
 
 pub fn replay_stream_events(provider: &str, events: &[Value]) -> StreamReplayFingerprint {
-    use codewit_lib::pipeline::PipelineEmit;
+    use grex_lib::pipeline::PipelineEmit;
 
     let mut pipeline = MessagePipeline::new(provider, "test-model", "ctx", "sess");
     let mut emissions: Vec<RawStreamEmission> = Vec::new();

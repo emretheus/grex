@@ -368,7 +368,7 @@ pub fn list_inbox_items(
     let draft_filter = filters.as_ref().and_then(|filters| filters.draft);
 
     tracing::debug!(
-        target: "codewit::inbox",
+        target: "grex::inbox",
         login,
         ?toggles,
         ?state,
@@ -405,7 +405,7 @@ pub fn list_inbox_items(
             );
             match fetch_search(login, &q, &cursor_entry.cursor, sort_qual, limit)? {
                 FetchOutcome::Auth => {
-                    tracing::warn!(target: "codewit::inbox", login, "issues search: auth required");
+                    tracing::warn!(target: "grex::inbox", login, "issues search: auth required");
                     return Ok(InboxPage {
                         items: Vec::new(),
                         next_cursor: None,
@@ -413,7 +413,7 @@ pub fn list_inbox_items(
                 }
                 FetchOutcome::Ok(page) => {
                     tracing::debug!(
-                        target: "codewit::inbox",
+                        target: "grex::inbox",
                         login,
                         fetched = page.nodes.len(),
                         has_next = page.has_next_page,
@@ -458,7 +458,7 @@ pub fn list_inbox_items(
             );
             match fetch_search(login, &q, &cursor_entry.cursor, sort_qual, limit)? {
                 FetchOutcome::Auth => {
-                    tracing::warn!(target: "codewit::inbox", login, "prs search: auth required");
+                    tracing::warn!(target: "grex::inbox", login, "prs search: auth required");
                     return Ok(InboxPage {
                         items: Vec::new(),
                         next_cursor: None,
@@ -466,7 +466,7 @@ pub fn list_inbox_items(
                 }
                 FetchOutcome::Ok(page) => {
                     tracing::debug!(
-                        target: "codewit::inbox",
+                        target: "grex::inbox",
                         login,
                         fetched = page.nodes.len(),
                         has_next = page.has_next_page,
@@ -503,11 +503,11 @@ pub fn list_inbox_items(
             limit,
         )? {
             FetchOutcome::Auth => {
-                tracing::warn!(target: "codewit::inbox", login, "discussions search: auth required");
+                tracing::warn!(target: "grex::inbox", login, "discussions search: auth required");
             }
             FetchOutcome::Ok(page) => {
                 tracing::debug!(
-                    target: "codewit::inbox",
+                    target: "grex::inbox",
                     login,
                     fetched = page.nodes.len(),
                     has_next = page.has_next_page,
@@ -542,7 +542,7 @@ pub fn list_inbox_items(
     };
 
     tracing::debug!(
-        target: "codewit::inbox",
+        target: "grex::inbox",
         login,
         returned = items.len(),
         has_next_cursor = next_cursor.is_some(),
@@ -583,7 +583,7 @@ pub fn list_repo_labels(login: &str, repos: &[String]) -> Result<Vec<ForgeLabelO
             Ok(None) => continue,
             Err(error) => {
                 tracing::warn!(
-                    target: "codewit::inbox",
+                    target: "grex::inbox",
                     login,
                     repo,
                     error = %error,
@@ -596,7 +596,7 @@ pub fn list_repo_labels(login: &str, repos: &[String]) -> Result<Vec<ForgeLabelO
             Ok(labels) => labels,
             Err(error) => {
                 tracing::warn!(
-                    target: "codewit::inbox",
+                    target: "grex::inbox",
                     login,
                     repo,
                     error = %error,
@@ -1753,7 +1753,7 @@ mod tests {
             },
             Some(&cursor),
             20,
-            Some("emretheus/codewit"),
+            Some("emretheus/grex"),
             None,
         )
         .unwrap();
@@ -1816,15 +1816,15 @@ mod tests {
     #[test]
     fn exact_reference_repo_scope_is_case_insensitive() {
         assert!(!repo_filters_exact_reference(
-            Some("emretheus/codewit"),
-            "Dohooo/Codewit",
+            Some("emretheus/grex"),
+            "EmreTheus/Grex",
         ));
         assert!(!repo_filters_exact_reference(
-            Some("Dohooo/Codewit"),
-            "emretheus/codewit",
+            Some("EmreTheus/Grex"),
+            "emretheus/grex",
         ));
         assert!(repo_filters_exact_reference(
-            Some("emretheus/codewit"),
+            Some("emretheus/grex"),
             "octocat/hello-world",
         ));
     }
@@ -1845,54 +1845,54 @@ mod tests {
     #[test]
     fn parse_exact_issue_pr_reference_accepts_github_links() {
         let issue = parse_exact_issue_pr_reference(
-            "https://github.com/emretheus/codewit/issues/123?notification_referrer_id=1",
+            "https://github.com/emretheus/grex/issues/123?notification_referrer_id=1",
             None,
             pr_only_toggles(),
         )
         .unwrap();
-        assert_eq!(issue.repo_with_owner, "emretheus/codewit");
+        assert_eq!(issue.repo_with_owner, "emretheus/grex");
         assert_eq!(issue.number, 123);
         assert_eq!(issue.source, InboxSource::GithubIssue);
 
         let pr = parse_exact_issue_pr_reference(
-            "github.com/emretheus/codewit/pull/456#discussion",
+            "github.com/emretheus/grex/pull/456#discussion",
             None,
             issue_only_toggles(),
         )
         .unwrap();
-        assert_eq!(pr.repo_with_owner, "emretheus/codewit");
+        assert_eq!(pr.repo_with_owner, "emretheus/grex");
         assert_eq!(pr.number, 456);
         assert_eq!(pr.source, InboxSource::GithubPr);
 
         let mixed_case = parse_exact_issue_pr_reference(
-            "HtTpS://GitHub.com/emretheus/codewit/issues/789",
+            "HtTpS://GitHub.com/emretheus/grex/issues/789",
             None,
             issue_only_toggles(),
         )
         .unwrap();
-        assert_eq!(mixed_case.repo_with_owner, "emretheus/codewit");
+        assert_eq!(mixed_case.repo_with_owner, "emretheus/grex");
         assert_eq!(mixed_case.number, 789);
     }
 
     #[test]
     fn parse_exact_issue_pr_reference_accepts_numbers_when_unambiguous() {
         let repo_number =
-            parse_exact_issue_pr_reference("emretheus/codewit#123", None, pr_only_toggles()).unwrap();
-        assert_eq!(repo_number.repo_with_owner, "emretheus/codewit");
+            parse_exact_issue_pr_reference("emretheus/grex#123", None, pr_only_toggles()).unwrap();
+        assert_eq!(repo_number.repo_with_owner, "emretheus/grex");
         assert_eq!(repo_number.number, 123);
         assert_eq!(repo_number.source, InboxSource::GithubPr);
 
         let hash_number =
-            parse_exact_issue_pr_reference("#456", Some("emretheus/codewit"), issue_only_toggles())
+            parse_exact_issue_pr_reference("#456", Some("emretheus/grex"), issue_only_toggles())
                 .unwrap();
-        assert_eq!(hash_number.repo_with_owner, "emretheus/codewit");
+        assert_eq!(hash_number.repo_with_owner, "emretheus/grex");
         assert_eq!(hash_number.number, 456);
         assert_eq!(hash_number.source, InboxSource::GithubIssue);
 
         let plain_number =
-            parse_exact_issue_pr_reference("789", Some("emretheus/codewit"), issue_only_toggles())
+            parse_exact_issue_pr_reference("789", Some("emretheus/grex"), issue_only_toggles())
                 .unwrap();
-        assert_eq!(plain_number.repo_with_owner, "emretheus/codewit");
+        assert_eq!(plain_number.repo_with_owner, "emretheus/grex");
         assert_eq!(plain_number.number, 789);
         assert_eq!(plain_number.source, InboxSource::GithubIssue);
     }
@@ -1902,7 +1902,7 @@ mod tests {
         assert!(parse_exact_issue_pr_reference("123", None, issue_only_toggles()).is_none());
         assert!(parse_exact_issue_pr_reference(
             "123",
-            Some("emretheus/codewit"),
+            Some("emretheus/grex"),
             InboxToggles {
                 issues: true,
                 prs: true,
@@ -1911,19 +1911,19 @@ mod tests {
         )
         .is_none());
         assert!(parse_exact_issue_pr_reference(
-            "https://github.com/emretheus/codewit",
+            "https://github.com/emretheus/grex",
             None,
             issue_only_toggles()
         )
         .is_none());
         assert!(parse_exact_issue_pr_reference(
-            "https://github.com/emretheus/codewit/discussions/123",
+            "https://github.com/emretheus/grex/discussions/123",
             None,
             issue_only_toggles()
         )
         .is_none());
         assert!(parse_exact_issue_pr_reference(
-            "https://github.com/emretheus/codewit/issues/not-a-number",
+            "https://github.com/emretheus/grex/issues/not-a-number",
             None,
             issue_only_toggles()
         )
@@ -1963,7 +1963,7 @@ mod tests {
 
         let issue = IssueRestResponse {
             node_id: "I_kw".to_string(),
-            html_url: "https://github.com/emretheus/codewit/issues/1".to_string(),
+            html_url: "https://github.com/emretheus/grex/issues/1".to_string(),
             title: "Issue".to_string(),
             body: None,
             state: "open".to_string(),
@@ -2001,7 +2001,7 @@ mod tests {
 
         let pull_request = PullRequestRestResponse {
             node_id: "PR_kw".to_string(),
-            html_url: "https://github.com/emretheus/codewit/pull/2".to_string(),
+            html_url: "https://github.com/emretheus/grex/pull/2".to_string(),
             title: "PR".to_string(),
             body: None,
             state: "open".to_string(),
@@ -2046,7 +2046,7 @@ mod tests {
     fn exact_issue_filter_rejects_pull_request_payloads() {
         let pull_request_as_issue = IssueRestResponse {
             node_id: "PR_kw".to_string(),
-            html_url: "https://github.com/emretheus/codewit/pull/487".to_string(),
+            html_url: "https://github.com/emretheus/grex/pull/487".to_string(),
             title: "PR".to_string(),
             body: None,
             state: "open".to_string(),
@@ -2055,7 +2055,7 @@ mod tests {
             assignees: Vec::new(),
             labels: Vec::new(),
             pull_request: Some(serde_json::json!({
-                "url": "https://api.github.com/repos/emretheus/codewit/pulls/487"
+                "url": "https://api.github.com/repos/emretheus/grex/pulls/487"
             })),
             created_at: None,
             updated_at: None,

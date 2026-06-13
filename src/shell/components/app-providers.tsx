@@ -7,7 +7,7 @@ import { AppOnboarding } from "@/features/onboarding";
 import type { SettingsSection } from "@/features/settings";
 import { SettingsDialog } from "@/features/settings";
 import { getPendingPairingToken } from "@/lib/ipc";
-import { codewitQueryPersister, QUERY_CACHE_BUSTER } from "@/lib/query-client";
+import { grexQueryPersister, QUERY_CACHE_BUSTER } from "@/lib/query-client";
 import { SettingsContext } from "@/lib/settings";
 import { isQuickPanelWindow } from "@/lib/window-role";
 import { router } from "@/router";
@@ -76,7 +76,7 @@ export function AppProviders({
 			<PersistQueryClientProvider
 				client={queryClient}
 				persistOptions={{
-					persister: codewitQueryPersister,
+					persister: grexQueryPersister,
 					buster: QUERY_CACHE_BUSTER,
 				}}
 			>
@@ -89,7 +89,7 @@ export function AppProviders({
 						// The onboarding flow belongs to the main window; the panel
 						// summoned mid-onboarding just points the user there.
 						<div className="flex h-dvh items-center justify-center bg-background p-6 text-center text-ui text-muted-foreground">
-							Finish setting up Codewit in the main window first.
+							Finish setting up Grex in the main window first.
 						</div>
 					) : (
 						<>

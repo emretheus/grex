@@ -18,7 +18,7 @@ import type {
 	ProviderModelInfo,
 } from "../session-manager.js";
 
-/// Map Codewit's permissionMode to Cursor's conversation mode. Plan mode
+/// Map Grex's permissionMode to Cursor's conversation mode. Plan mode
 /// runs Cursor read-only; everything else is the normal agent mode.
 export function toCursorMode(
 	permissionMode: string | undefined,

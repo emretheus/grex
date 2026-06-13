@@ -186,7 +186,7 @@ mod unix {
     /// Strategy: start from the login shell's PATH (which contains
     /// Homebrew, nvm, bun, cargo, etc.), then *append* any entries from
     /// the current PATH that aren't already present (e.g. Claude plugin
-    /// directories that Codewit itself added).
+    /// directories that Grex itself added).
     fn merge_path(login_path: &str) {
         let current = std::env::var("PATH").unwrap_or_default();
 
@@ -355,20 +355,20 @@ mod unix {
 
         #[test]
         fn merge_missing_env_sets_value_when_absent() {
-            unsafe { std::env::remove_var("CODEWIT_TEST_MISSING_ENV") };
-            merge_missing_env("CODEWIT_TEST_MISSING_ENV", "/tmp/agent.sock");
+            unsafe { std::env::remove_var("GREX_TEST_MISSING_ENV") };
+            merge_missing_env("GREX_TEST_MISSING_ENV", "/tmp/agent.sock");
             assert_eq!(
-                std::env::var("CODEWIT_TEST_MISSING_ENV").as_deref(),
+                std::env::var("GREX_TEST_MISSING_ENV").as_deref(),
                 Ok("/tmp/agent.sock")
             );
         }
 
         #[test]
         fn merge_missing_env_preserves_existing_value() {
-            unsafe { std::env::set_var("CODEWIT_TEST_EXISTING_ENV", "/tmp/existing.sock") };
-            merge_missing_env("CODEWIT_TEST_EXISTING_ENV", "/tmp/login.sock");
+            unsafe { std::env::set_var("GREX_TEST_EXISTING_ENV", "/tmp/existing.sock") };
+            merge_missing_env("GREX_TEST_EXISTING_ENV", "/tmp/login.sock");
             assert_eq!(
-                std::env::var("CODEWIT_TEST_EXISTING_ENV").as_deref(),
+                std::env::var("GREX_TEST_EXISTING_ENV").as_deref(),
                 Ok("/tmp/existing.sock")
             );
         }
@@ -377,7 +377,7 @@ mod unix {
         fn apply_codex_env_keys_injects_declared_var_from_login_shell() {
             // Unique name to avoid colliding with anything in the
             // ambient test environment.
-            let key = "CODEWIT_TEST_CODEX_AZURE_KEY_1";
+            let key = "GREX_TEST_CODEX_AZURE_KEY_1";
             unsafe { std::env::remove_var(key) };
 
             let config = format!(
@@ -401,7 +401,7 @@ env_key = "{key}"
 
         #[test]
         fn apply_codex_env_keys_does_not_clobber_preexisting_value() {
-            let key = "CODEWIT_TEST_CODEX_AZURE_KEY_2";
+            let key = "GREX_TEST_CODEX_AZURE_KEY_2";
             unsafe { std::env::set_var(key, "preexisting") };
 
             let config = format!(
@@ -423,7 +423,7 @@ env_key = "{key}"
 
         #[test]
         fn apply_codex_env_keys_skips_when_shell_has_no_value() {
-            let key = "CODEWIT_TEST_CODEX_AZURE_KEY_3";
+            let key = "GREX_TEST_CODEX_AZURE_KEY_3";
             unsafe { std::env::remove_var(key) };
 
             let config = format!(

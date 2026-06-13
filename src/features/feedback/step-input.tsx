@@ -5,14 +5,14 @@ import {
 	TooltipContent,
 	TooltipTrigger,
 } from "@/components/ui/tooltip";
-import type { ExistingCodewitRepo } from "@/lib/api";
+import type { ExistingGrexRepo } from "@/lib/api";
 
-import { CODEWIT_UPSTREAM_SLUG } from "./constants";
+import { GREX_UPSTREAM_SLUG } from "./constants";
 
 type StepInputProps = {
 	input: string;
-	existing: ExistingCodewitRepo | null;
-	/** False until `findExistingCodewitRepo` has resolved. Gates Quick fix
+	existing: ExistingGrexRepo | null;
+	/** False until `findExistingGrexRepo` has resolved. Gates Quick fix
 	 *  so a fast user can't bypass the "reuse local repo" optimization. */
 	existingLoaded: boolean;
 	githubConnected: boolean;
@@ -72,13 +72,13 @@ export function StepInput({
 						to send feedback.
 					</>
 				) : existing && !confirming ? (
-					"Will reuse your local codewit repo."
+					"Will reuse your local grex repo."
 				) : null}
 			</div>
 			<div className="mt-1 flex items-center justify-between gap-3">
 				<p className="text-small text-muted-foreground">
 					{confirming
-						? `This will open an issue in ${CODEWIT_UPSTREAM_SLUG}. Confirm?`
+						? `This will open an issue in ${GREX_UPSTREAM_SLUG}. Confirm?`
 						: null}
 				</p>
 				<div className="flex shrink-0 items-center gap-2">
@@ -117,7 +117,7 @@ export function StepInput({
 									</Button>
 								</TooltipTrigger>
 								<TooltipContent side="top" sideOffset={6}>
-									Contribute to Codewit — super easy
+									Contribute to Grex — super easy
 								</TooltipContent>
 							</Tooltip>
 						</>

@@ -157,7 +157,7 @@ function EditorSurfaceHarness({
 			<RouterContextProvider router={router}>
 				<WorkspaceEditorSurface
 					editorSession={session}
-					workspaceRootPath="/tmp/codewit-workspace"
+					workspaceRootPath="/tmp/grex-workspace"
 					onChangeSession={(next) => {
 						onChangeSpy(next);
 						setSession(next);
@@ -191,7 +191,7 @@ describe("WorkspaceEditorSurface", () => {
 		const onChangeSpy = vi.fn();
 
 		apiMocks.readEditorFile.mockResolvedValue({
-			path: "/tmp/codewit-workspace/src/App.tsx",
+			path: "/tmp/grex-workspace/src/App.tsx",
 			content: "const value = 1;\n",
 			mtimeMs: 10,
 		});
@@ -201,7 +201,7 @@ describe("WorkspaceEditorSurface", () => {
 				<EditorSurfaceHarness
 					initialSession={{
 						kind: "file",
-						path: "/tmp/codewit-workspace/src/App.tsx",
+						path: "/tmp/grex-workspace/src/App.tsx",
 					}}
 					onChangeSpy={onChangeSpy}
 				/>
@@ -210,7 +210,7 @@ describe("WorkspaceEditorSurface", () => {
 
 		await waitFor(() => {
 			expect(apiMocks.readEditorFile).toHaveBeenCalledWith(
-				"/tmp/codewit-workspace/src/App.tsx",
+				"/tmp/grex-workspace/src/App.tsx",
 			);
 			expect(runtimeMocks.createFileEditor).toHaveBeenCalled();
 		});
@@ -232,7 +232,7 @@ describe("WorkspaceEditorSurface", () => {
 		const onChangeSpy = vi.fn();
 
 		apiMocks.readEditorFile.mockResolvedValue({
-			path: "/tmp/codewit-workspace/src/App.tsx",
+			path: "/tmp/grex-workspace/src/App.tsx",
 			content: "const value = 1;\n",
 			mtimeMs: 10,
 		});
@@ -242,7 +242,7 @@ describe("WorkspaceEditorSurface", () => {
 				<EditorSurfaceHarness
 					initialSession={{
 						kind: "file",
-						path: "/tmp/codewit-workspace/src/App.tsx",
+						path: "/tmp/grex-workspace/src/App.tsx",
 					}}
 					onChangeSpy={onChangeSpy}
 				/>
@@ -265,7 +265,7 @@ describe("WorkspaceEditorSurface", () => {
 				<EditorSurfaceHarness
 					initialSession={{
 						kind: "diff",
-						path: "/tmp/codewit-workspace/src/App.tsx",
+						path: "/tmp/grex-workspace/src/App.tsx",
 						fileStatus: "M",
 						originalText: "const value = 1;\n",
 						modifiedText: "const value = 2;\n",
@@ -285,7 +285,7 @@ describe("WorkspaceEditorSurface", () => {
 			expect.objectContaining({
 				dirty: false,
 				kind: "file",
-				path: "/tmp/codewit-workspace/src/App.tsx",
+				path: "/tmp/grex-workspace/src/App.tsx",
 			}),
 		);
 	});
@@ -297,7 +297,7 @@ describe("WorkspaceEditorSurface", () => {
 		apiMocks.listWorkspaceFiles.mockResolvedValue([
 			{
 				path: "src/utils.ts",
-				absolutePath: "/tmp/codewit-workspace/src/utils.ts",
+				absolutePath: "/tmp/grex-workspace/src/utils.ts",
 				name: "utils.ts",
 				status: "M",
 				stagedInsertions: 0,
@@ -309,7 +309,7 @@ describe("WorkspaceEditorSurface", () => {
 			},
 		]);
 		apiMocks.readEditorFile.mockResolvedValue({
-			path: "/tmp/codewit-workspace/src/utils.ts",
+			path: "/tmp/grex-workspace/src/utils.ts",
 			content: "export const value = 1;\n",
 			mtimeMs: 20,
 		});
@@ -319,7 +319,7 @@ describe("WorkspaceEditorSurface", () => {
 				<EditorSurfaceHarness
 					initialSession={{
 						kind: "diff",
-						path: "/tmp/codewit-workspace/src/App.tsx",
+						path: "/tmp/grex-workspace/src/App.tsx",
 						fileStatus: "M",
 						originalText: "const value = 1;\n",
 						modifiedText: "const value = 2;\n",
@@ -337,12 +337,12 @@ describe("WorkspaceEditorSurface", () => {
 
 		await waitFor(() => {
 			expect(apiMocks.readEditorFile).toHaveBeenCalledWith(
-				"/tmp/codewit-workspace/src/utils.ts",
+				"/tmp/grex-workspace/src/utils.ts",
 			);
 			expect(onChangeSpy).toHaveBeenCalledWith(
 				expect.objectContaining({
 					kind: "file",
-					path: "/tmp/codewit-workspace/src/utils.ts",
+					path: "/tmp/grex-workspace/src/utils.ts",
 					modifiedText: "export const value = 1;\n",
 				}),
 			);
@@ -356,7 +356,7 @@ describe("WorkspaceEditorSurface", () => {
 		apiMocks.listWorkspaceFiles.mockResolvedValue([
 			{
 				path: "src/utils.ts",
-				absolutePath: "/tmp/codewit-workspace/src/utils.ts",
+				absolutePath: "/tmp/grex-workspace/src/utils.ts",
 				name: "utils.ts",
 				status: "M",
 				stagedInsertions: 0,
@@ -368,7 +368,7 @@ describe("WorkspaceEditorSurface", () => {
 			},
 		]);
 		apiMocks.readEditorFile.mockResolvedValue({
-			path: "/tmp/codewit-workspace/src/utils.ts",
+			path: "/tmp/grex-workspace/src/utils.ts",
 			content: "export const value = 1;\n",
 			mtimeMs: 20,
 		});
@@ -378,7 +378,7 @@ describe("WorkspaceEditorSurface", () => {
 				<EditorSurfaceHarness
 					initialSession={{
 						kind: "file",
-						path: "/tmp/codewit-workspace/src/App.tsx",
+						path: "/tmp/grex-workspace/src/App.tsx",
 						originalText: "const app = 1;\n",
 						modifiedText: "const app = 1;\n",
 					}}
@@ -402,7 +402,7 @@ describe("WorkspaceEditorSurface", () => {
 		expect(onChangeSpy).toHaveBeenCalledWith(
 			expect.objectContaining({
 				kind: "file",
-				path: "/tmp/codewit-workspace/src/App.tsx",
+				path: "/tmp/grex-workspace/src/App.tsx",
 			}),
 		);
 	});
@@ -414,7 +414,7 @@ describe("WorkspaceEditorSurface", () => {
 		apiMocks.listWorkspaceFiles.mockResolvedValue([
 			{
 				path: "src/utils.ts",
-				absolutePath: "/tmp/codewit-workspace/src/utils.ts",
+				absolutePath: "/tmp/grex-workspace/src/utils.ts",
 				name: "utils.ts",
 				status: "M",
 				stagedInsertions: 0,
@@ -428,7 +428,7 @@ describe("WorkspaceEditorSurface", () => {
 		apiMocks.listWorkspaceChanges.mockResolvedValue([
 			{
 				path: "src/utils.ts",
-				absolutePath: "/tmp/codewit-workspace/src/utils.ts",
+				absolutePath: "/tmp/grex-workspace/src/utils.ts",
 				name: "utils.ts",
 				status: "M",
 				stagedInsertions: 0,
@@ -445,7 +445,7 @@ describe("WorkspaceEditorSurface", () => {
 				<EditorSurfaceHarness
 					initialSession={{
 						kind: "file",
-						path: "/tmp/codewit-workspace/src/App.tsx",
+						path: "/tmp/grex-workspace/src/App.tsx",
 						originalText: "const app = 1;\n",
 						modifiedText: "const app = 1;\n",
 					}}
@@ -464,7 +464,7 @@ describe("WorkspaceEditorSurface", () => {
 			expect(onChangeSpy).toHaveBeenCalledWith(
 				expect.objectContaining({
 					kind: "diff",
-					path: "/tmp/codewit-workspace/src/utils.ts",
+					path: "/tmp/grex-workspace/src/utils.ts",
 					fileStatus: "M",
 				}),
 			);
@@ -475,7 +475,7 @@ describe("WorkspaceEditorSurface", () => {
 		const onChangeSpy = vi.fn();
 
 		apiMocks.readEditorFile.mockResolvedValue({
-			path: "/tmp/codewit-workspace/SPEC.md",
+			path: "/tmp/grex-workspace/SPEC.md",
 			content: "# Title\n\nbody",
 			mtimeMs: 10,
 		});
@@ -485,7 +485,7 @@ describe("WorkspaceEditorSurface", () => {
 				<EditorSurfaceHarness
 					initialSession={{
 						kind: "file",
-						path: "/tmp/codewit-workspace/SPEC.md",
+						path: "/tmp/grex-workspace/SPEC.md",
 					}}
 					onChangeSpy={onChangeSpy}
 				/>
@@ -511,7 +511,7 @@ describe("WorkspaceEditorSurface", () => {
 				<EditorSurfaceHarness
 					initialSession={{
 						kind: "file",
-						path: "/tmp/codewit-workspace/SPEC.md",
+						path: "/tmp/grex-workspace/SPEC.md",
 						viewMode: "preview",
 						originalText: "# Hello\n",
 						modifiedText: "# Hello\n",
@@ -535,7 +535,7 @@ describe("WorkspaceEditorSurface", () => {
 		const user = userEvent.setup();
 
 		apiMocks.readEditorFile.mockResolvedValue({
-			path: "/tmp/codewit-workspace/SPEC.md",
+			path: "/tmp/grex-workspace/SPEC.md",
 			content: "# Title\n",
 			mtimeMs: 10,
 		});
@@ -545,7 +545,7 @@ describe("WorkspaceEditorSurface", () => {
 				<EditorSurfaceHarness
 					initialSession={{
 						kind: "file",
-						path: "/tmp/codewit-workspace/SPEC.md",
+						path: "/tmp/grex-workspace/SPEC.md",
 					}}
 					onChangeSpy={onChangeSpy}
 				/>
@@ -578,7 +578,7 @@ describe("WorkspaceEditorSurface", () => {
 				<EditorSurfaceHarness
 					initialSession={{
 						kind: "file",
-						path: "/tmp/codewit-workspace/SPEC.md",
+						path: "/tmp/grex-workspace/SPEC.md",
 						viewMode: "source",
 						originalText: "# Hi",
 						modifiedText: "# Hi",
@@ -615,7 +615,7 @@ describe("WorkspaceEditorSurface", () => {
 		const onChangeSpy = vi.fn();
 
 		apiMocks.readEditorFile.mockResolvedValue({
-			path: "/tmp/codewit-workspace/src/App.tsx",
+			path: "/tmp/grex-workspace/src/App.tsx",
 			content: "const value = 1;\n",
 			mtimeMs: 10,
 		});
@@ -625,7 +625,7 @@ describe("WorkspaceEditorSurface", () => {
 				<EditorSurfaceHarness
 					initialSession={{
 						kind: "file",
-						path: "/tmp/codewit-workspace/src/App.tsx",
+						path: "/tmp/grex-workspace/src/App.tsx",
 					}}
 					onChangeSpy={onChangeSpy}
 				/>
@@ -647,7 +647,7 @@ describe("WorkspaceEditorSurface", () => {
 		apiMocks.listWorkspaceFiles.mockResolvedValue([
 			{
 				path: "src/utils.ts",
-				absolutePath: "/tmp/codewit-workspace/src/utils.ts",
+				absolutePath: "/tmp/grex-workspace/src/utils.ts",
 				name: "utils.ts",
 				status: "M",
 				stagedInsertions: 0,
@@ -659,7 +659,7 @@ describe("WorkspaceEditorSurface", () => {
 			},
 		]);
 		apiMocks.readEditorFile.mockResolvedValue({
-			path: "/tmp/codewit-workspace/src/utils.ts",
+			path: "/tmp/grex-workspace/src/utils.ts",
 			content: "export const value = 1;\n",
 			mtimeMs: 20,
 		});
@@ -669,7 +669,7 @@ describe("WorkspaceEditorSurface", () => {
 				<EditorSurfaceHarness
 					initialSession={{
 						kind: "file",
-						path: "/tmp/codewit-workspace/src/App.tsx",
+						path: "/tmp/grex-workspace/src/App.tsx",
 						originalText: "const app = 1;\n",
 						modifiedText: "const app = 1;\n",
 					}}
@@ -693,7 +693,7 @@ describe("WorkspaceEditorSurface", () => {
 
 		await waitFor(() => {
 			expect(runtimeMocks.fileController.switchFile).toHaveBeenCalledWith(
-				"/tmp/codewit-workspace/src/utils.ts",
+				"/tmp/grex-workspace/src/utils.ts",
 				expect.anything(),
 				undefined,
 				undefined,
@@ -717,7 +717,7 @@ describe("WorkspaceEditorSurface", () => {
 		apiMocks.listWorkspaceFiles.mockResolvedValue([
 			{
 				path: "src/utils.ts",
-				absolutePath: "/tmp/codewit-workspace/src/utils.ts",
+				absolutePath: "/tmp/grex-workspace/src/utils.ts",
 				name: "utils.ts",
 				status: "M",
 				stagedInsertions: 0,
@@ -731,7 +731,7 @@ describe("WorkspaceEditorSurface", () => {
 		apiMocks.listWorkspaceChanges.mockResolvedValue([
 			{
 				path: "src/utils.ts",
-				absolutePath: "/tmp/codewit-workspace/src/utils.ts",
+				absolutePath: "/tmp/grex-workspace/src/utils.ts",
 				name: "utils.ts",
 				status: "M",
 				stagedInsertions: 0,
@@ -744,7 +744,7 @@ describe("WorkspaceEditorSurface", () => {
 		]);
 		apiMocks.readFileAtRef.mockResolvedValue("export const value = 0;\n");
 		apiMocks.readEditorFile.mockResolvedValue({
-			path: "/tmp/codewit-workspace/src/utils.ts",
+			path: "/tmp/grex-workspace/src/utils.ts",
 			content: "export const value = 1;\n",
 			mtimeMs: 20,
 		});
@@ -754,7 +754,7 @@ describe("WorkspaceEditorSurface", () => {
 				<EditorSurfaceHarness
 					initialSession={{
 						kind: "diff",
-						path: "/tmp/codewit-workspace/src/App.tsx",
+						path: "/tmp/grex-workspace/src/App.tsx",
 						fileStatus: "M",
 						originalText: "const app = 1;\n",
 						modifiedText: "const app = 2;\n",
@@ -780,7 +780,7 @@ describe("WorkspaceEditorSurface", () => {
 		});
 		expect(runtimeMocks.createDiffEditor).toHaveBeenLastCalledWith(
 			expect.objectContaining({
-				path: "/tmp/codewit-workspace/src/utils.ts",
+				path: "/tmp/grex-workspace/src/utils.ts",
 				originalText: "export const value = 0;\n",
 				modifiedText: "export const value = 1;\n",
 			}),
@@ -800,7 +800,7 @@ describe("WorkspaceEditorSurface", () => {
 				<EditorSurfaceHarness
 					initialSession={{
 						kind: "file",
-						path: "/tmp/codewit-workspace/src/missing.ts",
+						path: "/tmp/grex-workspace/src/missing.ts",
 					}}
 					onChangeSpy={onChangeSpy}
 					onError={onError}
@@ -827,7 +827,7 @@ describe("WorkspaceEditorSurface", () => {
 				<EditorSurfaceHarness
 					initialSession={{
 						kind: "diff",
-						path: "/tmp/codewit-workspace/assets/logo.png",
+						path: "/tmp/grex-workspace/assets/logo.png",
 						fileStatus: "M",
 					}}
 					onChangeSpy={onChangeSpy}
@@ -837,11 +837,11 @@ describe("WorkspaceEditorSurface", () => {
 		);
 
 		const img = await screen.findByAltText(
-			"Preview of /tmp/codewit-workspace/assets/logo.png",
+			"Preview of /tmp/grex-workspace/assets/logo.png",
 		);
 		expect(img).toHaveAttribute(
 			"src",
-			"asset://localhost//tmp/codewit-workspace/assets/logo.png",
+			"asset://localhost//tmp/grex-workspace/assets/logo.png",
 		);
 		// The change status is surfaced so the diff context isn't lost.
 		expect(screen.getByText("Modified")).toBeInTheDocument();
@@ -863,7 +863,7 @@ describe("WorkspaceEditorSurface", () => {
 				<EditorSurfaceHarness
 					initialSession={{
 						kind: "diff",
-						path: "/tmp/codewit-workspace/assets/old-icon.svg",
+						path: "/tmp/grex-workspace/assets/old-icon.svg",
 						fileStatus: "D",
 					}}
 					onChangeSpy={onChangeSpy}

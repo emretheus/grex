@@ -10,9 +10,9 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 const apiMocks = vi.hoisted(() => ({
 	getCliStatus: vi.fn(),
-	getCodewitSkillsStatus: vi.fn(),
+	getGrexSkillsStatus: vi.fn(),
 	installCli: vi.fn(),
-	installCodewitSkills: vi.fn(),
+	installGrexSkills: vi.fn(),
 }));
 
 vi.mock("@/lib/api", async (importOriginal) => {
@@ -20,9 +20,9 @@ vi.mock("@/lib/api", async (importOriginal) => {
 	return {
 		...actual,
 		getCliStatus: apiMocks.getCliStatus,
-		getCodewitSkillsStatus: apiMocks.getCodewitSkillsStatus,
+		getGrexSkillsStatus: apiMocks.getGrexSkillsStatus,
 		installCli: apiMocks.installCli,
-		installCodewitSkills: apiMocks.installCodewitSkills,
+		installGrexSkills: apiMocks.installGrexSkills,
 	};
 });
 
@@ -35,24 +35,24 @@ import { SkillsStep } from "./skills-step";
 describe("SkillsStep", () => {
 	beforeEach(() => {
 		apiMocks.getCliStatus.mockReset();
-		apiMocks.getCodewitSkillsStatus.mockReset();
+		apiMocks.getGrexSkillsStatus.mockReset();
 		apiMocks.installCli.mockReset();
-		apiMocks.installCodewitSkills.mockReset();
+		apiMocks.installGrexSkills.mockReset();
 		// Default: skills not installed yet, default install call succeeds.
 		// Individual tests override these per scenario.
-		apiMocks.getCodewitSkillsStatus.mockResolvedValue({
+		apiMocks.getGrexSkillsStatus.mockResolvedValue({
 			installed: false,
 			claude: false,
 			codex: false,
 			command:
-				"npx --yes skills add emretheus/codewit/.agents/skills/codewit-cli -g -s codewit-cli -y --copy -a claude-code -a codex",
+				"npx --yes skills add emretheus/grex/.agents/skills/grex-cli -g -s grex-cli -y --copy -a claude-code -a codex",
 		});
-		apiMocks.installCodewitSkills.mockResolvedValue({
+		apiMocks.installGrexSkills.mockResolvedValue({
 			installed: true,
 			claude: true,
 			codex: true,
 			command:
-				"npx --yes skills add emretheus/codewit/.agents/skills/codewit-cli -g -s codewit-cli -y --copy -a claude-code -a codex",
+				"npx --yes skills add emretheus/grex/.agents/skills/grex-cli -g -s grex-cli -y --copy -a claude-code -a codex",
 		});
 	});
 
@@ -63,14 +63,14 @@ describe("SkillsStep", () => {
 
 	// --- already-installed paths --------------------------------------
 
-	it("shows Ready and skips install when the Codewit CLI is already installed", async () => {
+	it("shows Ready and skips install when the Grex CLI is already installed", async () => {
 		apiMocks.getCliStatus.mockResolvedValue({
 			installed: true,
-			installPath: "/usr/local/bin/codewit-dev",
+			installPath: "/usr/local/bin/grex-dev",
 			buildMode: "development",
 			installState: "managed",
 		});
-		apiMocks.getCodewitSkillsStatus.mockResolvedValue({
+		apiMocks.getGrexSkillsStatus.mockResolvedValue({
 			installed: true,
 			claude: true,
 			codex: true,
@@ -86,7 +86,7 @@ describe("SkillsStep", () => {
 			/>,
 		);
 
-		const cliItem = screen.getByRole("group", { name: "Codewit CLI" });
+		const cliItem = screen.getByRole("group", { name: "Grex CLI" });
 
 		await waitFor(() => {
 			expect(within(cliItem).getByText("Ready")).toBeInTheDocument();
@@ -101,7 +101,7 @@ describe("SkillsStep", () => {
 
 	// --- silent-auto-install happy paths ------------------------------
 
-	it("auto-installs the Codewit CLI on mount when missing", async () => {
+	it("auto-installs the Grex CLI on mount when missing", async () => {
 		apiMocks.getCliStatus.mockResolvedValue({
 			installed: false,
 			installPath: null,
@@ -110,7 +110,7 @@ describe("SkillsStep", () => {
 		});
 		apiMocks.installCli.mockResolvedValue({
 			installed: true,
-			installPath: "/usr/local/bin/codewit-dev",
+			installPath: "/usr/local/bin/grex-dev",
 			buildMode: "development",
 			installState: "managed",
 		});
@@ -124,7 +124,7 @@ describe("SkillsStep", () => {
 			/>,
 		);
 
-		const cliItem = screen.getByRole("group", { name: "Codewit CLI" });
+		const cliItem = screen.getByRole("group", { name: "Grex CLI" });
 
 		// Install fires WITHOUT any click — the auto-install effect
 		// kicks in once the status probe resolves.
@@ -139,10 +139,10 @@ describe("SkillsStep", () => {
 		).not.toBeInTheDocument();
 	});
 
-	it("auto-installs Codewit Skills on mount when missing", async () => {
+	it("auto-installs Grex Skills on mount when missing", async () => {
 		apiMocks.getCliStatus.mockResolvedValue({
 			installed: true,
-			installPath: "/usr/local/bin/codewit-dev",
+			installPath: "/usr/local/bin/grex-dev",
 			buildMode: "development",
 			installState: "managed",
 		});
@@ -157,11 +157,11 @@ describe("SkillsStep", () => {
 		);
 
 		const skillsItem = screen.getByRole("group", {
-			name: "Codewit Skills (Beta)",
+			name: "Grex Skills (Beta)",
 		});
 
 		await waitFor(() => {
-			expect(apiMocks.installCodewitSkills).toHaveBeenCalledTimes(1);
+			expect(apiMocks.installGrexSkills).toHaveBeenCalledTimes(1);
 		});
 		await waitFor(() => {
 			expect(within(skillsItem).getByText("Ready")).toBeInTheDocument();
@@ -174,14 +174,14 @@ describe("SkillsStep", () => {
 		const user = userEvent.setup();
 		apiMocks.getCliStatus.mockResolvedValue({
 			installed: true,
-			installPath: "/usr/local/bin/codewit-dev",
+			installPath: "/usr/local/bin/grex-dev",
 			buildMode: "development",
 			installState: "managed",
 		});
 		// First call fails; the retry call succeeds.
-		apiMocks.installCodewitSkills
+		apiMocks.installGrexSkills
 			.mockRejectedValueOnce(
-				new Error("Codewit skills setup failed with a long stack trace."),
+				new Error("Grex skills setup failed with a long stack trace."),
 			)
 			.mockResolvedValueOnce({
 				installed: true,
@@ -200,7 +200,7 @@ describe("SkillsStep", () => {
 		);
 
 		const skillsItem = screen.getByRole("group", {
-			name: "Codewit Skills (Beta)",
+			name: "Grex Skills (Beta)",
 		});
 
 		// The auto-install fires once on mount and fails — the user-
@@ -222,7 +222,7 @@ describe("SkillsStep", () => {
 		await user.click(retryBtn);
 
 		await waitFor(() => {
-			expect(apiMocks.installCodewitSkills).toHaveBeenCalledTimes(2);
+			expect(apiMocks.installGrexSkills).toHaveBeenCalledTimes(2);
 		});
 		await waitFor(() => {
 			expect(within(skillsItem).getByText("Ready")).toBeInTheDocument();

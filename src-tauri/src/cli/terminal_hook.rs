@@ -1,14 +1,14 @@
-//! `codewit terminal-hook` — receives an agent CLI's hook callback.
+//! `grex terminal-hook` — receives an agent CLI's hook callback.
 //!
 //! Registered as the hook command for Terminal-Mode agents (claude/codex).
 //! The agent runs it on lifecycle events with the hook payload
 //! on stdin; the owning terminal session id arrives via the
-//! `CODEWIT_TERMINAL_SESSION_ID` env var (injected when Codewit spawns the PTY).
+//! `GREX_TERMINAL_SESSION_ID` env var (injected when Grex spawns the PTY).
 //!
 //! Its job for M4a: persist the agent's real session id into
 //! `sessions.provider_session_id` so a later relaunch can `--resume`. It is a
-//! strict no-op when not invoked from a Codewit terminal (env missing), so a
-//! user running the same agent outside Codewit is never affected. A hook must
+//! strict no-op when not invoked from a Grex terminal (env missing), so a
+//! user running the same agent outside Grex is never affected. A hook must
 //! never break the agent, so every failure is swallowed.
 
 use std::io::Read;
@@ -18,7 +18,7 @@ use anyhow::Result;
 use super::args::Cli;
 
 pub fn run(agent: &str, _cli: &Cli) -> Result<()> {
-    let Ok(terminal_session_id) = std::env::var("CODEWIT_TERMINAL_SESSION_ID") else {
+    let Ok(terminal_session_id) = std::env::var("GREX_TERMINAL_SESSION_ID") else {
         return Ok(());
     };
     if terminal_session_id.is_empty() {

@@ -16,7 +16,7 @@
 //!
 //! Deliberately **not** here yet (later slices): serving the embedded SPA via
 //! `AssetResolver`, the public Cloudflare tunnel, agent-stream SSE wiring, and
-//! per-device PATs. The whole server is gated behind the `CODEWIT_COMPANION`
+//! per-device PATs. The whole server is gated behind the `GREX_COMPANION`
 //! env var so default app behaviour is unchanged.
 
 mod auth;
@@ -54,7 +54,7 @@ pub fn paired_device_verifier() -> Verifier {
 }
 
 /// Bring the companion fully up: start the loopback server, then a public
-/// tunnel — **named** (stable `remote-*.codewit.ai`) when a stable URL has been
+/// tunnel — **named** (stable `remote-*.grex.ai`) when a stable URL has been
 /// provisioned, otherwise a **quick** ephemeral tunnel. Idempotent on the
 /// server; replaces any running tunnel. Shared by the `companion_enable`
 /// command and launch-time auto-start. Concrete `AppHandle` (Wry) because the

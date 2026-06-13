@@ -65,15 +65,15 @@ const TABS_WRAPPER_COLLAPSED_MIN_HEIGHT_PX = INSPECTOR_SECTION_HEADER_HEIGHT;
 
 // Inspector layout persistence
 export const INSPECTOR_ACTIONS_OPEN_STORAGE_KEY =
-	"codewit.workspaceInspectorActionsOpen";
+	"grex.workspaceInspectorActionsOpen";
 export const INSPECTOR_TABS_OPEN_STORAGE_KEY =
-	"codewit.workspaceInspectorTabsOpen";
+	"grex.workspaceInspectorTabsOpen";
 export const INSPECTOR_ACTIVE_TAB_STORAGE_KEY =
-	"codewit.workspaceInspectorActiveTab";
+	"grex.workspaceInspectorActiveTab";
 export const INSPECTOR_CHANGES_HEIGHT_STORAGE_KEY =
-	"codewit.workspaceInspectorChangesHeight";
+	"grex.workspaceInspectorChangesHeight";
 export const INSPECTOR_TABS_HEIGHT_STORAGE_KEY =
-	"codewit.workspaceInspectorTabsHeight";
+	"grex.workspaceInspectorTabsHeight";
 
 export function getInitialActionsOpen(): boolean {
 	if (typeof window === "undefined") {
@@ -232,7 +232,7 @@ type InspectorTabsSectionProps = {
 	 * dropdown then renders each item without a status icon. */
 	workspaceId: string | null;
 	/**
-	 * All run actions configured for the current repo (DB + codewit.json
+	 * All run actions configured for the current repo (DB + grex.json
 	 * merged). Empty when none configured — the Run-tab dropdown still
 	 * renders, but only carries the "Create new" entry.
 	 */
@@ -526,7 +526,7 @@ export function InspectorTabsSection({
 									>
 										<ScriptStatusIcon state={runScriptState} />
 										{/* Capped width + truncate so a long custom action
-										    name (codewit.json) can't push the dropdown chevron
+										    name (grex.json) can't push the dropdown chevron
 										    off-screen or stretch the tab past its neighbours. */}
 										<span className="max-w-[8rem] truncate">{runTabLabel}</span>
 									</button>

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Deterministic renderer for the Codewit stacked-PR diagram (canonical style A).
+"""Deterministic renderer for the Grex stacked-PR diagram (canonical style A).
 
 The stacked-pr skill builds a JSON "stack spec" and pipes it through this
 script so the diagram is byte-for-byte identical every time — never hand-drawn
@@ -14,7 +14,7 @@ Usage:
 Spec shape (layers ordered tip -> root, i.e. newest PR first):
     {
       "name": "dark-mode",
-      "repo": "codewit/uranus",
+      "repo": "grex/uranus",
       "base": "main",
       "layers": [
         {"pr": "483", "title": "feat: dark mode toggle",  "state": "draft",  "ws": "dark-mode-ui"},
@@ -92,7 +92,7 @@ def render(spec):
 
 SELF_CHECK_SPEC = {
     "name": "dark-mode",
-    "repo": "codewit/uranus",
+    "repo": "grex/uranus",
     "base": "main",
     "layers": [
         {"pr": "483", "title": "feat: dark mode toggle", "state": "draft", "ws": "dark-mode-ui"},
@@ -103,7 +103,7 @@ SELF_CHECK_SPEC = {
 
 SELF_CHECK_EXPECTED = "\n".join(
     [
-        "stack: dark-mode · codewit/uranus · 3 PRs",
+        "stack: dark-mode · grex/uranus · 3 PRs",
         "",
         "◉ #483  feat: dark mode toggle      draft    ← HEAD",
         "│  └ ws: dark-mode-ui      base ◂ #482",

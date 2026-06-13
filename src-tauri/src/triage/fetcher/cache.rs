@@ -1,7 +1,7 @@
 //! Payload files on disk under `cache/triage/`.
 //!
 //! `triage_candidate.payload_path` is stored relative to this root so
-//! `CODEWIT_DATA_DIR` moves and tests don't carry stale absolute paths.
+//! `GREX_DATA_DIR` moves and tests don't carry stale absolute paths.
 
 use std::fs;
 #[cfg(test)]

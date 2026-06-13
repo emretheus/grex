@@ -348,7 +348,7 @@ impl DownloadsManager {
             .connect_timeout(std::time::Duration::from_secs(60))
             // No global read timeout: large model downloads can run
             // for an hour+; reqwest's per-chunk timeout still applies.
-            .user_agent(format!("codewit/{} downloads", env!("CARGO_PKG_VERSION")))
+            .user_agent(format!("grex/{} downloads", env!("CARGO_PKG_VERSION")))
             .build()
             .context("build downloads HTTP client")?;
         inner.http = Some(client.clone());

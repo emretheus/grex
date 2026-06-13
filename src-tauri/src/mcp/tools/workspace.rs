@@ -187,7 +187,7 @@ pub(super) fn tool_workspace_permanently_delete(args: &Value) -> Result<String> 
         .unwrap_or(false);
     if !confirmed {
         anyhow::bail!(
-            "codewit_workspace_permanently_delete: `confirmed` must be true. \
+            "grex_workspace_permanently_delete: `confirmed` must be true. \
              This deletes the worktree and history; ask the user to confirm first."
         );
     }
@@ -245,7 +245,7 @@ pub(super) fn tool_workspace_run_action(args: &Value) -> Result<String> {
                 "sessionId": dispatch.session_id,
                 "provider": dispatch.provider,
                 "model": dispatch.model,
-                "note": "Action prompt queued in a dedicated Codewit action session.",
+                "note": "Action prompt queued in a dedicated Grex action session.",
             }),
             None,
         ),

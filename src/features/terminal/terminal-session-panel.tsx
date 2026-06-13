@@ -5,7 +5,7 @@ import {
 	type TerminalHandle,
 	TerminalOutput,
 } from "@/components/terminal-output";
-import { codewitQueryKeys } from "@/lib/query-client";
+import { grexQueryKeys } from "@/lib/query-client";
 import { presetBootCommand, resumeBootCommand } from "./terminal-presets";
 import {
 	attach,
@@ -67,7 +67,7 @@ export function TerminalSessionPanel({
 		// process-level grant). Cache read only — a cold cache just resumes
 		// without them, same as before the feature existed.
 		const addDirs = queryClient.getQueryData<readonly string[]>(
-			codewitQueryKeys.workspaceLinkedDirectories(workspaceId),
+			grexQueryKeys.workspaceLinkedDirectories(workspaceId),
 		);
 		bootCommandRef.current =
 			(providerSessionId

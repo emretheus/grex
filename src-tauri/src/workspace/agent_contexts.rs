@@ -4,7 +4,7 @@
 //! The directory is **not** committed: we add it to Git's local exclude
 //! file (`git rev-parse --git-path info/exclude`) so the rule does
 //! **not** leak into the user's tracked `.gitignore`. The user's repo
-//! on disk has zero new tracked lines after Codewit materialises a
+//! on disk has zero new tracked lines after Grex materialises a
 //! workspace — clean as it was.
 //!
 //! Both arms of `finalize_workspace_from_repo_impl` (FromBranch +
@@ -15,7 +15,7 @@
 //!
 //! ## Git worktree gotcha
 //!
-//! In a linked git worktree (which is what Codewit creates), the
+//! In a linked git worktree (which is what Grex creates), the
 //! worktree's `.git` is a *file* whose first line reads
 //! `gitdir: <abs-path-to-main-repo>/.git/worktrees/<name>`. That path
 //! is **not** necessarily where Git reads `info/exclude` from. Ask Git
@@ -40,7 +40,7 @@ const EXCLUDE_RULE: &str = "/.agent-contexts/";
 
 /// Comment line written above the rule. Makes it obvious to anyone
 /// inspecting `info/exclude` why the entry is there.
-const EXCLUDE_COMMENT: &str = "# Codewit: scratch space for agents to share files across sessions.";
+const EXCLUDE_COMMENT: &str = "# Grex: scratch space for agents to share files across sessions.";
 
 /// Materialise `.agent-contexts/` under `workspace_dir` and add it to
 /// Git's local exclude file. Best-effort: errors are returned so
@@ -190,8 +190,8 @@ mod tests {
         let dir = tempfile::tempdir().unwrap();
         run(dir.path(), &["init"]);
         run(dir.path(), &["checkout", "-b", "main"]);
-        run(dir.path(), &["config", "user.email", "codewit@example.com"]);
-        run(dir.path(), &["config", "user.name", "Codewit Test"]);
+        run(dir.path(), &["config", "user.email", "grex@example.com"]);
+        run(dir.path(), &["config", "user.name", "Grex Test"]);
         run(dir.path(), &["config", "commit.gpgsign", "false"]);
         std::fs::write(dir.path().join("file.txt"), "base\n").unwrap();
         run(dir.path(), &["add", "file.txt"]);

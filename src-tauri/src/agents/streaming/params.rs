@@ -18,7 +18,7 @@ pub struct BuildSendMessageParamsInput<'a> {
     pub effort_level: Option<&'a str>,
     pub permission_mode: Option<&'a str>,
     pub fast_mode: bool,
-    pub codewit_session_id: Option<&'a str>,
+    pub grex_session_id: Option<&'a str>,
     pub claude_base_url: Option<&'a str>,
     pub claude_auth_token: Option<&'a str>,
     pub agent_proxy: Option<&'a Value>,
@@ -40,8 +40,8 @@ pub struct BuildSendMessageParamsInput<'a> {
 /// so the sidecar payload stays tight and existing snapshot fixtures
 /// for untouched sessions don't churn.
 pub fn build_send_message_params(input: BuildSendMessageParamsInput<'_>) -> Value {
-    let additional_directories = lookup_workspace_linked_directories(input.codewit_session_id);
-    let source_repo_path = lookup_workspace_repo_root_path(input.codewit_session_id);
+    let additional_directories = lookup_workspace_linked_directories(input.grex_session_id);
+    let source_repo_path = lookup_workspace_repo_root_path(input.grex_session_id);
 
     let mut params = serde_json::json!({
         "sessionId": input.sidecar_session_id,
@@ -96,21 +96,21 @@ pub fn build_send_message_params(input: BuildSendMessageParamsInput<'_>) -> Valu
     params
 }
 
-/// Load the workspace's `/add-dir` list via the codewit session id. Returns
+/// Load the workspace's `/add-dir` list via the grex session id. Returns
 /// an empty vec if the session is not yet persisted or the workspace has
 /// no linked directories — both are normal states. DB read failures are
 /// degraded to an empty list (the feature is best-effort per turn) but
 /// logged so a broken DB surfaces in the logs instead of as "my
 /// /add-dir silently stopped working".
-pub fn lookup_workspace_linked_directories(codewit_session_id: Option<&str>) -> Vec<String> {
-    let Some(hsid) = codewit_session_id else {
+pub fn lookup_workspace_linked_directories(grex_session_id: Option<&str>) -> Vec<String> {
+    let Some(hsid) = grex_session_id else {
         return Vec::new();
     };
     let conn = match crate::models::db::read_conn() {
         Ok(c) => c,
         Err(err) => {
             tracing::warn!(
-                codewit_session_id = %hsid,
+                grex_session_id = %hsid,
                 error = %err,
                 "Failed to open DB for linked-directory lookup; falling back to empty list",
             );
@@ -129,7 +129,7 @@ pub fn lookup_workspace_linked_directories(codewit_session_id: Option<&str>) -> 
         Err(rusqlite::Error::QueryReturnedNoRows) => None,
         Err(err) => {
             tracing::warn!(
-                codewit_session_id = %hsid,
+                grex_session_id = %hsid,
                 error = %err,
                 "linked_directory_paths query failed; falling back to empty list",
             );
@@ -139,17 +139,17 @@ pub fn lookup_workspace_linked_directories(codewit_session_id: Option<&str>) -> 
     crate::workspaces::parse_linked_directory_paths(raw.as_deref())
 }
 
-/// Resolve the source repo root path for a codewit session. Sidecar uses
+/// Resolve the source repo root path for a grex session. Sidecar uses
 /// it to read project-scope MCP servers from `~/.claude.json` (the
 /// worktree cwd never matches the user's registered project key, so
 /// without this hint Claude sees only user-scope MCPs).
-pub fn lookup_workspace_repo_root_path(codewit_session_id: Option<&str>) -> Option<String> {
-    let hsid = codewit_session_id?;
+pub fn lookup_workspace_repo_root_path(grex_session_id: Option<&str>) -> Option<String> {
+    let hsid = grex_session_id?;
     let conn = match crate::models::db::read_conn() {
         Ok(c) => c,
         Err(err) => {
             tracing::warn!(
-                codewit_session_id = %hsid,
+                grex_session_id = %hsid,
                 error = %err,
                 "Failed to open DB for repo root_path lookup; falling back to None",
             );
@@ -170,7 +170,7 @@ pub fn lookup_workspace_repo_root_path(codewit_session_id: Option<&str>) -> Opti
         Err(rusqlite::Error::QueryReturnedNoRows) => None,
         Err(err) => {
             tracing::warn!(
-                codewit_session_id = %hsid,
+                grex_session_id = %hsid,
                 error = %err,
                 "repo root_path query failed; falling back to None",
             );
@@ -188,7 +188,7 @@ mod tests {
         let _guard = crate::data_dir::TEST_ENV_LOCK
             .lock()
             .unwrap_or_else(|poisoned| poisoned.into_inner());
-        std::env::set_var("CODEWIT_DATA_DIR", dir.path());
+        std::env::set_var("GREX_DATA_DIR", dir.path());
         crate::data_dir::ensure_directory_structure().unwrap();
 
         let db_path = crate::data_dir::db_path().unwrap();
@@ -200,7 +200,7 @@ mod tests {
         )
         .unwrap();
         f(&conn);
-        std::env::remove_var("CODEWIT_DATA_DIR");
+        std::env::remove_var("GREX_DATA_DIR");
     }
 
     fn insert_ws_session(

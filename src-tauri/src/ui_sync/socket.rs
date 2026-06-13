@@ -151,7 +151,7 @@ mod tests {
     fn socket_path_uses_run_dir() {
         let _lock = TEST_ENV_LOCK.lock().unwrap();
         let dir = tempfile::tempdir().unwrap();
-        std::env::set_var("CODEWIT_DATA_DIR", dir.path());
+        std::env::set_var("GREX_DATA_DIR", dir.path());
 
         let path = socket_path().unwrap();
         assert!(path.ends_with("run/ui-sync.sock"));
@@ -193,7 +193,7 @@ mod tests {
     fn is_listener_running_returns_false_without_socket() {
         let _lock = TEST_ENV_LOCK.lock().unwrap();
         let dir = tempfile::tempdir().unwrap();
-        std::env::set_var("CODEWIT_DATA_DIR", dir.path());
+        std::env::set_var("GREX_DATA_DIR", dir.path());
         // Socket file has not been created — listener must report false.
         assert!(!is_listener_running());
     }
@@ -202,7 +202,7 @@ mod tests {
     fn notify_running_app_returns_false_without_socket() {
         let _lock = TEST_ENV_LOCK.lock().unwrap();
         let dir = tempfile::tempdir().unwrap();
-        std::env::set_var("CODEWIT_DATA_DIR", dir.path());
+        std::env::set_var("GREX_DATA_DIR", dir.path());
         let result = notify_running_app(UiMutationEvent::WorkspaceListChanged).unwrap();
         assert!(!result, "with no socket the call must succeed with false");
     }

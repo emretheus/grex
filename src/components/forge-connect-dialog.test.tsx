@@ -39,7 +39,7 @@ vi.mock("sonner", () => ({
 }));
 
 import type { ScriptEvent } from "@/lib/api";
-import { codewitQueryKeys } from "@/lib/query-client";
+import { grexQueryKeys } from "@/lib/query-client";
 import { renderWithProviders } from "@/test/render-with-providers";
 import { ForgeConnectDialog } from "./forge-connect-dialog";
 
@@ -132,7 +132,7 @@ describe("ForgeConnectDialog", () => {
 		);
 		expect(apiMocks.retryRepoForgeBinding).toHaveBeenCalledWith("repo-1");
 		expect(invalidateSpy).toHaveBeenCalledWith({
-			queryKey: codewitQueryKeys.forgeAccountsAll,
+			queryKey: grexQueryKeys.forgeAccountsAll,
 		});
 		// Chip header (`workspaceAccountProfile`, staleTime:Infinity) must be
 		// invalidated too, else it keeps the old avatar/login after reconnect.
@@ -142,7 +142,7 @@ describe("ForgeConnectDialog", () => {
 				| undefined;
 			return (
 				filters?.predicate?.({
-					queryKey: codewitQueryKeys.workspaceAccountProfile("workspace-1"),
+					queryKey: grexQueryKeys.workspaceAccountProfile("workspace-1"),
 				}) ?? false
 			);
 		});

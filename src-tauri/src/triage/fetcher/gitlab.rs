@@ -49,7 +49,7 @@ impl Fetcher for GitlabFetcher {
     }
 }
 
-/// Codewit-registered GitLab repo, deduped by (login, host, project
+/// Grex-registered GitLab repo, deduped by (login, host, project
 /// path). `host` is carried so self-hosted GitLab instances don't get
 /// routed to gitlab.com via the login's home-host fallback.
 #[derive(Debug, Clone)]

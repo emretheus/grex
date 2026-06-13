@@ -1,6 +1,6 @@
 import { defineConfig, devices } from "@playwright/test";
 
-// Codewit's production target is Tauri's macOS WebKit webview, so the E2E
+// Grex's production target is Tauri's macOS WebKit webview, so the E2E
 // harness runs against WebKit only — Chromium/Firefox add test time without
 // getting us closer to production fidelity.
 

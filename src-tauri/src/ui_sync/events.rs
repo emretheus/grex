@@ -133,7 +133,7 @@ pub enum UiMutationEvent {
     /// The mobile-companion paired-device list changed (paired or revoked).
     /// Frontends invalidate the `pairedDevices` query.
     PairedDevicesChanged,
-    /// "Open in Codewit" from the quick panel. Only the MAIN window acts on
+    /// "Open in Grex" from the quick panel. Only the MAIN window acts on
     /// this (navigates to the workspace/session); the quick panel ignores it.
     WorkspaceRevealRequested {
         workspace_id: String,

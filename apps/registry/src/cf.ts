@@ -44,7 +44,7 @@ export async function createCname(
 			content,
 			proxied: true,
 			ttl: 1,
-			comment: "codewit-companion",
+			comment: "grex-companion",
 		}),
 	});
 	const json = (await res.json().catch(() => ({}))) as Partial<

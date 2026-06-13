@@ -165,11 +165,11 @@ async fn spawn_script(
         .map(|p| p.display().to_string())
         .unwrap_or_else(|| repo.root_path.clone());
 
-    // Allocate a stable per-workspace port range so CODEWIT_PORT /
-    // CODEWIT_PORT_COUNT can be injected below. Lazy: only allocates if
+    // Allocate a stable per-workspace port range so GREX_PORT /
+    // GREX_PORT_COUNT can be injected below. Lazy: only allocates if
     // the workspace has no range yet. Best-effort — a DB error here
     // must not block the script run, scripts that don't read
-    // CODEWIT_PORT continue to work exactly as before.
+    // GREX_PORT continue to work exactly as before.
     let port_range = workspace.as_ref().and_then(|ws| {
         match crate::workspace::port_allocation::ensure_workspace_port_range(&ws.id) {
             Ok(range) => range,
@@ -177,7 +177,7 @@ async fn spawn_script(
                 tracing::warn!(
                     workspace_id = %ws.id,
                     %error,
-                    "Failed to allocate workspace port range; skipping CODEWIT_PORT env vars"
+                    "Failed to allocate workspace port range; skipping GREX_PORT env vars"
                 );
                 None
             }

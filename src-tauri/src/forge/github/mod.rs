@@ -2,7 +2,7 @@
 //! `pull_request`, `actions`, `types`, `accounts`). Public entry points
 //! are the workspace-scoped `lookup_workspace_pr` /
 //! `lookup_workspace_pr_action_status` / etc. functions consumed by
-//! [`crate::forge::workspace`] and the `codewit github pr` CLI.
+//! [`crate::forge::workspace`] and the `grex github pr` CLI.
 //!
 //! Auth flow:
 //!

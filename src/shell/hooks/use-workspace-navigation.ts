@@ -6,7 +6,7 @@ import type {
 	WorkspaceRow,
 	WorkspaceSessionSummary,
 } from "@/lib/api";
-import { codewitQueryKeys } from "@/lib/query-client";
+import { grexQueryKeys } from "@/lib/query-client";
 import {
 	type ScheduledAfterPaint,
 	scheduleAfterNextPaint,
@@ -60,7 +60,7 @@ export function useWorkspaceNavigation({
 			if (!workspaceId) return;
 			const workspaceSessions =
 				queryClient.getQueryData<WorkspaceSessionSummary[]>(
-					codewitQueryKeys.workspaceSessions(workspaceId),
+					grexQueryKeys.workspaceSessions(workspaceId),
 				) ?? [];
 			const nextSessionId = findAdjacentSessionId(
 				workspaceSessions,
@@ -102,7 +102,7 @@ export function useWorkspaceNavigation({
 			// only work this task does, so it paints on the next frame.
 			// Null-safe: no-ops when the sidebar pane isn't mounted.
 			applyImmediateWorkspaceHighlight(
-				document.querySelector("[data-codewit-sidebar-root]"),
+				document.querySelector("[data-grex-sidebar-root]"),
 				nextWorkspaceId,
 			);
 			pending?.scheduled.cancel();

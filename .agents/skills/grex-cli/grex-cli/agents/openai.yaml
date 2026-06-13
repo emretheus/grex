@@ -1,0 +1,4 @@
+interface:
+  display_name: "Grex CLI"
+  short_description: "Use Grex from the terminal."
+  default_prompt: "Use the Grex CLI to inspect data, manage workspaces, send prompts, or run Grex as an MCP server."

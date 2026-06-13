@@ -4,7 +4,7 @@ import { useSettings } from "@/lib/settings";
 import { isQuickPanelWindow } from "@/lib/window-role";
 
 /** On app start, restart `opencode serve` once to re-read ~/.config/opencode,
- *  so config edits made while Codewit was closed land in the composer's model
+ *  so config edits made while Grex was closed land in the composer's model
  *  list without opening Settings. Gated on prior opencode use so a cold start
  *  that never touches opencode doesn't pay for spawning the server. */
 export function useOpencodeStartupSync() {

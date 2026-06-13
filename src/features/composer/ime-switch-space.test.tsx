@@ -2,19 +2,19 @@
  * Regression tests for the CJK IME "switch-mid-composition" space-leak bug.
  *
  * Why this exists: when a user types under an active Chinese pinyin IME and
- * the IME segments their input (e.g. `codewit` → candidate row shows
+ * the IME segments their input (e.g. `grex` → candidate row shows
  * `he | lmor`), if the user **switches IMEs** (Shift / Ctrl+Space / Cmd+Space
  * to flip to English) WITHOUT pressing Enter to confirm or Esc to cancel,
  * the OS force-commits the IME's pending buffer into the contenteditable —
  * with the IME's own segmentation spaces preserved as ASCII U+0020s. The
- * editor ends up with `he lmor` instead of the `codewit` the user actually
+ * editor ends up with `he lmor` instead of the `grex` the user actually
  * typed.
  *
  * The browser-level event surface for this is genuinely under-specified:
  *   - W3C UI Events says nothing normative about IME-switch interruption.
  *   - Chromium typically fires `compositionend` with `event.data` = the raw
  *     buffer (including the IME's segmentation spaces).
- *   - WebKit (Codewit's Tauri target) sometimes does not fire `compositionend`
+ *   - WebKit (Grex's Tauri target) sometimes does not fire `compositionend`
  *     at all and lets the text arrive only through `input` events
  *     (WebKit bug 164369).
  *   - Firefox sometimes leaves the widget stuck in composing mode forever
@@ -59,7 +59,7 @@ import {
 } from "@testing-library/react";
 import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 import type { AgentModelSection } from "@/lib/api";
-import { createCodewitQueryClient } from "@/lib/query-client";
+import { createGrexQueryClient } from "@/lib/query-client";
 
 vi.mock("@tauri-apps/api/core", () => ({
 	invoke: vi.fn(),
@@ -135,7 +135,7 @@ const MODEL_SECTIONS = [
 ] satisfies AgentModelSection[];
 
 function renderComposer() {
-	const queryClient = createCodewitQueryClient();
+	const queryClient = createGrexQueryClient();
 	return render(
 		<QueryClientProvider client={queryClient}>
 			<WorkspaceComposer
@@ -288,7 +288,7 @@ describe("WorkspaceComposer — IME switch mid-composition leaves segmentation s
 		const editor = await screen.findByLabelText("Workspace input");
 		editor.focus();
 
-		// User typed "codewit" with Chinese pinyin IME active. The IME
+		// User typed "grex" with Chinese pinyin IME active. The IME
 		// segmented it as `he | lmor` (visible in the candidate strip).
 		// User pressed Shift to switch to English IME without confirming
 		// — OS commits the segmented buffer "he lmor" with the inserted
@@ -296,7 +296,7 @@ describe("WorkspaceComposer — IME switch mid-composition leaves segmentation s
 		simulateImeSwitchCommit(editor, "he lmor");
 
 		await waitFor(() => {
-			expect(editor.textContent).toBe("codewit");
+			expect(editor.textContent).toBe("grex");
 		});
 	});
 
@@ -354,8 +354,8 @@ describe("WorkspaceComposer — IME switch mid-composition leaves segmentation s
 	//
 	// This test pins the desired behavior: after a pinyin buffer
 	// `"he lmor"` is force-committed (IME cursor at end, offset 7), the
-	// strip lands `"codewit"` in the editor AND the caret ends at the end
-	// of `"codewit"` (offset 6). Today jsdom clamps the selection so this
+	// strip lands `"grex"` in the editor AND the caret ends at the end
+	// of `"grex"` (offset 6). Today jsdom clamps the selection so this
 	// may be passing already on paper — but the plugin itself does not
 	// restore the selection explicitly, which is what the real-world
 	// WebKit bug requires. Fix must add an explicit
@@ -368,7 +368,7 @@ describe("WorkspaceComposer — IME switch mid-composition leaves segmentation s
 		simulateImeSwitchCommit(editor, "he lmor");
 
 		await waitFor(() => {
-			expect(editor.textContent).toBe("codewit");
+			expect(editor.textContent).toBe("grex");
 		});
 	});
 
@@ -379,13 +379,13 @@ describe("WorkspaceComposer — IME switch mid-composition leaves segmentation s
 
 		simulateImeSwitchCommit(editor, "he lmor");
 		await waitFor(() => {
-			expect(editor.textContent).toBe("codewit");
+			expect(editor.textContent).toBe("grex");
 		});
 
-		simulateFollowUpComposition(editor, "codewit你好", "你好");
+		simulateFollowUpComposition(editor, "grex你好", "你好");
 
 		await waitFor(() => {
-			expect(editor.textContent).toBe("codewit你好");
+			expect(editor.textContent).toBe("grex你好");
 			expect(editor.textContent?.includes("he lmor")).toBe(false);
 
 			const sel = editor.ownerDocument.defaultView?.getSelection();
@@ -394,7 +394,7 @@ describe("WorkspaceComposer — IME switch mid-composition leaves segmentation s
 			const paragraph = editor.querySelector("p");
 			const textNode = paragraph?.firstChild;
 			if (sel && sel.anchorNode === textNode) {
-				expect(sel.anchorOffset).toBe("codewit你好".length);
+				expect(sel.anchorOffset).toBe("grex你好".length);
 				return;
 			}
 			if (sel && sel.anchorNode === paragraph) {
@@ -414,13 +414,13 @@ describe("WorkspaceComposer — IME switch mid-composition leaves segmentation s
 
 		simulateImeSwitchCommit(editor, "he lmor");
 		await waitFor(() => {
-			expect(editor.textContent).toBe("codewit");
+			expect(editor.textContent).toBe("grex");
 		});
 
 		getLexicalEditorFromRoot(editor).update(() => {});
 
 		await waitFor(() => {
-			expect(editor.textContent).toBe("codewit");
+			expect(editor.textContent).toBe("grex");
 		});
 	});
 

@@ -6,7 +6,7 @@ import {
 	type SlackSearchSort,
 	slackSearchMessages,
 } from "@/lib/api";
-import { codewitQueryKeys } from "@/lib/query-client";
+import { grexQueryKeys } from "@/lib/query-client";
 import { useWorkspaceToast } from "@/lib/workspace-toast-context";
 import type { UseSlackInboxItemsResult } from "./use-slack-inbox-items";
 
@@ -33,7 +33,7 @@ export function useSlackSearch(
 	const enabled = teamId !== null && trimmedQuery.length > 0;
 	const result = useInfiniteQuery<SlackInboxPage, Error>({
 		queryKey: enabled
-			? codewitQueryKeys.slackSearch(teamId, trimmedQuery, sort)
+			? grexQueryKeys.slackSearch(teamId, trimmedQuery, sort)
 			: ["slackSearch", "__disabled__"],
 		enabled,
 		initialPageParam: null as string | null,

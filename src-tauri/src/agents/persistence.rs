@@ -54,7 +54,7 @@ pub(super) fn persist_user_message(
             "#,
         params![
             user_message_id,
-            ctx.codewit_session_id,
+            ctx.grex_session_id,
             MessageRole::User,
             content,
             now
@@ -77,7 +77,7 @@ pub(super) fn persist_turn_message(
     // message IDs are the same UUID.
     let msg_id = turn.id.clone();
     let content = crate::image_store::prepare_turn_content_for_persist(
-        &ctx.codewit_session_id,
+        &ctx.grex_session_id,
         &turn.content_json,
     )?;
 
@@ -87,7 +87,7 @@ pub(super) fn persist_turn_message(
               id, session_id, role, content, created_at, sent_at
             ) VALUES (?1, ?2, ?3, ?4, ?5, ?5)
             "#,
-        params![msg_id, ctx.codewit_session_id, turn.role, content, now],
+        params![msg_id, ctx.grex_session_id, turn.role, content, now],
     )?;
     Ok(msg_id)
 }
@@ -114,7 +114,7 @@ pub(super) fn persist_error_message(
             "#,
         params![
             msg_id,
-            ctx.codewit_session_id,
+            ctx.grex_session_id,
             MessageRole::Error,
             payload,
             now
@@ -161,7 +161,7 @@ pub(super) fn persist_exit_plan_message(
             "#,
         params![
             msg_id,
-            ctx.codewit_session_id,
+            ctx.grex_session_id,
             MessageRole::Assistant,
             payload.to_string(),
             now
@@ -215,7 +215,7 @@ pub(super) fn persist_result_and_finalize(
             "#,
         params![
             result_message_id,
-            ctx.codewit_session_id,
+            ctx.grex_session_id,
             result_payload,
             now
         ],
@@ -280,7 +280,7 @@ fn finalize_session_metadata_in_transaction(
             WHERE id = ?1
             "#,
         params![
-            ctx.codewit_session_id,
+            ctx.grex_session_id,
             ctx.model_id,
             ctx.model_provider,
             now,
@@ -297,10 +297,10 @@ fn finalize_session_metadata_in_transaction(
               active_session_id = ?2
             WHERE id = (SELECT workspace_id FROM sessions WHERE id = ?1)
             "#,
-        params![ctx.codewit_session_id, ctx.codewit_session_id],
+        params![ctx.grex_session_id, ctx.grex_session_id],
     )?;
 
-    mark_session_read_in_transaction(transaction, &ctx.codewit_session_id)?;
+    mark_session_read_in_transaction(transaction, &ctx.grex_session_id)?;
     Ok(())
 }
 
@@ -314,7 +314,7 @@ mod tests {
 
     fn test_exchange_context() -> ExchangeContext {
         ExchangeContext {
-            codewit_session_id: "session-1".to_string(),
+            grex_session_id: "session-1".to_string(),
             model_id: "gpt-5.4".to_string(),
             model_provider: "codex".to_string(),
             user_message_id: "user-1".to_string(),

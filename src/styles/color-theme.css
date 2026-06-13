@@ -1,5 +1,5 @@
 /* =============================================================================
-   Codewit Theme System — Three-layer token architecture
+   Grex Theme System — Three-layer token architecture
    =============================================================================
    Layer 1: Base       — atomic semantic tokens (surfaces, text, borders,
                           accent, status). Shared by every region.
@@ -23,7 +23,7 @@
      shadcn's ecosystem protocol. They are intentionally kept as a public
      view of the Base layer — shadcn components and copy-pasted shadcn
      examples target these names, and they auto-track Base via var().
-     Not a shim; a separate layer with a clear job. New Codewit code should
+     Not a shim; a separate layer with a clear job. New Grex code should
      reach for Region tokens; shadcn primitives stay on the protocol names.
    ========================================================================== */
 

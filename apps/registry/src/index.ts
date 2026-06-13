@@ -1,7 +1,7 @@
-/// Codewit companion device registry (Cloudflare Worker).
+/// Grex companion device registry (Cloudflare Worker).
 ///
-/// The only Codewit-operated service in the companion architecture. It writes a
-/// single `remote-<random>.codewit.ai` CNAME per paired desktop, pointing at
+/// The only Grex-operated service in the companion architecture. It writes a
+/// single `remote-<random>.grex.ai` CNAME per paired desktop, pointing at
 /// that desktop's Cloudflare Tunnel. It never sees the PAT or any user data —
 /// only a tunnel UUID and (rate-limited) the caller IP.
 ///
@@ -19,7 +19,7 @@ export default {
 		const url = new URL(request.url);
 		try {
 			if (request.method === "GET" && url.pathname === "/api/health") {
-				return json({ status: "ok", service: "codewit-registry" });
+				return json({ status: "ok", service: "grex-registry" });
 			}
 
 			if (

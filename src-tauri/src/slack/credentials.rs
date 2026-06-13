@@ -3,7 +3,7 @@
 //! On macOS we shell out to `/usr/bin/security` rather than going
 //! through the `keyring` crate. The keyring crate's `set_password`
 //! silently no-ops when called from a tokio worker thread (verified
-//! end-to-end with tracing in codewit) — the macOS Security framework
+//! end-to-end with tracing in grex) — the macOS Security framework
 //! requires a CFRunLoop on the calling thread, which spawn_blocking
 //! workers don't have. The `security` CLI process gets its own
 //! runloop and works reliably. Same trick `desktop_scrape.rs` uses
@@ -12,14 +12,14 @@
 //! One entry per Slack workspace, keyed by `team_id`. The token
 //! (`xoxc-…`) and the `d` cookie value (`xoxd-…`) travel as a single
 //! JSON blob so we never write half of a pair. The service identifier
-//! groups every Codewit Slack credential under one umbrella in
+//! groups every Grex Slack credential under one umbrella in
 //! Keychain Access so users can audit / revoke at a glance.
 
 use anyhow::{bail, Context, Result};
 use serde::{Deserialize, Serialize};
 use std::process::{Command, Stdio};
 
-const KEYCHAIN_SERVICE: &str = "io.codewit.slack";
+const KEYCHAIN_SERVICE: &str = "io.grex.slack";
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SlackCreds {

@@ -1,6 +1,6 @@
 ---
 source: tests/agent_stream_event_wire.rs
-expression: "to_value(AgentStreamEvent::UserInputRequest\n{\n    provider: \"claude\".into(), model_id: \"opus-1m\".into(), resolved_model:\n    \"claude-opus-4-20250514\".into(), session_id:\n    Some(\"provider-session-1\".into()), working_directory:\n    \"/tmp/codewit\".into(), permission_mode: None, user_input_id:\n    \"elicitation-2\".into(), source: \"auth-server\".into(), message:\n    \"Finish auth\".into(), payload:\n    json!({ \"kind\": \"url\", \"url\": \"https://example.com/authorize\", }),\n})"
+expression: "to_value(AgentStreamEvent::UserInputRequest\n{\n    provider: \"claude\".into(), model_id: \"opus-1m\".into(), resolved_model:\n    \"claude-opus-4-20250514\".into(), session_id:\n    Some(\"provider-session-1\".into()), working_directory:\n    \"/tmp/grex\".into(), permission_mode: None, user_input_id:\n    \"elicitation-2\".into(), source: \"auth-server\".into(), message:\n    \"Finish auth\".into(), payload:\n    json!({ \"kind\": \"url\", \"url\": \"https://example.com/authorize\", }),\n})"
 ---
 kind: userInputRequest
 message: Finish auth
@@ -14,4 +14,4 @@ resolvedModel: claude-opus-4-20250514
 sessionId: provider-session-1
 source: auth-server
 userInputId: elicitation-2
-workingDirectory: /tmp/codewit
+workingDirectory: /tmp/grex

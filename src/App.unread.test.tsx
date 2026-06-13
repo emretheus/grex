@@ -93,7 +93,7 @@ describe("App unread lifecycle", () => {
 					{
 						id: "workspace-unread",
 						title: "Unread workspace",
-						repoName: "codewit-core",
+						repoName: "grex-core",
 						state: "ready",
 						hasUnread:
 							unreadRuntime.workspaceUnread > 0 ||
@@ -110,7 +110,7 @@ describe("App unread lifecycle", () => {
 			id: "workspace-unread",
 			title: "Unread workspace",
 			repoId: "repo-1",
-			repoName: "codewit-core",
+			repoName: "grex-core",
 			directoryName: "workspace-unread",
 			state: "ready",
 			hasUnread:

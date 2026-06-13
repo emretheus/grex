@@ -33,7 +33,7 @@ export function AppUpdateButton({ status, className }: AppUpdateButtonProps) {
 					type="button"
 					variant="default"
 					size="xs"
-					aria-label={`Update Codewit to ${update.version}`}
+					aria-label={`Update Grex to ${update.version}`}
 					className={cn(
 						"h-6 gap-1 rounded-sm px-1.5 text-mini font-medium tracking-[0.01em] transition-[background-color,color,border-color,box-shadow] duration-200 hover:bg-primary/90",
 						className,

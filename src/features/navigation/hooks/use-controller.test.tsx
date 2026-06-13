@@ -11,7 +11,7 @@ import type {
 	WorkspaceSessionSummary,
 	WorkspaceSummary,
 } from "@/lib/api";
-import { codewitQueryKeys } from "@/lib/query-client";
+import { grexQueryKeys } from "@/lib/query-client";
 import { DEFAULT_SETTINGS, SettingsContext } from "@/lib/settings";
 import {
 	isSidebarMutationInFlight,
@@ -113,7 +113,7 @@ const workspaceGroups: WorkspaceGroup[] = [
 			{
 				id: "ws-1",
 				title: "Workspace 1",
-				repoName: "codewit",
+				repoName: "grex",
 				repoInitials: "HE",
 				state: "ready",
 				status: "in-progress",
@@ -133,7 +133,7 @@ const workspaceGroups: WorkspaceGroup[] = [
 			{
 				id: "ws-2",
 				title: "Workspace 2",
-				repoName: "codewit",
+				repoName: "grex",
 				repoInitials: "HE",
 				state: "ready",
 				status: "in-progress",
@@ -160,7 +160,7 @@ function makeArchivedSummary(id: string): WorkspaceSummary {
 		title: `Archived ${id}`,
 		directoryName: id,
 		repoId: "repo-1",
-		repoName: "codewit",
+		repoName: "grex",
 		repoInitials: "HE",
 		state: "archived",
 		hasUnread: false,
@@ -185,7 +185,7 @@ function makeWorkspaceDetail(id: string): WorkspaceDetail {
 		id,
 		title: `Workspace ${id}`,
 		repoId: "repo-1",
-		repoName: "codewit",
+		repoName: "grex",
 		repoInitials: "HE",
 		repoIconSrc: null,
 		remote: "origin",
@@ -466,7 +466,7 @@ describe("useWorkspacesSidebarController archive flow", () => {
 		apiMocks.listRepositories.mockResolvedValue([
 			{
 				id: "repo-1",
-				name: "codewit",
+				name: "grex",
 				defaultBranch: "main",
 				repoInitials: "HE",
 			},
@@ -475,7 +475,7 @@ describe("useWorkspacesSidebarController archive flow", () => {
 			workspaceId: generatedWorkspaceId,
 			initialSessionId: generatedSessionId,
 			repoId: "repo-1",
-			repoName: "codewit",
+			repoName: "grex",
 			directoryName: "vega",
 			branch: "feature/vega",
 			defaultBranch: "main",
@@ -523,7 +523,7 @@ describe("useWorkspacesSidebarController archive flow", () => {
 		expect(preparedRow?.state).toBe("initializing");
 		// Title, directory, branch are all final-state immediately — prepare
 		// returned real values so there is no placeholder-to-real swap.
-		expect(preparedRow?.title).toBe("codewit workspace");
+		expect(preparedRow?.title).toBe("grex workspace");
 		expect(preparedRow?.directoryName).toBe("vega");
 		expect(preparedRow?.branch).toBe("feature/vega");
 		expect(apiMocks.prepareWorkspaceFromRepo).toHaveBeenCalledWith("repo-1");
@@ -544,7 +544,7 @@ describe("useWorkspacesSidebarController archive flow", () => {
 		await waitFor(() => {
 			expect(
 				queryClient.getQueryData(
-					codewitQueryKeys.workspaceDetail(generatedWorkspaceId),
+					grexQueryKeys.workspaceDetail(generatedWorkspaceId),
 				),
 			).toMatchObject({
 				id: generatedWorkspaceId,
@@ -566,7 +566,7 @@ describe("useWorkspacesSidebarController archive flow", () => {
 		apiMocks.listRepositories.mockResolvedValue([
 			{
 				id: "repo-1",
-				name: "codewit",
+				name: "grex",
 				defaultBranch: "main",
 				repoInitials: "HE",
 			},
@@ -575,9 +575,9 @@ describe("useWorkspacesSidebarController archive flow", () => {
 			workspaceId: generatedWorkspaceId,
 			initialSessionId: generatedSessionId,
 			repoId: "repo-1",
-			repoName: "codewit",
-			directoryName: "testuser-codewit",
-			branch: "testuser/codewit",
+			repoName: "grex",
+			directoryName: "testuser-grex",
+			branch: "testuser/grex",
 			defaultBranch: "main",
 			state: "initializing" as const,
 			repoScripts: {
@@ -628,12 +628,12 @@ describe("useWorkspacesSidebarController archive flow", () => {
 		// "origin/main"` and flash the "Remote" BranchDiffSection header.
 		expect(
 			queryClient.getQueryData(
-				codewitQueryKeys.workspaceDetail(generatedWorkspaceId),
+				grexQueryKeys.workspaceDetail(generatedWorkspaceId),
 			),
 		).toMatchObject({
 			id: generatedWorkspaceId,
-			directoryName: "testuser-codewit",
-			branch: "testuser/codewit",
+			directoryName: "testuser-grex",
+			branch: "testuser/grex",
 			state: "initializing",
 			remote: "origin",
 			defaultBranch: "main",
@@ -642,7 +642,7 @@ describe("useWorkspacesSidebarController archive flow", () => {
 		});
 		expect(
 			queryClient.getQueryData(
-				codewitQueryKeys.workspaceSessions(generatedWorkspaceId),
+				grexQueryKeys.workspaceSessions(generatedWorkspaceId),
 			),
 		).toMatchObject([
 			{
@@ -658,7 +658,7 @@ describe("useWorkspacesSidebarController archive flow", () => {
 		// "Sync status unavailable" / "Waiting for PR review" labels).
 		expect(
 			queryClient.getQueryData(
-				codewitQueryKeys.workspaceGitActionStatus(generatedWorkspaceId),
+				grexQueryKeys.workspaceGitActionStatus(generatedWorkspaceId),
 			),
 		).toMatchObject({
 			uncommittedCount: 0,
@@ -668,12 +668,12 @@ describe("useWorkspacesSidebarController archive flow", () => {
 		});
 		expect(
 			queryClient.getQueryData(
-				codewitQueryKeys.workspaceChangeRequest(generatedWorkspaceId),
+				grexQueryKeys.workspaceChangeRequest(generatedWorkspaceId),
 			),
 		).toBeNull();
 		expect(
 			queryClient.getQueryData(
-				codewitQueryKeys.workspaceForgeActionStatus(generatedWorkspaceId),
+				grexQueryKeys.workspaceForgeActionStatus(generatedWorkspaceId),
 			),
 		).toMatchObject({
 			changeRequest: null,
@@ -742,7 +742,7 @@ describe("useWorkspacesSidebarController archive flow", () => {
 		apiMocks.listRepositories.mockResolvedValue([
 			{
 				id: "repo-1",
-				name: "codewit",
+				name: "grex",
 				defaultBranch: "main",
 				repoInitials: "HE",
 			},
@@ -751,9 +751,9 @@ describe("useWorkspacesSidebarController archive flow", () => {
 			workspaceId: generatedWorkspaceId,
 			initialSessionId: generatedSessionId,
 			repoId: "repo-1",
-			repoName: "codewit",
-			directoryName: "testuser-codewit",
-			branch: "testuser/codewit",
+			repoName: "grex",
+			directoryName: "testuser-grex",
+			branch: "testuser/grex",
 			defaultBranch: "main",
 			state: "initializing" as const,
 			repoScripts: {
@@ -805,9 +805,9 @@ describe("useWorkspacesSidebarController archive flow", () => {
 					{
 						...workspaceGroups[0].rows[0],
 						id: generatedWorkspaceId,
-						title: "codewit workspace",
+						title: "grex workspace",
 						state: "initializing" as const,
-						branch: "testuser/codewit",
+						branch: "testuser/grex",
 					},
 					...workspaceGroups[0].rows,
 				],
@@ -816,7 +816,7 @@ describe("useWorkspacesSidebarController archive flow", () => {
 		apiMocks.loadWorkspaceGroups.mockResolvedValue(upgradedGroups);
 
 		act(() => {
-			queryClient.setQueryData(codewitQueryKeys.workspaceGroups, upgradedGroups);
+			queryClient.setQueryData(grexQueryKeys.workspaceGroups, upgradedGroups);
 		});
 
 		await act(async () => {
@@ -853,7 +853,7 @@ describe("useWorkspacesSidebarController archive flow", () => {
 		apiMocks.listRepositories.mockResolvedValue([
 			{
 				id: "repo-1",
-				name: "codewit",
+				name: "grex",
 				defaultBranch: "main",
 				repoInitials: "HE",
 			},
@@ -862,9 +862,9 @@ describe("useWorkspacesSidebarController archive flow", () => {
 			workspaceId: generatedWorkspaceId,
 			initialSessionId: generatedSessionId,
 			repoId: "repo-1",
-			repoName: "codewit",
-			directoryName: "testuser-codewit",
-			branch: "testuser/codewit",
+			repoName: "grex",
+			directoryName: "testuser-grex",
+			branch: "testuser/grex",
 			defaultBranch: "main",
 			state: "initializing" as const,
 			repoScripts: {
@@ -924,38 +924,38 @@ describe("useWorkspacesSidebarController archive flow", () => {
 		// Pending entry + every seeded cache key is removed.
 		expect(
 			queryClient.getQueryData(
-				codewitQueryKeys.workspaceDetail(generatedWorkspaceId),
+				grexQueryKeys.workspaceDetail(generatedWorkspaceId),
 			),
 		).toBeUndefined();
 		expect(
 			queryClient.getQueryData(
-				codewitQueryKeys.workspaceSessions(generatedWorkspaceId),
+				grexQueryKeys.workspaceSessions(generatedWorkspaceId),
 			),
 		).toBeUndefined();
 		expect(
 			queryClient.getQueryData([
-				...codewitQueryKeys.sessionMessages(generatedSessionId),
+				...grexQueryKeys.sessionMessages(generatedSessionId),
 				"thread",
 			]),
 		).toBeUndefined();
 		expect(
 			queryClient.getQueryData(
-				codewitQueryKeys.repoScripts("repo-1", generatedWorkspaceId),
+				grexQueryKeys.repoScripts("repo-1", generatedWorkspaceId),
 			),
 		).toBeUndefined();
 		expect(
 			queryClient.getQueryData(
-				codewitQueryKeys.workspaceGitActionStatus(generatedWorkspaceId),
+				grexQueryKeys.workspaceGitActionStatus(generatedWorkspaceId),
 			),
 		).toBeUndefined();
 		expect(
 			queryClient.getQueryData(
-				codewitQueryKeys.workspaceChangeRequest(generatedWorkspaceId),
+				grexQueryKeys.workspaceChangeRequest(generatedWorkspaceId),
 			),
 		).toBeUndefined();
 		expect(
 			queryClient.getQueryData(
-				codewitQueryKeys.workspaceForgeActionStatus(generatedWorkspaceId),
+				grexQueryKeys.workspaceForgeActionStatus(generatedWorkspaceId),
 			),
 		).toBeUndefined();
 		expect(

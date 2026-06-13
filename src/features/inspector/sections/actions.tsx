@@ -37,7 +37,7 @@ import {
 import { buildComposerPreviewPayload } from "@/lib/composer-insert";
 import { openUrl } from "@/lib/platform-bridge";
 import {
-	codewitQueryKeys,
+	grexQueryKeys,
 	workspaceForgeActionStatusQueryOptions,
 	workspaceForgeQueryOptions,
 	workspaceGitActionStatusQueryOptions,
@@ -273,16 +273,16 @@ export function ActionsSection({
 			requestSidebarReconcile(queryClient);
 			await Promise.all([
 				queryClient.invalidateQueries({
-					queryKey: codewitQueryKeys.workspaceGitActionStatus(workspaceId),
+					queryKey: grexQueryKeys.workspaceGitActionStatus(workspaceId),
 				}),
 				queryClient.invalidateQueries({
-					queryKey: codewitQueryKeys.workspaceChangeRequest(workspaceId),
+					queryKey: grexQueryKeys.workspaceChangeRequest(workspaceId),
 				}),
 				queryClient.invalidateQueries({
-					queryKey: codewitQueryKeys.workspaceForgeActionStatus(workspaceId),
+					queryKey: grexQueryKeys.workspaceForgeActionStatus(workspaceId),
 				}),
 				queryClient.invalidateQueries({
-					queryKey: codewitQueryKeys.workspaceDetail(workspaceId),
+					queryKey: grexQueryKeys.workspaceDetail(workspaceId),
 				}),
 				queryClient.invalidateQueries({ queryKey: ["workspaceChanges"] }),
 			]);

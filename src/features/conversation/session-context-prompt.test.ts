@@ -20,12 +20,12 @@ describe("buildSessionContextPrompt", () => {
 			},
 		]);
 
-		expect(prompt).toContain("<codewit-session-context>");
+		expect(prompt).toContain("<grex-session-context>");
 		expect(prompt).toContain(
-			'<codewit-session-ref session-id="session-1" workspace-id="workspace-1" title="Plan cache fix">',
+			'<grex-session-ref session-id="session-1" workspace-id="workspace-1" title="Plan cache fix">',
 		);
 		expect(prompt).toContain(
-			'<codewit-session-ref session-id="session-2" workspace-id="workspace-1" title="Review tests">',
+			'<grex-session-ref session-id="session-2" workspace-id="workspace-1" title="Review tests">',
 		);
 		expect(prompt).toContain(
 			"session get-messages session-1 --position tail --limit 12 --body-limit 2000 --json",
@@ -57,7 +57,7 @@ describe("buildSessionContextPrompt", () => {
 			},
 		]);
 
-		expect(prompt?.match(/<codewit-session-ref/g)).toHaveLength(1);
+		expect(prompt?.match(/<grex-session-ref/g)).toHaveLength(1);
 		expect(prompt).toContain('title="Auth &lt;fix&gt; &quot;final&quot;"');
 		expect(prompt).toContain('prior session "Auth &lt;fix&gt; "final""');
 	});

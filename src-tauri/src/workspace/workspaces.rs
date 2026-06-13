@@ -992,7 +992,7 @@ pub fn get_workspace_linked_directories(workspace_id: &str) -> Result<Vec<String
 
 /// One entry in the `/add-dir` picker's "known workspaces" list. Mirrors
 /// the sidebar row's display fields so the popup looks and reads the
-/// same as Codewit's workspace list (repo icon + humanized title +
+/// same as Grex's workspace list (repo icon + humanized title +
 /// branch). `absolute_path` is the only non-display field — it's what
 /// we persist into `linked_directory_paths` on selection.
 #[derive(Debug, Clone, Serialize)]
@@ -1148,12 +1148,12 @@ mod candidate_directories_tests {
         let _guard = crate::data_dir::TEST_ENV_LOCK
             .lock()
             .unwrap_or_else(|poisoned| poisoned.into_inner());
-        std::env::set_var("CODEWIT_DATA_DIR", dir.path());
+        std::env::set_var("GREX_DATA_DIR", dir.path());
         crate::data_dir::ensure_directory_structure().unwrap();
         let conn = rusqlite::Connection::open(crate::data_dir::db_path().unwrap()).unwrap();
         crate::schema::ensure_schema(&conn).unwrap();
         f(&conn);
-        std::env::remove_var("CODEWIT_DATA_DIR");
+        std::env::remove_var("GREX_DATA_DIR");
     }
 
     fn seed_repo(conn: &rusqlite::Connection, id: &str, name: &str) {
@@ -1365,7 +1365,7 @@ pub fn record_to_detail(record: WorkspaceRecord) -> WorkspaceDetail {
     let repo_initials = helpers::repo_initials_for_name(&record.repo_name);
 
     // Use the workspace path as root_path so Claude Code/Codex operate in the
-    // correct directory. For worktree workspaces this is the codewit data
+    // correct directory. For worktree workspaces this is the grex data
     // dir; for local it's the source repo's root. Archived workspaces have
     // no on-disk path — return None so the frontend knows agent messaging
     // is unavailable.

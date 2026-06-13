@@ -1,11 +1,11 @@
 /**
- * Codewit Sidecar — Agent SDK bridge.
+ * Grex Sidecar — Agent SDK bridge.
  *
  * Bridges the Claude Agent SDK and Codex SDK behind a unified
  * stdin/stdout JSON Lines protocol. Requests come in via stdin, responses
  * and streaming events go out via stdout. stderr is for debug logging.
  *
- * Log level controlled by CODEWIT_LOG (debug|info|error), defaults to info.
+ * Log level controlled by GREX_LOG (debug|info|error), defaults to info.
  */
 
 import { createInterface } from "node:readline";
@@ -76,7 +76,7 @@ function handleStdioError(stream: "stdout" | "stderr") {
 		// Report through the OTHER stream to avoid recursion.
 		if (stream === "stdout") {
 			try {
-				process.stderr.write(`[codewit-sidecar] stdout error: ${err.message}\n`);
+				process.stderr.write(`[grex-sidecar] stdout error: ${err.message}\n`);
 			} catch {}
 		}
 	};
@@ -414,7 +414,7 @@ async function handleGetContextUsage(
 	try {
 		const getParams = parseGetContextUsageParams(params);
 		logger.debug(`[${id}] getContextUsage`, {
-			sessionId: getParams.codewitSessionId,
+			sessionId: getParams.grexSessionId,
 			providerSessionId: getParams.providerSessionId ?? "(none)",
 			model: getParams.model ?? "(default)",
 			cwd: getParams.cwd ?? "(none)",

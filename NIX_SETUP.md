@@ -37,13 +37,13 @@ This project includes a `flake.nix` for reproducible development environments us
 The repository includes a `.envrc` file that automatically loads the Nix environment:
 
 ```bash
-cd /path/to/codewit/calypso
+cd /path/to/grex/calypso
 
 # Allow direnv (first time only)
 direnv allow
 
 # Environment automatically loads when you cd into the directory!
-# You should see: "🚀 Codewit development environment loaded!"
+# You should see: "🚀 Grex development environment loaded!"
 ```
 
 Now you can run commands directly:
@@ -57,7 +57,7 @@ bun run dev
 Without direnv, manually enter the Nix shell:
 
 ```bash
-cd /path/to/codewit/calypso
+cd /path/to/grex/calypso
 
 # Enter the development shell
 nix develop
@@ -212,7 +212,7 @@ Stable Rust from rust-overlay with extensions:
 
 ## Alternative: Docker (not recommended)
 
-While a Dockerfile could provide similar isolation, Nix is preferred for Codewit because:
+While a Dockerfile could provide similar isolation, Nix is preferred for Grex because:
 - Lower overhead (no container runtime)
 - Native macOS support (important for Tauri)
 - Better IDE integration

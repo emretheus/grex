@@ -16,7 +16,7 @@ import {
 	revokePairedDevice,
 	signInCloudflare,
 } from "@/lib/api";
-import { codewitQueryKeys } from "@/lib/query-client";
+import { grexQueryKeys } from "@/lib/query-client";
 import { SettingsGroup, SettingsRow } from "../components/settings-row";
 
 const COMPANION_STATUS_KEY = ["companionStatus"] as const;
@@ -52,7 +52,7 @@ function errorText(error: unknown): string {
 /// Settings → Experimental panel for the mobile browser companion. Enabling
 /// starts the loopback server + a cloudflared tunnel; the "Permanent URL"
 /// section upgrades the ephemeral quick tunnel to a stable
-/// remote-*.codewit.ai address; pairing mints a per-device token shown as a QR.
+/// remote-*.grex.ai address; pairing mints a per-device token shown as a QR.
 export function MobileCompanionPanel() {
 	const queryClient = useQueryClient();
 	const [pairing, setPairing] = useState<CompanionPairingPayload | null>(null);
@@ -64,7 +64,7 @@ export function MobileCompanionPanel() {
 		staleTime: 0,
 	});
 	const devicesQuery = useQuery({
-		queryKey: codewitQueryKeys.pairedDevices,
+		queryKey: grexQueryKeys.pairedDevices,
 		queryFn: listPairedDevices,
 		staleTime: 0,
 	});
@@ -112,7 +112,7 @@ export function MobileCompanionPanel() {
 		onSuccess: (payload) => {
 			setPairing(payload);
 			void queryClient.invalidateQueries({
-				queryKey: codewitQueryKeys.pairedDevices,
+				queryKey: grexQueryKeys.pairedDevices,
 			});
 		},
 	});
@@ -120,7 +120,7 @@ export function MobileCompanionPanel() {
 		mutationFn: (id: string) => revokePairedDevice(id),
 		onSuccess: () => {
 			void queryClient.invalidateQueries({
-				queryKey: codewitQueryKeys.pairedDevices,
+				queryKey: grexQueryKeys.pairedDevices,
 			});
 		},
 	});
@@ -131,7 +131,7 @@ export function MobileCompanionPanel() {
 		<SettingsGroup>
 			<SettingsRow
 				title="Mobile companion"
-				description="Drive Codewit from your phone's browser over a private link. Enabling starts a local server and a Cloudflare tunnel — no app to install."
+				description="Drive Grex from your phone's browser over a private link. Enabling starts a local server and a Cloudflare tunnel — no app to install."
 			>
 				<div className="flex items-center gap-2">
 					{enableMutation.isPending ? (
@@ -164,7 +164,7 @@ export function MobileCompanionPanel() {
 							stableHost
 								? "Your phone connects at a fixed address that survives desktop restarts."
 								: signedIn
-									? "Allocate a permanent remote-*.codewit.ai address so you never have to re-scan."
+									? "Allocate a permanent remote-*.grex.ai address so you never have to re-scan."
 									: "The quick link changes when you restart. Sign in to Cloudflare for a permanent address."
 						}
 					>

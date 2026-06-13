@@ -11,8 +11,8 @@
 use std::sync::Arc;
 
 use futures::FutureExt;
-use codewit_lib::companion::{CompanionState, Dispatcher, StreamStarter, Verifier};
-use codewit_lib::error::CommandError;
+use grex_lib::companion::{CompanionState, Dispatcher, StreamStarter, Verifier};
+use grex_lib::error::CommandError;
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn health_is_public_and_rpc_requires_bearer() {
@@ -65,7 +65,7 @@ async fn health_is_public_and_rpc_requires_bearer() {
     assert_eq!(health.status(), 200);
     let body: serde_json::Value = health.json().await.expect("health json");
     assert_eq!(body["status"], "ok");
-    assert_eq!(body["service"], "codewit-companion");
+    assert_eq!(body["service"], "grex-companion");
 
     // RPC without a bearer token is rejected.
     let unauth = client

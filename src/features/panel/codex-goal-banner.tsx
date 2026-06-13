@@ -22,7 +22,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { type CodexGoalState, mutateCodexGoal } from "@/lib/api";
 import {
-	codewitQueryKeys,
+	grexQueryKeys,
 	sessionCodexGoalQueryOptions,
 } from "@/lib/query-client";
 import { cn } from "@/lib/utils";
@@ -66,7 +66,7 @@ export function CodexGoalBanner({
 	onResume?: () => void;
 }) {
 	const queryClient = useQueryClient();
-	const queryKey = codewitQueryKeys.sessionCodexGoal(sessionId);
+	const queryKey = grexQueryKeys.sessionCodexGoal(sessionId);
 	const { data: goal } = useQuery(sessionCodexGoalQueryOptions(sessionId));
 
 	const clearMutation = useMutation({

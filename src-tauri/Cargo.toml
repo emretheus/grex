@@ -1,10 +1,10 @@
 [package]
-name = "codewit"
+name = "grex"
 version = "0.1.0"
 description = "The local-first IDE for coding agent orchestration."
 authors = ["Caspian Zhao", "Nathan Lian"]
 edition = "2021"
-default-run = "codewit"
+default-run = "grex"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
@@ -12,7 +12,7 @@ default-run = "codewit"
 # The `_lib` suffix may seem redundant but it is necessary
 # to make the lib name unique and wouldn't conflict with the bin name.
 # This seems to be only an issue on Windows, see https://github.com/rust-lang/cargo/issues/8519
-name = "codewit_lib"
+name = "grex_lib"
 crate-type = ["staticlib", "cdylib", "rlib"]
 
 [build-dependencies]
@@ -130,8 +130,8 @@ windows = { version = "0.58", features = [
 ] }
 
 [[bin]]
-name = "codewit-cli"
-path = "src/bin/codewit-cli.rs"
+name = "grex-cli"
+path = "src/bin/grex-cli.rs"
 
 # gen_pipeline_fixture{,_from_stream} are dev-only fixture-capture tools and
 # live in examples/ (NOT [[bin]]) on purpose: Tauri's bundler copies every

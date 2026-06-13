@@ -32,7 +32,7 @@
 }
 
 :root {
-	--codewit-interactive-cursor: pointer;
+	--grex-interactive-cursor: pointer;
 	font-synthesis: none;
 	text-rendering: optimizeLegibility;
 	-webkit-font-smoothing: antialiased;
@@ -46,15 +46,15 @@
  * cursor semantics.
  */
 html.no-pointer-cursors {
-	--codewit-interactive-cursor: default;
+	--grex-interactive-cursor: default;
 }
 
 :where(.cursor-interactive) {
-	cursor: var(--codewit-interactive-cursor);
+	cursor: var(--grex-interactive-cursor);
 }
 
 :where(.\!cursor-interactive) {
-	cursor: var(--codewit-interactive-cursor) !important;
+	cursor: var(--grex-interactive-cursor) !important;
 }
 
 html,
@@ -123,7 +123,7 @@ body {
 
 .monaco-editor .find-widget .button,
 .monaco-editor .find-widget .monaco-custom-toggle {
-	cursor: var(--codewit-interactive-cursor) !important;
+	cursor: var(--grex-interactive-cursor) !important;
 }
 
 /* Restore Monaco's 22×22 action buttons that tailwind preflight (border-box)
@@ -188,41 +188,19 @@ body {
 	animation: conversation-fade-in 70ms ease-out;
 }
 
-.codewit-logo-anim-piece {
-	transform-box: fill-box;
-	transform-origin: center;
-	animation-duration: 1300ms;
-	animation-iteration-count: infinite;
-	animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+.grex-logo-pulse {
+	animation: grex-logo-pulse 1400ms ease-in-out infinite;
 }
 
-.codewit-logo-anim-c {
-	animation-name: codewit-logo-c-breathe;
-}
-
-.codewit-logo-anim-chevron {
-	animation-name: codewit-logo-chevron-advance;
-}
-
-@keyframes codewit-logo-c-breathe {
+@keyframes grex-logo-pulse {
 	0%,
 	100% {
 		opacity: 1;
+		transform: scale(1);
 	}
 	50% {
-		opacity: 0.42;
-	}
-}
-
-@keyframes codewit-logo-chevron-advance {
-	0%,
-	100% {
-		opacity: 0.5;
-		transform: translateX(0);
-	}
-	45% {
-		opacity: 1;
-		transform: translateX(64px);
+		opacity: 0.55;
+		transform: scale(0.9);
 	}
 }
 
@@ -297,7 +275,7 @@ body {
 	color: var(--muted-foreground);
 	border-radius: 9999px;
 	padding: 0;
-	cursor: var(--codewit-interactive-cursor);
+	cursor: var(--grex-interactive-cursor);
 	opacity: 1;
 	transition:
 		opacity 200ms ease,
@@ -317,7 +295,7 @@ body {
 	color: var(--accent-foreground);
 }
 
-.codewit-shimmer-text {
+.grex-shimmer-text {
 	color: transparent;
 	background-image: linear-gradient(
 		90deg,
@@ -330,7 +308,7 @@ body {
 	background-size: 300% 100%;
 	background-clip: text;
 	-webkit-background-clip: text;
-	animation: codewit-shimmer-sweep 2.4s ease-in-out infinite;
+	animation: grex-shimmer-sweep 2.4s ease-in-out infinite;
 }
 
 /* A "magic" composer keyword (e.g. "workflow", "ultrathink") — a colorful
@@ -457,7 +435,7 @@ body {
 	font-size: 0.86em;
 }
 
-@keyframes codewit-shimmer-sweep {
+@keyframes grex-shimmer-sweep {
 	0% {
 		background-position: 100% 50%;
 	}

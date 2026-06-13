@@ -17,7 +17,7 @@ use crate::{
 };
 
 /// Resolve the on-disk path a workspace operates against. Worktree
-/// workspaces live under the codewit data dir; Local workspaces operate
+/// workspaces live under the grex data dir; Local workspaces operate
 /// directly on the source repo's root path; Chat workspaces store
 /// their relative scratch path (`"YYYY-MM-DD/new-chat[-N]"`) in
 /// `directory_name` and resolve it under the `chats` data dir.
@@ -155,10 +155,10 @@ pub fn sidebar_sort_rank(record: &WorkspaceRecord) -> usize {
 // ---- Repo icon helpers ----
 
 const REPO_ICON_CANDIDATES: &[&str] = &[
-    // Explicit Codewit override — always wins. Drop a file here in monorepos
+    // Explicit Grex override — always wins. Drop a file here in monorepos
     // (or any repo where automatic detection picks the wrong icon).
-    ".codewit/icon.svg",
-    ".codewit/icon.png",
+    ".grex/icon.svg",
+    ".grex/icon.png",
     // Single-package conventions.
     "public/apple-touch-icon.png",
     "apple-touch-icon.png",
@@ -232,7 +232,7 @@ pub fn repo_icon_src_for_root_path(root_path: Option<&str>) -> Option<String> {
 
     // Reuse the cached entry only if (a) the resolved icon path is unchanged
     // (e.g. a user didn't add a higher-priority candidate like
-    // `.codewit/icon.svg`) and (b) the file's mtime hasn't moved. We bail out
+    // `.grex/icon.svg`) and (b) the file's mtime hasn't moved. We bail out
     // of the cache on any uncertainty (missing metadata) so editing an icon
     // never strands a stale `data:` URI in the UI.
     if let Ok(cache) = REPO_ICON_SRC_CACHE.lock() {
@@ -933,14 +933,14 @@ mod tests {
     fn workspace_path_for_worktree_uses_data_dir() {
         let _guard = crate::data_dir::TEST_ENV_LOCK.lock();
         let temp = tempfile::TempDir::new().unwrap();
-        std::env::set_var("CODEWIT_DATA_DIR", temp.path());
+        std::env::set_var("GREX_DATA_DIR", temp.path());
         let record = fixture_record(WorkspaceMode::Worktree, None);
         let path = workspace_path(&record).unwrap();
         assert_eq!(
             path,
             temp.path().join("workspaces").join("demo").join("cebu")
         );
-        std::env::remove_var("CODEWIT_DATA_DIR");
+        std::env::remove_var("GREX_DATA_DIR");
     }
 
     #[test]
@@ -967,7 +967,7 @@ mod tests {
     fn workspace_path_for_chat_joins_chats_dir() {
         let _guard = crate::data_dir::TEST_ENV_LOCK.lock();
         let temp = tempfile::TempDir::new().unwrap();
-        std::env::set_var("CODEWIT_DATA_DIR", temp.path());
+        std::env::set_var("GREX_DATA_DIR", temp.path());
         let mut record = fixture_record(WorkspaceMode::Chat, None);
         record.directory_name = "2026-05-19/new-chat".to_string();
         let path = workspace_path(&record).unwrap();
@@ -978,7 +978,7 @@ mod tests {
                 .join("2026-05-19")
                 .join("new-chat")
         );
-        std::env::remove_var("CODEWIT_DATA_DIR");
+        std::env::remove_var("GREX_DATA_DIR");
     }
 
     #[test]
@@ -1102,7 +1102,7 @@ mod tests {
                 "-c",
                 "commit.gpgsign=false",
                 "-c",
-                "user.name=Codewit",
+                "user.name=Grex",
                 "-c",
                 "user.email=h@example.com",
                 "commit",
@@ -1139,7 +1139,7 @@ mod tests {
                 "-c",
                 "commit.gpgsign=false",
                 "-c",
-                "user.name=Codewit",
+                "user.name=Grex",
                 "-c",
                 "user.email=h@example.com",
                 "commit",
@@ -1220,7 +1220,7 @@ mod tests {
 
     #[test]
     fn repo_initials_single_word() {
-        assert_eq!(repo_initials_for_name("codewit"), "HE");
+        assert_eq!(repo_initials_for_name("grex"), "GR");
     }
 
     #[test]
@@ -1245,7 +1245,7 @@ mod tests {
     }
 
     #[test]
-    fn repo_icon_path_prefers_codewit_override_over_favicon() {
+    fn repo_icon_path_prefers_grex_override_over_favicon() {
         let dir = tempfile::tempdir().unwrap();
         let root = dir.path();
 
@@ -1253,15 +1253,15 @@ mod tests {
         fs::create_dir_all(root.join("public")).unwrap();
         fs::write(root.join("public/favicon.svg"), b"<svg/>").unwrap();
 
-        // Higher-priority Codewit override.
-        fs::create_dir_all(root.join(".codewit")).unwrap();
-        fs::write(root.join(".codewit/icon.svg"), b"<svg id=\"override\"/>").unwrap();
+        // Higher-priority Grex override.
+        fs::create_dir_all(root.join(".grex")).unwrap();
+        fs::write(root.join(".grex/icon.svg"), b"<svg id=\"override\"/>").unwrap();
 
         let resolved = repo_icon_path_for_root_path(Some(root.to_str().unwrap()))
             .expect("expected an icon to resolve");
         assert!(
-            resolved.ends_with(".codewit/icon.svg"),
-            "expected `.codewit/icon.svg` to win, got {resolved}"
+            resolved.ends_with(".grex/icon.svg"),
+            "expected `.grex/icon.svg` to win, got {resolved}"
         );
     }
 
@@ -1269,7 +1269,7 @@ mod tests {
     fn repo_icon_path_returns_none_for_unknown_subdir_layouts() {
         // No automatic monorepo detection — repos with apps under
         // `apps/<name>/public/...` or `applications/<name>/public/...` get
-        // initials-only avatars unless the user drops a `.codewit/icon.*`.
+        // initials-only avatars unless the user drops a `.grex/icon.*`.
         let dir = tempfile::tempdir().unwrap();
         let root = dir.path();
 
@@ -1302,12 +1302,12 @@ mod tests {
             repo_icon_src_for_root_path(Some(&root_str)).expect("expected initial icon to resolve");
         assert!(initial.starts_with("data:image/svg+xml;base64,"));
 
-        // Now drop in a `.codewit/icon.svg` override. The cache must notice
+        // Now drop in a `.grex/icon.svg` override. The cache must notice
         // that the resolved path changed and serve the new contents — this
         // is the failure mode that motivated mtime-aware invalidation.
-        fs::create_dir_all(dir.path().join(".codewit")).unwrap();
+        fs::create_dir_all(dir.path().join(".grex")).unwrap();
         fs::write(
-            dir.path().join(".codewit/icon.svg"),
+            dir.path().join(".grex/icon.svg"),
             b"<svg id=\"override\"/>",
         )
         .unwrap();
@@ -1325,8 +1325,8 @@ mod tests {
         let dir = tempfile::tempdir().unwrap();
         let root_str = dir.path().to_str().unwrap().to_string();
 
-        fs::create_dir_all(dir.path().join(".codewit")).unwrap();
-        let icon_path = dir.path().join(".codewit/icon.svg");
+        fs::create_dir_all(dir.path().join(".grex")).unwrap();
+        let icon_path = dir.path().join(".grex/icon.svg");
         fs::write(&icon_path, b"<svg id=\"v1\"/>").unwrap();
 
         let v1 =
@@ -1558,7 +1558,7 @@ mod tests {
             .lock()
             .unwrap_or_else(|p| p.into_inner());
         let temp = tempfile::TempDir::new().unwrap();
-        std::env::set_var("CODEWIT_DATA_DIR", temp.path());
+        std::env::set_var("GREX_DATA_DIR", temp.path());
 
         let (conn, _db_dir) = test_db();
         // Squat *every* base name with a real directory under
@@ -1577,7 +1577,7 @@ mod tests {
             "Expected -v2 suffix when every base name is squatted by an orphan dir, got: {allocated}"
         );
 
-        std::env::remove_var("CODEWIT_DATA_DIR");
+        std::env::remove_var("GREX_DATA_DIR");
     }
 
     /// Regression guard for the on-disk dedupe: a single orphan directory
@@ -1589,7 +1589,7 @@ mod tests {
             .lock()
             .unwrap_or_else(|p| p.into_inner());
         let temp = tempfile::TempDir::new().unwrap();
-        std::env::set_var("CODEWIT_DATA_DIR", temp.path());
+        std::env::set_var("GREX_DATA_DIR", temp.path());
 
         let (conn, _db_dir) = test_db();
         let workspaces_root = temp.path().join("workspaces").join("test-repo");
@@ -1605,7 +1605,7 @@ mod tests {
             );
         }
 
-        std::env::remove_var("CODEWIT_DATA_DIR");
+        std::env::remove_var("GREX_DATA_DIR");
     }
 
     /// Plain files (not directories) under the workspace root are NOT
@@ -1618,7 +1618,7 @@ mod tests {
             .lock()
             .unwrap_or_else(|p| p.into_inner());
         let temp = tempfile::TempDir::new().unwrap();
-        std::env::set_var("CODEWIT_DATA_DIR", temp.path());
+        std::env::set_var("GREX_DATA_DIR", temp.path());
 
         let (conn, _db_dir) = test_db();
         let workspaces_root = temp.path().join("workspaces").join("test-repo");
@@ -1640,6 +1640,6 @@ mod tests {
             "Allocated name should still be from WORKSPACE_NAMES: {allocated}"
         );
 
-        std::env::remove_var("CODEWIT_DATA_DIR");
+        std::env::remove_var("GREX_DATA_DIR");
     }
 }

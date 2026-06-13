@@ -2,7 +2,7 @@ import { type UseQueryResult, useQuery } from "@tanstack/react-query";
 import { Check, Clock3, Copy, ExternalLink, RefreshCw } from "lucide-react";
 import { Suspense, useCallback, useState } from "react";
 import { AppendContextButton } from "@/components/append-context-button";
-import { CodewitLogoAnimated } from "@/components/codewit-logo-animated";
+import { GrexLogoAnimated } from "@/components/grex-logo-animated";
 import { LazyStreamdown } from "@/components/streamdown-loader";
 import { Button } from "@/components/ui/button";
 import {
@@ -16,7 +16,7 @@ import { STATE_TONE_CLASS } from "@/features/inbox/state-tone";
 import { getInboxItemDetail } from "@/lib/api";
 import type { ComposerInsertTarget } from "@/lib/composer-insert";
 import { openUrl } from "@/lib/platform-bridge";
-import { codewitQueryKeys } from "@/lib/query-client";
+import { grexQueryKeys } from "@/lib/query-client";
 import type {
 	ContextCard,
 	ContextCardForgeDetailRef,
@@ -54,7 +54,7 @@ export function useInboxItemDetailQuery(
 ) {
 	return useQuery({
 		queryKey: detailRef
-			? codewitQueryKeys.inboxItemDetail(
+			? grexQueryKeys.inboxItemDetail(
 					detailRef.provider,
 					detailRef.login,
 					detailRef.source,
@@ -261,7 +261,7 @@ export function RefreshButton({ refresh }: { refresh: DetailRefreshControl }) {
 function DetailLoadingState() {
 	return (
 		<div className="flex items-center justify-center">
-			<CodewitLogoAnimated size={42} className="opacity-30" />
+			<GrexLogoAnimated size={42} className="opacity-30" />
 		</div>
 	);
 }

@@ -10,12 +10,12 @@
 //! Dev builds also print human-readable output to stderr.
 //!
 //! Level defaults:
-//! - dev: `warn,codewit_lib=debug,codewit=debug` — app crates debug, deps warn.
+//! - dev: `warn,grex_lib=debug,grex=debug` — app crates debug, deps warn.
 //!   Keeps hyper/reqwest/rustls/h2 connection traces out of the stream.
 //! - release: `info`.
 //!
-//! Override with `CODEWIT_LOG`. Accepts either a bare level (`debug`, `info`, ...)
-//! or a full `EnvFilter` directive list (e.g. `info,codewit_lib=trace,hyper=debug`).
+//! Override with `GREX_LOG`. Accepts either a bare level (`debug`, `info`, ...)
+//! or a full `EnvFilter` directive list (e.g. `info,grex_lib=trace,hyper=debug`).
 
 use std::fs::{self, File, OpenOptions};
 use std::io;
@@ -34,7 +34,7 @@ const MAX_BYTES: u64 = 10 * 1024 * 1024;
 /// Dev default: app crates at `debug`, everything else at `warn`.
 /// Without the `warn` baseline, hyper/reqwest/rustls flood stderr with
 /// per-connection traces (see `git::watcher` periodic fetches).
-const DEV_DEFAULT_DIRECTIVES: &str = "warn,codewit_lib=debug,codewit=debug";
+const DEV_DEFAULT_DIRECTIVES: &str = "warn,grex_lib=debug,grex=debug";
 
 /// Release default: plain `info`.
 const RELEASE_DEFAULT_DIRECTIVES: &str = "info";
@@ -76,7 +76,7 @@ pub fn init(logs_dir: &Path) -> Result<()> {
 }
 
 /// Returns the resolved `logs/` directory path. Convenience for callers that
-/// need to pass it to the sidecar via `CODEWIT_LOG_DIR`.
+/// need to pass it to the sidecar via `GREX_LOG_DIR`.
 pub fn logs_dir() -> Result<PathBuf> {
     crate::data_dir::logs_dir()
 }
@@ -161,11 +161,11 @@ impl<'a> MakeWriter<'a> for SizeRingAppender {
     }
 }
 
-/// Build a fresh `EnvFilter`. `CODEWIT_LOG` wins when set and parses; otherwise
+/// Build a fresh `EnvFilter`. `GREX_LOG` wins when set and parses; otherwise
 /// falls back to the build-profile default. Called once per layer because
 /// `EnvFilter` is not `Clone`.
 fn build_filter(is_dev: bool) -> EnvFilter {
-    std::env::var("CODEWIT_LOG")
+    std::env::var("GREX_LOG")
         .ok()
         .and_then(|s| EnvFilter::try_new(&s).ok())
         .unwrap_or_else(|| EnvFilter::new(default_directives(is_dev)))
@@ -185,8 +185,8 @@ mod tests {
     use std::io::{Read, Write};
 
     #[test]
-    fn dev_default_allows_codewit_debug_but_caps_deps_at_warn() {
-        // Dev default: codewit crates DEBUG, everything else WARN.
+    fn dev_default_allows_grex_debug_but_caps_deps_at_warn() {
+        // Dev default: grex crates DEBUG, everything else WARN.
         // max_level_hint reflects the most permissive directive.
         let f = EnvFilter::new(default_directives(true));
         assert_eq!(f.max_level_hint(), Some(tracing::Level::DEBUG.into()));

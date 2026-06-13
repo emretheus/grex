@@ -3,7 +3,7 @@ import { act, renderHook } from "@testing-library/react";
 import type { ReactNode } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { WorkspaceDetail } from "@/lib/api";
-import { codewitQueryKeys } from "@/lib/query-client";
+import { grexQueryKeys } from "@/lib/query-client";
 import { useSettledWorkspaceId } from "./use-settled-workspace-id";
 
 // Locks the single-switch-preserving contract of the rapid-switch settle gate:
@@ -16,7 +16,7 @@ import { useSettledWorkspaceId } from "./use-settled-workspace-id";
 const COLD_DELAY_MS = 140;
 
 function seedDetail(queryClient: QueryClient, workspaceId: string) {
-	queryClient.setQueryData(codewitQueryKeys.workspaceDetail(workspaceId), {
+	queryClient.setQueryData(grexQueryKeys.workspaceDetail(workspaceId), {
 		id: workspaceId,
 	} as unknown as WorkspaceDetail);
 }

@@ -3,8 +3,8 @@ import type { SidebarGrouping } from "@/lib/settings";
 import { ARCHIVED_SECTION_ID } from "./shared";
 
 const SECTION_OPEN_STATE_STORAGE_KEYS: Record<SidebarGrouping, string> = {
-	status: "codewit:workspaces-sidebar:section-open-state",
-	repo: "codewit:workspaces-sidebar:section-open-state:repo",
+	status: "grex:workspaces-sidebar:section-open-state",
+	repo: "grex:workspaces-sidebar:section-open-state:repo",
 };
 
 function storageKeyFor(grouping: SidebarGrouping): string {
@@ -53,7 +53,7 @@ export function writeStoredSectionOpenState(
 		window.localStorage.setItem(key, JSON.stringify(state));
 	} catch (error) {
 		console.error(
-			`[codewit] sidebar section state save failed for "${key}"`,
+			`[grex] sidebar section state save failed for "${key}"`,
 			error,
 		);
 	}

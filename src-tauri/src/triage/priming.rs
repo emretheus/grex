@@ -13,7 +13,7 @@ pub fn wrap_priming(priming_text: &str) -> String {
 }
 
 // Returns Some(prefix) only for an unconsumed AI-triage workspace; Ok(None) otherwise.
-pub fn load_priming_prefix_for_session(codewit_session_id: &str) -> Result<Option<String>> {
+pub fn load_priming_prefix_for_session(grex_session_id: &str) -> Result<Option<String>> {
     let connection = db::read_conn()?;
     let workspace_row = connection
         .query_row(
@@ -21,7 +21,7 @@ pub fn load_priming_prefix_for_session(codewit_session_id: &str) -> Result<Optio
              FROM sessions s
              JOIN workspaces w ON w.id = s.workspace_id
              WHERE s.id = ?1",
-            [codewit_session_id],
+            [grex_session_id],
             |row| {
                 Ok((
                     row.get::<_, String>(0)?,
@@ -42,7 +42,7 @@ pub fn load_priming_prefix_for_session(codewit_session_id: &str) -> Result<Optio
             "SELECT content FROM session_messages
              WHERE session_id = ?1 AND is_ai_priming = 1
              ORDER BY created_at ASC LIMIT 1",
-            [codewit_session_id],
+            [grex_session_id],
             |row| row.get(0),
         )
         .ok();
@@ -79,7 +79,7 @@ pub fn extract_plan_text(raw: &str) -> Option<String> {
 }
 
 /// Flip `ai_priming_consumed=1` and graduate `kind` to 'manual'. Idempotent; `Ok(true)` only on first flip.
-pub fn mark_consumed_for_session(codewit_session_id: &str) -> Result<bool> {
+pub fn mark_consumed_for_session(grex_session_id: &str) -> Result<bool> {
     let connection = db::write_conn()?;
     let rows = connection
         .execute(
@@ -88,7 +88,7 @@ pub fn mark_consumed_for_session(codewit_session_id: &str) -> Result<bool> {
                  kind = 'manual'
              WHERE id = (SELECT workspace_id FROM sessions WHERE id = ?1)
                AND ai_priming_consumed = 0",
-            [codewit_session_id],
+            [grex_session_id],
         )
         .context("mark ai_priming_consumed + graduate kind")?;
     Ok(rows > 0)

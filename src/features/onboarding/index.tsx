@@ -274,11 +274,11 @@ export function AppOnboarding({ onComplete }: AppOnboardingProps) {
 
 	return (
 		<main
-			aria-label="Codewit onboarding"
+			aria-label="Grex onboarding"
 			className="relative h-dvh overflow-hidden bg-background font-sans text-foreground antialiased"
 		>
 			<div
-				aria-label="Codewit onboarding drag region"
+				aria-label="Grex onboarding drag region"
 				className="absolute inset-x-0 top-0 z-20 flex h-11 items-center"
 			>
 				<TrafficLightSpacer side="left" width={94} />

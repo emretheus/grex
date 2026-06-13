@@ -283,7 +283,7 @@ mod tests {
             "opus-1m",
             "claude-opus-4-20250514",
             Some("provider-session-1".to_string()),
-            "/tmp/codewit",
+            "/tmp/grex",
             Some("default".to_string()),
             &serde_json::json!({
                 "userInputId": "tool-1",
@@ -317,7 +317,7 @@ mod tests {
         sessionId: provider-session-1
         source: Claude
         userInputId: tool-1
-        workingDirectory: /tmp/codewit
+        workingDirectory: /tmp/grex
         "#
         );
     }
@@ -332,7 +332,7 @@ mod tests {
             "gpt-5.5",
             "gpt-5.5",
             None,
-            "/tmp/codewit",
+            "/tmp/grex",
             None,
             &serde_json::json!({
                 "userInputId": "codex-input-1",
@@ -367,7 +367,7 @@ mod tests {
         sessionId: ~
         source: Codex
         userInputId: codex-input-1
-        workingDirectory: /tmp/codewit
+        workingDirectory: /tmp/grex
         "#
         );
     }
@@ -417,7 +417,7 @@ mod tests {
             "opus-1m",
             "claude-opus-4-20250514",
             Some("provider-session-1".to_string()),
-            "/tmp/codewit",
+            "/tmp/grex",
             true,
         );
 
@@ -430,7 +430,7 @@ mod tests {
         provider: claude
         resolvedModel: claude-opus-4-20250514
         sessionId: provider-session-1
-        workingDirectory: /tmp/codewit
+        workingDirectory: /tmp/grex
         "#
         );
     }
@@ -442,7 +442,7 @@ mod tests {
             "opus-1m",
             "claude-opus-4-20250514",
             Some("provider-session-1".to_string()),
-            "/tmp/codewit",
+            "/tmp/grex",
             true,
             "user_requested".to_string(),
         );
@@ -457,7 +457,7 @@ mod tests {
         reason: user_requested
         resolvedModel: claude-opus-4-20250514
         sessionId: provider-session-1
-        workingDirectory: /tmp/codewit
+        workingDirectory: /tmp/grex
         "#
         );
     }

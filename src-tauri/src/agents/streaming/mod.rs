@@ -81,7 +81,7 @@ pub(super) fn stream_via_sidecar(
     // workspace_id we stamp onto the active-streams handle. Two queries
     // would borrow the read pool twice on the hot path of every send.
     let session_row: Option<(Option<String>, Option<String>, Option<String>)> =
-        request.codewit_session_id.as_deref().and_then(|hsid| {
+        request.grex_session_id.as_deref().and_then(|hsid| {
             let conn = crate::models::db::read_conn().ok()?;
             conn.query_row(
                 "SELECT provider_session_id, agent_type, workspace_id FROM sessions WHERE id = ?1",
@@ -103,23 +103,23 @@ pub(super) fn stream_via_sidecar(
 
     tracing::debug!(
         resume_session_id = ?resume_session_id,
-        codewit_session_id = ?request.codewit_session_id,
+        grex_session_id = ?request.grex_session_id,
         provider = %model.provider,
         "Session resume context"
     );
 
-    let codewit_session_id = request.codewit_session_id.clone();
-    let sidecar_session_id = codewit_session_id
+    let grex_session_id = request.grex_session_id.clone();
+    let sidecar_session_id = grex_session_id
         .clone()
         .unwrap_or_else(|| Uuid::new_v4().to_string());
 
-    // Build Codewit's "you are inside Codewit" system-prompt preamble.
+    // Build Grex's "you are inside Grex" system-prompt preamble.
     // Pulled from the same `session_row` we already read so we don't
     // borrow the read pool again on the hot path. Re-rendered every
     // turn so even mid-conversation orchestration asks ("spawn me 3
-    // more workspaces") still see the codewit-cli skill cue.
-    let codewit_prefix = build_codewit_system_prompt_for_workspace(
-        request.codewit_session_id.as_deref(),
+    // more workspaces") still see the grex-cli skill cue.
+    let grex_prefix = build_grex_system_prompt_for_workspace(
+        request.grex_session_id.as_deref(),
         session_row
             .as_ref()
             .and_then(|(_, _, workspace_id)| workspace_id.as_deref()),
@@ -135,11 +135,11 @@ pub(super) fn stream_via_sidecar(
         .as_deref()
         .map(str::trim)
         .filter(|p| !p.is_empty());
-    let combined_prompt = match (codewit_prefix.as_deref(), prefix_trimmed) {
-        (Some(codewit), Some(caller)) => {
-            format!("{codewit}\n\n{caller}\n\nUser request:\n{prompt}")
+    let combined_prompt = match (grex_prefix.as_deref(), prefix_trimmed) {
+        (Some(grex), Some(caller)) => {
+            format!("{grex}\n\n{caller}\n\nUser request:\n{prompt}")
         }
-        (Some(codewit), None) => format!("{codewit}\n\nUser request:\n{prompt}"),
+        (Some(grex), None) => format!("{grex}\n\nUser request:\n{prompt}"),
         (None, Some(caller)) => format!("{caller}\n\nUser request:\n{prompt}"),
         (None, None) => prompt.to_string(),
     };
@@ -166,7 +166,7 @@ pub(super) fn stream_via_sidecar(
         effort_level: request.effort_level.as_deref(),
         permission_mode: request.permission_mode.as_deref(),
         fast_mode: request.fast_mode.unwrap_or(false),
-        codewit_session_id: request.codewit_session_id.as_deref(),
+        grex_session_id: request.grex_session_id.as_deref(),
         claude_base_url: model.claude_base_url.as_deref(),
         claude_auth_token: model.claude_auth_token.as_deref(),
         agent_proxy: agent_proxy.as_ref(),
@@ -185,12 +185,12 @@ pub(super) fn stream_via_sidecar(
         tracing::info!(
             count = arr.len(),
             dirs = ?arr,
-            codewit_session_id = ?request.codewit_session_id,
+            grex_session_id = ?request.grex_session_id,
             "sendMessage with linked additionalDirectories"
         );
     } else {
         tracing::info!(
-            codewit_session_id = ?request.codewit_session_id,
+            grex_session_id = ?request.grex_session_id,
             "sendMessage without linked additionalDirectories (none configured)"
         );
     }
@@ -208,20 +208,20 @@ pub(super) fn stream_via_sidecar(
         .as_ref()
         .and_then(|(_, _, workspace_id)| workspace_id.clone());
 
-    // Per-codewit-session lock — block overlapping sends so concurrent
+    // Per-grex-session lock — block overlapping sends so concurrent
     // `query()` calls can't stack against the same `resume:` id and
     // corrupt the conversation jsonl (issue #398).
     let registered = active_streams.try_register_for_session(ActiveStreamHandle {
         request_id: request_id.clone(),
         sidecar_session_id: sidecar_session_id.clone(),
         provider: model.provider.to_string(),
-        codewit_session_id: request.codewit_session_id.clone(),
+        grex_session_id: request.grex_session_id.clone(),
         workspace_id: workspace_id_for_handle,
     });
     if !registered {
         tracing::warn!(
             rid = %request_id,
-            codewit_session_id = ?request.codewit_session_id,
+            grex_session_id = ?request.grex_session_id,
             "Rejecting send: another stream is already active for this session"
         );
         return Err(anyhow::anyhow!(
@@ -230,7 +230,7 @@ pub(super) fn stream_via_sidecar(
         .into());
     }
     // Notify the UI that the active-streams set changed. Anonymous
-    // streams (codewit_session_id == None) are filtered out of the
+    // streams (grex_session_id == None) are filtered out of the
     // snapshot the frontend reads, but we still publish — the
     // frontend's invalidate is cheap and the alternative (branch on
     // visibility here) couples this call site to UI policy.
@@ -250,7 +250,7 @@ pub(super) fn stream_via_sidecar(
     let model_copy = model.clone();
     let prompt_copy = prompt.to_string();
     let working_dir_str = working_directory.display().to_string();
-    let hsid_copy = codewit_session_id;
+    let hsid_copy = grex_session_id;
     let effort_copy = request.effort_level.clone();
     let permission_mode_initial = request.permission_mode.clone();
     let fast_mode = request.fast_mode.unwrap_or(false);
@@ -265,7 +265,7 @@ pub(super) fn stream_via_sidecar(
         let stream_started_at = Instant::now();
         tracing::info!(
             rid = %rid,
-            codewit_session_id = ?hsid_copy,
+            grex_session_id = ?hsid_copy,
             sidecar_session_id = %sidecar_session_id_copy,
             provider = %provider,
             model = %model_copy.cli_model,
@@ -308,7 +308,7 @@ pub(super) fn stream_via_sidecar(
         // block pin/unpin/mark-read/rename for the entire turn.
         if let Some(hsid) = &hsid_copy {
             let ctx = ExchangeContext {
-                codewit_session_id: hsid.clone(),
+                grex_session_id: hsid.clone(),
                 model_id: model_copy.id.to_string(),
                 model_provider: model_copy.provider.to_string(),
                 user_message_id: user_message_id_copy
@@ -320,7 +320,7 @@ pub(super) fn stream_via_sidecar(
                 Ok(conn) => {
                     if let Err(e) = conn.execute(
                         "UPDATE sessions SET fast_mode = ?1 WHERE id = ?2",
-                        rusqlite::params![fast_mode, &ctx.codewit_session_id],
+                        rusqlite::params![fast_mode, &ctx.grex_session_id],
                     ) {
                         tracing::error!(rid = %rid, "Failed to update fast_mode: {e}");
                     }
@@ -370,7 +370,7 @@ pub(super) fn stream_via_sidecar(
             effort_level: effort_copy.clone(),
             permission_mode: permission_mode_initial.clone(),
             fast_mode,
-            codewit_session_id: hsid_copy.clone(),
+            grex_session_id: hsid_copy.clone(),
             resolved_session_id: resolved_session_id.clone(),
             resolved_model: model_copy.cli_model.to_string(),
             persisted_turn_count: 0,
@@ -444,7 +444,7 @@ pub(super) fn stream_via_sidecar(
                             crate::ui_sync::publish(
                                 &app,
                                 crate::ui_sync::UiMutationEvent::SessionTurnPersisted {
-                                    session_id: ctx.codewit_session_id.clone(),
+                                    session_id: ctx.grex_session_id.clone(),
                                 },
                             );
                         }
@@ -550,7 +550,7 @@ pub(super) fn stream_via_sidecar(
                         {
                             if let Err(error) = conn.execute(
                                 "UPDATE sessions SET provider_session_id = ?2, agent_type = ?3 WHERE id = ?1",
-                                params![ctx.codewit_session_id, sid, ctx.model_provider],
+                                params![ctx.grex_session_id, sid, ctx.model_provider],
                             ) {
                                 tracing::error!(rid = %rid, "Failed to persist session id: {error}");
                             } else {
@@ -679,7 +679,7 @@ pub(super) fn stream_via_sidecar(
                                         crate::ui_sync::publish(
                                             &app,
                                             crate::ui_sync::UiMutationEvent::SessionTurnPersisted {
-                                                session_id: ctx.codewit_session_id.clone(),
+                                                session_id: ctx.grex_session_id.clone(),
                                             },
                                         );
                                     }
@@ -722,7 +722,7 @@ pub(super) fn stream_via_sidecar(
                                     crate::ui_sync::publish(
                                         &app,
                                         crate::ui_sync::UiMutationEvent::SessionTurnPersisted {
-                                            session_id: ctx.codewit_session_id.clone(),
+                                            session_id: ctx.grex_session_id.clone(),
                                         },
                                     );
                                 }
@@ -749,7 +749,7 @@ pub(super) fn stream_via_sidecar(
                                         crate::ui_sync::publish(
                                             &app,
                                             crate::ui_sync::UiMutationEvent::SessionTurnPersisted {
-                                                session_id: ctx.codewit_session_id.clone(),
+                                                session_id: ctx.grex_session_id.clone(),
                                             },
                                         );
                                     }
@@ -943,7 +943,7 @@ pub(super) fn stream_via_sidecar(
                                     persisted_metadata.as_ref().map(|(id, _)| id.as_str());
                                 match crate::agents::session_plan::upsert_session_plan(
                                     conn,
-                                    &ctx.codewit_session_id,
+                                    &ctx.grex_session_id,
                                     crate::agents::session_plan::PlanSource::ExitPlanMode,
                                     msg_for_plan,
                                     &plan,
@@ -951,12 +951,12 @@ pub(super) fn stream_via_sidecar(
                                     Ok(_) => crate::ui_sync::publish(
                                         &app,
                                         crate::ui_sync::UiMutationEvent::SessionPlanChanged {
-                                            session_id: ctx.codewit_session_id.clone(),
+                                            session_id: ctx.grex_session_id.clone(),
                                         },
                                     ),
                                     Err(error) => tracing::warn!(
                                         rid = %rid,
-                                        session_id = %ctx.codewit_session_id,
+                                        session_id = %ctx.grex_session_id,
                                         %error,
                                         "Failed to project ExitPlanMode into session_plan_state"
                                     ),
@@ -1172,7 +1172,7 @@ pub(super) fn stream_via_sidecar(
                                 crate::ui_sync::publish(
                                     &app,
                                     crate::ui_sync::UiMutationEvent::SessionTurnPersisted {
-                                        session_id: ctx.codewit_session_id.clone(),
+                                        session_id: ctx.grex_session_id.clone(),
                                     },
                                 );
                             }
@@ -1234,7 +1234,7 @@ pub(super) fn stream_via_sidecar(
                             crate::ui_sync::publish(
                                 &app,
                                 crate::ui_sync::UiMutationEvent::FastModeUnavailable {
-                                    session_id: ctx.codewit_session_id.clone(),
+                                    session_id: ctx.grex_session_id.clone(),
                                     reason: event
                                         .raw
                                         .get("reason")
@@ -1261,7 +1261,7 @@ pub(super) fn stream_via_sidecar(
                                     crate::agents::session_plan::plan_from_codex_event(&event.raw)
                                 {
                                     match crate::agents::session_plan::upsert_session_plan_via_pool(
-                                        &ctx.codewit_session_id,
+                                        &ctx.grex_session_id,
                                         crate::agents::session_plan::PlanSource::Codex,
                                         None,
                                         &plan,
@@ -1269,12 +1269,12 @@ pub(super) fn stream_via_sidecar(
                                         Ok(_) => crate::ui_sync::publish(
                                             &app,
                                             crate::ui_sync::UiMutationEvent::SessionPlanChanged {
-                                                session_id: ctx.codewit_session_id.clone(),
+                                                session_id: ctx.grex_session_id.clone(),
                                             },
                                         ),
                                         Err(error) => tracing::warn!(
                                             rid = %rid,
-                                            session_id = %ctx.codewit_session_id,
+                                            session_id = %ctx.grex_session_id,
                                             %error,
                                             "Failed to project codex turn/plan/updated into session_plan_state"
                                         ),
@@ -1314,7 +1314,7 @@ pub(super) fn stream_via_sidecar(
 
                                 // Tee workflow task_* events into durable
                                 // snapshot rows (see workflow_persist).
-                                workflow_persist.observe(conn, &ctx.codewit_session_id, &event.raw);
+                                workflow_persist.observe(conn, &ctx.grex_session_id, &event.raw);
                             }
 
                             match turn_session.handle_stream_event(emit) {
@@ -1431,10 +1431,10 @@ fn build_exit_plan_review_message(
     }
 }
 
-/// Build the Codewit system-prompt prefix that gets prepended to the
+/// Build the Grex system-prompt prefix that gets prepended to the
 /// agent's wire payload. Returns `None` when we can't resolve enough
 /// context (missing workspace id, or the workspace row is gone) —
-/// callers fall through to "no Codewit prefix this turn" rather than
+/// callers fall through to "no Grex prefix this turn" rather than
 /// blocking the send.
 ///
 /// Exposed `pub(crate)` so both the in-app streaming path and the
@@ -1444,20 +1444,20 @@ fn build_exit_plan_review_message(
 ///
 /// Lookups against the workspace record happen against the read pool;
 /// failures degrade gracefully.
-pub(crate) fn build_codewit_system_prompt_for_workspace(
-    codewit_session_id: Option<&str>,
+pub(crate) fn build_grex_system_prompt_for_workspace(
+    grex_session_id: Option<&str>,
     workspace_id: Option<&str>,
     working_directory: &std::path::Path,
 ) -> Option<String> {
     use crate::agents::system_prompt::{
-        build_codewit_chat_prompt, build_codewit_system_prompt, CodewitChatPromptContext,
-        CodewitSystemPromptContext,
+        build_grex_chat_prompt, build_grex_system_prompt, GrexChatPromptContext,
+        GrexSystemPromptContext,
     };
 
     let workspace_id = workspace_id?;
 
     // Skip the preamble entirely when we can't resolve the workspace
-    // row. The agent gets no Codewit framing this turn rather than a
+    // row. The agent gets no Grex framing this turn rather than a
     // degraded one with a UUID-as-workspace-label and a misleading
     // "target branch not configured" nag — matches the function's
     // doc-comment contract ("Returns `None` when ... no workspace row
@@ -1468,11 +1468,11 @@ pub(crate) fn build_codewit_system_prompt_for_workspace(
         .flatten()?;
 
     // CLI invocation the agent should call. On release this is the
-    // canonical `codewit` symlink on PATH; on dev it's the absolute
-    // path of THIS process's sibling `codewit-cli`. The dev branch
-    // deliberately avoids the bare `codewit-dev` name because under
-    // Codewit's worktree-based dev workflow every worktree compiles
-    // its own CLI binary, and a global `/usr/local/bin/codewit-dev`
+    // canonical `grex` symlink on PATH; on dev it's the absolute
+    // path of THIS process's sibling `grex-cli`. The dev branch
+    // deliberately avoids the bare `grex-dev` name because under
+    // Grex's worktree-based dev workflow every worktree compiles
+    // its own CLI binary, and a global `/usr/local/bin/grex-dev`
     // symlink (if it exists) can only target one of them — the other
     // dev instances' agents would silently talk to the wrong build.
     // See `crate::cli::agent_invocation_path` for the full rationale.
@@ -1480,13 +1480,13 @@ pub(crate) fn build_codewit_system_prompt_for_workspace(
 
     // Chat-mode workspaces have no repo / no worktree / no target
     // branch. The workspace-bound preamble would inject misleading
-    // hints (a synthetic workspace label, a `~/codewit/chats/...`
+    // hints (a synthetic workspace label, a `~/grex/chats/...`
     // working directory the user never sees, a "configure a target
     // branch" nag, and a `.agent-contexts/` scratch dir that lives in
     // a non-git directory). Route them through the smaller chat-only
     // template instead.
     if record.mode.is_chat() {
-        return Some(build_codewit_chat_prompt(&CodewitChatPromptContext {
+        return Some(build_grex_chat_prompt(&GrexChatPromptContext {
             cli_command_name,
         }));
     }
@@ -1505,11 +1505,11 @@ pub(crate) fn build_codewit_system_prompt_for_workspace(
     let target_branch = target_branch_raw.as_deref().map(|b| format!("origin/{b}"));
 
     let linked_directories =
-        crate::agents::streaming::lookup_workspace_linked_directories(codewit_session_id);
+        crate::agents::streaming::lookup_workspace_linked_directories(grex_session_id);
 
     // Stacked-PR awareness: when this workspace is part of a multi-layer stack,
     // surface a lightweight pointer so the agent self-locates and fetches the
-    // rest with `codewit workspace stack`. Best-effort — failures just elide it.
+    // rest with `grex workspace stack`. Best-effort — failures just elide it.
     let stack = crate::models::workspaces::load_workspace_stack(workspace_id)
         .ok()
         .filter(|chain| chain.len() > 1)
@@ -1524,7 +1524,7 @@ pub(crate) fn build_codewit_system_prompt_for_workspace(
             })
         });
 
-    let ctx = CodewitSystemPromptContext {
+    let ctx = GrexSystemPromptContext {
         workspace_label,
         workspace_root_path: working_directory.display().to_string(),
         target_branch,
@@ -1533,5 +1533,5 @@ pub(crate) fn build_codewit_system_prompt_for_workspace(
         cli_command_name,
         stack,
     };
-    Some(build_codewit_system_prompt(&ctx))
+    Some(build_grex_system_prompt(&ctx))
 }

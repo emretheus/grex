@@ -2,7 +2,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { renderHook } from "@testing-library/react";
 import type { ReactNode } from "react";
 import { describe, expect, it, vi } from "vitest";
-import { createCodewitQueryClient, codewitQueryKeys } from "@/lib/query-client";
+import { createGrexQueryClient, grexQueryKeys } from "@/lib/query-client";
 import type { AppSettings } from "@/lib/settings";
 import { DEFAULT_SETTINGS, SettingsContext } from "@/lib/settings";
 import { useEnsureDefaultModel } from "./use-ensure-default-model";
@@ -22,8 +22,8 @@ function renderUseEnsureDefaultModel(args: {
 	}>;
 	settingsOverrides?: Partial<AppSettings>;
 }) {
-	const queryClient = createCodewitQueryClient();
-	queryClient.setQueryData(codewitQueryKeys.agentModelSections, args.sections);
+	const queryClient = createGrexQueryClient();
+	queryClient.setQueryData(grexQueryKeys.agentModelSections, args.sections);
 	const updateSettings = vi.fn();
 
 	const wrapper = ({ children }: { children: ReactNode }) => (

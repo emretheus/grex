@@ -3,7 +3,7 @@ import { cleanup, render, screen, waitFor } from "@testing-library/react";
 import type { ComponentProps } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { createCodewitQueryClient, codewitQueryKeys } from "@/lib/query-client";
+import { createGrexQueryClient, grexQueryKeys } from "@/lib/query-client";
 import { DEFAULT_SETTINGS, SettingsContext } from "@/lib/settings";
 
 const apiMockState = vi.hoisted(() => ({
@@ -189,8 +189,8 @@ const WORKSPACE_DETAIL = {
 	id: "workspace-1",
 	title: "Workspace 1",
 	repoId: "repo-1",
-	repoName: "codewit",
-	directoryName: "codewit",
+	repoName: "grex",
+	directoryName: "grex",
 	state: "ready",
 	hasUnread: false,
 	workspaceUnread: 0,
@@ -208,7 +208,7 @@ const WORKSPACE_DETAIL = {
 	archiveCommit: null,
 	sessionCount: 2,
 	messageCount: 2,
-	rootPath: "/tmp/codewit",
+	rootPath: "/tmp/grex",
 };
 
 const WORKSPACE_SESSIONS = [
@@ -297,17 +297,17 @@ describe("WorkspaceComposerContainer", () => {
 	});
 
 	it("does not remount the composer when switching displayed sessions", () => {
-		const queryClient = createCodewitQueryClient();
+		const queryClient = createGrexQueryClient();
 		queryClient.setQueryData(
-			codewitQueryKeys.agentModelSections,
+			grexQueryKeys.agentModelSections,
 			MODEL_SECTIONS,
 		);
 		queryClient.setQueryData(
-			codewitQueryKeys.workspaceDetail("workspace-1"),
+			grexQueryKeys.workspaceDetail("workspace-1"),
 			WORKSPACE_DETAIL,
 		);
 		queryClient.setQueryData(
-			codewitQueryKeys.workspaceSessions("workspace-1"),
+			grexQueryKeys.workspaceSessions("workspace-1"),
 			WORKSPACE_SESSIONS,
 		);
 
@@ -361,10 +361,10 @@ describe("WorkspaceComposerContainer", () => {
 	});
 
 	it("uses the context-key model selection before a workspace exists", () => {
-		const queryClient = createCodewitQueryClient();
+		const queryClient = createGrexQueryClient();
 		const handleSelectModel = vi.fn();
 		queryClient.setQueryData(
-			codewitQueryKeys.agentModelSections,
+			grexQueryKeys.agentModelSections,
 			MODEL_SECTIONS,
 		);
 
@@ -408,12 +408,12 @@ describe("WorkspaceComposerContainer", () => {
 	});
 
 	it("uses context-key effort/plan/fast selections before a workspace exists", () => {
-		const queryClient = createCodewitQueryClient();
+		const queryClient = createGrexQueryClient();
 		const handleSelectEffort = vi.fn();
 		const handleChangePermissionMode = vi.fn();
 		const handleChangeFastMode = vi.fn();
 		queryClient.setQueryData(
-			codewitQueryKeys.agentModelSections,
+			grexQueryKeys.agentModelSections,
 			MODEL_SECTIONS,
 		);
 
@@ -468,18 +468,18 @@ describe("WorkspaceComposerContainer", () => {
 	});
 
 	it("forwards the start submit mode into the composer payload", () => {
-		const queryClient = createCodewitQueryClient();
+		const queryClient = createGrexQueryClient();
 		const handleSubmit = vi.fn();
 		queryClient.setQueryData(
-			codewitQueryKeys.agentModelSections,
+			grexQueryKeys.agentModelSections,
 			MODEL_SECTIONS,
 		);
 		queryClient.setQueryData(
-			codewitQueryKeys.workspaceDetail("workspace-1"),
+			grexQueryKeys.workspaceDetail("workspace-1"),
 			WORKSPACE_DETAIL,
 		);
 		queryClient.setQueryData(
-			codewitQueryKeys.workspaceSessions("workspace-1"),
+			grexQueryKeys.workspaceSessions("workspace-1"),
 			WORKSPACE_SESSIONS,
 		);
 
@@ -522,18 +522,18 @@ describe("WorkspaceComposerContainer", () => {
 	});
 
 	it("persists the selected start submit mode in settings", () => {
-		const queryClient = createCodewitQueryClient();
+		const queryClient = createGrexQueryClient();
 		const updateSettings = vi.fn();
 		queryClient.setQueryData(
-			codewitQueryKeys.agentModelSections,
+			grexQueryKeys.agentModelSections,
 			MODEL_SECTIONS,
 		);
 		queryClient.setQueryData(
-			codewitQueryKeys.workspaceDetail("workspace-1"),
+			grexQueryKeys.workspaceDetail("workspace-1"),
 			WORKSPACE_DETAIL,
 		);
 		queryClient.setQueryData(
-			codewitQueryKeys.workspaceSessions("workspace-1"),
+			grexQueryKeys.workspaceSessions("workspace-1"),
 			WORKSPACE_SESSIONS,
 		);
 
@@ -590,10 +590,10 @@ describe("WorkspaceComposerContainer", () => {
 	});
 
 	it("persists the start composer's terminal toggle in settings", () => {
-		const queryClient = createCodewitQueryClient();
+		const queryClient = createGrexQueryClient();
 		const updateSettings = vi.fn();
 		queryClient.setQueryData(
-			codewitQueryKeys.agentModelSections,
+			grexQueryKeys.agentModelSections,
 			MODEL_SECTIONS,
 		);
 
@@ -652,9 +652,9 @@ describe("WorkspaceComposerContainer", () => {
 	});
 
 	it("hides the terminal toggle on chat surfaces (no repo to spawn the PTY in)", () => {
-		const queryClient = createCodewitQueryClient();
+		const queryClient = createGrexQueryClient();
 		queryClient.setQueryData(
-			codewitQueryKeys.agentModelSections,
+			grexQueryKeys.agentModelSections,
 			MODEL_SECTIONS,
 		);
 
@@ -707,7 +707,7 @@ describe("WorkspaceComposerContainer", () => {
 		expect(composerMockState.lastOnChangeTerminalMode).toBeNull();
 
 		// Chat workspace: derived from the workspace detail row's mode.
-		queryClient.setQueryData(codewitQueryKeys.workspaceDetail("workspace-1"), {
+		queryClient.setQueryData(grexQueryKeys.workspaceDetail("workspace-1"), {
 			...WORKSPACE_DETAIL,
 			mode: "chat",
 			repoId: "",
@@ -729,20 +729,20 @@ describe("WorkspaceComposerContainer", () => {
 	});
 
 	it("auto-submits queued CLI prompts using the model + permission_mode pinned on the session row", async () => {
-		const queryClient = createCodewitQueryClient();
+		const queryClient = createGrexQueryClient();
 		queryClient.setQueryData(
-			codewitQueryKeys.agentModelSections,
+			grexQueryKeys.agentModelSections,
 			MODEL_SECTIONS,
 		);
 		queryClient.setQueryData(
-			codewitQueryKeys.workspaceDetail("workspace-1"),
+			grexQueryKeys.workspaceDetail("workspace-1"),
 			WORKSPACE_DETAIL,
 		);
 		// CLI-send path pins the resolved model + permissionMode onto the
 		// session row before queuing the prompt; the composer reads them off
 		// `currentSession` rather than off the (now prompt-only) handoff.
 		queryClient.setQueryData(
-			codewitQueryKeys.workspaceSessions("workspace-1"),
+			grexQueryKeys.workspaceSessions("workspace-1"),
 			WORKSPACE_SESSIONS.map((session) =>
 				session.id === "session-1"
 					? { ...session, model: "gpt-5.4", permissionMode: "plan" }
@@ -798,17 +798,17 @@ describe("WorkspaceComposerContainer", () => {
 	});
 
 	it("loads slash commands when the composer mounts", async () => {
-		const queryClient = createCodewitQueryClient();
+		const queryClient = createGrexQueryClient();
 		queryClient.setQueryData(
-			codewitQueryKeys.agentModelSections,
+			grexQueryKeys.agentModelSections,
 			MODEL_SECTIONS,
 		);
 		queryClient.setQueryData(
-			codewitQueryKeys.workspaceDetail("workspace-1"),
+			grexQueryKeys.workspaceDetail("workspace-1"),
 			WORKSPACE_DETAIL,
 		);
 		queryClient.setQueryData(
-			codewitQueryKeys.workspaceSessions("workspace-1"),
+			grexQueryKeys.workspaceSessions("workspace-1"),
 			WORKSPACE_SESSIONS,
 		);
 
@@ -840,7 +840,7 @@ describe("WorkspaceComposerContainer", () => {
 		await waitFor(() =>
 			expect(apiMockState.listSlashCommands).toHaveBeenCalledWith({
 				provider: "claude",
-				workingDirectory: "/tmp/codewit",
+				workingDirectory: "/tmp/grex",
 				repoId: "repo-1",
 				workspaceId: "workspace-1",
 			}),
@@ -848,16 +848,16 @@ describe("WorkspaceComposerContainer", () => {
 	});
 
 	it("uses the default fast mode setting for new sessions", () => {
-		const queryClient = createCodewitQueryClient();
+		const queryClient = createGrexQueryClient();
 		queryClient.setQueryData(
-			codewitQueryKeys.agentModelSections,
+			grexQueryKeys.agentModelSections,
 			MODEL_SECTIONS,
 		);
 		queryClient.setQueryData(
-			codewitQueryKeys.workspaceDetail("workspace-1"),
+			grexQueryKeys.workspaceDetail("workspace-1"),
 			WORKSPACE_DETAIL,
 		);
-		queryClient.setQueryData(codewitQueryKeys.workspaceSessions("workspace-1"), [
+		queryClient.setQueryData(grexQueryKeys.workspaceSessions("workspace-1"), [
 			...WORKSPACE_SESSIONS,
 			{
 				id: "session-new",
@@ -928,17 +928,17 @@ describe("WorkspaceComposerContainer", () => {
 	// window the editor + toolbar stay fully live and only the send action
 	// is blocked, so users can type-ahead without a visible 60% dim.
 	const renderContainerForState = (workspaceState: string) => {
-		const queryClient = createCodewitQueryClient();
+		const queryClient = createGrexQueryClient();
 		queryClient.setQueryData(
-			codewitQueryKeys.agentModelSections,
+			grexQueryKeys.agentModelSections,
 			MODEL_SECTIONS,
 		);
-		queryClient.setQueryData(codewitQueryKeys.workspaceDetail("workspace-1"), {
+		queryClient.setQueryData(grexQueryKeys.workspaceDetail("workspace-1"), {
 			...WORKSPACE_DETAIL,
 			state: workspaceState,
 		});
 		queryClient.setQueryData(
-			codewitQueryKeys.workspaceSessions("workspace-1"),
+			grexQueryKeys.workspaceSessions("workspace-1"),
 			WORKSPACE_SESSIONS,
 		);
 
@@ -995,17 +995,17 @@ describe("WorkspaceComposerContainer", () => {
 	});
 
 	it("renders queued follow-ups as an overlay above the composer", () => {
-		const queryClient = createCodewitQueryClient();
+		const queryClient = createGrexQueryClient();
 		queryClient.setQueryData(
-			codewitQueryKeys.agentModelSections,
+			grexQueryKeys.agentModelSections,
 			MODEL_SECTIONS,
 		);
 		queryClient.setQueryData(
-			codewitQueryKeys.workspaceDetail("workspace-1"),
+			grexQueryKeys.workspaceDetail("workspace-1"),
 			WORKSPACE_DETAIL,
 		);
 		queryClient.setQueryData(
-			codewitQueryKeys.workspaceSessions("workspace-1"),
+			grexQueryKeys.workspaceSessions("workspace-1"),
 			WORKSPACE_SESSIONS,
 		);
 
@@ -1050,7 +1050,7 @@ describe("WorkspaceComposerContainer", () => {
 											...MODEL_SECTIONS[0].options[0].effortLevels,
 										],
 									},
-									workingDirectory: "/tmp/codewit",
+									workingDirectory: "/tmp/grex",
 									effortLevel: "medium",
 									permissionMode: "default",
 									fastMode: false,
@@ -1080,17 +1080,17 @@ describe("WorkspaceComposerContainer", () => {
 			// so the background refetch (`staleTime: 0`) doesn't overwrite
 			// the seeded value with the default setup.ts mock.
 			apiMockState.listWorkspaceLinkedDirectories.mockResolvedValue(linked);
-			const queryClient = createCodewitQueryClient();
+			const queryClient = createGrexQueryClient();
 			queryClient.setQueryData(
-				codewitQueryKeys.agentModelSections,
+				grexQueryKeys.agentModelSections,
 				MODEL_SECTIONS,
 			);
 			queryClient.setQueryData(
-				codewitQueryKeys.workspaceDetail("workspace-1"),
+				grexQueryKeys.workspaceDetail("workspace-1"),
 				WORKSPACE_DETAIL,
 			);
 			queryClient.setQueryData(
-				codewitQueryKeys.workspaceSessions("workspace-1"),
+				grexQueryKeys.workspaceSessions("workspace-1"),
 				WORKSPACE_SESSIONS,
 			);
 			return render(
@@ -1284,11 +1284,11 @@ describe("WorkspaceComposerContainer", () => {
 		}: {
 			seedCapabilities?: boolean;
 		} = {}): {
-			queryClient: ReturnType<typeof createCodewitQueryClient>;
+			queryClient: ReturnType<typeof createGrexQueryClient>;
 		} {
-			const queryClient = createCodewitQueryClient();
+			const queryClient = createGrexQueryClient();
 			queryClient.setQueryData(
-				codewitQueryKeys.agentModelSections,
+				grexQueryKeys.agentModelSections,
 				MODEL_SECTIONS,
 			);
 			// Explicitly seed the provider-capability table for the steady-
@@ -1297,7 +1297,7 @@ describe("WorkspaceComposerContainer", () => {
 			// `initialData`, which mirrors the Rust default table — that is
 			// the cold-start path the dedicated test below exercises.
 			if (seedCapabilities) {
-				queryClient.setQueryData(codewitQueryKeys.providerCapabilities, [
+				queryClient.setQueryData(grexQueryKeys.providerCapabilities, [
 					{
 						provider: "codex",
 						displayName: "Codex",
@@ -1311,15 +1311,15 @@ describe("WorkspaceComposerContainer", () => {
 				]);
 			}
 			queryClient.setQueryData(
-				codewitQueryKeys.workspaceDetail("workspace-1"),
+				grexQueryKeys.workspaceDetail("workspace-1"),
 				WORKSPACE_DETAIL,
 			);
 			queryClient.setQueryData(
-				codewitQueryKeys.workspaceSessions("workspace-1"),
+				grexQueryKeys.workspaceSessions("workspace-1"),
 				WORKSPACE_SESSIONS,
 			);
 			queryClient.setQueryData(
-				codewitQueryKeys.sessionCodexGoal("session-2"),
+				grexQueryKeys.sessionCodexGoal("session-2"),
 				ACTIVE_GOAL,
 			);
 			return { queryClient };
@@ -1330,7 +1330,7 @@ describe("WorkspaceComposerContainer", () => {
 		>["onSubmit"];
 
 		function renderCodexComposer(
-			queryClient: ReturnType<typeof createCodewitQueryClient>,
+			queryClient: ReturnType<typeof createGrexQueryClient>,
 			onSubmit: ContainerOnSubmit,
 		) {
 			render(

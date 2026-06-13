@@ -6,9 +6,9 @@ export interface Env {
 	DEVICES: KVNamespace;
 	/** Cloudflare API token, `Zone:DNS:Edit` scoped to the root zone. Secret. */
 	CF_API_TOKEN: string;
-	/** Zone ID of `ROOT_DOMAIN` (the parent `codewit.ai` zone). */
+	/** Zone ID of `ROOT_DOMAIN` (the parent `grex.ai` zone). */
 	CF_ZONE_ID: string;
-	/** Apex domain CNAMEs are created under, e.g. `codewit.ai`. */
+	/** Apex domain CNAMEs are created under, e.g. `grex.ai`. */
 	ROOT_DOMAIN: string;
 	/** Hostname prefix for companion records. Defaults to `remote-`. */
 	HOSTNAME_PREFIX?: string;

@@ -520,7 +520,7 @@ fn opencode_model(slug: &str, label: &str, effort_levels: Vec<String>) -> AgentM
 }
 
 /// Build a Cursor option. Cursor wire ids collide with claude/codex
-/// (e.g. `default` = Claude Opus), so Codewit `id` is namespaced
+/// (e.g. `default` = Claude Opus), so Grex `id` is namespaced
 /// `cursor-<wire>`; `cli_model` keeps the bare wire id for `agent.send`.
 fn cursor_model(
     wire_id: &str,
@@ -571,7 +571,7 @@ pub struct ResolvedModel {
     pub claude_auth_token: Option<String>,
 }
 
-/// Resolve a Codewit model id to provider + cli_model. `provider_hint`
+/// Resolve a Grex model id to provider + cli_model. `provider_hint`
 /// is the inbound request's provider field (tie-breaker for ambiguous
 /// ids); falls back to prefix inference (`cursor-`/`composer-` →
 /// cursor, `gpt-` → codex, else claude). For cursor, strips the
@@ -957,7 +957,7 @@ mod tests {
     fn cursor_namespaced_id_strips_to_wire_for_cli_model() {
         let _env = crate::testkit::TestEnv::new("cursor-namespaced-id-strips-to-wire-for-");
         // Composer's selected model id from the picker is `cursor-default`
-        // (Codewit namespace). Resolver must emit `cli_model = "default"`
+        // (Grex namespace). Resolver must emit `cli_model = "default"`
         // so the SDK's `Cursor.models.list` token survives the round-trip.
         let m = resolve_model("cursor-default", Some("cursor"));
         assert_eq!(m.provider, "cursor");

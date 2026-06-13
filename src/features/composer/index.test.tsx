@@ -12,7 +12,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import type { PendingPermission } from "@/features/conversation/hooks/use-streaming";
 import type { PendingUserInput } from "@/features/conversation/pending-user-input";
-import { createCodewitQueryClient } from "@/lib/query-client";
+import { createGrexQueryClient } from "@/lib/query-client";
 import {
 	__resetDraftCacheForTests,
 	loadPersistedDraft,
@@ -139,7 +139,7 @@ function createAskUserQuestionUserInput(): PendingUserInput {
 		modelId: "opus-1m",
 		resolvedModel: "opus-1m",
 		providerSessionId: "provider-session-1",
-		workingDirectory: "/tmp/codewit",
+		workingDirectory: "/tmp/grex",
 		permissionMode: "default",
 		userInputId: "tool-ask-1",
 		source: "Claude",
@@ -203,7 +203,7 @@ function createFormUserInput(): PendingUserInput {
 		modelId: "opus-1m",
 		resolvedModel: "opus-1m",
 		providerSessionId: "provider-session-1",
-		workingDirectory: "/tmp/codewit",
+		workingDirectory: "/tmp/grex",
 		permissionMode: null,
 		userInputId: "elicitation-form-1",
 		source: "design-server",
@@ -235,7 +235,7 @@ function createUrlUserInput(): PendingUserInput {
 		modelId: "opus-1m",
 		resolvedModel: "opus-1m",
 		providerSessionId: "provider-session-1",
-		workingDirectory: "/tmp/codewit",
+		workingDirectory: "/tmp/grex",
 		permissionMode: null,
 		userInputId: "elicitation-url-1",
 		source: "auth-server",
@@ -250,7 +250,7 @@ describe("WorkspaceComposer", () => {
 	});
 
 	it("renders custom tag insertions as badges and expands them on submit", async () => {
-		const queryClient = createCodewitQueryClient();
+		const queryClient = createGrexQueryClient();
 		const handleSubmit = vi.fn();
 		const handleConsumed = vi.fn();
 
@@ -324,7 +324,7 @@ describe("WorkspaceComposer", () => {
 	});
 
 	it("allows an empty start composer submit as a create-only workspace", async () => {
-		const queryClient = createCodewitQueryClient();
+		const queryClient = createGrexQueryClient();
 		const handleSubmit = vi.fn();
 
 		render(
@@ -371,7 +371,7 @@ describe("WorkspaceComposer", () => {
 	});
 
 	it("persists drafts to the in-memory cache and restores them after remount", async () => {
-		const queryClient = createCodewitQueryClient();
+		const queryClient = createGrexQueryClient();
 		const handleSubmit = vi.fn();
 		const contextKey = "session:session-restore";
 		const { unmount } = render(
@@ -453,7 +453,7 @@ describe("WorkspaceComposer", () => {
 	});
 
 	it("clears persisted drafts after submit", async () => {
-		const queryClient = createCodewitQueryClient();
+		const queryClient = createGrexQueryClient();
 		const handleSubmit = vi.fn();
 		const contextKey = "session:session-send";
 
@@ -526,7 +526,7 @@ describe("WorkspaceComposer", () => {
 	});
 
 	it("does not rehydrate the active draft when restore props change in-place", async () => {
-		const queryClient = createCodewitQueryClient();
+		const queryClient = createGrexQueryClient();
 		const stableContextKey = "session:session-stable";
 		savePersistedDraft(
 			stableContextKey,
@@ -595,7 +595,7 @@ describe("WorkspaceComposer", () => {
 	});
 
 	it("does not rehydrate stale local drafts on same-context rerenders", async () => {
-		const queryClient = createCodewitQueryClient();
+		const queryClient = createGrexQueryClient();
 		const contextKey = "session:session-rerender";
 		savePersistedDraft(contextKey, paragraphDraft("stale draft"));
 
@@ -661,7 +661,7 @@ describe("WorkspaceComposer", () => {
 	});
 
 	it("only renders fast mode controls for supported models", () => {
-		const queryClient = createCodewitQueryClient();
+		const queryClient = createGrexQueryClient();
 		const { rerender } = render(
 			<TooltipProvider delayDuration={0}>
 				<QueryClientProvider client={queryClient}>
@@ -754,7 +754,7 @@ describe("WorkspaceComposer", () => {
 	});
 
 	it("renders the fast mode lottie overlay only during the fast prelude", () => {
-		const queryClient = createCodewitQueryClient();
+		const queryClient = createGrexQueryClient();
 
 		render(
 			<TooltipProvider delayDuration={0}>
@@ -796,7 +796,7 @@ describe("WorkspaceComposer", () => {
 	});
 
 	it("does not render the fast mode lottie overlay when fast mode is only toggled on", () => {
-		const queryClient = createCodewitQueryClient();
+		const queryClient = createGrexQueryClient();
 
 		render(
 			<TooltipProvider delayDuration={0}>
@@ -836,7 +836,7 @@ describe("WorkspaceComposer", () => {
 	});
 
 	it("only dims the fast mode lightning icon when disabled", () => {
-		const queryClient = createCodewitQueryClient();
+		const queryClient = createGrexQueryClient();
 
 		render(
 			<TooltipProvider delayDuration={0}>
@@ -877,7 +877,7 @@ describe("WorkspaceComposer", () => {
 
 	it("shows a hover preview for inserted image badges", async () => {
 		const user = userEvent.setup();
-		const queryClient = createCodewitQueryClient();
+		const queryClient = createGrexQueryClient();
 
 		render(
 			<QueryClientProvider client={queryClient}>
@@ -923,7 +923,7 @@ describe("WorkspaceComposer", () => {
 
 	it("shows a code preview for inserted custom tag badges", async () => {
 		const user = userEvent.setup();
-		const queryClient = createCodewitQueryClient();
+		const queryClient = createGrexQueryClient();
 
 		render(
 			<QueryClientProvider client={queryClient}>
@@ -982,7 +982,7 @@ describe("WorkspaceComposer", () => {
 
 	it("collects AskUserQuestion answers into updatedInput and resumes via allow", async () => {
 		const user = userEvent.setup();
-		const queryClient = createCodewitQueryClient();
+		const queryClient = createGrexQueryClient();
 		const handleUserInputResponse = vi.fn();
 
 		render(
@@ -1059,7 +1059,7 @@ describe("WorkspaceComposer", () => {
 
 	it("keeps permission approval buttons enabled while the stream is paused for approval", async () => {
 		const user = userEvent.setup();
-		const queryClient = createCodewitQueryClient();
+		const queryClient = createGrexQueryClient();
 		const handlePermissionResponse = vi.fn();
 
 		render(
@@ -1103,7 +1103,7 @@ describe("WorkspaceComposer", () => {
 
 	it("edits custom AskUserQuestion answers inline inside the Other row", async () => {
 		const user = userEvent.setup();
-		const queryClient = createCodewitQueryClient();
+		const queryClient = createGrexQueryClient();
 
 		render(
 			<QueryClientProvider client={queryClient}>
@@ -1149,7 +1149,7 @@ describe("WorkspaceComposer", () => {
 
 	it("renders a form elicitation panel and submits structured content", async () => {
 		const user = userEvent.setup();
-		const queryClient = createCodewitQueryClient();
+		const queryClient = createGrexQueryClient();
 		const onUserInputResponse = vi.fn();
 
 		render(
@@ -1190,7 +1190,7 @@ describe("WorkspaceComposer", () => {
 
 		await user.type(
 			screen.getByPlaceholderText("Project name"),
-			"Codewit Elicitation",
+			"Grex Elicitation",
 		);
 		expect(
 			screen.getByRole("button", { name: "Send Response" }),
@@ -1205,13 +1205,13 @@ describe("WorkspaceComposer", () => {
 		expect(onUserInputResponse).toHaveBeenCalledWith(
 			expect.objectContaining({ userInputId: "elicitation-form-1" }),
 			"submit",
-			{ content: { approved: true, name: "Codewit Elicitation" } },
+			{ content: { approved: true, name: "Grex Elicitation" } },
 		);
 	});
 
 	it("opens and copies URL elicitation links through the shared panel shell", async () => {
 		const user = userEvent.setup();
-		const queryClient = createCodewitQueryClient();
+		const queryClient = createGrexQueryClient();
 		const onUserInputResponse = vi.fn();
 		const writeText = vi.fn().mockResolvedValue(undefined);
 		Object.defineProperty(navigator, "clipboard", {
@@ -1266,7 +1266,7 @@ describe("WorkspaceComposer", () => {
 	});
 
 	it("shows Approve and Request Changes buttons when ExitPlanMode permission is pending", () => {
-		const queryClient = createCodewitQueryClient();
+		const queryClient = createGrexQueryClient();
 
 		render(
 			<QueryClientProvider client={queryClient}>
@@ -1304,7 +1304,7 @@ describe("WorkspaceComposer", () => {
 	});
 
 	it("calls onSubmit with bypassPermissions when Implement is clicked", async () => {
-		const queryClient = createCodewitQueryClient();
+		const queryClient = createGrexQueryClient();
 		const onSubmit = vi.fn();
 
 		render(
@@ -1343,7 +1343,7 @@ describe("WorkspaceComposer", () => {
 	});
 
 	it("disables Request Changes when input is empty", () => {
-		const queryClient = createCodewitQueryClient();
+		const queryClient = createGrexQueryClient();
 
 		render(
 			<QueryClientProvider client={queryClient}>
@@ -1375,7 +1375,7 @@ describe("WorkspaceComposer", () => {
 	});
 
 	it("shows plan review placeholder when plan is captured", () => {
-		const queryClient = createCodewitQueryClient();
+		const queryClient = createGrexQueryClient();
 
 		render(
 			<QueryClientProvider client={queryClient}>
@@ -1405,7 +1405,7 @@ describe("WorkspaceComposer", () => {
 	});
 
 	it("keeps plan review controls visible while plan review is active", async () => {
-		const queryClient = createCodewitQueryClient();
+		const queryClient = createGrexQueryClient();
 		const onChangePermissionMode = vi.fn();
 
 		render(
@@ -1445,7 +1445,7 @@ describe("WorkspaceComposer", () => {
 	});
 
 	it("switches permission mode and submits when Implement is clicked", async () => {
-		const queryClient = createCodewitQueryClient();
+		const queryClient = createGrexQueryClient();
 		const onChangePermissionMode = vi.fn();
 		const onSubmit = vi.fn();
 
@@ -1486,7 +1486,7 @@ describe("WorkspaceComposer", () => {
 	});
 
 	it("shows normal Send button when hasPlanReview but permissionMode is not plan", () => {
-		const queryClient = createCodewitQueryClient();
+		const queryClient = createGrexQueryClient();
 
 		render(
 			<QueryClientProvider client={queryClient}>
@@ -1522,7 +1522,7 @@ describe("WorkspaceComposer", () => {
 	});
 
 	it("shows normal placeholder when hasPlanReview but permissionMode is not plan", () => {
-		const queryClient = createCodewitQueryClient();
+		const queryClient = createGrexQueryClient();
 
 		render(
 			<QueryClientProvider client={queryClient}>
@@ -1555,7 +1555,7 @@ describe("WorkspaceComposer", () => {
 	});
 
 	it("plan toggle button is freely clickable during plan review", async () => {
-		const queryClient = createCodewitQueryClient();
+		const queryClient = createGrexQueryClient();
 		const onChangePermissionMode = vi.fn();
 
 		render(
@@ -1590,7 +1590,7 @@ describe("WorkspaceComposer", () => {
 	});
 
 	it("plan keyboard shortcut exits plan into bypassPermissions (matches the button), not default (#733)", () => {
-		const queryClient = createCodewitQueryClient();
+		const queryClient = createGrexQueryClient();
 		const onChangePermissionMode = vi.fn();
 
 		const { container } = render(

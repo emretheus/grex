@@ -3,8 +3,8 @@
 use std::path::{Path, PathBuf};
 use std::sync::OnceLock;
 
-pub const GH_PATH_ENV: &str = "CODEWIT_GH_BIN_PATH";
-pub const GLAB_PATH_ENV: &str = "CODEWIT_GLAB_BIN_PATH";
+pub const GH_PATH_ENV: &str = "GREX_GH_BIN_PATH";
+pub const GLAB_PATH_ENV: &str = "GREX_GLAB_BIN_PATH";
 
 #[derive(Debug, Default, Clone)]
 pub struct BundledForgeCliPaths {
@@ -160,8 +160,8 @@ mod tests {
     #[test]
     fn resolve_finds_binaries_under_resources_vendor() {
         let root = tempfile::tempdir().unwrap();
-        let exe = root.path().join("Codewit.app/Contents/MacOS/Codewit");
-        let vendor = root.path().join("Codewit.app/Contents/Resources/vendor");
+        let exe = root.path().join("Grex.app/Contents/MacOS/Grex");
+        let vendor = root.path().join("Grex.app/Contents/Resources/vendor");
         write_vendor_binaries(&vendor);
 
         let paths = resolve_for_exe(&exe).unwrap();
@@ -174,8 +174,8 @@ mod tests {
     fn resolve_finds_binaries_next_to_exe() {
         // Windows (NSIS/MSI) layout: resources installed beside the exe.
         let root = tempfile::tempdir().unwrap();
-        let exe = root.path().join("Codewit/codewit.exe");
-        let vendor = root.path().join("Codewit/vendor");
+        let exe = root.path().join("Grex/grex.exe");
+        let vendor = root.path().join("Grex/vendor");
         write_vendor_binaries(&vendor);
 
         let paths = resolve_for_exe(&exe).unwrap();
@@ -187,7 +187,7 @@ mod tests {
     #[test]
     fn resolve_returns_none_when_binaries_missing() {
         let root = tempfile::tempdir().unwrap();
-        let exe = root.path().join("Codewit.app/Contents/MacOS/Codewit");
+        let exe = root.path().join("Grex.app/Contents/MacOS/Grex");
         let paths = resolve_for_exe(&exe).unwrap();
         assert!(paths.gh.is_none());
         assert!(paths.glab.is_none());
@@ -210,8 +210,8 @@ mod tests {
     #[test]
     fn app_bundle_paths_win_over_debug_vendor() {
         let root = tempfile::tempdir().unwrap();
-        let exe = root.path().join("Codewit.app/Contents/MacOS/Codewit");
-        let app_vendor = root.path().join("Codewit.app/Contents/Resources/vendor");
+        let exe = root.path().join("Grex.app/Contents/MacOS/Grex");
+        let app_vendor = root.path().join("Grex.app/Contents/Resources/vendor");
         let dev_vendor = root.path().join("sidecar/dist/vendor");
         write_vendor_binaries(&app_vendor);
         write_vendor_binaries(&dev_vendor);
