@@ -2,6 +2,24 @@
 	"_readme": "AUTO-GENERATED from .announcements during `bun run release:version`. Each item is one released version's in-app announcement. Do not edit released entries by hand.",
 	"items": [
 		{
+			"releaseVersion": "0.2.0",
+			"items": [
+				{
+					"text": "Follow-ups now queue while the agent works — line up your next tasks above the composer and Steer, Edit, or Delete each one. Prefer interrupting the run instead? Switch to Steer in Settings.",
+					"action": {
+						"label": "Open Settings",
+						"value": {
+							"type": "openSettings",
+							"section": "general"
+						}
+					}
+				},
+				{
+					"text": "The composer now shows an explicit Plan vs Auto mode, so it's clear when the agent is running with full access."
+				}
+			]
+		},
+		{
 			"releaseVersion": "0.37.0",
 			"items": [
 				{
