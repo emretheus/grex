@@ -23,12 +23,12 @@ describe("shell event bus", () => {
 		document.body.innerHTML = "";
 	});
 
-	it("publishShellEvent dispatches a CustomEvent with `codewit:` prefix", () => {
+	it("publishShellEvent dispatches a CustomEvent with `grex:` prefix", () => {
 		const listener = vi.fn();
-		window.addEventListener("codewit:focus-composer", listener);
+		window.addEventListener("grex:focus-composer", listener);
 		publishShellEvent({ type: "focus-composer" });
 		expect(listener).toHaveBeenCalledTimes(1);
-		window.removeEventListener("codewit:focus-composer", listener);
+		window.removeEventListener("grex:focus-composer", listener);
 	});
 
 	it("useShellEvent receives the typed event when published", () => {
@@ -55,12 +55,12 @@ describe("shell event bus", () => {
 		expect(onEvent).not.toHaveBeenCalled();
 	});
 
-	it("legacy listeners using the raw `codewit:foo` name still receive events", () => {
+	it("legacy listeners using the raw `grex:foo` name still receive events", () => {
 		const listener = vi.fn();
-		window.addEventListener("codewit:open-model-picker", listener);
+		window.addEventListener("grex:open-model-picker", listener);
 		publishShellEvent({ type: "open-model-picker" });
 		expect(listener).toHaveBeenCalledTimes(1);
-		window.removeEventListener("codewit:open-model-picker", listener);
+		window.removeEventListener("grex:open-model-picker", listener);
 	});
 
 	it("publishShellEvent + legacy CustomEvent dispatcher are interoperable", () => {
@@ -68,7 +68,7 @@ describe("shell event bus", () => {
 		render(<Harness type="open-settings" onEvent={onEvent} />);
 		// Simulate a legacy emitter (e.g. features/settings/panels/inbox.tsx).
 		window.dispatchEvent(
-			new CustomEvent("codewit:open-settings", {
+			new CustomEvent("grex:open-settings", {
 				detail: { section: "account" },
 			}),
 		);
@@ -78,8 +78,8 @@ describe("shell event bus", () => {
 		});
 	});
 
-	it("shellEventName prefixes type with `codewit:`", () => {
-		expect(shellEventName("focus-composer")).toBe("codewit:focus-composer");
+	it("shellEventName prefixes type with `grex:`", () => {
+		expect(shellEventName("focus-composer")).toBe("grex:focus-composer");
 	});
 
 	it("useShellEvent unsubscribes on unmount", () => {

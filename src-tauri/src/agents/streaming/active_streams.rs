@@ -24,14 +24,14 @@ pub(crate) struct ActiveStreamHandle {
     pub request_id: String,
     pub sidecar_session_id: String,
     pub provider: String,
-    /// Codewit session this stream belongs to. Drives the per-session
+    /// Grex session this stream belongs to. Drives the per-session
     /// dedup in `try_register_for_session`. `Option<_>` is defensive —
     /// today every registered handle comes from `stream_via_sidecar`
     /// and carries a Some, but the type leaves room for an anonymous
     /// stream path (which would NOT surface in `snapshot_for_ui`).
-    pub codewit_session_id: Option<String>,
-    /// Workspace owning the codewit session, looked up at registration
-    /// time. `None` for streams without a codewit session, or when the
+    pub grex_session_id: Option<String>,
+    /// Workspace owning the grex session, looked up at registration
+    /// time. `None` for streams without a grex session, or when the
     /// session row hasn't been written yet (rare boot race).
     pub workspace_id: Option<String>,
 }
@@ -57,16 +57,16 @@ impl ActiveStreams {
     }
 
     /// Register `handle` iff no existing entry targets the same
-    /// `codewit_session_id`. `None` ids never collide. Returns `false`
+    /// `grex_session_id`. `None` ids never collide. Returns `false`
     /// when a stream is already in flight for the session.
     pub(super) fn try_register_for_session(&self, handle: ActiveStreamHandle) -> bool {
         let Ok(mut map) = self.inner.lock() else {
             return false;
         };
-        if let Some(hsid) = handle.codewit_session_id.as_deref() {
+        if let Some(hsid) = handle.grex_session_id.as_deref() {
             let already_active = map
                 .values()
-                .any(|h| h.codewit_session_id.as_deref() == Some(hsid));
+                .any(|h| h.grex_session_id.as_deref() == Some(hsid));
             if already_active {
                 return false;
             }
@@ -83,7 +83,7 @@ impl ActiveStreams {
 
     /// Register/unregister a non-SDK stream (e.g. a Terminal session) keyed by
     /// its own session id, so the UI's busy/spinner derivation treats a working
-    /// terminal like any other busy session. `request_id` == `codewit_session_id`
+    /// terminal like any other busy session. `request_id` == `grex_session_id`
     /// == `session_id` (one in-flight "turn" per terminal).
     pub(crate) fn set_session_active(
         &self,
@@ -97,7 +97,7 @@ impl ActiveStreams {
                 request_id: session_id.to_string(),
                 sidecar_session_id: String::new(),
                 provider: provider.to_string(),
-                codewit_session_id: Some(session_id.to_string()),
+                grex_session_id: Some(session_id.to_string()),
                 workspace_id,
             })
         } else {
@@ -113,7 +113,7 @@ impl ActiveStreams {
             .lock()
             .map(|map| {
                 map.values()
-                    .any(|h| h.codewit_session_id.as_deref() == Some(session_id))
+                    .any(|h| h.grex_session_id.as_deref() == Some(session_id))
             })
             .unwrap_or(false)
     }
@@ -125,8 +125,8 @@ impl ActiveStreams {
             .unwrap_or_default()
     }
 
-    /// UI-facing snapshot. Drops handles without a `codewit_session_id`
-    /// — the frontend keys everything off the codewit session, so a
+    /// UI-facing snapshot. Drops handles without a `grex_session_id`
+    /// — the frontend keys everything off the grex session, so a
     /// session-less entry would be unaddressable on the wire. Today
     /// every registered handle has one; this is purely defensive.
     pub fn snapshot_for_ui(&self) -> Vec<ActiveStreamSummary> {
@@ -135,7 +135,7 @@ impl ActiveStreams {
             .map(|map| {
                 map.values()
                     .filter_map(|h| {
-                        h.codewit_session_id.as_ref().map(|sid| ActiveStreamSummary {
+                        h.grex_session_id.as_ref().map(|sid| ActiveStreamSummary {
                             session_id: sid.clone(),
                             workspace_id: h.workspace_id.clone(),
                             provider: h.provider.clone(),
@@ -234,13 +234,13 @@ pub fn abort_all_active_streams_blocking(
 mod tests {
     use super::*;
 
-    fn handle(request_id: &str, codewit_session_id: Option<&str>) -> ActiveStreamHandle {
+    fn handle(request_id: &str, grex_session_id: Option<&str>) -> ActiveStreamHandle {
         ActiveStreamHandle {
             request_id: request_id.to_string(),
             sidecar_session_id: format!("sidecar-{request_id}"),
             provider: "claude".to_string(),
-            codewit_session_id: codewit_session_id.map(str::to_string),
-            workspace_id: codewit_session_id.map(|sid| format!("ws-{sid}")),
+            grex_session_id: grex_session_id.map(str::to_string),
+            workspace_id: grex_session_id.map(|sid| format!("ws-{sid}")),
         }
     }
 
@@ -266,7 +266,7 @@ mod tests {
     }
 
     #[test]
-    fn duplicate_codewit_session_id_is_rejected() {
+    fn duplicate_grex_session_id_is_rejected() {
         let streams = ActiveStreams::new();
         assert!(streams.try_register_for_session(handle("r1", Some("s1"))));
         assert!(!streams.try_register_for_session(handle("r2", Some("s1"))));

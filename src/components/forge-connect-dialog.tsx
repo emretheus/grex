@@ -42,7 +42,7 @@ import {
 	type WorkspaceDetail,
 	writeForgeCliAuthTerminalStdin,
 } from "@/lib/api";
-import { codewitQueryKeys } from "@/lib/query-client";
+import { grexQueryKeys } from "@/lib/query-client";
 import { cn } from "@/lib/utils";
 
 export type ForgeConnectDialogProps = {
@@ -215,7 +215,7 @@ export function ForgeConnectDialog({
 			let resolvedRepoId = repoId ?? null;
 			if (!resolvedRepoId && workspaceId) {
 				const detail = queryClient.getQueryData<WorkspaceDetail | null>(
-					codewitQueryKeys.workspaceDetail(workspaceId),
+					grexQueryKeys.workspaceDetail(workspaceId),
 				);
 				resolvedRepoId = detail?.repoId ?? null;
 			}
@@ -238,7 +238,7 @@ export function ForgeConnectDialog({
 			}
 
 			void queryClient.invalidateQueries({
-				queryKey: codewitQueryKeys.forgeAccountsAll,
+				queryKey: grexQueryKeys.forgeAccountsAll,
 			});
 			// Refresh the workspace-scoped identity views: `workspaceForge`
 			// (detection), `workspaceForgeActionStatus` (remote-state), and
@@ -260,22 +260,22 @@ export function ForgeConnectDialog({
 			});
 			if (workspaceId) {
 				void queryClient.invalidateQueries({
-					queryKey: codewitQueryKeys.workspaceDetail(workspaceId),
+					queryKey: grexQueryKeys.workspaceDetail(workspaceId),
 				});
 				void queryClient.invalidateQueries({
-					queryKey: codewitQueryKeys.workspaceChangeRequest(workspaceId),
+					queryKey: grexQueryKeys.workspaceChangeRequest(workspaceId),
 				});
 			}
 			// Always invalidate — per-repo retry above may have changed
 			// this repo's row, and the async backfill below may bind more.
 			void queryClient.invalidateQueries({
-				queryKey: codewitQueryKeys.repositories,
+				queryKey: grexQueryKeys.repositories,
 			});
 			void backfillForgeRepoBindings()
 				.then((bound) => {
 					if (bound > 0) {
 						void queryClient.invalidateQueries({
-							queryKey: codewitQueryKeys.repositories,
+							queryKey: grexQueryKeys.repositories,
 						});
 					}
 				})

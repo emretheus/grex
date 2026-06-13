@@ -12,13 +12,13 @@ const catalog: readonly ReleaseAnnouncementCatalogEntry[] = [
 ];
 
 describe("selectReleaseAnnouncement", () => {
-	it("returns null on a genuine first install (isFirstCodewitBoot=true)", () => {
+	it("returns null on a genuine first install (isFirstGrexBoot=true)", () => {
 		expect(
 			selectReleaseAnnouncement({
 				catalog,
 				currentVersion: "0.20.0",
 				lastSeenVersion: null,
-				isFirstCodewitBoot: true,
+				isFirstGrexBoot: true,
 				lastDismissedReleaseVersion: null,
 			}),
 		).toBeNull();
@@ -29,7 +29,7 @@ describe("selectReleaseAnnouncement", () => {
 			catalog,
 			currentVersion: "0.20.0",
 			lastSeenVersion: null,
-			isFirstCodewitBoot: false,
+			isFirstGrexBoot: false,
 			lastDismissedReleaseVersion: null,
 		});
 		expect(result?.releaseVersions).toEqual(["0.20.0"]);
@@ -42,7 +42,7 @@ describe("selectReleaseAnnouncement", () => {
 				catalog,
 				currentVersion: "0.20.0",
 				lastSeenVersion: "0.20.0",
-				isFirstCodewitBoot: false,
+				isFirstGrexBoot: false,
 				lastDismissedReleaseVersion: null,
 			}),
 		).toBeNull();
@@ -54,7 +54,7 @@ describe("selectReleaseAnnouncement", () => {
 				catalog,
 				currentVersion: "0.19.0",
 				lastSeenVersion: "0.20.0",
-				isFirstCodewitBoot: false,
+				isFirstGrexBoot: false,
 				lastDismissedReleaseVersion: null,
 			}),
 		).toBeNull();
@@ -65,7 +65,7 @@ describe("selectReleaseAnnouncement", () => {
 			catalog,
 			currentVersion: "0.20.0",
 			lastSeenVersion: "0.19.1",
-			isFirstCodewitBoot: false,
+			isFirstGrexBoot: false,
 			lastDismissedReleaseVersion: null,
 		});
 		expect(result).toEqual({
@@ -81,7 +81,7 @@ describe("selectReleaseAnnouncement", () => {
 				catalog,
 				currentVersion: "0.20.0",
 				lastSeenVersion: "0.19.1",
-				isFirstCodewitBoot: false,
+				isFirstGrexBoot: false,
 				lastDismissedReleaseVersion: "0.20.0",
 			}),
 		).toBeNull();
@@ -97,7 +97,7 @@ describe("selectReleaseAnnouncement", () => {
 			catalog: wideCatalog,
 			currentVersion: "0.21.0",
 			lastSeenVersion: "0.18.0",
-			isFirstCodewitBoot: false,
+			isFirstGrexBoot: false,
 			lastDismissedReleaseVersion: "0.20.0",
 		});
 		expect(result?.releaseVersions).toEqual(["0.21.0"]);
@@ -113,7 +113,7 @@ describe("selectReleaseAnnouncement", () => {
 			catalog: wideCatalog,
 			currentVersion: "0.21.0",
 			lastSeenVersion: "0.19.1",
-			isFirstCodewitBoot: false,
+			isFirstGrexBoot: false,
 			lastDismissedReleaseVersion: null,
 		});
 		expect(result).toEqual({
@@ -132,7 +132,7 @@ describe("selectReleaseAnnouncement", () => {
 			catalog: futureCatalog,
 			currentVersion: "0.20.0",
 			lastSeenVersion: "0.19.1",
-			isFirstCodewitBoot: false,
+			isFirstGrexBoot: false,
 			lastDismissedReleaseVersion: null,
 		});
 		expect(result?.releaseVersions).toEqual(["0.20.0"]);
@@ -147,7 +147,7 @@ describe("selectReleaseAnnouncement", () => {
 			catalog: orderedCatalog,
 			currentVersion: "0.21.0",
 			lastSeenVersion: "0.19.1",
-			isFirstCodewitBoot: false,
+			isFirstGrexBoot: false,
 			lastDismissedReleaseVersion: null,
 		});
 		expect(result?.releaseVersions).toEqual(["0.21.0", "0.20.0"]);
@@ -160,7 +160,7 @@ describe("selectReleaseAnnouncement", () => {
 				catalog,
 				currentVersion: "0.21.0",
 				lastSeenVersion: "0.20.0",
-				isFirstCodewitBoot: false,
+				isFirstGrexBoot: false,
 				lastDismissedReleaseVersion: null,
 			}),
 		).toBeNull();

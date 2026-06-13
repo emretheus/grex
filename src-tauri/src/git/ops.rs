@@ -1122,7 +1122,7 @@ fn current_upstream_ref(workspace_dir: &Path) -> Option<String> {
 /// Tries upstream config first, then falls back to a literal
 /// `refs/remotes/<remote>/<branch>` lookup so manually-pushed branches
 /// (without `-u`) are still recognised. `None` means the local branch has
-/// no corresponding remote ref Codewit can see — treat as "branch was
+/// no corresponding remote ref Grex can see — treat as "branch was
 /// never published".
 pub fn resolve_remote_tracking_ref(workspace_dir: &Path, remote: Option<&str>) -> Option<String> {
     if let Some(upstream) = current_upstream_ref(workspace_dir) {
@@ -1453,7 +1453,7 @@ pub fn stash_pop(workspace_dir: &Path) -> Result<StashPopOutcome> {
 pub fn preflight_merge_ref(workspace_dir: &Path, target_ref: &str) -> Result<MergePreflightResult> {
     let head_sha = current_workspace_head_commit(workspace_dir)?;
     let preflight_dir =
-        std::env::temp_dir().join(format!("codewit-merge-preflight-{}", uuid::Uuid::new_v4()));
+        std::env::temp_dir().join(format!("grex-merge-preflight-{}", uuid::Uuid::new_v4()));
     refresh_repo_setup_root(workspace_dir, &preflight_dir, &head_sha)?;
 
     let merge_result = run_git(
@@ -1541,8 +1541,8 @@ mod tests {
         let dir = tempfile::tempdir().unwrap();
         run(dir.path(), &["init"]);
         run(dir.path(), &["checkout", "-b", "main"]);
-        run(dir.path(), &["config", "user.email", "codewit@example.com"]);
-        run(dir.path(), &["config", "user.name", "Codewit Test"]);
+        run(dir.path(), &["config", "user.email", "grex@example.com"]);
+        run(dir.path(), &["config", "user.name", "Grex Test"]);
         run(dir.path(), &["config", "commit.gpgsign", "false"]);
         std::fs::write(dir.path().join("file.txt"), "base\n").unwrap();
         run(dir.path(), &["add", "file.txt"]);
@@ -1751,9 +1751,9 @@ mod tests {
         // Configure user in clone
         run(
             clone_dir.path(),
-            &["config", "user.email", "codewit@example.com"],
+            &["config", "user.email", "grex@example.com"],
         );
-        run(clone_dir.path(), &["config", "user.name", "Codewit Test"]);
+        run(clone_dir.path(), &["config", "user.name", "Grex Test"]);
         run(clone_dir.path(), &["config", "commit.gpgsign", "false"]);
         (origin, clone_dir)
     }

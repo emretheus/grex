@@ -1,4 +1,4 @@
-use codewit_lib::schema;
+use grex_lib::schema;
 use insta::assert_yaml_snapshot;
 
 fn repos_branch_prefix_columns(connection: &rusqlite::Connection) -> Vec<(String, String)> {

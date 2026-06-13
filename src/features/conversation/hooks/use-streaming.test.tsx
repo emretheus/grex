@@ -10,7 +10,7 @@ import type {
 	ThreadMessageLike,
 	ToolCallPart,
 } from "@/lib/api";
-import { codewitQueryKeys } from "@/lib/query-client";
+import { grexQueryKeys } from "@/lib/query-client";
 import { sessionThreadCacheKey } from "@/lib/session-thread-cache";
 import type {
 	QueuedSubmitContext,
@@ -81,7 +81,7 @@ function createAskUserQuestionInput(): PendingUserInput {
 		modelId: "opus-1m",
 		resolvedModel: "opus-1m",
 		providerSessionId: "provider-session-1",
-		workingDirectory: "/tmp/codewit",
+		workingDirectory: "/tmp/grex",
 		permissionMode: "default",
 		userInputId: "tool-1",
 		source: "Claude",
@@ -99,7 +99,7 @@ function createFormUserInput(): PendingUserInput {
 		modelId: "opus-1m",
 		resolvedModel: "opus-1m",
 		providerSessionId: "provider-session-1",
-		workingDirectory: "/tmp/codewit",
+		workingDirectory: "/tmp/grex",
 		permissionMode: null,
 		userInputId: "elicitation-1",
 		source: "design-server",
@@ -245,7 +245,7 @@ describe("useConversationStreaming", () => {
 				filePaths: [],
 				customTags: [],
 				model: MODEL,
-				workingDirectory: "/tmp/codewit",
+				workingDirectory: "/tmp/grex",
 				effortLevel: "medium",
 				permissionMode: "default",
 				fastMode: false,
@@ -371,7 +371,7 @@ describe("useConversationStreaming", () => {
 				filePaths: [],
 				customTags: [],
 				model: MODEL,
-				workingDirectory: "/tmp/codewit",
+				workingDirectory: "/tmp/grex",
 				effortLevel: "medium",
 				permissionMode: "plan",
 				fastMode: false,
@@ -411,7 +411,7 @@ describe("useConversationStreaming", () => {
 				filePaths: [],
 				customTags: [],
 				model: MODEL,
-				workingDirectory: "/tmp/codewit",
+				workingDirectory: "/tmp/grex",
 				effortLevel: "medium",
 				permissionMode: "plan",
 				fastMode: false,
@@ -431,7 +431,7 @@ describe("useConversationStreaming", () => {
 				filePaths: [],
 				customTags: [],
 				model: MODEL,
-				workingDirectory: "/tmp/codewit",
+				workingDirectory: "/tmp/grex",
 				effortLevel: "medium",
 				permissionMode: "bypassPermissions",
 				fastMode: false,
@@ -476,7 +476,7 @@ describe("useConversationStreaming", () => {
 				filePaths: [],
 				customTags: [],
 				model: MODEL,
-				workingDirectory: "/tmp/codewit",
+				workingDirectory: "/tmp/grex",
 				effortLevel: "medium",
 				permissionMode: "default",
 				fastMode: false,
@@ -493,7 +493,7 @@ describe("useConversationStreaming", () => {
 				filePaths: ["src/foo.ts"],
 				customTags: [],
 				model: MODEL,
-				workingDirectory: "/tmp/codewit",
+				workingDirectory: "/tmp/grex",
 				effortLevel: "medium",
 				permissionMode: "default",
 				fastMode: false,
@@ -552,7 +552,7 @@ describe("useConversationStreaming", () => {
 				filePaths: [],
 				customTags: [],
 				model: MODEL,
-				workingDirectory: "/tmp/codewit",
+				workingDirectory: "/tmp/grex",
 				effortLevel: "medium",
 				permissionMode: "default",
 				fastMode: false,
@@ -577,7 +577,7 @@ describe("useConversationStreaming", () => {
 				modelId: MODEL.id,
 				resolvedModel: MODEL.cliModel,
 				sessionId: "provider-session-1",
-				workingDirectory: "/tmp/codewit",
+				workingDirectory: "/tmp/grex",
 				persisted: true,
 			});
 		});
@@ -593,7 +593,7 @@ describe("useConversationStreaming", () => {
 		apiMocks.startAgentMessageStream.mockImplementation(async () => {});
 
 		const { Wrapper, queryClient } = createWrapper();
-		queryClient.setQueryData(codewitQueryKeys.workspaceSessions("workspace-1"), [
+		queryClient.setQueryData(grexQueryKeys.workspaceSessions("workspace-1"), [
 			{
 				id: "session-1",
 				title: "Untitled",
@@ -655,7 +655,7 @@ describe("useConversationStreaming", () => {
 		]);
 
 		const { Wrapper, queryClient } = createWrapper();
-		queryClient.setQueryData(codewitQueryKeys.workspaceSessions("workspace-1"), [
+		queryClient.setQueryData(grexQueryKeys.workspaceSessions("workspace-1"), [
 			{
 				id: "session-1",
 				title: "Untitled",
@@ -718,7 +718,7 @@ describe("useConversationStreaming", () => {
 		apiMocks.startAgentMessageStream.mockImplementation(async () => {});
 
 		const { Wrapper, queryClient } = createWrapper();
-		queryClient.setQueryData(codewitQueryKeys.workspaceSessions("workspace-1"), [
+		queryClient.setQueryData(grexQueryKeys.workspaceSessions("workspace-1"), [
 			{
 				id: "session-1",
 				title: "Untitled",
@@ -816,7 +816,7 @@ describe("useConversationStreaming", () => {
 				filePaths: [],
 				customTags: [],
 				model: MODEL,
-				workingDirectory: "/tmp/codewit",
+				workingDirectory: "/tmp/grex",
 				effortLevel: "medium",
 				permissionMode: "default",
 				fastMode: false,
@@ -833,7 +833,7 @@ describe("useConversationStreaming", () => {
 				filePaths: ["src/foo.ts"],
 				customTags: [],
 				model: MODEL,
-				workingDirectory: "/tmp/codewit",
+				workingDirectory: "/tmp/grex",
 				effortLevel: "medium",
 				permissionMode: "default",
 				fastMode: false,
@@ -856,7 +856,7 @@ describe("useConversationStreaming", () => {
 		apiMocks.startAgentMessageStream.mockImplementation(async () => {});
 
 		const { Wrapper, queryClient } = createWrapper();
-		queryClient.setQueryData(codewitQueryKeys.workspaceSessions("workspace-1"), [
+		queryClient.setQueryData(grexQueryKeys.workspaceSessions("workspace-1"), [
 			{
 				id: "session-1",
 				workspaceId: "workspace-1",
@@ -877,18 +877,18 @@ describe("useConversationStreaming", () => {
 				active: true,
 			},
 		]);
-		queryClient.setQueryData(codewitQueryKeys.workspaceDetail("workspace-1"), {
+		queryClient.setQueryData(grexQueryKeys.workspaceDetail("workspace-1"), {
 			id: "workspace-1",
 			title: "Workspace 1",
 			repoId: "repo-1",
-			repoName: "codewit",
+			repoName: "grex",
 			repoIconSrc: null,
 			repoInitials: "HE",
 			remote: "origin",
 			remoteUrl: null,
 			defaultBranch: "main",
-			rootPath: "/tmp/codewit",
-			directoryName: "codewit",
+			rootPath: "/tmp/grex",
+			directoryName: "grex",
 			state: "ready",
 			hasUnread: false,
 			workspaceUnread: 0,
@@ -907,7 +907,7 @@ describe("useConversationStreaming", () => {
 			sessionCount: 1,
 			messageCount: 0,
 		});
-		queryClient.setQueryData(codewitQueryKeys.workspaceGroups, [
+		queryClient.setQueryData(grexQueryKeys.workspaceGroups, [
 			{
 				id: "progress",
 				label: "In progress",
@@ -916,7 +916,7 @@ describe("useConversationStreaming", () => {
 					{
 						id: "workspace-1",
 						title: "Workspace 1",
-						repoName: "codewit",
+						repoName: "grex",
 						repoInitials: "HE",
 						state: "ready",
 						hasUnread: false,
@@ -958,7 +958,7 @@ describe("useConversationStreaming", () => {
 				filePaths: [],
 				customTags: [],
 				model: MODEL,
-				workingDirectory: "/tmp/codewit",
+				workingDirectory: "/tmp/grex",
 				effortLevel: "medium",
 				permissionMode: "default",
 				fastMode: false,
@@ -976,13 +976,13 @@ describe("useConversationStreaming", () => {
 		);
 		expect(
 			queryClient.getQueryData<Array<{ title: string }>>(
-				codewitQueryKeys.workspaceSessions("workspace-1"),
+				grexQueryKeys.workspaceSessions("workspace-1"),
 			)?.[0]?.title,
 		).toBe("Investigate reconnect failures af...");
 		expect(
 			queryClient.getQueryData<
 				Array<{ rows: Array<{ activeSessionTitle: string }> }>
-			>(codewitQueryKeys.workspaceGroups)?.[0]?.rows[0]?.activeSessionTitle,
+			>(grexQueryKeys.workspaceGroups)?.[0]?.rows[0]?.activeSessionTitle,
 		).toBe("Investigate reconnect failures af...");
 	});
 
@@ -1021,7 +1021,7 @@ describe("useConversationStreaming", () => {
 				filePaths: [],
 				customTags: [],
 				model: MODEL,
-				workingDirectory: "/tmp/codewit",
+				workingDirectory: "/tmp/grex",
 				effortLevel: "medium",
 				permissionMode: "default",
 				fastMode: false,
@@ -1035,7 +1035,7 @@ describe("useConversationStreaming", () => {
 				modelId: "",
 				resolvedModel: "opus-1m",
 				sessionId: "provider-session-1",
-				workingDirectory: "/tmp/codewit",
+				workingDirectory: "/tmp/grex",
 				userInputId: "elicitation-1",
 				source: "design-server",
 				message: "Need structured input",
@@ -1110,7 +1110,7 @@ describe("useConversationStreaming", () => {
 				filePaths: [],
 				customTags: [],
 				model: MODEL,
-				workingDirectory: "/tmp/codewit",
+				workingDirectory: "/tmp/grex",
 				effortLevel: "medium",
 				permissionMode: "default",
 				fastMode: false,
@@ -1210,7 +1210,7 @@ describe("useConversationStreaming", () => {
 				filePaths: [],
 				customTags: [],
 				model: MODEL,
-				workingDirectory: "/tmp/codewit",
+				workingDirectory: "/tmp/grex",
 				effortLevel: "medium",
 				permissionMode: "default",
 				fastMode: false,
@@ -1294,7 +1294,7 @@ describe("useConversationStreaming", () => {
 					filePaths: [],
 					customTags: [],
 					model: MODEL,
-					workingDirectory: "/tmp/codewit",
+					workingDirectory: "/tmp/grex",
 					effortLevel: "medium",
 					permissionMode: "default",
 					fastMode: false,
@@ -1354,7 +1354,7 @@ describe("useConversationStreaming", () => {
 				filePaths: [],
 				customTags: [],
 				model: MODEL,
-				workingDirectory: "/tmp/codewit",
+				workingDirectory: "/tmp/grex",
 				effortLevel: "medium",
 				permissionMode: "default",
 				fastMode: false,
@@ -1442,7 +1442,7 @@ describe("useConversationStreaming", () => {
 				filePaths: [],
 				customTags: [],
 				model: MODEL,
-				workingDirectory: "/tmp/codewit",
+				workingDirectory: "/tmp/grex",
 				effortLevel: "medium",
 				permissionMode: "default",
 				fastMode: false,
@@ -1469,7 +1469,7 @@ describe("useConversationStreaming", () => {
 				filePaths: [],
 				customTags: [],
 				model: MODEL,
-				workingDirectory: "/tmp/codewit",
+				workingDirectory: "/tmp/grex",
 				effortLevel: "medium",
 				permissionMode: "default",
 				fastMode: false,
@@ -1511,7 +1511,7 @@ describe("useConversationStreaming", () => {
 				filePaths: [],
 				customTags: [],
 				model: MODEL,
-				workingDirectory: "/tmp/codewit",
+				workingDirectory: "/tmp/grex",
 				effortLevel: "medium",
 				permissionMode: "default",
 				fastMode: false,
@@ -1569,7 +1569,7 @@ describe("useConversationStreaming", () => {
 				filePaths: [],
 				customTags: [],
 				model: MODEL,
-				workingDirectory: "/tmp/codewit",
+				workingDirectory: "/tmp/grex",
 				effortLevel: "medium",
 				permissionMode: "default",
 				fastMode: true,
@@ -1625,7 +1625,7 @@ describe("useConversationStreaming", () => {
 				modelId: MODEL.id,
 				resolvedModel: MODEL.cliModel,
 				sessionId: "provider-session-1",
-				workingDirectory: "/tmp/codewit",
+				workingDirectory: "/tmp/grex",
 				persisted: false,
 			});
 		});
@@ -1666,7 +1666,7 @@ describe("useConversationStreaming", () => {
 				filePaths: [],
 				customTags: [],
 				model: MODEL,
-				workingDirectory: "/tmp/codewit",
+				workingDirectory: "/tmp/grex",
 				effortLevel: "medium",
 				permissionMode: "default",
 				fastMode: true,
@@ -1682,7 +1682,7 @@ describe("useConversationStreaming", () => {
 				modelId: MODEL.id,
 				resolvedModel: MODEL.cliModel,
 				sessionId: "provider-session-1",
-				workingDirectory: "/tmp/codewit",
+				workingDirectory: "/tmp/grex",
 				persisted: false,
 			});
 		});
@@ -1713,14 +1713,14 @@ describe("useConversationStreaming", () => {
 			await result.current.handleUserInputResponse(
 				createFormUserInput(),
 				"submit",
-				{ content: { name: "Codewit" } },
+				{ content: { name: "Grex" } },
 			);
 		});
 
 		expect(apiMocks.respondToUserInput).toHaveBeenCalledWith(
 			"elicitation-1",
 			"submit",
-			{ name: "Codewit" },
+			{ name: "Grex" },
 			undefined,
 		);
 		expect(result.current.pendingUserInput).toBeNull();
@@ -1853,7 +1853,7 @@ describe("useConversationStreaming", () => {
 					filePaths: [],
 					customTags: [],
 					model: MODEL,
-					workingDirectory: "/tmp/codewit",
+					workingDirectory: "/tmp/grex",
 					effortLevel: "medium",
 					permissionMode: "default",
 					fastMode: false,
@@ -1870,7 +1870,7 @@ describe("useConversationStreaming", () => {
 					filePaths: [],
 					customTags: [],
 					model: MODEL,
-					workingDirectory: "/tmp/codewit",
+					workingDirectory: "/tmp/grex",
 					effortLevel: "medium",
 					permissionMode: "default",
 					fastMode: false,
@@ -1933,7 +1933,7 @@ describe("useConversationStreaming", () => {
 					filePaths: [],
 					customTags: [],
 					model: MODEL,
-					workingDirectory: "/tmp/codewit",
+					workingDirectory: "/tmp/grex",
 					effortLevel: "medium",
 					permissionMode: "default",
 					fastMode: false,
@@ -1949,7 +1949,7 @@ describe("useConversationStreaming", () => {
 					filePaths: [],
 					customTags: [],
 					model: MODEL,
-					workingDirectory: "/tmp/codewit",
+					workingDirectory: "/tmp/grex",
 					effortLevel: "medium",
 					permissionMode: "default",
 					fastMode: false,
@@ -1966,7 +1966,7 @@ describe("useConversationStreaming", () => {
 					modelId: MODEL.id,
 					resolvedModel: MODEL.cliModel,
 					sessionId: "provider-session-1",
-					workingDirectory: "/tmp/codewit",
+					workingDirectory: "/tmp/grex",
 					persisted: false,
 				});
 			});
@@ -1995,7 +1995,7 @@ describe("useConversationStreaming", () => {
 					filePaths: [],
 					customTags: [],
 					model: MODEL,
-					workingDirectory: "/tmp/codewit",
+					workingDirectory: "/tmp/grex",
 					effortLevel: "medium",
 					permissionMode: "default",
 					fastMode: false,
@@ -2060,7 +2060,7 @@ describe("useConversationStreaming", () => {
 					filePaths: [],
 					customTags: [],
 					model: MODEL,
-					workingDirectory: "/tmp/codewit",
+					workingDirectory: "/tmp/grex",
 					effortLevel: "medium",
 					permissionMode: "default",
 					fastMode: false,
@@ -2075,7 +2075,7 @@ describe("useConversationStreaming", () => {
 					filePaths: [],
 					customTags: [],
 					model: MODEL,
-					workingDirectory: "/tmp/codewit",
+					workingDirectory: "/tmp/grex",
 					effortLevel: "medium",
 					permissionMode: "default",
 					fastMode: false,
@@ -2152,7 +2152,7 @@ describe("useConversationStreaming", () => {
 					filePaths: [],
 					customTags: [],
 					model: MODEL,
-					workingDirectory: "/tmp/codewit",
+					workingDirectory: "/tmp/grex",
 					effortLevel: "medium",
 					permissionMode: "default",
 					fastMode: false,
@@ -2172,7 +2172,7 @@ describe("useConversationStreaming", () => {
 					filePaths: [],
 					customTags: [],
 					model: MODEL,
-					workingDirectory: "/tmp/codewit",
+					workingDirectory: "/tmp/grex",
 					effortLevel: "medium",
 					permissionMode: "default",
 					fastMode: false,
@@ -2202,7 +2202,7 @@ describe("useConversationStreaming", () => {
 					modelId: MODEL.id,
 					resolvedModel: MODEL.cliModel,
 					sessionId: "provider-session-A",
-					workingDirectory: "/tmp/codewit",
+					workingDirectory: "/tmp/grex",
 					persisted: false,
 				});
 			});
@@ -2215,9 +2215,9 @@ describe("useConversationStreaming", () => {
 			expect(queue.snapshot().has("session-B")).toBe(false);
 			expect(apiMocks.startAgentMessageStream).toHaveBeenCalledTimes(2);
 			const drainedPayload = apiMocks.startAgentMessageStream.mock
-				.calls[1][0] as { prompt: string; codewitSessionId: string };
+				.calls[1][0] as { prompt: string; grexSessionId: string };
 			expect(drainedPayload.prompt).toBe("A follow-up");
-			expect(drainedPayload.codewitSessionId).toBe("session-A");
+			expect(drainedPayload.grexSessionId).toBe("session-A");
 		});
 
 		it("forceQueue bypasses followUpBehavior='steer' and always queues", async () => {
@@ -2255,7 +2255,7 @@ describe("useConversationStreaming", () => {
 					filePaths: [],
 					customTags: [],
 					model: MODEL,
-					workingDirectory: "/tmp/codewit",
+					workingDirectory: "/tmp/grex",
 					effortLevel: "medium",
 					permissionMode: "default",
 					fastMode: false,
@@ -2271,7 +2271,7 @@ describe("useConversationStreaming", () => {
 					filePaths: [],
 					customTags: [],
 					model: MODEL,
-					workingDirectory: "/tmp/codewit",
+					workingDirectory: "/tmp/grex",
 					effortLevel: "medium",
 					permissionMode: "default",
 					fastMode: false,
@@ -2320,7 +2320,7 @@ describe("useConversationStreaming", () => {
 					filePaths: [],
 					customTags: [],
 					model: MODEL,
-					workingDirectory: "/tmp/codewit",
+					workingDirectory: "/tmp/grex",
 					effortLevel: "medium",
 					permissionMode: "default",
 					fastMode: false,
@@ -2335,7 +2335,7 @@ describe("useConversationStreaming", () => {
 					filePaths: [],
 					customTags: [],
 					model: MODEL,
-					workingDirectory: "/tmp/codewit",
+					workingDirectory: "/tmp/grex",
 					effortLevel: "medium",
 					permissionMode: "default",
 					fastMode: false,
@@ -2381,7 +2381,7 @@ describe("useConversationStreaming", () => {
 					filePaths: [],
 					customTags: [],
 					model: MODEL,
-					workingDirectory: "/tmp/codewit",
+					workingDirectory: "/tmp/grex",
 					effortLevel: "medium",
 					permissionMode: "default",
 					fastMode: false,
@@ -2396,7 +2396,7 @@ describe("useConversationStreaming", () => {
 					filePaths: [],
 					customTags: [],
 					model: MODEL,
-					workingDirectory: "/tmp/codewit",
+					workingDirectory: "/tmp/grex",
 					effortLevel: "medium",
 					permissionMode: "default",
 					fastMode: false,
@@ -2438,7 +2438,7 @@ describe("useConversationStreaming", () => {
 					filePaths: [],
 					customTags: [],
 					model: MODEL,
-					workingDirectory: "/tmp/codewit",
+					workingDirectory: "/tmp/grex",
 					effortLevel: "medium",
 					permissionMode: "default",
 					fastMode: false,
@@ -2453,7 +2453,7 @@ describe("useConversationStreaming", () => {
 					filePaths: [],
 					customTags: [],
 					model: MODEL,
-					workingDirectory: "/tmp/codewit",
+					workingDirectory: "/tmp/grex",
 					effortLevel: "medium",
 					permissionMode: "default",
 					fastMode: false,
@@ -2507,7 +2507,7 @@ describe("useConversationStreaming", () => {
 					filePaths: [],
 					customTags: [],
 					model: MODEL,
-					workingDirectory: "/tmp/codewit",
+					workingDirectory: "/tmp/grex",
 					effortLevel: "medium",
 					permissionMode: "default",
 					fastMode: false,
@@ -2520,7 +2520,7 @@ describe("useConversationStreaming", () => {
 					filePaths: [],
 					customTags: [],
 					model: MODEL,
-					workingDirectory: "/tmp/codewit",
+					workingDirectory: "/tmp/grex",
 					effortLevel: "medium",
 					permissionMode: "default",
 					fastMode: false,
@@ -2581,7 +2581,7 @@ describe("useConversationStreaming", () => {
 						filePaths: [],
 						customTags: [],
 						model: MODEL,
-						workingDirectory: "/tmp/codewit",
+						workingDirectory: "/tmp/grex",
 						effortLevel: "medium",
 						permissionMode: "default",
 						fastMode: false,
@@ -2601,10 +2601,10 @@ describe("useConversationStreaming", () => {
 			expect(apiMocks.startAgentMessageStream).toHaveBeenCalledTimes(1);
 			const firstCall = apiMocks.startAgentMessageStream.mock.calls[0][0] as {
 				prompt: string;
-				codewitSessionId: string;
+				grexSessionId: string;
 			};
 			expect(firstCall.prompt).toContain("Orphan");
-			expect(firstCall.codewitSessionId).toBe("session-1");
+			expect(firstCall.grexSessionId).toBe("session-1");
 			expect(queue.snapshot().has("session-1")).toBe(false);
 		});
 
@@ -2651,7 +2651,7 @@ describe("useConversationStreaming", () => {
 					filePaths: [],
 					customTags: [],
 					model: MODEL,
-					workingDirectory: "/tmp/codewit",
+					workingDirectory: "/tmp/grex",
 					effortLevel: "medium",
 					permissionMode: "default",
 					fastMode: false,
@@ -2667,7 +2667,7 @@ describe("useConversationStreaming", () => {
 						filePaths: [],
 						customTags: [],
 						model: MODEL,
-						workingDirectory: "/tmp/codewit",
+						workingDirectory: "/tmp/grex",
 						effortLevel: "medium",
 						permissionMode: "default",
 						fastMode: false,
@@ -2685,7 +2685,7 @@ describe("useConversationStreaming", () => {
 					modelId: MODEL.id,
 					resolvedModel: MODEL.cliModel,
 					sessionId: "provider-session-1",
-					workingDirectory: "/tmp/codewit",
+					workingDirectory: "/tmp/grex",
 					persisted: false,
 				});
 			});
@@ -2705,7 +2705,7 @@ describe("useConversationStreaming", () => {
 					modelId: MODEL.id,
 					resolvedModel: MODEL.cliModel,
 					sessionId: "provider-session-1",
-					workingDirectory: "/tmp/codewit",
+					workingDirectory: "/tmp/grex",
 					persisted: false,
 				});
 			});
@@ -2765,7 +2765,7 @@ describe("useConversationStreaming", () => {
 					filePaths: [],
 					customTags: [],
 					model: MODEL,
-					workingDirectory: "/tmp/codewit",
+					workingDirectory: "/tmp/grex",
 					effortLevel: "medium",
 					permissionMode: "default",
 					fastMode: false,
@@ -2779,7 +2779,7 @@ describe("useConversationStreaming", () => {
 					filePaths: [],
 					customTags: [],
 					model: MODEL,
-					workingDirectory: "/tmp/codewit",
+					workingDirectory: "/tmp/grex",
 					effortLevel: "medium",
 					permissionMode: "default",
 					fastMode: false,
@@ -2844,7 +2844,7 @@ describe("useConversationStreaming", () => {
 					filePaths: [],
 					customTags: [],
 					model: MODEL,
-					workingDirectory: "/tmp/codewit",
+					workingDirectory: "/tmp/grex",
 					effortLevel: "medium",
 					permissionMode: "default",
 					fastMode: false,
@@ -2896,7 +2896,7 @@ describe("useConversationStreaming", () => {
 					filePaths: [],
 					customTags: [],
 					model: MODEL,
-					workingDirectory: "/tmp/codewit",
+					workingDirectory: "/tmp/grex",
 					effortLevel: "medium",
 					permissionMode: "default",
 					fastMode: false,

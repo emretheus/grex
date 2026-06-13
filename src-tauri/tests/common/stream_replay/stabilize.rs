@@ -3,7 +3,7 @@
 //! `has_duration` boolean. Everything here is pure transformation; see
 //! `replay.rs` for the side-effectful driver that produces the raw form.
 
-use codewit_lib::pipeline::types::ThreadMessageLike;
+use grex_lib::pipeline::types::ThreadMessageLike;
 use serde::Serialize;
 use serde_json::Value;
 

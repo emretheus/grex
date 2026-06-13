@@ -29,7 +29,7 @@ export function buildAgentLoginItems(
 				? CHECKING_COPY
 				: status?.claude
 					? "Signed in and ready to run in local workspaces."
-					: "Sign in to Claude Code to use Anthropic models in Codewit.",
+					: "Sign in to Claude Code to use Anthropic models in Grex.",
 			status: resolve(status?.claude),
 		},
 		{
@@ -39,8 +39,8 @@ export function buildAgentLoginItems(
 			description: checking
 				? CHECKING_COPY
 				: status?.opencode
-					? "Connected and ready to run OpenCode models in Codewit."
-					: "Sign in with `opencode auth login` to use OpenCode models in Codewit.",
+					? "Connected and ready to run OpenCode models in Grex."
+					: "Sign in with `opencode auth login` to use OpenCode models in Grex.",
 			status: resolve(status?.opencode),
 		},
 		{
@@ -57,8 +57,8 @@ export function buildAgentLoginItems(
 			description: checking
 				? CHECKING_COPY
 				: status?.cursor
-					? "API key saved and ready to run Cursor models in Codewit."
-					: "Add a Cursor API key to use Cursor models in Codewit.",
+					? "API key saved and ready to run Cursor models in Grex."
+					: "Add a Cursor API key to use Cursor models in Grex.",
 			status: resolve(status?.cursor),
 		},
 	];
@@ -70,7 +70,7 @@ function codexDescription(status?: AgentLoginStatusResult | null): string {
 		return `Using ${provider} from Codex config with its API key environment variable.`;
 	}
 	if (status?.codex) {
-		return "Signed in and ready to run OpenAI models in Codewit.";
+		return "Signed in and ready to run OpenAI models in Grex.";
 	}
-	return "Sign in to Codex or configure a Codex API-key provider to use Codex models in Codewit.";
+	return "Sign in to Codex or configure a Codex API-key provider to use Codex models in Grex.";
 }

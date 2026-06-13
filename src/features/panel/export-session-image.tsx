@@ -20,7 +20,7 @@ import {
 	TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { loadSessionThreadMessages, type ThreadMessageLike } from "@/lib/api";
-import { codewitQueryKeys } from "@/lib/query-client";
+import { grexQueryKeys } from "@/lib/query-client";
 import { useWorkspaceToast } from "@/lib/workspace-toast-context";
 import { MemoConversationMessage } from "./message-components";
 
@@ -84,7 +84,7 @@ function ExportSessionImageDialogContent({ sessionId }: { sessionId: string }) {
 	// Fetch with `tailLimit: null` here — separate query key so the
 	// trailing snapshot used by the live chat panel isn't blown away.
 	const messagesQuery = useQuery({
-		queryKey: [...codewitQueryKeys.sessionMessages(sessionId), "thread", "full"],
+		queryKey: [...grexQueryKeys.sessionMessages(sessionId), "thread", "full"],
 		queryFn: () => loadSessionThreadMessages(sessionId, { tailLimit: null }),
 		enabled: Boolean(sessionId),
 		staleTime: 60_000,

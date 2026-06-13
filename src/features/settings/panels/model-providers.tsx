@@ -22,7 +22,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { isMac } from "@/lib/platform";
 import { openUrl } from "@/lib/platform-bridge";
-import { codewitQueryKeys } from "@/lib/query-client";
+import { grexQueryKeys } from "@/lib/query-client";
 import type {
 	AgentProxySettings,
 	ClaudeCustomProviderSettings,
@@ -143,7 +143,7 @@ export function ClaudeCustomProvidersPanel() {
 			}),
 		).then(() =>
 			queryClient.invalidateQueries({
-				queryKey: codewitQueryKeys.agentModelSections,
+				queryKey: grexQueryKeys.agentModelSections,
 			}),
 		);
 	}

@@ -6,7 +6,7 @@ import { DownloadDropdown } from "./download-dropdown";
 
 type Theme = "light" | "dark";
 
-const STORAGE_KEY = "codewit-marketing-theme";
+const STORAGE_KEY = "grex-marketing-theme";
 // Keep the product preview tilt subtle so it reads as ambient polish.
 const MAX_TILT_DEG = 4;
 // Atmospheric FX — backlit dust mote count. 18 is the sweet spot from the
@@ -219,18 +219,18 @@ export function MarketingShell({ data }: { data: RepoData }) {
 					{/* eslint-disable-next-line @next/next/no-img-element */}
 					<img
 						className="brand-mark-dark"
-						src="/codewit-logo-dark.svg"
+						src="/grex-logo-dark.svg"
 						alt=""
 						aria-hidden="true"
 					/>
 					{/* eslint-disable-next-line @next/next/no-img-element */}
 					<img
 						className="brand-mark-light"
-						src="/codewit-logo-light.svg"
+						src="/grex-logo-light.svg"
 						alt=""
 						aria-hidden="true"
 					/>
-					Codewit
+					Grex
 				</a>
 				<span className="version">{data.version}</span>
 				<div className="links">
@@ -298,8 +298,8 @@ export function MarketingShell({ data }: { data: RepoData }) {
 				{/* LEFT — pitch */}
 				<div className="pitch">
 					<a className="changelog-chip" href={data.latestReleaseUrl}>
-						<span className="tag">{data.versionShort}</span>
-						8 coding agents, one clean interface
+						<span className="tag">{data.versionShort}</span>8 coding agents, one
+						clean interface
 						<span className="arrow">→</span>
 					</a>
 
@@ -311,8 +311,8 @@ export function MarketingShell({ data }: { data: RepoData }) {
 
 					<p className="sub">
 						Run Claude Code, Codex, Cursor, Gemini, Grok, Kilo Code, OpenCode
-						and Pi from a single, clean, local-first interface with built-in chat,
-						diff review, file explorer + editor, and terminals.
+						and Pi from a single, clean, local-first interface with built-in
+						chat, diff review, file explorer + editor, and terminals.
 					</p>
 
 					<div className="cta">
@@ -338,22 +338,22 @@ export function MarketingShell({ data }: { data: RepoData }) {
 				<div className="mock-wrap" ref={wrapRef}>
 					<div
 						className="mock-stage"
-						aria-label="Codewit product preview"
+						aria-label="Grex product preview"
 						ref={stageRef}
 					>
 						<div className="shot dark-layer">
 							{/* eslint-disable-next-line @next/next/no-img-element */}
 							<img
-								src="/codewit-screenshot-dark.png"
-								alt="Codewit (dark)"
+								src="/grex-screenshot-dark.png"
+								alt="Grex (dark)"
 								draggable={false}
 							/>
 						</div>
 						<div className="shot light-layer">
 							{/* eslint-disable-next-line @next/next/no-img-element */}
 							<img
-								src="/codewit-screenshot-light.png"
-								alt="Codewit (light)"
+								src="/grex-screenshot-light.png"
+								alt="Grex (light)"
 								draggable={false}
 							/>
 						</div>

@@ -14,8 +14,8 @@
 mod common;
 
 use common::*;
-use codewit_lib::pipeline::types::{ExtendedMessagePart, MessagePart};
-use codewit_lib::pipeline::PipelineEmit;
+use grex_lib::pipeline::types::{ExtendedMessagePart, MessagePart};
+use grex_lib::pipeline::PipelineEmit;
 use serde_json::{json, Value};
 
 /// Feed an event and return the fully rendered thread snapshot.
@@ -318,7 +318,7 @@ fn part_id_roundtrips_through_historical_reload() {
 fn collect_all_part_ids(messages: &[ThreadMessageLike]) -> Vec<String> {
     let mut ids = Vec::new();
     for msg in messages {
-        if msg.role != codewit_lib::pipeline::types::MessageRole::Assistant {
+        if msg.role != grex_lib::pipeline::types::MessageRole::Assistant {
             continue;
         }
         for part in &msg.content {

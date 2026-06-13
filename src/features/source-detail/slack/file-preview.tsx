@@ -84,7 +84,7 @@ function VideoPreview({ file }: { file: SlackFileRef }) {
 	// a playable source (shouldn't happen for `video/*` mime, but defensive).
 	if (!file.sourceUrl) return <FileChip file={file} />;
 	return (
-		// biome-ignore lint/a11y/useMediaCaption: Slack uploads don't carry caption tracks and we have no way to author them in Codewit.
+		// biome-ignore lint/a11y/useMediaCaption: Slack uploads don't carry caption tracks and we have no way to author them in Grex.
 		<video
 			controls
 			// `metadata` only fetches the MOOV atom (≤ a few hundred KB)

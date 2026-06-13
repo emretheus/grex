@@ -105,8 +105,8 @@ async fn dispatch(
         "get_cli_status" => to_value(crate::commands::system_commands::get_cli_status()?),
         "get_codex_rate_limits" => to_value(crate::commands::settings_commands::get_codex_rate_limits().await?),
         "get_data_info" => to_value(crate::commands::system_commands::get_data_info()?),
-        "get_codewit_components_update_check" => to_value(crate::commands::system_commands::get_codewit_components_update_check().await?),
-        "get_codewit_skills_status" => to_value(crate::commands::system_commands::get_codewit_skills_status().await?),
+        "get_grex_components_update_check" => to_value(crate::commands::system_commands::get_grex_components_update_check().await?),
+        "get_grex_skills_status" => to_value(crate::commands::system_commands::get_grex_skills_status().await?),
         "get_inbox_item_detail" => to_value(crate::commands::forge_commands::get_inbox_item_detail(arg_json(&args, "provider")?, arg_string(&args, "login")?, arg_opt_string(&args, "host"), arg_json(&args, "source")?, arg_string(&args, "externalId")?).await?),
         "get_live_context_usage" => to_value(crate::commands::session_commands::get_live_context_usage(app.state::<crate::sidecar::ManagedSidecar>(), arg_json(&args, "request")?).await?),
         "get_opencode_custom_providers" => to_value(crate::commands::opencode_config_commands::get_opencode_custom_providers().await?),
@@ -211,7 +211,7 @@ async fn dispatch(
         "read_editor_file" => to_value(crate::commands::editor_commands::read_editor_file(arg_string(&args, "path")?).await?),
         "read_file_at_ref" => to_value(crate::commands::editor_commands::read_file_at_ref(arg_string(&args, "workspaceRootPath")?, arg_string(&args, "filePath")?, arg_string(&args, "gitRef")?).await?),
         "read_query_cache" => to_value(crate::commands::system_commands::read_query_cache(arg_string(&args, "key")?).await?),
-        "recheck_codewit_components" => to_value(crate::commands::system_commands::recheck_codewit_components().await?),
+        "recheck_grex_components" => to_value(crate::commands::system_commands::recheck_grex_components().await?),
         "refresh_workspace_change_request" => to_value(crate::commands::forge_commands::refresh_workspace_change_request(arg_string(&args, "workspaceId")?, app.clone()).await?),
         "rename_session" => {
             crate::commands::session_commands::rename_session(arg_string(&args, "sessionId")?, arg_string(&args, "title")?).await?;
@@ -381,10 +381,10 @@ async fn dispatch(
         "cancel_triage_tick" => to_value(crate::commands::triage_commands::cancel_triage_tick(app.clone()).await?),
         "conductor_source_available" => to_value(crate::commands::conductor_commands::conductor_source_available()),
         "count_open_triage_candidates" => to_value(crate::commands::triage_commands::count_open_triage_candidates().await?),
-        "create_codewit_issue" => to_value(crate::commands::feedback_commands::create_codewit_issue(arg_string(&args, "title")?, arg_string(&args, "body")?).await?),
+        "create_grex_issue" => to_value(crate::commands::feedback_commands::create_grex_issue(arg_string(&args, "title")?, arg_string(&args, "body")?).await?),
         "detect_local_llm_hardware" => to_value(crate::commands::local_llm_commands::detect_local_llm_hardware().await?),
-        "find_existing_codewit_repo" => to_value(crate::commands::feedback_commands::find_existing_codewit_repo().await?),
-        "fork_codewit_upstream" => to_value(crate::commands::feedback_commands::fork_codewit_upstream().await?),
+        "find_existing_grex_repo" => to_value(crate::commands::feedback_commands::find_existing_grex_repo().await?),
+        "fork_grex_upstream" => to_value(crate::commands::feedback_commands::fork_grex_upstream().await?),
         "get_local_llm_endpoint" => to_value(crate::commands::local_llm_commands::get_local_llm_endpoint(app.state::<crate::local_llm::Manager>()).await?),
         "get_local_llm_status" => to_value(crate::commands::local_llm_commands::get_local_llm_status(app.state::<crate::local_llm::Manager>()).await?),
         "get_triage_active_status" => to_value(crate::commands::triage_commands::get_triage_active_status(app.state::<crate::triage::ActiveStatusStore>()).await?),
@@ -462,7 +462,7 @@ async fn dispatch(
         |         "exit_mini_window_mode"
         |         "exit_onboarding_window_mode"
         |         "install_cli"
-        |         "install_codewit_skills"
+        |         "install_grex_skills"
         |         "open_agent_login_terminal"
         |         "open_file_in_editor"
         |         "open_workspace_in_editor"

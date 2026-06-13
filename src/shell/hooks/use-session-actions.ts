@@ -17,7 +17,7 @@ import {
 	type WorkspaceSessionSummary,
 } from "@/lib/api";
 import { listen } from "@/lib/ipc";
-import { codewitQueryKeys } from "@/lib/query-client";
+import { grexQueryKeys } from "@/lib/query-client";
 import { requestSidebarReconcile } from "@/lib/sidebar-mutation-gate";
 import { isNewSession } from "@/lib/workspace-helpers";
 import type { PushWorkspaceToast } from "@/lib/workspace-toast-context";
@@ -28,7 +28,7 @@ import { useShellEvent } from "@/shell/event-bus";
  * Session-level mutations AppShell exposes to keyboard shortcuts and the
  * conversation surface: resolve the currently-closeable session, close it
  * (through the shared confirm flow), and create a fresh session in the active
- * workspace. Also owns the `codewit://close-current-session` listener that the
+ * workspace. Also owns the `grex://close-current-session` listener that the
  * menu's "Close Tab" item fires. Extracted verbatim from AppShell.
  *
  * Call this AFTER `useConfirmSessionClose` so its `requestClose` can be threaded
@@ -65,11 +65,11 @@ export function useSessionActions({
 		}
 
 		const workspace = queryClient.getQueryData<WorkspaceDetail | null>(
-			codewitQueryKeys.workspaceDetail(workspaceId),
+			grexQueryKeys.workspaceDetail(workspaceId),
 		);
 		const sessions =
 			queryClient.getQueryData<WorkspaceSessionSummary[]>(
-				codewitQueryKeys.workspaceSessions(workspaceId),
+				grexQueryKeys.workspaceSessions(workspaceId),
 			) ?? [];
 		if (!workspace || !sessions.some((session) => session.id === sessionId)) {
 			return null;
@@ -110,13 +110,13 @@ export function useSessionActions({
 				requestSidebarReconcile(queryClient);
 				void Promise.all([
 					queryClient.invalidateQueries({
-						queryKey: codewitQueryKeys.workspaceDetail(workspaceId),
+						queryKey: grexQueryKeys.workspaceDetail(workspaceId),
 					}),
 					queryClient.invalidateQueries({
-						queryKey: codewitQueryKeys.workspaceSessions(workspaceId),
+						queryKey: grexQueryKeys.workspaceSessions(workspaceId),
 					}),
 					queryClient.invalidateQueries({
-						queryKey: [...codewitQueryKeys.sessionMessages(sessionId), "thread"],
+						queryKey: [...grexQueryKeys.sessionMessages(sessionId), "thread"],
 					}),
 				]);
 			},
@@ -149,7 +149,7 @@ export function useSessionActions({
 				onCreated?.(sessionId);
 				const cachedWorkspace =
 					queryClient.getQueryData<WorkspaceDetail | null>(
-						codewitQueryKeys.workspaceDetail(workspaceId),
+						grexQueryKeys.workspaceDetail(workspaceId),
 					) ?? null;
 				seedNewSessionInCache({
 					queryClient,
@@ -160,7 +160,7 @@ export function useSessionActions({
 					agentType,
 					existingSessions:
 						queryClient.getQueryData<WorkspaceSessionSummary[]>(
-							codewitQueryKeys.workspaceSessions(workspaceId),
+							grexQueryKeys.workspaceSessions(workspaceId),
 						) ?? [],
 				});
 				handleSelectSession(sessionId);
@@ -170,7 +170,7 @@ export function useSessionActions({
 					...(cachedWorkspace
 						? [
 								queryClient.invalidateQueries({
-									queryKey: codewitQueryKeys.repoScripts(
+									queryKey: grexQueryKeys.repoScripts(
 										cachedWorkspace.repoId,
 										workspaceId,
 									),
@@ -178,10 +178,10 @@ export function useSessionActions({
 							]
 						: []),
 					queryClient.invalidateQueries({
-						queryKey: codewitQueryKeys.workspaceDetail(workspaceId),
+						queryKey: grexQueryKeys.workspaceDetail(workspaceId),
 					}),
 					queryClient.invalidateQueries({
-						queryKey: codewitQueryKeys.workspaceSessions(workspaceId),
+						queryKey: grexQueryKeys.workspaceSessions(workspaceId),
 					}),
 				]);
 				return sessionId;
@@ -235,7 +235,7 @@ export function useSessionActions({
 		const sessions =
 			event.sessionId && event.workspaceId
 				? (queryClient.getQueryData<WorkspaceSessionSummary[]>(
-						codewitQueryKeys.workspaceSessions(event.workspaceId),
+						grexQueryKeys.workspaceSessions(event.workspaceId),
 					) ?? [])
 				: [];
 		const currentSession =
@@ -274,7 +274,7 @@ export function useSessionActions({
 			// Flip the cached row to terminal so the panel renders the TUI now,
 			// before the backend round-trip reconciles.
 			queryClient.setQueryData<WorkspaceSessionSummary[]>(
-				codewitQueryKeys.workspaceSessions(workspaceId),
+				grexQueryKeys.workspaceSessions(workspaceId),
 				(current) =>
 					(current ?? []).map((session) =>
 						session.id === sessionId
@@ -288,10 +288,10 @@ export function useSessionActions({
 			);
 			requestSidebarReconcile(queryClient);
 			void queryClient.invalidateQueries({
-				queryKey: codewitQueryKeys.workspaceSessions(workspaceId),
+				queryKey: grexQueryKeys.workspaceSessions(workspaceId),
 			});
 			void queryClient.invalidateQueries({
-				queryKey: codewitQueryKeys.workspaceDetail(workspaceId),
+				queryKey: grexQueryKeys.workspaceDetail(workspaceId),
 			});
 		})();
 	});
@@ -304,7 +304,7 @@ export function useSessionActions({
 		let disposed = false;
 		let unlisten: (() => void) | undefined;
 
-		void listen("codewit://close-current-session", () => {
+		void listen("grex://close-current-session", () => {
 			if (!getCloseableCurrentSession()) {
 				return;
 			}

@@ -13,7 +13,7 @@ import {
 	type WorkspaceRow,
 	type WorkspaceSessionSummary,
 } from "@/lib/api";
-import { codewitQueryKeys } from "@/lib/query-client";
+import { grexQueryKeys } from "@/lib/query-client";
 import { SCHEDULE_AFTER_PAINT_FALLBACK_MS } from "@/lib/schedule-after-paint";
 import { DEFAULT_SETTINGS } from "@/lib/settings";
 import { router } from "@/router";
@@ -239,16 +239,16 @@ function seedWorkspaceCache(
 	sessions: WorkspaceSessionSummary[] = [],
 ) {
 	queryClient.setQueryData(
-		codewitQueryKeys.workspaceDetail(workspaceId),
+		grexQueryKeys.workspaceDetail(workspaceId),
 		makeWorkspace(workspaceId),
 	);
 	queryClient.setQueryData(
-		codewitQueryKeys.workspaceSessions(workspaceId),
+		grexQueryKeys.workspaceSessions(workspaceId),
 		sessions,
 	);
 	for (const session of sessions) {
 		queryClient.setQueryData(
-			[...codewitQueryKeys.sessionMessages(session.id), "thread"],
+			[...grexQueryKeys.sessionMessages(session.id), "thread"],
 			[],
 		);
 	}
@@ -1025,7 +1025,7 @@ describe("useSelectionController", () => {
 			sessionId === "ws-B-session-1" ? thread.promise : new Promise(() => {}),
 		);
 		queryClient.setQueryData(
-			[...codewitQueryKeys.sessionMessages("ws-B-session-2"), "thread"],
+			[...grexQueryKeys.sessionMessages("ws-B-session-2"), "thread"],
 			[],
 		);
 
@@ -1321,7 +1321,7 @@ describe("useSelectionController", () => {
 		// The foreign session's thread is warm so only the divergence guard —
 		// not a cold-cache accident — keeps the write out.
 		queryClient.setQueryData(
-			[...codewitQueryKeys.sessionMessages("ws-Z-session-9"), "thread"],
+			[...grexQueryKeys.sessionMessages("ws-Z-session-9"), "thread"],
 			[],
 		);
 

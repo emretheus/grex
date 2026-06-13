@@ -1,6 +1,6 @@
-//! Command-line interface for Codewit.
+//! Command-line interface for Grex.
 //!
-//! The binary at `src/bin/codewit-cli.rs` is a thin dispatcher — every
+//! The binary at `src/bin/grex-cli.rs` is a thin dispatcher — every
 //! command body lives here so it can reach crate-private domain logic
 //! (`workspace::*`, `models::*`, `agents::*`, `github::*`, `git::*`).
 //!
@@ -37,19 +37,19 @@ use crate::ui_sync::UiMutationEvent;
 
 /// The CLI's user-facing binary name for this build.
 ///
-/// - Release builds: `codewit` (the canonical name; the installer
-///   creates `/usr/local/bin/codewit` as a symlink to the bundled
-///   `codewit-cli`).
-/// - Dev builds: `codewit-dev` (a separate symlink name so a dev
+/// - Release builds: `grex` (the canonical name; the installer
+///   creates `/usr/local/bin/grex` as a symlink to the bundled
+///   `grex-cli`).
+/// - Dev builds: `grex-dev` (a separate symlink name so a dev
 ///   install doesn't shadow a release install on the same machine).
 ///
 /// **Important caveat for dev builds**: each worktree builds its own
-/// `target/debug/codewit-cli`, but `/usr/local/bin/codewit-dev` (if it
+/// `target/debug/grex-cli`, but `/usr/local/bin/grex-dev` (if it
 /// exists at all) can only point at one of them. Callers that need a
 /// *reliable* dev invocation — in particular code that hands a
-/// command string to an agent running inside this Codewit instance —
+/// command string to an agent running inside this Grex instance —
 /// should use [`agent_invocation_path`] instead, which returns the
-/// absolute path of THIS process's sibling `codewit-cli`.
+/// absolute path of THIS process's sibling `grex-cli`.
 ///
 /// Use this function for terminal-user-visible output (e.g. error
 /// messages telling the user which command to run themselves) — the
@@ -58,25 +58,25 @@ use crate::ui_sync::UiMutationEvent;
 /// code paths.
 pub(crate) fn installed_cli_name() -> &'static str {
     if crate::data_dir::is_dev() {
-        "codewit-dev"
+        "grex-dev"
     } else {
-        "codewit"
+        "grex"
     }
 }
 
-/// The CLI invocation an agent running inside this Codewit instance
+/// The CLI invocation an agent running inside this Grex instance
 /// should use.
 ///
-/// - Release: returns `codewit` (the on-PATH symlink is stable).
-/// - Dev: returns the absolute path of the `codewit-cli` binary sitting
-///   next to the currently-running Codewit executable. This is the
+/// - Release: returns `grex` (the on-PATH symlink is stable).
+/// - Dev: returns the absolute path of the `grex-cli` binary sitting
+///   next to the currently-running Grex executable. This is the
 ///   *only* reliable invocation under the worktree-based dev workflow,
-///   where multiple Codewit dev instances coexist and a shared
-///   `/usr/local/bin/codewit-dev` symlink (if any) can only target one
+///   where multiple Grex dev instances coexist and a shared
+///   `/usr/local/bin/grex-dev` symlink (if any) can only target one
 ///   worktree's binary.
 ///
-/// Falls back to `codewit-cli` (bare name, relying on PATH) only if
-/// `current_exe()` itself fails — which would already imply Codewit is
+/// Falls back to `grex-cli` (bare name, relying on PATH) only if
+/// `current_exe()` itself fails — which would already imply Grex is
 /// in a broken state. The fallback exists so prompt assembly never
 /// returns an empty / nonsense string.
 pub(crate) fn agent_invocation_path() -> String {
@@ -84,11 +84,11 @@ pub(crate) fn agent_invocation_path() -> String {
         return installed_cli_name().to_string();
     }
 
-    // The compiled CLI is `codewit-cli.exe` on Windows, `codewit-cli` elsewhere.
+    // The compiled CLI is `grex-cli.exe` on Windows, `grex-cli` elsewhere.
     let cli_name = if cfg!(windows) {
-        "codewit-cli.exe"
+        "grex-cli.exe"
     } else {
-        "codewit-cli"
+        "grex-cli"
     };
     match std::env::current_exe()
         .ok()
@@ -123,7 +123,7 @@ pub fn run() -> ExitCode {
 
     if let Some(ref dir) = cli.data_dir {
         // SAFETY: called in main() before any threads are spawned.
-        unsafe { std::env::set_var("CODEWIT_DATA_DIR", dir) };
+        unsafe { std::env::set_var("GREX_DATA_DIR", dir) };
     }
 
     match dispatch(&cli) {
@@ -183,35 +183,35 @@ mod tests {
     /// `cargo test` always runs as a debug build, so `is_dev()` is
     /// `true` here — this exercises the dev branch end-to-end.
     /// Pinning the *shape* of the returned path (absolute, ends with
-    /// `/codewit-cli`) protects against a future refactor that
-    /// accidentally drops back to the bare `codewit-dev` name, which
+    /// `/grex-cli`) protects against a future refactor that
+    /// accidentally drops back to the bare `grex-dev` name, which
     /// would silently misroute agents to the wrong worktree's CLI.
     #[test]
-    fn agent_invocation_path_returns_absolute_codewit_cli_in_dev() {
+    fn agent_invocation_path_returns_absolute_grex_cli_in_dev() {
         let path = agent_invocation_path();
         // Either an absolute path ending in the platform CLI file name
-        // (`codewit-cli` on Unix, `codewit-cli.exe` on Windows), or that bare
+        // (`grex-cli` on Unix, `grex-cli.exe` on Windows), or that bare
         // name as the fallback when `current_exe()` is unavailable.
         let cli_name = if cfg!(windows) {
-            "codewit-cli.exe"
+            "grex-cli.exe"
         } else {
-            "codewit-cli"
+            "grex-cli"
         };
         assert!(
             path.ends_with(cli_name),
             "unexpected dev invocation path: {path}"
         );
-        // Never the bare `codewit-dev` symlink name — that's the
+        // Never the bare `grex-dev` symlink name — that's the
         // ambiguous-under-worktree case this helper exists to avoid.
-        assert_ne!(path, "codewit-dev", "must not emit bare `codewit-dev`");
-        assert_ne!(path, "codewit", "must not emit release name in dev");
+        assert_ne!(path, "grex-dev", "must not emit bare `grex-dev`");
+        assert_ne!(path, "grex", "must not emit release name in dev");
     }
 
     /// `installed_cli_name` is the terminal-user-facing name and
     /// must stay aligned with what `cli_status` reports / what the
-    /// installer creates as a symlink. Debug builds = `codewit-dev`.
+    /// installer creates as a symlink. Debug builds = `grex-dev`.
     #[test]
     fn installed_cli_name_uses_dev_suffix_in_debug_builds() {
-        assert_eq!(installed_cli_name(), "codewit-dev");
+        assert_eq!(installed_cli_name(), "grex-dev");
     }
 }

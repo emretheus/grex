@@ -7,6 +7,7 @@ import CursorMono from "@lobehub/icons/es/Cursor/components/Mono";
 import DeepInfraColor from "@lobehub/icons/es/DeepInfra/components/Color";
 import DeepSeekColor from "@lobehub/icons/es/DeepSeek/components/Color";
 import FireworksColor from "@lobehub/icons/es/Fireworks/components/Color";
+import GeminiColor from "@lobehub/icons/es/Gemini/components/Color";
 import GrokMono from "@lobehub/icons/es/Grok/components/Mono";
 import GroqMono from "@lobehub/icons/es/Groq/components/Mono";
 import HuggingFaceColor from "@lobehub/icons/es/HuggingFace/components/Color";
@@ -73,6 +74,10 @@ export function ClaudeColorIcon(props: SVGProps<SVGSVGElement>) {
 
 export function OpenAIColorIcon(props: SVGProps<SVGSVGElement>) {
 	return <OpenAIMono {...props} />;
+}
+
+export function GeminiColorIcon(props: SVGProps<SVGSVGElement>) {
+	return <GeminiColor {...props} />;
 }
 
 export function MinimaxIcon(props: SVGProps<SVGSVGElement>) {

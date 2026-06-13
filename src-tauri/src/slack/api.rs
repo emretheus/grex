@@ -72,7 +72,7 @@ fn http_runtime() -> &'static Runtime {
         Builder::new_multi_thread()
             .enable_all()
             .worker_threads(2)
-            .thread_name("codewit-slack-http")
+            .thread_name("grex-slack-http")
             .build()
             .expect("Failed to build tokio runtime for Slack HTTP")
     })
@@ -280,7 +280,7 @@ fn call_once(
 #[derive(Debug, Clone, Deserialize)]
 pub struct AuthTest {
     pub team_id: String,
-    /// Team domain — `codewit` for `codewit.slack.com`. Stored so the
+    /// Team domain — `grex` for `grex.slack.com`. Stored so the
     /// detail view can build deep links.
     #[serde(default, rename = "team")]
     pub team_name: String,

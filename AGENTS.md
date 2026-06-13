@@ -2,16 +2,16 @@
 
 This file provides guidance to AI coding agents working with code in this repository.
 
-## What is Codewit
+## What is Grex
 
-Codewit is a local-first desktop app built with **Tauri v2** (Rust backend) + **React 19** + **Vite** + **TypeScript**. It provides a workspace management UI with its own SQLite database (`~/codewit/` in release, `~/codewit-dev/` in debug), letting users browse workspaces/sessions/messages and send prompts to AI agents (Claude Code CLI, OpenAI Codex CLI, OpenCode) via streaming IPC.
+Grex is a local-first desktop app built with **Tauri v2** (Rust backend) + **React 19** + **Vite** + **TypeScript**. It provides a workspace management UI with its own SQLite database (`~/grex/` in release, `~/grex-dev/` in debug), letting users browse workspaces/sessions/messages and send prompts to AI agents (Claude Code CLI, OpenAI Codex CLI, OpenCode) via streaming IPC.
 
 ## Commands
 
 ```bash
 bun install                  # Install deps (bun 1.3+). Also runs `bun install` in sidecar/ via postinstall.
 bun run dev                  # dev:prepare + vite build + tauri dev (builds dist/ so companion serves current bundle)
-bun run dev:analyze          # Same as dev, with perf HUD (VITE_CODEWIT_PERF_HUD=1)
+bun run dev:analyze          # Same as dev, with perf HUD (VITE_GREX_PERF_HUD=1)
 bun run build                # tsc + vite build (frontend bundle to dist/)
 bun run typecheck            # tsc --noEmit for frontend AND sidecar
 bun run lint                 # biome check . + cargo clippy -- -D warnings
@@ -37,7 +37,7 @@ Single test file: `bun x vitest run src/App.test.tsx` | `cd sidecar && bun test 
 
 - **Frontend** (`src/`): React 19 SPA in Tauri webview. State managed by focused hooks in `shell/hooks/` (`useAppShellState`, `useSelectionController`, `useEditorEditMode`, `useGlobalShortcutHandlers`, `useAppBootstrap`) + TanStack React Query + context providers.
 - **Rust backend** (`src-tauri/src/`): Tauri host, SQLite database, spawns and supervises the sidecar.
-- **Sidecar** (`sidecar/`): Bun + TypeScript, wraps `@anthropic-ai/claude-agent-sdk`, `@openai/codex-sdk`, and `@opencode-ai/sdk`. Built to `sidecar/dist/codewit-sidecar` via `bun build --compile`. JSON event stream over stdout.
+- **Sidecar** (`sidecar/`): Bun + TypeScript, wraps `@anthropic-ai/claude-agent-sdk`, `@openai/codex-sdk`, and `@opencode-ai/sdk`. Built to `sidecar/dist/grex-sidecar` via `bun build --compile`. JSON event stream over stdout.
 
 Message flow: user prompt -> Rust `agents::streaming` -> sidecar -> SDK -> stdout events -> Rust accumulator -> adapter + collapse -> `ThreadMessageLike[]` -> `tauri::ipc::Channel` -> React.
 
@@ -83,7 +83,7 @@ Feature-based layout. Each feature folder follows: `index.tsx` (main) + `contain
 | `schema.rs` | DB schema + idempotent migrations. |
 | `mcp.rs` | MCP bridge integration. |
 | `logging.rs` | Structured logging setup. |
-| `data_dir.rs` | Data dir resolution. `CODEWIT_DATA_DIR` env override. |
+| `data_dir.rs` | Data dir resolution. `GREX_DATA_DIR` env override. |
 | `error.rs` | `CommandError` -- bridges `anyhow::Error` to Tauri IPC. |
 
 ### Sidecar structure (`sidecar/src/`)
@@ -139,26 +139,26 @@ When a snapshot drifts: look at the diff first. Only accept after confirming the
 - **File editor**: Monaco, lazy via `src/lib/monaco-runtime.ts`.
 - **Linting**: Biome (tab indent). `lint-staged` enforces on pre-commit.
 - **Testing**: Vitest + jsdom (frontend), `bun test` (sidecar), cargo test + insta (Rust). Tests co-located with source.
-- **Changesets**: A `.changeset/*.md` body uses the smallest shape that fits — a single prose sentence (default for simple patch-level changes) or a prose summary line followed by `- ` sub-items (only when ≥2 distinct user-visible changes are worth enumerating). Never start the body with `- `. See the `codewit-release` skill for full format and rationale.
-- **Data dir**: `~/codewit/` (release) or `~/codewit-dev/` (debug). Override: `CODEWIT_DATA_DIR`.
+- **Changesets**: A `.changeset/*.md` body uses the smallest shape that fits — a single prose sentence (default for simple patch-level changes) or a prose summary line followed by `- ` sub-items (only when ≥2 distinct user-visible changes are worth enumerating). Never start the body with `- `. See the `grex-release` skill for full format and rationale.
+- **Data dir**: `~/grex/` (release) or `~/grex-dev/` (debug). Override: `GREX_DATA_DIR`.
 - **macOS chrome**: Overlay title bar, traffic lights at (16, 24). Drag via `data-tauri-drag-region`.
 - **Serde**: `#[serde(rename_all = "camelCase")]` -- JSON fields match TypeScript directly.
 - **Persisting React Query data**: Every query is **in-memory only by default**. To persist a query across app restarts, set `meta: PERSIST_META` (alias for `{ persist: true }`) on its `queryOptions` / `useQuery` call. Only do this for data the user must see *immediately on cold start* (sidebar lists, identity chips). Never opt in large or fast-refetching queries — the persisted blob is read synchronously on boot. See `src/lib/query-client.ts` for the wiring; the `react-query.d.ts` augmentation closes `meta`'s shape so typos like `presist` fail at compile time.
 - **Backend → frontend notifications**: Always go through `UiMutationEvent` (`src-tauri/src/ui_sync/events.rs`). Add a typed variant, broadcast with `crate::ui_sync::publish(&app, ...)`, mirror the variant in `UiMutationEvent` in `src/lib/api.ts`, and handle it in `src/shell/hooks/use-ui-sync-bridge.ts` to invalidate the right React Query keys. Do NOT add ad-hoc `app.emit("custom-event", ...)` channels with their own component-level `listen(...)` -- they fragment cache invalidation, skip the global bridge, and are easy to leak. Terminal session lifecycle uses `TerminalActivityChanged` (busy/idle transitions), `TerminalSessionIdle` (completion notification), and `TerminalPromptCaptured` (title and branch-rename generation).
 - **Adding a Triage provider**: A provider lives in `sidecar/src/triage/providers/<id>.ts` implementing `TriageProvider` from `providers/types.ts` (`preflight()` → `buildTools(ctx)` → `promptHint(ctx)`), registered in `providers/registry.ts`, and mirrored by a `PROVIDER_SPECS` row in `src/features/settings/panels/triage.tsx` so the toggle shows up in Settings → Experimental → Local LLM → Auto-triage. Provider tools must write fetched data as Markdown into the per-tick `ScratchSession`; the agent then uses the built-in `scratch_grep` / `scratch_read` to fish out slices instead of stuffing raw API JSON into the context window.
 - **Clippy**: Must pass `cargo clippy --all-targets -- -D warnings` with zero warnings.
-- **Perf**: `VITE_CODEWIT_PERF_HUD=1` enables HUD + react-scan + long-frame tracker.
-- **Logging**: Dev defaults to `debug`. Override: `CODEWIT_LOG=info|debug|error`. JSONL logs in `{data_dir}/logs/`.
+- **Perf**: `VITE_GREX_PERF_HUD=1` enables HUD + react-scan + long-frame tracker.
+- **Logging**: Dev defaults to `debug`. Override: `GREX_LOG=info|debug|error`. JSONL logs in `{data_dir}/logs/`.
 - **Bundled forge CLIs (`gh`, `glab`, `cloudflared`)**: Pinned + SHA256-verified in `sidecar/scripts/vendor-platform.ts`. `cloudflared` powers the mobile-companion tunnel feature. To upgrade:
   1. Bump `GH_VERSION` / `GLAB_VERSION` / `CLOUDFLARED_VERSION`.
   2. Pull the new SHA256 from `…/checksums.txt` (URLs in the file's header comment) and update `GH_SHA256` / `GLAB_SHA256` / `CLOUDFLARED_SHA256`.
-  3. Re-run `bun run build` in `sidecar/` — the changed SHA256 auto-forces a re-download + verify (no manual wipe). Downloaded archives now live in a shared, cross-worktree cache (the main worktree's `sidecar/.bundle-cache`, override `CODEWIT_BUNDLE_CACHE`); wipe that only if you want a forced clean fetch.
-  Bump cadence: every release cycle if upstream has shipped a notable fix; immediately on security advisories. Pin so the auth-status JSON shape Codewit parses doesn't drift unexpectedly.
+  3. Re-run `bun run build` in `sidecar/` — the changed SHA256 auto-forces a re-download + verify (no manual wipe). Downloaded archives now live in a shared, cross-worktree cache (the main worktree's `sidecar/.bundle-cache`, override `GREX_BUNDLE_CACHE`); wipe that only if you want a forced clean fetch.
+  Bump cadence: every release cycle if upstream has shipped a notable fix; immediately on security advisories. Pin so the auth-status JSON shape Grex parses doesn't drift unexpectedly.
 - **Bundled agent CLIs (`claude-code`, `codex`, `opencode`)**: Pulled in via `sidecar/package.json` and staged into `sidecar/dist/vendor/{claude-code,codex,opencode}/` as platform-native binaries. All three upstreams ship per-platform npm sub-packages (`@anthropic-ai/claude-code-darwin-{arm64,x64}`, `@openai/codex-darwin-{arm64,x64}`, `opencode-darwin-{arm64,x64}`). Cross-arch CI staging downloads the tarball straight from the npm registry and verifies against `CLAUDE_CODE_SHA256` / `CODEX_SHA256` / `OPENCODE_SHA256` in `vendor-platform.ts`. The `stage-vendor.ts` script stages claude-code, codex, opencode, gh, glab, and cloudflared CLIs. To upgrade:
   1. Bump the version in `sidecar/package.json`, `cd sidecar && bun install`.
   2. Compute the SHA256 of both arch tarballs (`shasum -a 256` on the cached `.tgz`) and update the table in `stage-vendor.ts` (key it under the new version string).
-  3. Run `bun run build` in `sidecar/` to verify — a changed SHA256 auto-forces a re-download (shared cache at the main worktree's `sidecar/.bundle-cache`, override `CODEWIT_BUNDLE_CACHE`; no manual wipe needed).
-  Both binaries are `bun build --compile` output (~200 MB each on macOS), so `maybeSignMacBinary(_, true)` is required — JSC needs `allow-jit` / `allow-unsigned-executable-memory` under hardened runtime. Run pipeline snapshot tests after every claude-code bump (`cd src-tauri && cargo test --tests`); the SDK event shape is the contract Codewit's accumulator depends on.
+  3. Run `bun run build` in `sidecar/` to verify — a changed SHA256 auto-forces a re-download (shared cache at the main worktree's `sidecar/.bundle-cache`, override `GREX_BUNDLE_CACHE`; no manual wipe needed).
+  Both binaries are `bun build --compile` output (~200 MB each on macOS), so `maybeSignMacBinary(_, true)` is required — JSC needs `allow-jit` / `allow-unsigned-executable-memory` under hardened runtime. Run pipeline snapshot tests after every claude-code bump (`cd src-tauri && cargo test --tests`); the SDK event shape is the contract Grex's accumulator depends on.
 
 ## 🚨 Code organization rules
 
@@ -178,7 +178,7 @@ Terminal Mode is a composer toggle (settings opt-in) that sends prompts directly
 
 - WebGL context management: only visible terminals hold GPU contexts, staying within Chromium/WebKit budget limits.
 - Coalesced PTY output: 8ms flush window, 16KB threshold to reduce per-event IPC cost on high-throughput output.
-- Lifecycle hooks: idle detection, title generation, and completion notifications matching GUI behavior. Hooks inject `codewit terminal-hook` as a callback command into the agent's session lifecycle events (SessionStart, UserPromptSubmit, Stop).
+- Lifecycle hooks: idle detection, title generation, and completion notifications matching GUI behavior. Hooks inject `grex terminal-hook` as a callback command into the agent's session lifecycle events (SessionStart, UserPromptSubmit, Stop).
 - Resume support: the agent's real session id is persisted via hooks, enabling `--resume` on relaunch.
 
 **Structure:**
@@ -189,7 +189,7 @@ Terminal Mode is a composer toggle (settings opt-in) that sends prompts directly
 
 ## Debugging (Tauri MCP only)
 
-> **Hard rule:** Use the Tauri MCP bridge (`tauri-plugin-mcp-bridge`) only. No `chrome-devtools` MCP, no `/agent-browser`. Codewit runs in Tauri webview only.
+> **Hard rule:** Use the Tauri MCP bridge (`tauri-plugin-mcp-bridge`) only. No `chrome-devtools` MCP, no `/agent-browser`. Grex runs in Tauri webview only.
 
 ### Prerequisites
 
@@ -204,7 +204,7 @@ Terminal Mode is a composer toggle (settings opt-in) that sends prompts directly
 - **IPC tracing**: `ipc_monitor start` -> trigger flow -> `ipc_get_captured filter=<cmd>` -> `ipc_monitor stop`. Always stop when done.
 - **Direct backend call**: `ipc_execute_command command=... args=...` to bypass frontend.
 - **Async waits**: `webview_wait_for type=ipc-event value=<event>` for streaming/pipeline events.
-- **Console/system logs**: `read_logs source=console` or `source=system filter=codewit`.
+- **Console/system logs**: `read_logs source=console` or `source=system filter=grex`.
 - **JS eval**: `webview_execute_js script="(() => <expr>)()"` (IIFE, JSON-serializable return). Cannot see React state.
 - **Styles**: `webview_get_styles selector=... properties=[...]`.
 - **Element picker**: `webview_select_element` or `webview_get_pointed_element` (Alt+Shift+Click).

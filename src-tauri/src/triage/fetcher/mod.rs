@@ -66,7 +66,7 @@ pub fn http_runtime() -> &'static Runtime {
         Builder::new_multi_thread()
             .enable_all()
             .worker_threads(2)
-            .thread_name("codewit-triage-fetcher")
+            .thread_name("grex-triage-fetcher")
             .build()
             .expect("Failed to build tokio runtime for triage fetcher")
     })

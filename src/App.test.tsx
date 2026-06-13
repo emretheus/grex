@@ -20,8 +20,8 @@ vi.mock("@tauri-apps/plugin-dialog", () => ({
 	open: vi.fn(),
 }));
 
-const SIDEBAR_WIDTH_STORAGE_KEY = "codewit.workspaceSidebarWidth";
-const INSPECTOR_WIDTH_STORAGE_KEY = "codewit.workspaceInspectorWidth";
+const SIDEBAR_WIDTH_STORAGE_KEY = "grex.workspaceSidebarWidth";
+const INSPECTOR_WIDTH_STORAGE_KEY = "grex.workspaceInspectorWidth";
 
 // `use-panels.ts` writes inline `style.width` directly on the pane element
 // (not as a CSS custom property) so the per-frame drag work doesn't trigger a
@@ -509,7 +509,7 @@ describe("App", () => {
 
 			expect(
 				await screen.findByRole("button", {
-					name: "Update Codewit to 1.1.0",
+					name: "Update Grex to 1.1.0",
 				}),
 			).toBeInTheDocument();
 
@@ -519,7 +519,7 @@ describe("App", () => {
 
 			expect(
 				await screen.findByRole("button", {
-					name: "Update Codewit to 1.1.0",
+					name: "Update Grex to 1.1.0",
 				}),
 			).toBeInTheDocument();
 		} finally {
@@ -537,7 +537,7 @@ describe("App", () => {
 					{
 						id: "repo-avatar",
 						title: "Investigate repo avatar fallback",
-						repoName: "codewit-core",
+						repoName: "grex-core",
 					},
 				],
 			},
@@ -568,7 +568,7 @@ describe("App", () => {
 						id: "archived-workspace",
 						title: "Archived workspace",
 						state: "archived",
-						repoName: "codewit-core",
+						repoName: "grex-core",
 					},
 				]}
 				onRestoreWorkspace={onRestoreWorkspace}
@@ -597,7 +597,7 @@ describe("App", () => {
 								id: "ready-workspace",
 								title: "Ready workspace",
 								state: "ready",
-								repoName: "codewit-core",
+								repoName: "grex-core",
 							},
 						],
 					},
@@ -652,7 +652,7 @@ describe("App", () => {
 								id: "ready-workspace",
 								title: "Ready workspace",
 								state: "ready",
-								repoName: "codewit-core",
+								repoName: "grex-core",
 								hasUnread: false,
 							},
 						],
@@ -687,7 +687,7 @@ describe("App", () => {
 								id: "selected-workspace",
 								title: "Selected workspace",
 								state: "ready",
-								repoName: "codewit-core",
+								repoName: "grex-core",
 								hasUnread: false,
 							},
 						],
@@ -720,14 +720,14 @@ describe("App", () => {
 								id: "selected-read",
 								title: "Selected read",
 								state: "ready",
-								repoName: "codewit-core",
+								repoName: "grex-core",
 								hasUnread: false,
 							},
 							{
 								id: "unselected-unread",
 								title: "Unselected unread",
 								state: "ready",
-								repoName: "codewit-core",
+								repoName: "grex-core",
 								hasUnread: true,
 							},
 						],
@@ -765,7 +765,7 @@ describe("App", () => {
 						id: "review-workspace",
 						title: "Review workspace",
 						state: "ready",
-						repoName: "codewit-core",
+						repoName: "grex-core",
 					},
 				],
 			},
@@ -778,7 +778,7 @@ describe("App", () => {
 						id: "progress-workspace",
 						title: "Progress workspace",
 						state: "ready",
-						repoName: "codewit-core",
+						repoName: "grex-core",
 					},
 				],
 			},
@@ -818,7 +818,7 @@ describe("App", () => {
 				id: "archived-workspace",
 				title: "Archived workspace",
 				state: "archived" as const,
-				repoName: "codewit-core",
+				repoName: "grex-core",
 			},
 		];
 
@@ -853,7 +853,7 @@ describe("App", () => {
 						id: "archived-workspace",
 						title: "Archived workspace",
 						state: "archived",
-						repoName: "codewit-core",
+						repoName: "grex-core",
 					},
 				]}
 				onRestoreWorkspace={onRestoreWorkspace}
@@ -887,7 +887,7 @@ describe("App", () => {
 								id: "ready-workspace",
 								title: "Ready workspace",
 								state: "ready",
-								repoName: "codewit-core",
+								repoName: "grex-core",
 							},
 						],
 					},

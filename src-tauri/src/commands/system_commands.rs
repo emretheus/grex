@@ -22,14 +22,14 @@ const ONBOARDING_WINDOW_WIDTH: f64 = 1300.0;
 const ONBOARDING_WINDOW_HEIGHT: f64 = 810.0;
 const MINI_WINDOW_WIDTH: f64 = 430.0;
 const MINI_WINDOW_HEIGHT: f64 = 760.0;
-const CODEWIT_SKILL_NAME: &str = "codewit-cli";
-const CODEWIT_SKILL_SOURCE: &str = "emretheus/codewit/.agents/skills/codewit-cli";
+const GREX_SKILL_NAME: &str = "grex-cli";
+const GREX_SKILL_SOURCE: &str = "emretheus/grex/.agents/skills/grex-cli";
 
 // --- Per-version startup update check (CLI + Skills) -----------------------
 //
 // Keys live in the generic KV settings table:
 //
-//   `app.last_update_check_version`  — last Codewit version we ran the
+//   `app.last_update_check_version`  — last Grex version we ran the
 //                                      startup check for. Cache key — when
 //                                      this matches the current app
 //                                      version we skip the check entirely.
@@ -107,14 +107,14 @@ pub struct CliStatus {
 
 #[derive(Debug, Clone, Serialize)]
 #[serde(rename_all = "camelCase")]
-pub struct CodewitSkillsStatus {
+pub struct GrexSkillsStatus {
     pub installed: bool,
     pub claude: bool,
     pub codex: bool,
     pub command: String,
 }
 
-/// Combined snapshot used by the Settings → General "Codewit components"
+/// Combined snapshot used by the Settings → General "Grex components"
 /// row. Pure read — never triggers an install. Pairs CLI + Skills status
 /// with whatever was cached by the last per-version startup check so the
 /// panel can render a single coherent state ("up to date", "needs
@@ -123,12 +123,12 @@ pub struct CodewitSkillsStatus {
 #[serde(rename_all = "camelCase")]
 pub struct ComponentsUpdateCheck {
     pub cli: CliStatus,
-    pub skills: CodewitSkillsStatus,
-    /// Codewit version (`CARGO_PKG_VERSION`) for which the silent startup
+    pub skills: GrexSkillsStatus,
+    /// Grex version (`CARGO_PKG_VERSION`) for which the silent startup
     /// check last completed successfully. `None` means we've never
     /// finished a clean pass — the panel reads that as "first run".
     pub last_checked_version: Option<String>,
-    /// Current Codewit version. The panel compares this to
+    /// Current Grex version. The panel compares this to
     /// `last_checked_version` to decide whether to nudge the user that a
     /// re-check is pending.
     pub current_version: String,
@@ -140,19 +140,19 @@ pub struct ComponentsUpdateCheck {
     pub skills_error: Option<String>,
 }
 
-/// Where Codewit installs its managed CLI entrypoint. The OS-specific target
+/// Where Grex installs its managed CLI entrypoint. The OS-specific target
 /// path lives behind the `platform::cli_install` seam.
 fn cli_install_target() -> std::path::PathBuf {
     crate::platform::cli_install::install_target(crate::cli::installed_cli_name())
 }
 
-/// Name of the compiled CLI binary produced by `cargo build --bin codewit-cli`.
+/// Name of the compiled CLI binary produced by `cargo build --bin grex-cli`.
 /// Windows appends the `.exe` extension that cargo emits.
 fn cli_source_binary_name() -> &'static str {
     if cfg!(windows) {
-        "codewit-cli.exe"
+        "grex-cli.exe"
     } else {
-        "codewit-cli"
+        "grex-cli"
     }
 }
 
@@ -205,12 +205,12 @@ fn cli_status_for_paths(
     }
 }
 
-/// Startup self-heal for the managed CLI launcher. If `/usr/local/bin/codewit`
-/// exists but resolves to a DIFFERENT Codewit install (pre-update app path,
+/// Startup self-heal for the managed CLI launcher. If `/usr/local/bin/grex`
+/// exists but resolves to a DIFFERENT Grex install (pre-update app path,
 /// moved bundle), re-link it to this app's CLI so the launcher always matches
 /// the running app version. Conservative on purpose:
 /// - `Missing` is left alone — the user never opted into the CLI.
-/// - A stale entry is only adopted when it already points at a Codewit CLI
+/// - A stale entry is only adopted when it already points at a Grex CLI
 ///   binary; a user's own same-named tool is never clobbered.
 /// - Never elevates: a permission failure logs and leaves Settings → CLI
 ///   install as the explicit (elevating) repair path.
@@ -235,7 +235,7 @@ pub fn ensure_cli_install_current() {
     {
         return;
     }
-    let points_at_codewit_cli = std::fs::read_link(&install_path)
+    let points_at_grex_cli = std::fs::read_link(&install_path)
         .map(|target| {
             target
                 .file_name()
@@ -243,7 +243,7 @@ pub fn ensure_cli_install_current() {
                 .unwrap_or(false)
         })
         .unwrap_or(false);
-    if !points_at_codewit_cli {
+    if !points_at_grex_cli {
         return;
     }
     match try_install_symlink_unprivileged(&bundled_cli, &install_path) {
@@ -268,7 +268,7 @@ fn install_cli_symlink(
 ) -> anyhow::Result<()> {
     if !bundled_cli.is_file() {
         anyhow::bail!(
-            "CLI binary not found at {}. Run `cargo build --bin codewit-cli` first.",
+            "CLI binary not found at {}. Run `cargo build --bin grex-cli` first.",
             bundled_cli.display()
         );
     }
@@ -287,7 +287,7 @@ fn install_cli_symlink(
         Ok(()) => return Ok(()),
         Err(error) if is_permission_denied(&error) => {
             tracing::info!(
-                target: "codewit_lib::commands::system_commands",
+                target: "grex_lib::commands::system_commands",
                 "Direct CLI install hit permission denied; requesting authorization."
             );
         }
@@ -395,7 +395,7 @@ fn build_elevated_install_script(
         target = applescript_shell_arg(install_path),
     );
     format!(
-        "do shell script \"{inner}\" with prompt \"Codewit wants to install the {name} command line tool to {display}.\" with administrator privileges",
+        "do shell script \"{inner}\" with prompt \"Grex wants to install the {name} command line tool to {display}.\" with administrator privileges",
         name = crate::cli::installed_cli_name(),
         display = install_path.display(),
     )
@@ -430,7 +430,7 @@ fn codex_skills_dir() -> PathBuf {
 }
 
 fn skill_exists(base: &Path) -> bool {
-    base.join(CODEWIT_SKILL_NAME).join("SKILL.md").is_file()
+    base.join(GREX_SKILL_NAME).join("SKILL.md").is_file()
 }
 
 fn ready_skill_agents(login: &AgentLoginStatus) -> Vec<&'static str> {
@@ -444,15 +444,15 @@ fn ready_skill_agents(login: &AgentLoginStatus) -> Vec<&'static str> {
     agents
 }
 
-fn codewit_skills_install_args(agents: &[&str]) -> Vec<String> {
+fn grex_skills_install_args(agents: &[&str]) -> Vec<String> {
     let mut args = vec![
         "--yes".to_string(),
         "skills".to_string(),
         "add".to_string(),
-        CODEWIT_SKILL_SOURCE.to_string(),
+        GREX_SKILL_SOURCE.to_string(),
         "-g".to_string(),
         "-s".to_string(),
-        CODEWIT_SKILL_NAME.to_string(),
+        GREX_SKILL_NAME.to_string(),
         "-y".to_string(),
         "--copy".to_string(),
     ];
@@ -474,21 +474,21 @@ fn npx_command() -> Command {
     cmd
 }
 
-fn codewit_skills_install_command(agents: &[&str]) -> String {
+fn grex_skills_install_command(agents: &[&str]) -> String {
     let command_agents = if agents.is_empty() {
         vec!["claude-code", "codex"]
     } else {
         agents.to_vec()
     };
     std::iter::once("npx".to_string())
-        .chain(codewit_skills_install_args(&command_agents))
+        .chain(grex_skills_install_args(&command_agents))
         .map(|arg| shell_quote_arg(&arg))
         .collect::<Vec<_>>()
         .join(" ")
 }
 
-fn codewit_skills_status() -> anyhow::Result<CodewitSkillsStatus> {
-    Ok(codewit_skills_status_for_agents(&ready_skill_agents(
+fn grex_skills_status() -> anyhow::Result<GrexSkillsStatus> {
+    Ok(grex_skills_status_for_agents(&ready_skill_agents(
         &AgentLoginStatus {
             claude: claude_login_ready(),
             codex: codex_auth_status().ready,
@@ -501,7 +501,7 @@ fn codewit_skills_status() -> anyhow::Result<CodewitSkillsStatus> {
     )))
 }
 
-fn codewit_skills_status_for_agents(agents: &[&str]) -> CodewitSkillsStatus {
+fn grex_skills_status_for_agents(agents: &[&str]) -> GrexSkillsStatus {
     let claude = skill_exists(&claude_skills_dir());
     let codex = skill_exists(&codex_skills_dir());
     let installed = if agents.is_empty() {
@@ -513,11 +513,11 @@ fn codewit_skills_status_for_agents(agents: &[&str]) -> CodewitSkillsStatus {
             _ => false,
         })
     };
-    CodewitSkillsStatus {
+    GrexSkillsStatus {
         installed,
         claude,
         codex,
-        command: codewit_skills_install_command(agents),
+        command: grex_skills_install_command(agents),
     }
 }
 
@@ -533,7 +533,7 @@ pub fn get_cli_status() -> CmdResult<CliStatus> {
 /// `<data_dir>/cache/query/` instead of localStorage so it isn't bound
 /// by the webview's ~5–10 MB localStorage quota. The frontend addresses
 /// each cache key as a distinct file under this dir — only one key is
-/// in use today (`codewit-query-cache`), but the namespacing keeps the
+/// in use today (`grex-query-cache`), but the namespacing keeps the
 /// door open for the persister's optional `entries()` extension.
 fn query_cache_dir() -> anyhow::Result<PathBuf> {
     data_dir::query_cache_dir()
@@ -623,12 +623,12 @@ pub async fn install_cli() -> CmdResult<CliStatus> {
 }
 
 #[tauri::command]
-pub async fn get_codewit_skills_status() -> CmdResult<CodewitSkillsStatus> {
-    run_blocking(codewit_skills_status).await
+pub async fn get_grex_skills_status() -> CmdResult<GrexSkillsStatus> {
+    run_blocking(grex_skills_status).await
 }
 
 #[tauri::command]
-pub async fn install_codewit_skills() -> CmdResult<CodewitSkillsStatus> {
+pub async fn install_grex_skills() -> CmdResult<GrexSkillsStatus> {
     run_blocking(|| {
         let login = AgentLoginStatus {
             claude: claude_login_ready(),
@@ -640,7 +640,7 @@ pub async fn install_codewit_skills() -> CmdResult<CodewitSkillsStatus> {
             codex_auth_method: None,
         };
         let agents = ready_skill_agents(&login);
-        let command = codewit_skills_install_command(&agents);
+        let command = grex_skills_install_command(&agents);
 
         if agents.is_empty() {
             anyhow::bail!(
@@ -650,7 +650,7 @@ pub async fn install_codewit_skills() -> CmdResult<CodewitSkillsStatus> {
         }
 
         let output = npx_command()
-            .args(codewit_skills_install_args(&agents))
+            .args(grex_skills_install_args(&agents))
             .output()
             .with_context(|| format!("Failed to start skills installer. Try:\n  {command}"))?;
 
@@ -658,7 +658,7 @@ pub async fn install_codewit_skills() -> CmdResult<CodewitSkillsStatus> {
             let stdout = String::from_utf8_lossy(&output.stdout);
             let stderr = String::from_utf8_lossy(&output.stderr);
             anyhow::bail!(
-                "Codewit skills setup failed.\n{}\n{}\nFix the error, then run:\n  {}",
+                "Grex skills setup failed.\n{}\n{}\nFix the error, then run:\n  {}",
                 stdout.trim(),
                 stderr.trim(),
                 command
@@ -669,7 +669,7 @@ pub async fn install_codewit_skills() -> CmdResult<CodewitSkillsStatus> {
         // succeeded, so the cached error from the silent startup pass
         // (if any) is no longer accurate.
         persist_error(UPDATE_CHECK_SKILLS_ERROR_KEY, None);
-        Ok(codewit_skills_status_for_agents(&agents))
+        Ok(grex_skills_status_for_agents(&agents))
     })
     .await
 }
@@ -678,21 +678,21 @@ pub async fn install_codewit_skills() -> CmdResult<CodewitSkillsStatus> {
 // Per-version startup component update check
 // ---------------------------------------------------------------------------
 //
-// The Codewit app ships with two ancillary surfaces:
+// The Grex app ships with two ancillary surfaces:
 //
-//   1. The `codewit` CLI binary, installed as a symlink at /usr/local/bin/.
-//      Because it's a symlink to a binary inside `Codewit.app`, the CLI
+//   1. The `grex` CLI binary, installed as a symlink at /usr/local/bin/.
+//      Because it's a symlink to a binary inside `Grex.app`, the CLI
 //      already auto-tracks app upgrades — but a user who upgraded across
 //      the pre-symlink era can still be stuck with a stale file copy at
-//      that path, and brand-new users who skipped the "Power up Codewit"
+//      that path, and brand-new users who skipped the "Power up Grex"
 //      onboarding step have nothing at all there.
 //
-//   2. The "codewit-cli" skill, copied from the emretheus/codewit repo into
+//   2. The "grex-cli" skill, copied from the emretheus/grex repo into
 //      ~/.claude/skills/ and ~/.agents/skills/ via `npx skills add`.
 //      The `--copy` install snapshots the source files locally, so
 //      app upgrades **never** refresh the skill content.
 //
-// This check runs once per Codewit version after onboarding completes.
+// This check runs once per Grex version after onboarding completes.
 // Cache key is the app version string itself, so the work is exactly
 // "once per upgrade". Both halves are silent: CLI install only attempts
 // the unprivileged path (no sudo prompt at startup), and skills install
@@ -707,7 +707,7 @@ fn read_components_update_check() -> anyhow::Result<ComponentsUpdateCheck> {
     let source = std::env::current_exe().context("Cannot determine app executable path")?;
     let cli_binary = bundled_cli_binary(&source)?;
     let cli = cli_status_for_paths(&install_path, &cli_binary);
-    let skills = codewit_skills_status()?;
+    let skills = grex_skills_status()?;
     let last_checked_version =
         crate::models::settings::load_setting_value(LAST_UPDATE_CHECK_VERSION_KEY).unwrap_or(None);
     let cli_error =
@@ -759,7 +759,7 @@ fn try_install_cli_silent_at(
         Ok(()) => Ok(()),
         Err(error) if is_permission_denied(&error) => {
             anyhow::bail!(
-                "Codewit needs administrator access to install the CLI at {}. Open Settings → General and click Retry to authorize.",
+                "Grex needs administrator access to install the CLI at {}. Open Settings → General and click Retry to authorize.",
                 install_path.display()
             )
         }
@@ -774,7 +774,7 @@ fn try_install_cli_silent_at(
 /// cache — because the symlink is cheap to fix (a stat + an unprivileged
 /// symlink rewrite) and can go stale WITHIN a single version whenever the
 /// dev build switches worktrees. Caching it behind the version key is
-/// exactly what used to leave a dangling `/usr/local/bin/codewit-dev`
+/// exactly what used to leave a dangling `/usr/local/bin/grex-dev`
 /// pointing at a worktree whose binary was rebuilt or removed.
 fn check_and_heal_cli_symlink(
     install_path: &std::path::Path,
@@ -881,16 +881,16 @@ fn run_components_check_inner(force: bool) -> ComponentsUpdateCheck {
 }
 
 fn install_skills_silent(agents: &[&str]) -> anyhow::Result<()> {
-    let command = codewit_skills_install_command(agents);
+    let command = grex_skills_install_command(agents);
     let output = npx_command()
-        .args(codewit_skills_install_args(agents))
+        .args(grex_skills_install_args(agents))
         .output()
         .with_context(|| format!("Failed to start skills installer. Try:\n  {command}"))?;
     if !output.status.success() {
         let stdout = String::from_utf8_lossy(&output.stdout);
         let stderr = String::from_utf8_lossy(&output.stderr);
         anyhow::bail!(
-            "Codewit skills setup failed.\n{}\n{}",
+            "Grex skills setup failed.\n{}\n{}",
             stdout.trim(),
             stderr.trim(),
         );
@@ -920,11 +920,11 @@ fn empty_components_check(current_version: String) -> ComponentsUpdateCheck {
             build_mode: crate::data_dir::data_mode_label().to_string(),
             install_state: CliInstallState::Missing,
         },
-        skills: CodewitSkillsStatus {
+        skills: GrexSkillsStatus {
             installed: false,
             claude: false,
             codex: false,
-            command: codewit_skills_install_command(&[]),
+            command: grex_skills_install_command(&[]),
         },
         last_checked_version: None,
         current_version,
@@ -959,12 +959,12 @@ pub fn spawn_startup_components_check() {
 }
 
 #[tauri::command]
-pub async fn get_codewit_components_update_check() -> CmdResult<ComponentsUpdateCheck> {
+pub async fn get_grex_components_update_check() -> CmdResult<ComponentsUpdateCheck> {
     run_blocking(read_components_update_check).await
 }
 
 #[tauri::command]
-pub async fn recheck_codewit_components() -> CmdResult<ComponentsUpdateCheck> {
+pub async fn recheck_grex_components() -> CmdResult<ComponentsUpdateCheck> {
     run_blocking(|| Ok(run_components_check_inner(true))).await
 }
 
@@ -1276,7 +1276,7 @@ fn cursor_login_ready() -> bool {
 
 /// Resolve the binary to spawn for an agent CLI subcommand.
 ///
-/// Prefers the bundled binary under `Codewit.app/Contents/Resources/vendor/`
+/// Prefers the bundled binary under `Grex.app/Contents/Resources/vendor/`
 /// so onboarding works on machines that don't have `claude` / `codex` on
 /// PATH. Falls back to the bare command name (PATH lookup) for dev builds
 /// and as a last resort.
@@ -1430,7 +1430,7 @@ fn agent_login_command(provider: &str) -> anyhow::Result<String> {
         "opencode" => "auth login",
         _ => anyhow::bail!("Unknown agent provider: {provider}"),
     };
-    // Quote the resolved binary path so spaces in `Codewit.app` survive
+    // Quote the resolved binary path so spaces in `Grex.app` survive
     // both the embedded PTY shell and AppleScript's `do shell script`.
     Ok(format!(
         "{} {}",
@@ -1443,7 +1443,7 @@ fn agent_login_script_type(provider: &str, instance_id: &str) -> String {
     format!("agent-login:{provider}:{instance_id}")
 }
 
-const AGENT_LOGIN_REPO_ID: &str = "__codewit_onboarding__";
+const AGENT_LOGIN_REPO_ID: &str = "__grex_onboarding__";
 
 #[tauri::command]
 pub async fn spawn_agent_login_terminal(
@@ -1853,9 +1853,9 @@ pub async fn request_quit(app: tauri::AppHandle, force: bool) {
 
     // 3. Signal every Run-tab script and embedded-terminal PTY so dev
     //    servers, watch processes, and shell sessions don't outlive
-    //    Codewit as orphan process trees. Unconditional (not gated on
+    //    Grex as orphan process trees. Unconditional (not gated on
     //    `force`) — even a normal quit needs to clean up the processes
-    //    Codewit itself spawned. Each handle's owning `run_script` thread
+    //    Grex itself spawned. Each handle's owning `run_script` thread
     //    reaps its own `Child`, so we just need to deliver the signal.
     let scripts = app.state::<ScriptProcessManager>();
     let signaled = scripts.kill_all();
@@ -2046,11 +2046,11 @@ mod tests {
     #[test]
     fn classify_cli_install_reports_missing_when_path_absent() {
         let tmp = tempdir().unwrap();
-        let bundled_cli = tmp.path().join("Codewit.app/Contents/MacOS/codewit-cli");
+        let bundled_cli = tmp.path().join("Grex.app/Contents/MacOS/grex-cli");
         fs::create_dir_all(bundled_cli.parent().unwrap()).unwrap();
         fs::write(&bundled_cli, "#!/bin/sh\n").unwrap();
 
-        let install_path = tmp.path().join("usr/local/bin/codewit");
+        let install_path = tmp.path().join("usr/local/bin/grex");
         assert_eq!(
             classify_cli_install(&install_path, &bundled_cli),
             CliInstallState::Missing
@@ -2061,8 +2061,8 @@ mod tests {
     #[test]
     fn classify_cli_install_reports_managed_for_matching_shim() {
         let tmp = tempdir().unwrap();
-        let bundled_cli = tmp.path().join("Codewit/codewit-cli.exe");
-        let install_path = tmp.path().join("bin/codewit.cmd");
+        let bundled_cli = tmp.path().join("Grex/grex-cli.exe");
+        let install_path = tmp.path().join("bin/grex.cmd");
         fs::create_dir_all(bundled_cli.parent().unwrap()).unwrap();
         fs::create_dir_all(install_path.parent().unwrap()).unwrap();
         fs::write(&bundled_cli, "").unwrap();
@@ -2082,8 +2082,8 @@ mod tests {
     #[test]
     fn classify_cli_install_reports_managed_for_matching_symlink() {
         let tmp = tempdir().unwrap();
-        let bundled_cli = tmp.path().join("Codewit.app/Contents/MacOS/codewit-cli");
-        let install_path = tmp.path().join("usr/local/bin/codewit");
+        let bundled_cli = tmp.path().join("Grex.app/Contents/MacOS/grex-cli");
+        let install_path = tmp.path().join("usr/local/bin/grex");
         fs::create_dir_all(bundled_cli.parent().unwrap()).unwrap();
         fs::create_dir_all(install_path.parent().unwrap()).unwrap();
         fs::write(&bundled_cli, "#!/bin/sh\n").unwrap();
@@ -2098,8 +2098,8 @@ mod tests {
     #[test]
     fn classify_cli_install_reports_stale_for_regular_file_copy() {
         let tmp = tempdir().unwrap();
-        let bundled_cli = tmp.path().join("Codewit.app/Contents/MacOS/codewit-cli");
-        let install_path = tmp.path().join("usr/local/bin/codewit");
+        let bundled_cli = tmp.path().join("Grex.app/Contents/MacOS/grex-cli");
+        let install_path = tmp.path().join("usr/local/bin/grex");
         fs::create_dir_all(bundled_cli.parent().unwrap()).unwrap();
         fs::create_dir_all(install_path.parent().unwrap()).unwrap();
         fs::write(&bundled_cli, "#!/bin/sh\n").unwrap();
@@ -2115,8 +2115,8 @@ mod tests {
     #[test]
     fn install_cli_symlink_replaces_stale_copy_with_managed_symlink() {
         let tmp = tempdir().unwrap();
-        let bundled_cli = tmp.path().join("Codewit.app/Contents/MacOS/codewit-cli");
-        let install_path = tmp.path().join("usr/local/bin/codewit");
+        let bundled_cli = tmp.path().join("Grex.app/Contents/MacOS/grex-cli");
+        let install_path = tmp.path().join("usr/local/bin/grex");
         fs::create_dir_all(bundled_cli.parent().unwrap()).unwrap();
         fs::create_dir_all(install_path.parent().unwrap()).unwrap();
         fs::write(&bundled_cli, "#!/bin/sh\n").unwrap();
@@ -2134,9 +2134,9 @@ mod tests {
     #[test]
     fn check_and_heal_cli_symlink_repoints_a_stale_link() {
         let tmp = tempdir().unwrap();
-        let bundled_cli = tmp.path().join("Codewit.app/Contents/MacOS/codewit-cli");
-        let old_cli = tmp.path().join("old-worktree/codewit-cli");
-        let install_path = tmp.path().join("usr/local/bin/codewit-dev");
+        let bundled_cli = tmp.path().join("Grex.app/Contents/MacOS/grex-cli");
+        let old_cli = tmp.path().join("old-worktree/grex-cli");
+        let install_path = tmp.path().join("usr/local/bin/grex-dev");
         fs::create_dir_all(bundled_cli.parent().unwrap()).unwrap();
         fs::create_dir_all(old_cli.parent().unwrap()).unwrap();
         fs::create_dir_all(install_path.parent().unwrap()).unwrap();
@@ -2167,13 +2167,13 @@ mod tests {
     #[test]
     fn cli_install_remediation_uses_force_replace_symlink_command() {
         let command = cli_install_remediation(
-            std::path::Path::new("/Applications/Codewit.app/Contents/MacOS/codewit-cli"),
-            std::path::Path::new("/usr/local/bin/codewit-dev"),
+            std::path::Path::new("/Applications/Grex.app/Contents/MacOS/grex-cli"),
+            std::path::Path::new("/usr/local/bin/grex-dev"),
         );
 
         assert_eq!(
             command,
-            "sudo ln -sfn '/Applications/Codewit.app/Contents/MacOS/codewit-cli' '/usr/local/bin/codewit-dev'"
+            "sudo ln -sfn '/Applications/Grex.app/Contents/MacOS/grex-cli' '/usr/local/bin/grex-dev'"
         );
     }
 
@@ -2181,8 +2181,8 @@ mod tests {
     #[test]
     fn applescript_shell_arg_quotes_plain_path() {
         assert_eq!(
-            applescript_shell_arg(std::path::Path::new("/usr/local/bin/codewit")),
-            "'/usr/local/bin/codewit'"
+            applescript_shell_arg(std::path::Path::new("/usr/local/bin/grex")),
+            "'/usr/local/bin/grex'"
         );
     }
 
@@ -2210,14 +2210,14 @@ mod tests {
     #[test]
     fn build_elevated_install_script_produces_expected_osascript_payload() {
         let bundled_cli =
-            std::path::Path::new("/Applications/Codewit.app/Contents/MacOS/codewit-cli");
-        let install_path = std::path::Path::new("/usr/local/bin/codewit");
+            std::path::Path::new("/Applications/Grex.app/Contents/MacOS/grex-cli");
+        let install_path = std::path::Path::new("/usr/local/bin/grex");
 
         let script = build_elevated_install_script(bundled_cli, install_path);
 
         let expected_inner = "/bin/mkdir -p '/usr/local/bin' && /bin/ln -sfn \
-                              '/Applications/Codewit.app/Contents/MacOS/codewit-cli' \
-                              '/usr/local/bin/codewit'";
+                              '/Applications/Grex.app/Contents/MacOS/grex-cli' \
+                              '/usr/local/bin/grex'";
         assert!(
             script.contains(expected_inner),
             "script missing expected shell command: {script}"
@@ -2237,8 +2237,8 @@ mod tests {
     #[test]
     fn try_install_cli_silent_at_creates_symlink_when_target_writable() {
         let tmp = tempdir().unwrap();
-        let bundled_cli = tmp.path().join("Codewit.app/Contents/MacOS/codewit-cli");
-        let install_path = tmp.path().join("usr/local/bin/codewit");
+        let bundled_cli = tmp.path().join("Grex.app/Contents/MacOS/grex-cli");
+        let install_path = tmp.path().join("usr/local/bin/grex");
         fs::create_dir_all(bundled_cli.parent().unwrap()).unwrap();
         fs::write(&bundled_cli, "#!/bin/sh\n").unwrap();
 
@@ -2255,8 +2255,8 @@ mod tests {
     #[test]
     fn try_install_cli_silent_at_replaces_stale_copy_in_writable_dir() {
         let tmp = tempdir().unwrap();
-        let bundled_cli = tmp.path().join("Codewit.app/Contents/MacOS/codewit-cli");
-        let install_path = tmp.path().join("usr/local/bin/codewit");
+        let bundled_cli = tmp.path().join("Grex.app/Contents/MacOS/grex-cli");
+        let install_path = tmp.path().join("usr/local/bin/grex");
         fs::create_dir_all(bundled_cli.parent().unwrap()).unwrap();
         fs::create_dir_all(install_path.parent().unwrap()).unwrap();
         fs::write(&bundled_cli, "#!/bin/sh\n").unwrap();
@@ -2273,8 +2273,8 @@ mod tests {
     #[test]
     fn try_install_cli_silent_at_bails_when_target_is_directory() {
         let tmp = tempdir().unwrap();
-        let bundled_cli = tmp.path().join("Codewit.app/Contents/MacOS/codewit-cli");
-        let install_path = tmp.path().join("usr/local/bin/codewit");
+        let bundled_cli = tmp.path().join("Grex.app/Contents/MacOS/grex-cli");
+        let install_path = tmp.path().join("usr/local/bin/grex");
         fs::create_dir_all(bundled_cli.parent().unwrap()).unwrap();
         fs::create_dir_all(&install_path).unwrap();
         fs::write(&bundled_cli, "#!/bin/sh\n").unwrap();
@@ -2298,7 +2298,7 @@ mod tests {
         // without sudo — exactly the condition we want to exercise.
         // Skip the test if for some reason we CAN write there (e.g. dev
         // with broken perms) — passing in either case is wrong.
-        let install_path = std::path::PathBuf::from("/usr/local/bin/__codewit_test_silent_probe");
+        let install_path = std::path::PathBuf::from("/usr/local/bin/__grex_test_silent_probe");
         if install_path.exists() || std::fs::write(&install_path, b"x").is_ok() {
             // Cleanup so a future run isn't polluted.
             let _ = std::fs::remove_file(&install_path);
@@ -2307,7 +2307,7 @@ mod tests {
         }
 
         let tmp = tempdir().unwrap();
-        let bundled_cli = tmp.path().join("Codewit.app/Contents/MacOS/codewit-cli");
+        let bundled_cli = tmp.path().join("Grex.app/Contents/MacOS/grex-cli");
         fs::create_dir_all(bundled_cli.parent().unwrap()).unwrap();
         fs::write(&bundled_cli, "#!/bin/sh\n").unwrap();
 

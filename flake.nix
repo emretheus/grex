@@ -1,5 +1,5 @@
 {
-  description = "Codewit - Local-first desktop app development environment";
+  description = "Grex - Local-first desktop app development environment";
 
   inputs = {
     # Use 24.11 stable - last known release with working Darwin SDK
@@ -100,13 +100,13 @@
             export LD_LIBRARY_PATH="${pkgs.lib.makeLibraryPath linuxInputs}:$LD_LIBRARY_PATH"
           '' else ""}
 
-          # Codewit data directory (optional override)
-          # export CODEWIT_DATA_DIR="$HOME/codewit-dev"
+          # Grex data directory (optional override)
+          # export GREX_DATA_DIR="$HOME/grex-dev"
 
-          # Codewit logging (optional override)
-          # export CODEWIT_LOG=debug
+          # Grex logging (optional override)
+          # export GREX_LOG=debug
 
-          echo "🚀 Codewit development environment loaded!"
+          echo "🚀 Grex development environment loaded!"
           echo ""
           echo "📦 Available tools:"
           echo "  - bun $(bun --version)"

@@ -4,7 +4,7 @@ import {
 	CircleQuestionMark,
 	CircleX,
 } from "lucide-react";
-import { CodewitLogoAnimated } from "@/components/codewit-logo-animated";
+import { GrexLogoAnimated } from "@/components/grex-logo-animated";
 import { cn } from "@/lib/utils";
 import type { ScriptIconState } from "./hooks/use-script-status";
 
@@ -22,13 +22,13 @@ type ScriptStatusIconProps = {
  * Success / failure reuse the Git-actions PR accent tokens (open-accent
  * green, closed-accent red) so status semantics stay consistent across
  * the inspector. `no-script` and `idle` stay muted — they're neutral
- * states, not alerts. `running` uses the Codewit H logo animation.
+ * states, not alerts. `running` uses the Grex H logo animation.
  */
 export function ScriptStatusIcon({ state, className }: ScriptStatusIconProps) {
 	switch (state) {
 		case "running":
 			return (
-				<CodewitLogoAnimated
+				<GrexLogoAnimated
 					size={11}
 					className={cn("shrink-0 opacity-85", className)}
 				/>

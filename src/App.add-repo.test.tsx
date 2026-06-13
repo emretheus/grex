@@ -82,7 +82,7 @@ describe("App add repository flow", () => {
 					{
 						id: "workspace-existing",
 						title: "Existing workspace",
-						repoName: "codewit-core",
+						repoName: "grex-core",
 						state: "ready",
 					},
 				],
@@ -95,7 +95,7 @@ describe("App add repository flow", () => {
 				? [
 						{
 							id: "repo-existing",
-							name: "codewit-core",
+							name: "grex-core",
 							defaultBranch: "main",
 							repoInitials: "HC",
 						},
@@ -109,7 +109,7 @@ describe("App add repository flow", () => {
 				: [
 						{
 							id: "repo-existing",
-							name: "codewit-core",
+							name: "grex-core",
 							defaultBranch: "main",
 							repoInitials: "HC",
 						},
@@ -148,7 +148,7 @@ describe("App add repository flow", () => {
 					id: "workspace-existing",
 					title: "Existing workspace",
 					repoId: "repo-existing",
-					repoName: "codewit-core",
+					repoName: "grex-core",
 					directoryName: "existing-workspace",
 					state: "ready",
 					hasUnread: false,

@@ -10,20 +10,20 @@
 
 use std::sync::{Mutex, MutexGuard, OnceLock, PoisonError};
 
-use codewit_lib::agents::{build_send_message_params, BuildSendMessageParamsInput};
-use codewit_lib::data_dir;
-use codewit_lib::db;
-use codewit_lib::workspace::sidebar_order;
+use grex_lib::agents::{build_send_message_params, BuildSendMessageParamsInput};
+use grex_lib::data_dir;
+use grex_lib::db;
+use grex_lib::workspace::sidebar_order;
 use insta::assert_yaml_snapshot;
 use serde_json::Value;
 use tempfile::TempDir;
 
-/// Serialize intra-binary access to the process-wide `CODEWIT_DATA_DIR`
+/// Serialize intra-binary access to the process-wide `GREX_DATA_DIR`
 /// env var. Cargo runs each test binary in its own OS process, so we
 /// don't need to coordinate with the unit-test crate's own lock.
 static ENV_LOCK: OnceLock<Mutex<()>> = OnceLock::new();
 
-/// RAII test env: takes the env-var lock, overrides `CODEWIT_DATA_DIR`,
+/// RAII test env: takes the env-var lock, overrides `GREX_DATA_DIR`,
 /// runs migrations, and cleans up on drop.
 struct TestEnv {
     _dir: TempDir,
@@ -37,10 +37,10 @@ impl TestEnv {
             .lock()
             .unwrap_or_else(PoisonError::into_inner);
         let dir = tempfile::tempdir().unwrap();
-        std::env::set_var("CODEWIT_DATA_DIR", dir.path());
+        std::env::set_var("GREX_DATA_DIR", dir.path());
         data_dir::ensure_directory_structure().unwrap();
         let conn = rusqlite::Connection::open(data_dir::db_path().unwrap()).unwrap();
-        codewit_lib::schema::ensure_schema(&conn).unwrap();
+        grex_lib::schema::ensure_schema(&conn).unwrap();
         // Rebuild the connection pool so `read_conn()` sees the fresh
         // data dir. The lib's prod fast path caches the pool path, and
         // integration tests link against the lib in non-test mode.
@@ -63,7 +63,7 @@ impl TestEnv {
 
 impl Drop for TestEnv {
     fn drop(&mut self) {
-        std::env::remove_var("CODEWIT_DATA_DIR");
+        std::env::remove_var("GREX_DATA_DIR");
     }
 }
 
@@ -103,7 +103,7 @@ fn base_input<'a>(session_id: Option<&'a str>) -> BuildSendMessageParamsInput<'a
         effort_level: Some("high"),
         permission_mode: Some("bypassPermissions"),
         fast_mode: false,
-        codewit_session_id: session_id,
+        grex_session_id: session_id,
         claude_base_url: None,
         claude_auth_token: None,
         agent_proxy: None,
@@ -165,7 +165,7 @@ fn includes_agent_proxy_for_any_provider() {
 }
 
 #[test]
-fn omits_additional_directories_when_codewit_session_id_is_absent() {
+fn omits_additional_directories_when_grex_session_id_is_absent() {
     // New session that hasn't been written to the DB yet — common for the
     // first turn. Must not emit additionalDirectories.
     let env = TestEnv::new();

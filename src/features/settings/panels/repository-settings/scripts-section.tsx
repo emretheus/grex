@@ -2,7 +2,7 @@
 // follow the same `ScriptField` rhythm: a left-aligned label + tooltip
 // description above the editor, with optional right-side controls in the
 // header slot. The Run section is a list of editable rows (DB-owned) or
-// read-only rows mirroring codewit.json. The "Add script" button lives in
+// read-only rows mirroring grex.json. The "Add script" button lives in
 // the section header's right slot so the list itself stays a clean
 // vertical stack of name+command pairs aligned with setup/archive.
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -177,7 +177,7 @@ export function ScriptsSection({
 					placeholder="e.g., npm install"
 					value={setupScript}
 					locked={setupLocked}
-					lockedMessage="Set by this workspace's codewit.json — edit it there"
+					lockedMessage="Set by this workspace's grex.json — edit it there"
 					onChange={handleSetupChange}
 					headerRight={
 						<div className="flex items-center gap-1.5">
@@ -224,7 +224,7 @@ export function ScriptsSection({
 					placeholder="e.g., docker compose down"
 					value={archiveScript}
 					locked={archiveLocked}
-					lockedMessage="Set by this workspace's codewit.json — edit it there"
+					lockedMessage="Set by this workspace's grex.json — edit it there"
 					onChange={handleArchiveChange}
 				/>
 			</div>
@@ -328,7 +328,7 @@ function RunScriptsSection({
 			{actions.length === 0 ? (
 				locked ? (
 					<div className="mt-2 text-mini text-muted-foreground/70">
-						Set by this workspace's codewit.json — edit it there.
+						Set by this workspace's grex.json — edit it there.
 					</div>
 				) : (
 					// Empty state: dashed placeholder explaining what run
@@ -772,7 +772,7 @@ function RunScriptRow({
 						    to the expanded state so a misclick on a collapsed
 						    row can't trash anything. For project-owned actions
 						    we swap the buttons out for a small "Managed by
-						    codewit.json" hint in the same slot (same align,
+						    grex.json" hint in the same slot (same align,
 						    same vertical rhythm) so the user knows why the
 						    controls aren't there. */}
 					{!isProjectOwned ? (
@@ -841,7 +841,7 @@ function RunScriptRow({
 						</div>
 					) : (
 						<div className="mt-2 flex h-7 items-center justify-end text-mini text-muted-foreground/70">
-							Managed by codewit.json — edit the file to add or change
+							Managed by grex.json — edit the file to add or change
 						</div>
 					)}
 				</div>

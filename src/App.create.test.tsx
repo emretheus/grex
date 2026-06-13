@@ -159,7 +159,7 @@ describe("App create workspace flow", () => {
 								{
 									id: "workspace-existing",
 									title: "Existing workspace",
-									repoName: "codewit-core",
+									repoName: "grex-core",
 									state: "ready",
 								},
 								{
@@ -174,7 +174,7 @@ describe("App create workspace flow", () => {
 								{
 									id: "workspace-existing",
 									title: "Existing workspace",
-									repoName: "codewit-core",
+									repoName: "grex-core",
 									state: "ready",
 								},
 							],
@@ -218,7 +218,7 @@ describe("App create workspace flow", () => {
 					id: "workspace-existing",
 					title: "Existing workspace",
 					repoId: "repo-existing",
-					repoName: "codewit-core",
+					repoName: "grex-core",
 					directoryName: "existing-workspace",
 					state: "ready",
 					hasUnread: false,

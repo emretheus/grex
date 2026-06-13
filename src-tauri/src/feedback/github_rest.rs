@@ -1,8 +1,8 @@
 //! REST calls for the feedback / Quick-fix flow.
 //!
-//!   1. `fork_codewit_upstream()` — POST /repos/{owner}/{repo}/forks
+//!   1. `fork_grex_upstream()` — POST /repos/{owner}/{repo}/forks
 //!      Idempotent on GitHub's side; re-forking returns the same metadata.
-//!   2. `create_codewit_issue(title, body)` — POST /repos/{owner}/{repo}/issues
+//!   2. `create_grex_issue(title, body)` — POST /repos/{owner}/{repo}/issues
 //!      Called after the user has confirmed in the dialog.
 //!
 //! Both go through the shared `gh api` forge backend so we inherit the
@@ -13,14 +13,14 @@ use serde::{Deserialize, Serialize};
 
 use crate::forge::{accounts, ForgeProvider};
 
-use super::{CODEWIT_UPSTREAM_OWNER, CODEWIT_UPSTREAM_REPO};
+use super::{GREX_UPSTREAM_OWNER, GREX_UPSTREAM_REPO};
 
 const GITHUB_ACCEPT_JSON_HEADER: &str = "Accept: application/vnd.github+json";
 const GITHUB_API_VERSION_HEADER: &str = "X-GitHub-Api-Version: 2022-11-28";
 const GITHUB_HOST: &str = "github.com";
 
 /// Metadata returned after successfully forking (or re-fetching an existing
-/// fork of) the codewit upstream repository.
+/// fork of) the grex upstream repository.
 #[derive(Debug, Clone, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct ForkResult {
@@ -83,11 +83,11 @@ fn run_github_api(login: &str, args: &[&str]) -> Result<String> {
     Ok(output.stdout)
 }
 
-/// Fork the codewit upstream repo to the current user's account. Idempotent on
+/// Fork the grex upstream repo to the current user's account. Idempotent on
 /// GitHub's side — re-forking returns the same fork metadata.
-pub fn fork_codewit_upstream() -> Result<ForkResult> {
+pub fn fork_grex_upstream() -> Result<ForkResult> {
     let login = require_github_login()?;
-    let path = format!("repos/{CODEWIT_UPSTREAM_OWNER}/{CODEWIT_UPSTREAM_REPO}/forks");
+    let path = format!("repos/{GREX_UPSTREAM_OWNER}/{GREX_UPSTREAM_REPO}/forks");
     let stdout = run_github_api(
         &login,
         &[
@@ -114,14 +114,14 @@ pub fn fork_codewit_upstream() -> Result<ForkResult> {
     })
 }
 
-/// Create an issue on the codewit upstream repo.
-pub fn create_codewit_issue(title: &str, body: &str) -> Result<IssueResult> {
+/// Create an issue on the grex upstream repo.
+pub fn create_grex_issue(title: &str, body: &str) -> Result<IssueResult> {
     let title = title.trim();
     if title.is_empty() {
         return Err(anyhow!("Issue title must not be empty"));
     }
     let login = require_github_login()?;
-    let path = format!("repos/{CODEWIT_UPSTREAM_OWNER}/{CODEWIT_UPSTREAM_REPO}/issues");
+    let path = format!("repos/{GREX_UPSTREAM_OWNER}/{GREX_UPSTREAM_REPO}/issues");
     let title_field = format!("title={title}");
     let body_field = format!("body={body}");
     let stdout = run_github_api(

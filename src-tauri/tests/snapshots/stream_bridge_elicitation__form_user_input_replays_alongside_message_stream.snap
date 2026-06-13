@@ -27,7 +27,7 @@ control_events:
     sessionId: provider-session-1
     source: design-server
     userInputId: user-input-form-1
-    workingDirectory: /tmp/codewit
+    workingDirectory: /tmp/grex
 final_messages:
   - role: assistant
     id: msg-1

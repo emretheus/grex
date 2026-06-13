@@ -449,7 +449,7 @@ pub(super) fn atomic_write_file(path: &Path, content: &[u8]) -> Result<()> {
         .file_name()
         .with_context(|| format!("Editor file has no file name: {}", path.display()))?
         .to_string_lossy();
-    let temp_path = parent.join(format!(".{file_name}.codewit-{}", Uuid::new_v4()));
+    let temp_path = parent.join(format!(".{file_name}.grex-{}", Uuid::new_v4()));
 
     let write_result = (|| -> Result<()> {
         let mut temp_file = fs::OpenOptions::new()

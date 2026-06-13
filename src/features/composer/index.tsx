@@ -7,6 +7,7 @@ import type { LexicalEditor, SerializedEditorState } from "lexical";
 import { $createParagraphNode, $createTextNode, $getRoot } from "lexical";
 import {
 	ArrowUp,
+	Bot,
 	Check,
 	ChevronDown,
 	ClipboardList,
@@ -102,7 +103,7 @@ import { UsageStatsIndicator } from "./usage-stats-indicator";
 import type { UserInputResponseHandler } from "./user-input";
 import { UserInputPanel } from "./user-input-panel";
 
-const OPEN_SETTINGS_EVENT = "codewit:open-settings";
+const OPEN_SETTINGS_EVENT = "grex:open-settings";
 
 type WorkspaceComposerProps = {
 	contextKey: string;
@@ -197,7 +198,7 @@ type WorkspaceComposerProps = {
 	 *  When false (the default), the ring auto-reveals only after usage
 	 *  crosses the threshold defined inside the ring component. */
 	alwaysShowContextUsage?: boolean;
-	/** Codewit session id for the context-usage ring. */
+	/** Grex session id for the context-usage ring. */
 	sessionId?: string | null;
 	/** Provider's own session id (Claude Code UUID). Threaded into the
 	 *  context-usage ring for its hover-triggered live fetch. */
@@ -386,9 +387,9 @@ export const WorkspaceComposer = memo(function WorkspaceComposer({
 				?.focus();
 		};
 
-		window.addEventListener("codewit:focus-composer", handleFocusComposer);
+		window.addEventListener("grex:focus-composer", handleFocusComposer);
 		return () =>
-			window.removeEventListener("codewit:focus-composer", handleFocusComposer);
+			window.removeEventListener("grex:focus-composer", handleFocusComposer);
 	}, [disabled]);
 
 	// Apply a one-shot composer prefill (e.g. from the Inspector's
@@ -493,10 +494,10 @@ export const WorkspaceComposer = memo(function WorkspaceComposer({
 			if (toolbarDisabled) return;
 			setModelPickerOpen(true);
 		};
-		window.addEventListener("codewit:open-model-picker", handleOpenModelPicker);
+		window.addEventListener("grex:open-model-picker", handleOpenModelPicker);
 		return () =>
 			window.removeEventListener(
-				"codewit:open-model-picker",
+				"grex:open-model-picker",
 				handleOpenModelPicker,
 			);
 	}, [toolbarDisabled]);
@@ -1197,13 +1198,17 @@ export const WorkspaceComposer = memo(function WorkspaceComposer({
 											</DropdownMenu>
 										)}
 										{supportsPlanMode ? (
-											<PlanModeButton
+											<PermissionModeButton
 												disabled={toolbarDisabled}
+												isPlan={permissionMode === "plan"}
 												className={cn(
 													`size-7 justify-center px-0 ${composerToolbarTriggerClassName}`,
 													permissionMode === "plan"
 														? composerToolbarActiveClassName
-														: "text-muted-foreground/70 hover:text-muted-foreground/70",
+														: // Auto is a deliberate, full-access mode — keep it
+															// clearly legible (not dimmed like an "off" toggle)
+															// so the user can see the agent runs autonomously.
+															"text-foreground/70 hover:text-foreground/70",
 												)}
 												onToggle={() =>
 													onChangePermissionMode(
@@ -1463,23 +1468,34 @@ export const WorkspaceComposer = memo(function WorkspaceComposer({
 	);
 });
 
-function PlanModeButton({
+// Two-state permission toggle. Plan = read-only planning; Auto = full
+// access where the agent runs tools autonomously without approval prompts.
+// Both states render an explicit icon + label so "Auto" is a visible,
+// deliberate mode rather than the implicit "Plan is off" state.
+function PermissionModeButton({
 	disabled,
 	className,
+	isPlan,
 	onToggle,
 }: {
 	disabled: boolean;
 	className: string;
+	isPlan: boolean;
 	onToggle: () => void;
 }) {
 	const button = (
 		<ComposerButton
-			aria-label="Plan mode"
+			aria-label={isPlan ? "Plan mode" : "Auto mode"}
+			aria-pressed={!isPlan}
 			disabled={disabled}
 			className={className}
 			onClick={onToggle}
 		>
-			<ClipboardList className="size-[14px]" strokeWidth={1.8} />
+			{isPlan ? (
+				<ClipboardList className="size-[14px]" strokeWidth={1.8} />
+			) : (
+				<Bot className="size-[14px]" strokeWidth={1.8} />
+			)}
 		</ComposerButton>
 	);
 	return (
@@ -1490,7 +1506,7 @@ function PlanModeButton({
 				sideOffset={4}
 				className="flex h-[24px] items-center rounded-md px-2 text-small leading-none"
 			>
-				<span>Plan</span>
+				<span>{isPlan ? "Plan · read-only" : "Auto · full access"}</span>
 			</TooltipContent>
 		</Tooltip>
 	);

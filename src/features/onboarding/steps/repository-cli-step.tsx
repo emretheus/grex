@@ -36,7 +36,7 @@ import {
 	writeForgeCliAuthTerminalStdin,
 } from "@/lib/api";
 import { initialsFor } from "@/lib/initials";
-import { codewitQueryKeys } from "@/lib/query-client";
+import { grexQueryKeys } from "@/lib/query-client";
 import { useForgeAccountsAll } from "@/lib/use-forge-accounts";
 import { cn } from "@/lib/utils";
 import { OnboardingTerminalPreview } from "../components/login-terminal-preview";
@@ -246,7 +246,7 @@ export function RepositoryCliStep({
 						setGitlab({ logins, checking: false });
 					}
 					void queryClient.invalidateQueries({
-						queryKey: codewitQueryKeys.forgeAccountsAll,
+						queryKey: grexQueryKeys.forgeAccountsAll,
 					});
 					return;
 				}
@@ -298,7 +298,7 @@ export function RepositoryCliStep({
 			.then((bound) => {
 				if (bound > 0) {
 					void queryClient.invalidateQueries({
-						queryKey: codewitQueryKeys.repositories,
+						queryKey: grexQueryKeys.repositories,
 					});
 				}
 			})

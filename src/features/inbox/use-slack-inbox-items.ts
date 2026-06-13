@@ -5,7 +5,7 @@ import {
 	type SlackInboxPage,
 	slackListInboxItems,
 } from "@/lib/api";
-import { codewitQueryKeys } from "@/lib/query-client";
+import { grexQueryKeys } from "@/lib/query-client";
 import { useWorkspaceToast } from "@/lib/workspace-toast-context";
 
 const PAGE_SIZE = 30;
@@ -35,7 +35,7 @@ export function useSlackInboxItems(
 	const enabled = teamId !== null;
 	const query = useInfiniteQuery<SlackInboxPage, Error>({
 		queryKey: teamId
-			? codewitQueryKeys.slackInbox(teamId)
+			? grexQueryKeys.slackInbox(teamId)
 			: ["slackInbox", "__none__"],
 		enabled,
 		initialPageParam: null as string | null,

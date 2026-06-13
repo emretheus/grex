@@ -68,7 +68,7 @@ pub(super) fn tool_session_search(args: &Value) -> Result<String> {
         .map(str::trim)
         .filter(|s| !s.is_empty());
     if query.is_none() && status.is_none() {
-        anyhow::bail!("codewit_session_search: provide `query` or `status`");
+        anyhow::bail!("grex_session_search: provide `query` or `status`");
     }
     let repo_name_filter = match args.get("repo").and_then(Value::as_str) {
         Some(reference) => {

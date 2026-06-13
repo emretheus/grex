@@ -8,7 +8,7 @@ import {
 	type WorkspaceDetail,
 	type WorkspaceSessionSummary,
 } from "@/lib/api";
-import { codewitQueryKeys } from "@/lib/query-client";
+import { grexQueryKeys } from "@/lib/query-client";
 import { isNewSession } from "@/lib/workspace-helpers";
 import type { PushWorkspaceToast } from "@/lib/workspace-toast-context";
 import { buildOptimisticSession } from "./session-cache";
@@ -74,11 +74,11 @@ export async function closeWorkspaceSession({
 				now,
 			);
 			void queryClient.invalidateQueries({
-				queryKey: codewitQueryKeys.repoScripts(workspace.repoId, workspace.id),
+				queryKey: grexQueryKeys.repoScripts(workspace.repoId, workspace.id),
 			});
 
 			queryClient.setQueryData(
-				codewitQueryKeys.workspaceDetail(workspace.id),
+				grexQueryKeys.workspaceDetail(workspace.id),
 				(current: WorkspaceDetail | null | undefined) => {
 					const base = current ?? workspace;
 					if (!base) {
@@ -96,11 +96,11 @@ export async function closeWorkspaceSession({
 				},
 			);
 			queryClient.setQueryData(
-				codewitQueryKeys.workspaceSessions(workspace.id),
+				grexQueryKeys.workspaceSessions(workspace.id),
 				() => [optimisticSession],
 			);
 			queryClient.setQueryData(
-				[...codewitQueryKeys.sessionMessages(replacementSessionId), "thread"],
+				[...grexQueryKeys.sessionMessages(replacementSessionId), "thread"],
 				[],
 			);
 
@@ -128,7 +128,7 @@ export async function closeWorkspaceSession({
 				sessions.find((session) => session.id === adjacentSessionId) ?? null;
 
 			queryClient.setQueryData(
-				codewitQueryKeys.workspaceDetail(workspace.id),
+				grexQueryKeys.workspaceDetail(workspace.id),
 				(current: WorkspaceDetail | null | undefined) => {
 					const base = current ?? workspace;
 					if (!base) {
@@ -146,7 +146,7 @@ export async function closeWorkspaceSession({
 				},
 			);
 			queryClient.setQueryData(
-				codewitQueryKeys.workspaceSessions(workspace.id),
+				grexQueryKeys.workspaceSessions(workspace.id),
 				(current: WorkspaceSessionSummary[] | undefined) =>
 					(current ?? sessions)
 						.filter((session) => session.id !== sessionId)

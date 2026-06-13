@@ -6,7 +6,7 @@
 //!    user hasn't run `codex login`.
 //!  - `shell_env::inherit_login_shell_env` — extend the env-var
 //!    inheritance whitelist with whichever `env_key` names the user has
-//!    declared, so a Finder-launched Codewit.app sees the same API keys
+//!    declared, so a Finder-launched Grex.app sees the same API keys
 //!    as a terminal session.
 
 use std::path::PathBuf;
@@ -48,7 +48,7 @@ pub fn active_api_key_provider(config: &str) -> Option<ApiKeyProvider> {
 
 /// Every `env_key` declared under `[model_providers.*]` — regardless of
 /// which provider is currently active. We surface them all so the user
-/// can switch providers in `config.toml` without restarting Codewit.
+/// can switch providers in `config.toml` without restarting Grex.
 ///
 /// Returns an empty vec on parse failure or when no providers declare an
 /// `env_key`.

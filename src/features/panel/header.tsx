@@ -25,7 +25,7 @@ import {
 import { BranchPickerPopover } from "@/components/branch-picker";
 import { CachedAvatar } from "@/components/cached-avatar";
 import { TrafficLightSpacer } from "@/components/chrome/traffic-light-spacer";
-import { CodewitThinkingIndicator } from "@/components/codewit-thinking-indicator";
+import { GrexThinkingIndicator } from "@/components/grex-thinking-indicator";
 import {
 	ClaudeIcon,
 	CursorIcon,
@@ -63,7 +63,7 @@ import {
 } from "@/lib/api";
 import { initialsFor } from "@/lib/initials";
 import {
-	codewitQueryKeys,
+	grexQueryKeys,
 	workspaceAccountProfileQueryOptions,
 	workspaceDetailQueryOptions,
 	workspaceForgeActionStatusQueryOptions,
@@ -404,7 +404,7 @@ export const WorkspacePanelHeader = memo(function WorkspacePanelHeader({
 												if (branch === workspace.intendedTargetBranch) {
 													return;
 												}
-												const detailKey = codewitQueryKeys.workspaceDetail(
+												const detailKey = grexQueryKeys.workspaceDetail(
 													workspace.id,
 												);
 												const previousDetail =
@@ -424,7 +424,7 @@ export const WorkspacePanelHeader = memo(function WorkspacePanelHeader({
 												// Invalidate changes so diff section shows loading.
 												if (workspace.rootPath) {
 													void queryClient.invalidateQueries({
-														queryKey: codewitQueryKeys.workspaceChanges(
+														queryKey: grexQueryKeys.workspaceChanges(
 															workspace.rootPath,
 															workspace.id,
 														),
@@ -436,14 +436,13 @@ export const WorkspacePanelHeader = memo(function WorkspacePanelHeader({
 														onWorkspaceChanged?.();
 														// Recompute sync status vs. new target now; don't wait for 10s poll.
 														void queryClient.invalidateQueries({
-															queryKey:
-																codewitQueryKeys.workspaceGitActionStatus(
-																	workspace.id,
-																),
+															queryKey: grexQueryKeys.workspaceGitActionStatus(
+																workspace.id,
+															),
 														});
 														if (workspace.rootPath) {
 															void queryClient.invalidateQueries({
-																queryKey: codewitQueryKeys.workspaceChanges(
+																queryKey: grexQueryKeys.workspaceChanges(
 																	workspace.rootPath,
 																	workspace.id,
 																),
@@ -857,7 +856,7 @@ function SessionProviderIcon({
 	active: boolean;
 }) {
 	if (active) {
-		return <CodewitThinkingIndicator size={14} />;
+		return <GrexThinkingIndicator size={14} />;
 	}
 	if (agentType === "codex") {
 		return <OpenAIIcon className="size-3 shrink-0 text-muted-foreground" />;

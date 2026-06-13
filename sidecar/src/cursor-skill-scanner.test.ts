@@ -58,7 +58,7 @@ describe("scanCursorSkills", () => {
 	let homeDir: string;
 
 	beforeEach(async () => {
-		tempRoot = await mkdtemp(join(tmpdir(), "codewit-cursor-skills-"));
+		tempRoot = await mkdtemp(join(tmpdir(), "grex-cursor-skills-"));
 		projectDir = join(tempRoot, "project");
 		homeDir = join(tempRoot, "home");
 		await mkdir(projectDir, { recursive: true });

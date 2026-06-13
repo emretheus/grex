@@ -26,7 +26,7 @@ import {
 } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { CodexGoalState } from "@/lib/api";
-import { createCodewitQueryClient, codewitQueryKeys } from "@/lib/query-client";
+import { createGrexQueryClient, grexQueryKeys } from "@/lib/query-client";
 
 const apiMockState = vi.hoisted(() => ({
 	mutateCodexGoal: vi.fn(),
@@ -60,8 +60,8 @@ function pausedGoal(): CodexGoalState {
 }
 
 function renderWithGoal(goal: CodexGoalState | null, onResume?: () => void) {
-	const queryClient = createCodewitQueryClient();
-	queryClient.setQueryData(codewitQueryKeys.sessionCodexGoal("session-1"), goal);
+	const queryClient = createGrexQueryClient();
+	queryClient.setQueryData(grexQueryKeys.sessionCodexGoal("session-1"), goal);
 	return render(
 		<QueryClientProvider client={queryClient}>
 			<CodexGoalBanner sessionId="session-1" onResume={onResume} />

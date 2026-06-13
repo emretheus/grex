@@ -1,7 +1,7 @@
 //! Debug: replay a stream fixture and dump every Full emission's part list.
 //! Usage: cargo run --example debug_stream_replay -- <fixture.jsonl> [--all]
 
-use codewit_lib::pipeline::{MessagePipeline, PipelineEmit};
+use grex_lib::pipeline::{MessagePipeline, PipelineEmit};
 use serde_json::Value;
 
 fn part_brief(p: &Value) -> String {
@@ -45,7 +45,7 @@ fn part_brief(p: &Value) -> String {
     }
 }
 
-fn dump(label: &str, msgs: &[codewit_lib::pipeline::types::ThreadMessageLike]) {
+fn dump(label: &str, msgs: &[grex_lib::pipeline::types::ThreadMessageLike]) {
     println!("== {label}");
     for m in msgs {
         let v = serde_json::to_value(m).unwrap();

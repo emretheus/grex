@@ -1,4 +1,4 @@
-import { CodewitLogoAnimated } from "@/components/codewit-logo-animated";
+import { GrexLogoAnimated } from "@/components/grex-logo-animated";
 
 /**
  * Shown in the companion browser when this client has no valid pairing token
@@ -11,19 +11,19 @@ export function CompanionPairingScreen() {
 	return (
 		<div className="fixed inset-0 z-[9998] flex items-center justify-center bg-background p-6">
 			<div className="flex w-full max-w-sm flex-col items-center gap-6 text-center">
-				<CodewitLogoAnimated size={56} className="opacity-90" />
+				<GrexLogoAnimated size={56} className="opacity-90" />
 				<div className="flex flex-col gap-2">
 					<h1 className="font-semibold text-foreground text-heading">
 						Pair this browser
 					</h1>
 					<p className="text-muted-foreground text-body">
-						This browser isn’t connected to your Codewit desktop yet.
+						This browser isn’t connected to your Grex desktop yet.
 					</p>
 				</div>
 				<ol className="flex w-full flex-col gap-3 text-left text-muted-foreground text-body">
 					<li>
 						<span className="font-medium text-foreground">1.</span> On the
-						computer running Codewit, open{" "}
+						computer running Grex, open{" "}
 						<span className="font-medium text-foreground">
 							Settings → Mobile companion
 						</span>

@@ -6,7 +6,7 @@ import {
 	useStreamingStore,
 } from "@/features/conversation/state/streaming-store";
 import type { UiMutationEvent } from "@/lib/api";
-import { codewitQueryKeys } from "@/lib/query-client";
+import { grexQueryKeys } from "@/lib/query-client";
 import {
 	holdSidebarMutation,
 	resetSidebarMutationGate,
@@ -75,16 +75,16 @@ describe("useUiSyncBridge", () => {
 
 		await waitFor(() => {
 			expect(invalidateQueries).toHaveBeenCalledWith({
-				queryKey: codewitQueryKeys.workspaceGroups,
+				queryKey: grexQueryKeys.workspaceGroups,
 			});
 			expect(invalidateQueries).toHaveBeenCalledWith({
-				queryKey: codewitQueryKeys.workspaceDetail("workspace-1"),
+				queryKey: grexQueryKeys.workspaceDetail("workspace-1"),
 			});
 			expect(invalidateQueries).toHaveBeenCalledWith({
-				queryKey: codewitQueryKeys.workspaceGitActionStatus("workspace-1"),
+				queryKey: grexQueryKeys.workspaceGitActionStatus("workspace-1"),
 			});
 			expect(invalidateQueries).toHaveBeenCalledWith({
-				queryKey: codewitQueryKeys.workspaceForgeActionStatus("workspace-1"),
+				queryKey: grexQueryKeys.workspaceForgeActionStatus("workspace-1"),
 			});
 			expect(invalidateQueries).toHaveBeenCalledWith({
 				predicate: expect.any(Function),
@@ -141,14 +141,14 @@ describe("useUiSyncBridge", () => {
 
 		await waitFor(() => {
 			expect(invalidateQueries).toHaveBeenCalledWith({
-				queryKey: codewitQueryKeys.workspaceForge("workspace-1"),
+				queryKey: grexQueryKeys.workspaceForge("workspace-1"),
 			});
 		});
 		// Settings → Account renders the per-account roster from this
 		// cache; the bridge fans the same backend signal out so a fresh
 		// auth flip detected elsewhere shows up there too.
 		expect(invalidateQueries).toHaveBeenCalledWith({
-			queryKey: codewitQueryKeys.forgeAccountsAll,
+			queryKey: grexQueryKeys.forgeAccountsAll,
 		});
 		// Auth verdicts are shared repo-wide — every workspace's
 		// action-status snapshot must refresh, not just the one that
@@ -190,7 +190,7 @@ describe("useUiSyncBridge", () => {
 
 		await waitFor(() => {
 			expect(invalidateQueries).toHaveBeenCalledWith({
-				queryKey: codewitQueryKeys.sessionContextUsage("session-7"),
+				queryKey: grexQueryKeys.sessionContextUsage("session-7"),
 			});
 		});
 		// And a predicate-based invalidate for rich entries scoped to
@@ -224,10 +224,10 @@ describe("useUiSyncBridge", () => {
 		await waitFor(() => {
 			expect(reloadSettings).not.toHaveBeenCalled();
 			expect(invalidateQueries).toHaveBeenCalledWith({
-				queryKey: codewitQueryKeys.autoCloseActionKinds,
+				queryKey: grexQueryKeys.autoCloseActionKinds,
 			});
 			expect(invalidateQueries).toHaveBeenCalledWith({
-				queryKey: codewitQueryKeys.autoCloseOptInAsked,
+				queryKey: grexQueryKeys.autoCloseOptInAsked,
 			});
 		});
 
@@ -259,8 +259,8 @@ describe("useUiSyncBridge", () => {
 				capturedSubscription?.(event);
 			});
 			const sidebarKeys = [
-				codewitQueryKeys.workspaceGroups,
-				codewitQueryKeys.archivedWorkspaces,
+				grexQueryKeys.workspaceGroups,
+				grexQueryKeys.archivedWorkspaces,
 			];
 			for (const call of invalidateSpy.mock.calls) {
 				const arg = call[0] as { queryKey?: unknown } | undefined;
@@ -412,10 +412,10 @@ describe("useUiSyncBridge", () => {
 				});
 			});
 			expect(invalidateQueries).toHaveBeenCalledWith({
-				queryKey: codewitQueryKeys.workspaceDetail("workspace-1"),
+				queryKey: grexQueryKeys.workspaceDetail("workspace-1"),
 			});
 			expect(invalidateQueries).toHaveBeenCalledWith({
-				queryKey: codewitQueryKeys.workspaceGitActionStatus("workspace-1"),
+				queryKey: grexQueryKeys.workspaceGitActionStatus("workspace-1"),
 			});
 		});
 
@@ -437,17 +437,17 @@ describe("useUiSyncBridge", () => {
 			});
 			// During the hold: no sidebar invalidate.
 			expect(invalidateQueries).not.toHaveBeenCalledWith({
-				queryKey: codewitQueryKeys.workspaceGroups,
+				queryKey: grexQueryKeys.workspaceGroups,
 			});
 
 			release();
 			// `release` itself reconciles; that single pair is the
 			// post-mutation flush.
 			expect(invalidateQueries).toHaveBeenCalledWith({
-				queryKey: codewitQueryKeys.workspaceGroups,
+				queryKey: grexQueryKeys.workspaceGroups,
 			});
 			expect(invalidateQueries).toHaveBeenCalledWith({
-				queryKey: codewitQueryKeys.archivedWorkspaces,
+				queryKey: grexQueryKeys.archivedWorkspaces,
 			});
 
 			// And a fresh event after the gate clears flows through.
@@ -456,7 +456,7 @@ describe("useUiSyncBridge", () => {
 				capturedSubscription?.({ type: "workspaceListChanged" });
 			});
 			expect(invalidateQueries).toHaveBeenCalledWith({
-				queryKey: codewitQueryKeys.workspaceGroups,
+				queryKey: grexQueryKeys.workspaceGroups,
 			});
 		});
 	});
@@ -495,7 +495,7 @@ describe("useUiSyncBridge", () => {
 			// on-screen conversation (the same contract the local stream
 			// dispatcher's done-path enforces).
 			expect(invalidateQueries).toHaveBeenCalledWith({
-				queryKey: codewitQueryKeys.sessionMessages("session-9"),
+				queryKey: grexQueryKeys.sessionMessages("session-9"),
 				refetchType: "none",
 			});
 		});

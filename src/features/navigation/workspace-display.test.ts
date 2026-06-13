@@ -61,9 +61,9 @@ describe("deriveWorkspaceDisplay", () => {
 
 	it("subtitle = 'repo › branch' when both present", () => {
 		const display = deriveWorkspaceDisplay(
-			makeRow({ repoName: "codewit", branch: "feature/x" }),
+			makeRow({ repoName: "grex", branch: "feature/x" }),
 		);
-		expect(display.subtitle).toBe("codewit › feature/x");
+		expect(display.subtitle).toBe("grex › feature/x");
 	});
 
 	it("subtitle falls back to directoryName when repoName missing", () => {
@@ -74,8 +74,8 @@ describe("deriveWorkspaceDisplay", () => {
 	});
 
 	it("subtitle = repo only when branch missing", () => {
-		const display = deriveWorkspaceDisplay(makeRow({ repoName: "codewit" }));
-		expect(display.subtitle).toBe("codewit");
+		const display = deriveWorkspaceDisplay(makeRow({ repoName: "grex" }));
+		expect(display.subtitle).toBe("grex");
 	});
 
 	it("subtitle = branch only when repo missing", () => {

@@ -5,17 +5,17 @@ use serde_json::{json, Value};
 pub(super) fn tool_catalog() -> Vec<Value> {
     vec![
         tool_def(
-            "codewit_data_info",
-            "Show Codewit data directory, database path, and mode",
+            "grex_data_info",
+            "Show Grex data directory, database path, and mode",
             add_response_options(json!({ "type": "object", "properties": {}, "required": [] })),
         ),
         tool_def(
-            "codewit_repo_list",
+            "grex_repo_list",
             "List all registered repositories. Defaults to compact output without repoIconSrc; use response_mode='full' and include_icon=true only when a UI explicitly needs icons.",
             add_response_options(json!({ "type": "object", "properties": {}, "required": [] })),
         ),
         tool_def(
-            "codewit_repo_add",
+            "grex_repo_add",
             "Register a local Git repository. New repositories do not create a workspace automatically; duplicate registrations may select an existing workspace.",
             add_response_options(json!({
                 "type": "object",
@@ -26,7 +26,7 @@ pub(super) fn tool_catalog() -> Vec<Value> {
             })),
         ),
         tool_def(
-            "codewit_workspace_list",
+            "grex_workspace_list",
             "List workspaces with optional filters. Returns active workspaces unless `archived: true`. Filter by stored status (in-progress/done/review/backlog/canceled), repo name or UUID, and result limit.",
             add_response_options(json!({
                 "type": "object",
@@ -40,7 +40,7 @@ pub(super) fn tool_catalog() -> Vec<Value> {
             })),
         ),
         tool_def(
-            "codewit_workspace_show",
+            "grex_workspace_show",
             "Show details for a workspace.",
             add_response_options(json!({
                 "type": "object",
@@ -51,7 +51,7 @@ pub(super) fn tool_catalog() -> Vec<Value> {
             })),
         ),
         tool_def(
-            "codewit_workspace_create",
+            "grex_workspace_create",
             "Create a new workspace for a repository.",
             add_response_options(json!({
                 "type": "object",
@@ -62,7 +62,7 @@ pub(super) fn tool_catalog() -> Vec<Value> {
             })),
         ),
         tool_def(
-            "codewit_workspace_set_status",
+            "grex_workspace_set_status",
             "Move a workspace into a different status group. Use this when the user verbally moves a workspace to done/review/backlog/in-progress/canceled. Canceled and Done are destructive-feeling; callers should confirm with the user first.",
             add_response_options(json!({
                 "type": "object",
@@ -78,7 +78,7 @@ pub(super) fn tool_catalog() -> Vec<Value> {
             })),
         ),
         tool_def(
-            "codewit_workspace_archive",
+            "grex_workspace_archive",
             "Archive a workspace. Reversible — the workspace moves to the archive list and can be restored later. No confirmation required.",
             add_response_options(json!({
                 "type": "object",
@@ -89,7 +89,7 @@ pub(super) fn tool_catalog() -> Vec<Value> {
             })),
         ),
         tool_def(
-            "codewit_workspace_permanently_delete",
+            "grex_workspace_permanently_delete",
             "Permanently delete a workspace. NOT REVERSIBLE — deletes the worktree directory and all history. The caller MUST have explicit user confirmation; the tool requires `confirmed: true` to proceed.",
             add_response_options(json!({
                 "type": "object",
@@ -101,7 +101,7 @@ pub(super) fn tool_catalog() -> Vec<Value> {
             })),
         ),
         tool_def(
-            "codewit_workspace_run_action",
+            "grex_workspace_run_action",
             "Run a workspace ship action. \"Direct\" actions run inline (merge_pr merges the open change request; pull_latest rebases onto target). \"Agent-dispatched\" actions (commit_and_push / create_pr / fix_errors / resolve_conflicts) create a dedicated action session with the same prompt/settings the GUI uses, then return once the prompt is queued.",
             add_response_options(json!({
                 "type": "object",
@@ -124,7 +124,7 @@ pub(super) fn tool_catalog() -> Vec<Value> {
             })),
         ),
         tool_def(
-            "codewit_session_list",
+            "grex_session_list",
             "List sessions in a workspace, newest first. Returns stored session status only (no live-stream awareness).",
             add_response_options(json!({
                 "type": "object",
@@ -136,7 +136,7 @@ pub(super) fn tool_catalog() -> Vec<Value> {
             })),
         ),
         tool_def(
-            "codewit_session_create",
+            "grex_session_create",
             "Create a new session in a workspace.",
             add_response_options(json!({
                 "type": "object",
@@ -148,8 +148,8 @@ pub(super) fn tool_catalog() -> Vec<Value> {
             })),
         ),
         tool_def(
-            "codewit_session_search",
-            "Search sessions across all workspaces by title or message content substring. Either `query` or `status` (or both) must be provided. Returns stored session status only (no live-stream awareness) and does NOT include message snippets in this MCP variant — use codewit_session_get_messages on a matched session to read messages directly.",
+            "grex_session_search",
+            "Search sessions across all workspaces by title or message content substring. Either `query` or `status` (or both) must be provided. Returns stored session status only (no live-stream awareness) and does NOT include message snippets in this MCP variant — use grex_session_get_messages on a matched session to read messages directly.",
             add_response_options(json!({
                 "type": "object",
                 "properties": {
@@ -163,12 +163,12 @@ pub(super) fn tool_catalog() -> Vec<Value> {
             })),
         ),
         tool_def(
-            "codewit_session_get_messages",
-            "Fetch a window of messages from a session. Use after codewit_session_list / codewit_session_search to read what an agent said or what the user asked. Trailing window by default; pass `position: \"head\"` for the start. Each message body is char-bounded with `body_limit`; use `body_position: \"start\"` or `\"end\"` to choose which side of long messages is returned.",
+            "grex_session_get_messages",
+            "Fetch a window of messages from a session. Use after grex_session_list / grex_session_search to read what an agent said or what the user asked. Trailing window by default; pass `position: \"head\"` for the start. Each message body is char-bounded with `body_limit`; use `body_position: \"start\"` or `\"end\"` to choose which side of long messages is returned.",
             add_response_options(json!({
                 "type": "object",
                 "properties": {
-                    "session": { "type": "string", "description": "Session UUID (from codewit_session_list / search)" },
+                    "session": { "type": "string", "description": "Session UUID (from grex_session_list / search)" },
                     "limit": { "type": "integer", "description": "How many messages to return (1-20, default 5)" },
                     "position": { "type": "string", "enum": ["head", "tail"], "description": "Where the window starts. tail = newest. Default tail." },
                     "body_limit": { "type": "integer", "description": "Per-message body char cap (1-4000, default 800)" },
@@ -178,7 +178,7 @@ pub(super) fn tool_catalog() -> Vec<Value> {
             })),
         ),
         tool_def(
-            "codewit_send",
+            "grex_send",
             "Send a prompt to an AI agent in a workspace.",
             add_response_options(json!({
                 "type": "object",

@@ -5,7 +5,7 @@ import {
 	__resetStreamingStoreForTests,
 	useStreamingStore,
 } from "@/features/conversation/state/streaming-store";
-import { codewitQueryKeys } from "@/lib/query-client";
+import { grexQueryKeys } from "@/lib/query-client";
 import { useThreadFocusBackstop } from "./use-thread-focus-backstop";
 
 afterEach(() => {
@@ -41,7 +41,7 @@ describe("useThreadFocusBackstop", () => {
 
 		expect(invalidateQueries).toHaveBeenCalledTimes(1);
 		expect(invalidateQueries).toHaveBeenCalledWith({
-			queryKey: codewitQueryKeys.sessionMessages("session-1"),
+			queryKey: grexQueryKeys.sessionMessages("session-1"),
 		});
 	});
 

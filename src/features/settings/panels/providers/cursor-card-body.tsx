@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/tooltip";
 import { listCursorModels } from "@/lib/api";
 import { openUrl } from "@/lib/platform-bridge";
-import { codewitQueryKeys } from "@/lib/query-client";
+import { grexQueryKeys } from "@/lib/query-client";
 import {
 	type CursorCachedModel,
 	type CursorProviderSettings,
@@ -39,7 +39,7 @@ export function CursorCardBody() {
 				updateSettings({ cursorProvider: { ...cursor, ...patch } }),
 			);
 			queryClient.invalidateQueries({
-				queryKey: codewitQueryKeys.agentModelSections,
+				queryKey: grexQueryKeys.agentModelSections,
 			});
 		},
 		[cursor, queryClient, updateSettings],

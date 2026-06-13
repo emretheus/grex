@@ -14,7 +14,7 @@ const SIDECAR_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 // sqlite3 shim + cursor-chunk-inlining hacks are gone.
 const result = await Bun.build({
 	entrypoints: [join(SIDECAR_ROOT, "src/index.ts")],
-	compile: { outfile: join(SIDECAR_ROOT, "dist/codewit-sidecar") },
+	compile: { outfile: join(SIDECAR_ROOT, "dist/grex-sidecar") },
 });
 
 if (!result.success) {

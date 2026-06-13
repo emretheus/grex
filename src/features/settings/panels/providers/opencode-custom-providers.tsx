@@ -28,7 +28,7 @@ import {
 	upsertOpencodeCustomProvider,
 } from "@/lib/api";
 import { openUrl } from "@/lib/platform-bridge";
-import { codewitQueryKeys } from "@/lib/query-client";
+import { grexQueryKeys } from "@/lib/query-client";
 import { cn } from "@/lib/utils";
 import {
 	findOpencodePreset,
@@ -130,7 +130,7 @@ export function OpencodeCustomProvidersPanel({
 }) {
 	const queryClient = useQueryClient();
 	const providersQuery = useQuery({
-		queryKey: codewitQueryKeys.opencodeCustomProviders,
+		queryKey: grexQueryKeys.opencodeCustomProviders,
 		queryFn: getOpencodeCustomProviders,
 	});
 	const providers = useMemo(
@@ -162,7 +162,7 @@ export function OpencodeCustomProvidersPanel({
 	);
 	const afterWrite = () => {
 		void queryClient.invalidateQueries({
-			queryKey: codewitQueryKeys.opencodeCustomProviders,
+			queryKey: grexQueryKeys.opencodeCustomProviders,
 		});
 		if (refreshTimer.current) clearTimeout(refreshTimer.current);
 		refreshTimer.current = setTimeout(() => onChanged?.(), 1500);

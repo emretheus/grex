@@ -6,7 +6,7 @@ import { SCHEDULE_AFTER_PAINT_FALLBACK_MS } from "@/lib/schedule-after-paint";
 import type { SelectionActions } from "@/shell/controllers/use-selection-controller";
 import { useWorkspaceNavigation } from "./use-workspace-navigation";
 
-// The hook queries `[data-codewit-sidebar-root]` document-wide; unmount each
+// The hook queries `[data-grex-sidebar-root]` document-wide; unmount each
 // test's fixture (no auto-cleanup here — vitest globals are disabled) so the
 // next test's queries can't hit a stale, already-mutated sidebar.
 afterEach(cleanup);
@@ -70,7 +70,7 @@ const rowHasHighlight = (workspaceId: string) =>
 
 function renderSidebarFixture() {
 	render(
-		<div data-codewit-sidebar-root="">
+		<div data-grex-sidebar-root="">
 			<div
 				data-workspace-row-body=""
 				data-workspace-row-id="ws-A"
@@ -160,7 +160,7 @@ describe("useWorkspaceNavigation", () => {
 
 	it("no-ops without touching the highlight when there is no adjacent workspace", () => {
 		render(
-			<div data-codewit-sidebar-root="">
+			<div data-grex-sidebar-root="">
 				<div
 					data-workspace-row-body=""
 					data-workspace-row-id="ws-A"

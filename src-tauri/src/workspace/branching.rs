@@ -488,7 +488,7 @@ pub fn sync_workspace_with_target_branch(
         });
     }
 
-    let stash_message = format!("codewit-sync-{workspace_id}");
+    let stash_message = format!("grex-sync-{workspace_id}");
     let stashed = if dirty {
         git_ops::stash_push_include_untracked(&workspace_dir, &stash_message)?
     } else {

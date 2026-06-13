@@ -8,7 +8,7 @@ import {
 } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { ThreadMessageLike } from "@/lib/api";
-import { createCodewitQueryClient } from "@/lib/query-client";
+import { createGrexQueryClient } from "@/lib/query-client";
 import {
 	ActiveThreadViewport,
 	type PresentedSessionPane,
@@ -64,7 +64,7 @@ describe("ActiveThreadViewport", () => {
 		};
 
 		render(
-			<QueryClientProvider client={createCodewitQueryClient()}>
+			<QueryClientProvider client={createGrexQueryClient()}>
 				<ActiveThreadViewport hasSession pane={pane} />
 			</QueryClientProvider>,
 		);
@@ -158,7 +158,7 @@ function assertSmallBottomTail(mounted: number[]) {
 }
 
 function renderPane(pane: PresentedSessionPane) {
-	const queryClient = createCodewitQueryClient();
+	const queryClient = createGrexQueryClient();
 	const rendered = render(
 		<QueryClientProvider client={queryClient}>
 			<ActiveThreadViewport hasSession pane={pane} />

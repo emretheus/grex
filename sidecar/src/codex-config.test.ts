@@ -120,5 +120,5 @@ describe("ensureCodexGoalsFeatureEnabled", () => {
 
 async function mkTmpDir(): Promise<string> {
 	const { mkdtemp } = await import("node:fs/promises");
-	return mkdtemp(join(tmpdir(), "codewit-codex-config-"));
+	return mkdtemp(join(tmpdir(), "grex-codex-config-"));
 }

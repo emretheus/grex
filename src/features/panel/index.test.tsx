@@ -10,7 +10,7 @@ import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import type { WorkspaceDetail, WorkspaceSessionSummary } from "@/lib/api";
-import { createCodewitQueryClient, codewitQueryKeys } from "@/lib/query-client";
+import { createGrexQueryClient, grexQueryKeys } from "@/lib/query-client";
 
 const apiMocks = vi.hoisted(() => ({
 	createSession: vi.fn(),
@@ -31,11 +31,11 @@ vi.mock("@/components/icons", () => ({
 	),
 }));
 
-vi.mock("@/components/codewit-thinking-indicator", () => ({
-	CodewitThinkingIndicator: () => (
+vi.mock("@/components/grex-thinking-indicator", () => ({
+	GrexThinkingIndicator: () => (
 		<span
 			aria-hidden="true"
-			data-slot="codewit-thinking-indicator"
+			data-slot="grex-thinking-indicator"
 			data-testid="thinking-indicator"
 		/>
 	),
@@ -58,8 +58,8 @@ const WORKSPACE: WorkspaceDetail = {
 	id: "workspace-1",
 	title: "Workspace 1",
 	repoId: "repo-1",
-	repoName: "codewit",
-	directoryName: "codewit",
+	repoName: "grex",
+	directoryName: "grex",
 	state: "ready",
 	hasUnread: false,
 	workspaceUnread: 0,
@@ -78,7 +78,7 @@ const WORKSPACE: WorkspaceDetail = {
 	archiveCommit: null,
 	sessionCount: 1,
 	messageCount: 0,
-	rootPath: "/tmp/codewit",
+	rootPath: "/tmp/grex",
 };
 
 const SESSIONS: WorkspaceSessionSummary[] = [
@@ -121,7 +121,7 @@ describe("WorkspacePanel", () => {
 	it("shows a session tab loading indicator from persisted streaming status when live sending ids are empty", () => {
 		render(
 			<TooltipProvider delayDuration={0}>
-				<QueryClientProvider client={createCodewitQueryClient()}>
+				<QueryClientProvider client={createGrexQueryClient()}>
 					<WorkspacePanel
 						workspace={{
 							...WORKSPACE,
@@ -150,7 +150,7 @@ describe("WorkspacePanel", () => {
 	it("keeps the selected session tab loading when panel sending is true and live sending ids are empty", () => {
 		render(
 			<TooltipProvider delayDuration={0}>
-				<QueryClientProvider client={createCodewitQueryClient()}>
+				<QueryClientProvider client={createGrexQueryClient()}>
 					<WorkspacePanel
 						workspace={WORKSPACE}
 						sessions={SESSIONS}
@@ -170,7 +170,7 @@ describe("WorkspacePanel", () => {
 
 	it("optimistically seeds the new session before switching selection", async () => {
 		const user = userEvent.setup();
-		const queryClient = createCodewitQueryClient();
+		const queryClient = createGrexQueryClient();
 		const onSelectSession = vi.fn();
 
 		render(
@@ -197,7 +197,7 @@ describe("WorkspacePanel", () => {
 
 		expect(
 			queryClient.getQueryData<WorkspaceDetail>(
-				codewitQueryKeys.workspaceDetail("workspace-1"),
+				grexQueryKeys.workspaceDetail("workspace-1"),
 			),
 		).toMatchObject({
 			activeSessionId: "session-new",
@@ -206,7 +206,7 @@ describe("WorkspacePanel", () => {
 		});
 		expect(
 			queryClient.getQueryData<WorkspaceSessionSummary[]>(
-				codewitQueryKeys.workspaceSessions("workspace-1"),
+				grexQueryKeys.workspaceSessions("workspace-1"),
 			),
 		).toEqual(
 			expect.arrayContaining([
@@ -219,7 +219,7 @@ describe("WorkspacePanel", () => {
 		);
 		expect(
 			queryClient.getQueryData([
-				...codewitQueryKeys.sessionMessages("session-new"),
+				...grexQueryKeys.sessionMessages("session-new"),
 				"thread",
 			]),
 		).toEqual([]);
@@ -227,7 +227,7 @@ describe("WorkspacePanel", () => {
 
 	it("replaces the last visible session before closing it", async () => {
 		const user = userEvent.setup();
-		const queryClient = createCodewitQueryClient();
+		const queryClient = createGrexQueryClient();
 		const onSelectSession = vi.fn();
 		const onSessionsChanged = vi.fn();
 
@@ -268,7 +268,7 @@ describe("WorkspacePanel", () => {
 		expect(onSessionsChanged).toHaveBeenCalled();
 		expect(
 			queryClient.getQueryData<WorkspaceDetail>(
-				codewitQueryKeys.workspaceDetail("workspace-1"),
+				grexQueryKeys.workspaceDetail("workspace-1"),
 			),
 		).toMatchObject({
 			activeSessionId: "session-replacement",
@@ -276,7 +276,7 @@ describe("WorkspacePanel", () => {
 		});
 		expect(
 			queryClient.getQueryData<WorkspaceSessionSummary[]>(
-				codewitQueryKeys.workspaceSessions("workspace-1"),
+				grexQueryKeys.workspaceSessions("workspace-1"),
 			),
 		).toEqual([
 			expect.objectContaining({
@@ -289,7 +289,7 @@ describe("WorkspacePanel", () => {
 	it("wraps the empty session state in a full-size centered container", () => {
 		const { container } = render(
 			<TooltipProvider delayDuration={0}>
-				<QueryClientProvider client={createCodewitQueryClient()}>
+				<QueryClientProvider client={createGrexQueryClient()}>
 					<WorkspacePanel
 						workspace={WORKSPACE}
 						sessions={SESSIONS}
@@ -338,7 +338,7 @@ describe("WorkspacePanel", () => {
 
 		render(
 			<TooltipProvider delayDuration={0}>
-				<QueryClientProvider client={createCodewitQueryClient()}>
+				<QueryClientProvider client={createGrexQueryClient()}>
 					<WorkspacePanel
 						workspace={{ ...WORKSPACE, directoryName: "himalia" }}
 						sessions={SESSIONS}
@@ -390,7 +390,7 @@ describe("WorkspacePanel", () => {
 	it("renders only the missing workspace script actions in the empty state", () => {
 		render(
 			<TooltipProvider delayDuration={0}>
-				<QueryClientProvider client={createCodewitQueryClient()}>
+				<QueryClientProvider client={createGrexQueryClient()}>
 					<WorkspacePanel
 						workspace={WORKSPACE}
 						sessions={SESSIONS}
@@ -429,7 +429,7 @@ describe("WorkspacePanel", () => {
 
 		render(
 			<TooltipProvider delayDuration={0}>
-				<QueryClientProvider client={createCodewitQueryClient()}>
+				<QueryClientProvider client={createGrexQueryClient()}>
 					<WorkspacePanel
 						workspace={WORKSPACE}
 						sessions={SESSIONS}
@@ -472,7 +472,7 @@ describe("WorkspacePanel", () => {
 
 		render(
 			<TooltipProvider delayDuration={0}>
-				<QueryClientProvider client={createCodewitQueryClient()}>
+				<QueryClientProvider client={createGrexQueryClient()}>
 					<WorkspacePanel
 						workspace={WORKSPACE}
 						sessions={sessions}
@@ -495,7 +495,7 @@ describe("WorkspacePanel", () => {
 	it("keeps the yellow dot visible on the selected session while interaction is pending", () => {
 		render(
 			<TooltipProvider delayDuration={0}>
-				<QueryClientProvider client={createCodewitQueryClient()}>
+				<QueryClientProvider client={createGrexQueryClient()}>
 					<WorkspacePanel
 						workspace={WORKSPACE}
 						sessions={SESSIONS}
@@ -516,10 +516,10 @@ describe("WorkspacePanel", () => {
 		).toBe(true);
 	});
 
-	it("shows the Codewit thinking indicator for the active sending session", () => {
+	it("shows the Grex thinking indicator for the active sending session", () => {
 		render(
 			<TooltipProvider delayDuration={0}>
-				<QueryClientProvider client={createCodewitQueryClient()}>
+				<QueryClientProvider client={createGrexQueryClient()}>
 					<WorkspacePanel
 						workspace={WORKSPACE}
 						sessions={SESSIONS}
@@ -535,7 +535,7 @@ describe("WorkspacePanel", () => {
 		expect(
 			activeSessions.some(
 				(tab) =>
-					tab.querySelector('[data-slot="codewit-thinking-indicator"]') !== null,
+					tab.querySelector('[data-slot="grex-thinking-indicator"]') !== null,
 			),
 		).toBe(true);
 	});
@@ -553,7 +553,7 @@ describe("WorkspacePanel", () => {
 
 		render(
 			<TooltipProvider delayDuration={0}>
-				<QueryClientProvider client={createCodewitQueryClient()}>
+				<QueryClientProvider client={createGrexQueryClient()}>
 					<WorkspacePanel
 						workspace={WORKSPACE}
 						sessions={sessions}
@@ -594,7 +594,7 @@ describe("WorkspacePanel", () => {
 
 		render(
 			<TooltipProvider delayDuration={0}>
-				<QueryClientProvider client={createCodewitQueryClient()}>
+				<QueryClientProvider client={createGrexQueryClient()}>
 					<WorkspacePanel
 						workspace={WORKSPACE}
 						sessions={sessions}

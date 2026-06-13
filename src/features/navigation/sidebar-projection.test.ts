@@ -42,7 +42,7 @@ function makeArchivedSummary(id: string): WorkspaceSummary {
 		title: `Archived ${id}`,
 		directoryName: id,
 		repoId: "repo-1",
-		repoName: "codewit",
+		repoName: "grex",
 		state: "archived",
 		hasUnread: false,
 		workspaceUnread: 0,
@@ -87,7 +87,7 @@ function makePendingCreation(
 		repoId: "repo-1",
 		row: {
 			id: resolvedWorkspaceId ?? workspaceId,
-			title: "Creating codewit",
+			title: "Creating grex",
 			state: "initializing",
 			status: "in-progress",
 		},

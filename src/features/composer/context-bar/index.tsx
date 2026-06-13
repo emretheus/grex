@@ -35,7 +35,7 @@ export type ContextBarDirectory = {
 	/** Optional branch label, shown in mono small caps. */
 	branch?: string | null;
 	/** Repo icon / initials sourced from the sidebar (set when the path
-	 * resolves to a known Codewit workspace). When absent, the chip falls
+	 * resolves to a known Grex workspace). When absent, the chip falls
 	 * back to a neutral folder glyph. */
 	repoIconSrc?: string | null;
 	repoInitials?: string | null;

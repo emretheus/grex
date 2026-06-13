@@ -5,29 +5,29 @@ import { compareSemver } from "./announcements";
  * announcements for. Anything ≤ this is treated as dismissed.
  */
 export const LAST_DISMISSED_RELEASE_VERSION_STORAGE_KEY =
-	"codewit:last-dismissed-release-version";
+	"grex:last-dismissed-release-version";
 
 export const LAST_SEEN_INSTALL_VERSION_STORAGE_KEY =
-	"codewit:last-seen-install-version";
+	"grex:last-seen-install-version";
 
 /**
- * Best-effort detection of "this device has never run Codewit before".
+ * Best-effort detection of "this device has never run Grex before".
  * We can't ask `LAST_SEEN_INSTALL_VERSION_STORAGE_KEY` directly — it's a
  * brand-new key, so existing users look identical to new users from its
- * point of view. Instead we look for older Codewit keys that pre-date
- * the announcement system: `codewit-theme` is the most reliable signal
+ * point of view. Instead we look for older Grex keys that pre-date
+ * the announcement system: `grex-theme` is the most reliable signal
  * because it's read synchronously on every boot to avoid splash flash,
- * so any user who has opened a recent Codewit build has it set.
+ * so any user who has opened a recent Grex build has it set.
  *
  * Edge: a user who manually nukes localStorage will look "fresh" on
  * their next boot. Acceptable — they'd also lose dismiss state, theme,
  * etc., so missing one onboarding toast is the least of it.
  */
-export function isFirstCodewitBoot(): boolean {
+export function isFirstGrexBoot(): boolean {
 	try {
 		return (
-			window.localStorage.getItem("codewit-theme") === null &&
-			window.localStorage.getItem("codewit-dark-theme") === null
+			window.localStorage.getItem("grex-theme") === null &&
+			window.localStorage.getItem("grex-dark-theme") === null
 		);
 	} catch {
 		// Storage access blocked — fail closed (assume not fresh) so we
@@ -57,7 +57,7 @@ export function dismissReleaseAnnouncement(releaseVersion: string): void {
 		);
 	} catch (error) {
 		console.error(
-			"[codewit] failed to save release announcement dismissal",
+			"[grex] failed to save release announcement dismissal",
 			error,
 		);
 	}
@@ -78,6 +78,6 @@ export function writeLastSeenInstallVersion(version: string): void {
 	try {
 		window.localStorage.setItem(LAST_SEEN_INSTALL_VERSION_STORAGE_KEY, version);
 	} catch (error) {
-		console.error("[codewit] failed to save last seen install version", error);
+		console.error("[grex] failed to save last seen install version", error);
 	}
 }

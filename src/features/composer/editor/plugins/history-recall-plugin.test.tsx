@@ -29,7 +29,7 @@ import {
 } from "lexical";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { AgentModelSection } from "@/lib/api";
-import { createCodewitQueryClient } from "@/lib/query-client";
+import { createGrexQueryClient } from "@/lib/query-client";
 import {
 	__resetDraftCacheForTests,
 	loadPersistedDraft,
@@ -166,7 +166,7 @@ function renderComposer(
 	onSubmit = vi.fn(),
 	contextKey?: string,
 ) {
-	const queryClient = createCodewitQueryClient();
+	const queryClient = createGrexQueryClient();
 	testCounter += 1;
 	const composerContextKey = contextKey ?? `session:recall-test-${testCounter}`;
 	const result = render(

@@ -283,7 +283,7 @@ export function useWorkspaceInspectorSidebar({
 			);
 		} catch (error) {
 			console.error(
-				`[codewit] actions open save failed for "${INSPECTOR_ACTIONS_OPEN_STORAGE_KEY}"`,
+				`[grex] actions open save failed for "${INSPECTOR_ACTIONS_OPEN_STORAGE_KEY}"`,
 				error,
 			);
 		}
@@ -297,7 +297,7 @@ export function useWorkspaceInspectorSidebar({
 			);
 		} catch (error) {
 			console.error(
-				`[codewit] tabs open save failed for "${INSPECTOR_TABS_OPEN_STORAGE_KEY}"`,
+				`[grex] tabs open save failed for "${INSPECTOR_TABS_OPEN_STORAGE_KEY}"`,
 				error,
 			);
 		}
@@ -308,7 +308,7 @@ export function useWorkspaceInspectorSidebar({
 			window.localStorage.setItem(INSPECTOR_ACTIVE_TAB_STORAGE_KEY, activeTab);
 		} catch (error) {
 			console.error(
-				`[codewit] active tab save failed for "${INSPECTOR_ACTIVE_TAB_STORAGE_KEY}"`,
+				`[grex] active tab save failed for "${INSPECTOR_ACTIVE_TAB_STORAGE_KEY}"`,
 				error,
 			);
 		}
@@ -322,7 +322,7 @@ export function useWorkspaceInspectorSidebar({
 			);
 		} catch (error) {
 			console.error(
-				`[codewit] changes height save failed for "${INSPECTOR_CHANGES_HEIGHT_STORAGE_KEY}"`,
+				`[grex] changes height save failed for "${INSPECTOR_CHANGES_HEIGHT_STORAGE_KEY}"`,
 				error,
 			);
 		}
@@ -336,7 +336,7 @@ export function useWorkspaceInspectorSidebar({
 			);
 		} catch (error) {
 			console.error(
-				`[codewit] tabs height save failed for "${INSPECTOR_TABS_HEIGHT_STORAGE_KEY}"`,
+				`[grex] tabs height save failed for "${INSPECTOR_TABS_HEIGHT_STORAGE_KEY}"`,
 				error,
 			);
 		}
@@ -374,8 +374,8 @@ export function useWorkspaceInspectorSidebar({
 				startScript(repoId, "run", workspaceId, resolvedActiveId);
 			}
 		};
-		window.addEventListener("codewit:run-script", handler);
-		return () => window.removeEventListener("codewit:run-script", handler);
+		window.addEventListener("grex:run-script", handler);
+		return () => window.removeEventListener("grex:run-script", handler);
 	}, [repoId, workspaceId, resolvedActiveId]);
 
 	const isResizing = resizeState !== null;
@@ -557,7 +557,7 @@ export function useWorkspaceInspectorSidebar({
 		overlay.style.inset = "0";
 		overlay.style.zIndex = "2147483647";
 		overlay.style.cursor = "ns-resize";
-		overlay.setAttribute("data-codewit-resize-overlay", "");
+		overlay.setAttribute("data-grex-resize-overlay", "");
 		overlay.setAttribute("aria-hidden", "true");
 		document.body.appendChild(overlay);
 

@@ -12,8 +12,8 @@
 //! Use `--limit N` to truncate the input to the first N records, useful
 //! for keeping fixture files small while still testing realistic data.
 //!
-//! The DB path resolves the same way the main app does: `~/codewit` for
-//! release builds, `~/codewit-dev` for debug builds, or `CODEWIT_DATA_DIR`
+//! The DB path resolves the same way the main app does: `~/grex` for
+//! release builds, `~/grex-dev` for debug builds, or `GREX_DATA_DIR`
 //! when set.
 
 use std::fs;
@@ -21,7 +21,7 @@ use std::path::PathBuf;
 use std::process::ExitCode;
 
 use anyhow::{Context, Result};
-use codewit_lib::pipeline::types::HistoricalRecord;
+use grex_lib::pipeline::types::HistoricalRecord;
 use serde::Serialize;
 use serde_json::Value;
 
@@ -137,7 +137,7 @@ fn run(session_id: &str, fixture_name: &str, limit: Option<usize>) -> Result<()>
 }
 
 fn load_session_records(session_id: &str) -> Result<Vec<HistoricalRecord>> {
-    let db_path = codewit_lib::data_dir::db_path()?;
+    let db_path = grex_lib::data_dir::db_path()?;
     let conn =
         rusqlite::Connection::open(&db_path).with_context(|| format!("open db at {db_path:?}"))?;
 
@@ -150,7 +150,7 @@ fn load_session_records(session_id: &str) -> Result<Vec<HistoricalRecord>> {
 
     let rows = stmt.query_map([session_id], |row| {
         let id: String = row.get(0)?;
-        let role: codewit_lib::pipeline::types::MessageRole = row.get(1)?;
+        let role: grex_lib::pipeline::types::MessageRole = row.get(1)?;
         let content: String = row.get(2)?;
         let created_at: String = row.get(3)?;
         Ok((id, role, content, created_at))

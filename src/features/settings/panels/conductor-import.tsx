@@ -24,7 +24,7 @@ import {
 	listConductorRepos,
 	listConductorWorkspaces,
 } from "@/lib/api";
-import { codewitQueryKeys } from "@/lib/query-client";
+import { grexQueryKeys } from "@/lib/query-client";
 import { requestSidebarReconcile } from "@/lib/sidebar-mutation-gate";
 import { cn } from "@/lib/utils";
 import { SettingsGroup, SettingsRow } from "../components/settings-row";
@@ -255,7 +255,7 @@ export function ConductorImportPanel() {
 	const invalidateAfterImport = useCallback(() => {
 		requestSidebarReconcile(queryClient);
 		void queryClient.invalidateQueries({
-			queryKey: codewitQueryKeys.repositories,
+			queryKey: grexQueryKeys.repositories,
 		});
 	}, [queryClient]);
 

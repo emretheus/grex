@@ -20,7 +20,7 @@ import {
 	useRef,
 	useState,
 } from "react";
-import { CodewitThinkingIndicator } from "@/components/codewit-thinking-indicator";
+import { GrexThinkingIndicator } from "@/components/grex-thinking-indicator";
 import { Button } from "@/components/ui/button";
 import {
 	ContextMenu,
@@ -361,7 +361,7 @@ export const WorkspaceRowItem = memo(
 				{(() => {
 					const branchIcon =
 						isSending && !isInteractionRequired ? (
-							<CodewitThinkingIndicator size={13} />
+							<GrexThinkingIndicator size={13} />
 						) : row.mode === "local" ? (
 							<Laptop
 								className={cn(

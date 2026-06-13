@@ -407,7 +407,11 @@ export const DEFAULT_SETTINGS: AppSettings = {
 	defaultEffort: "high",
 	defaultFastMode: false,
 	zoomLevel: 1.0,
-	followUpBehavior: "steer",
+	// Default to queueing follow-ups while the agent runs (stacked above the
+	// composer with per-item Steer / Edit / Delete) so users can line up the
+	// next tasks without interrupting the active turn. Switch to "steer" in
+	// Settings → Follow-up behavior to inject into the running turn instead.
+	followUpBehavior: "queue",
 	claudeThinkingDisplay: "summarized",
 	alwaysShowContextUsage: true,
 	showUsageStats: true,
@@ -448,15 +452,15 @@ export const DEFAULT_SETTINGS: AppSettings = {
 	sidebarSort: "custom",
 };
 
-export const THEME_STORAGE_KEY = "codewit-theme";
-export const LIGHT_THEME_STORAGE_KEY = "codewit-light-theme";
-export const DARK_THEME_STORAGE_KEY = "codewit-dark-theme";
-export const SIDEBAR_GROUPING_STORAGE_KEY = "codewit-sidebar-grouping";
-export const SIDEBAR_REPO_FILTER_STORAGE_KEY = "codewit-sidebar-repo-filter";
-export const SIDEBAR_SORT_STORAGE_KEY = "codewit-sidebar-sort";
-export const UI_FONT_FAMILY_STORAGE_KEY = "codewit-ui-font-family";
-export const CODE_FONT_FAMILY_STORAGE_KEY = "codewit-code-font-family";
-export const TERMINAL_FONT_FAMILY_STORAGE_KEY = "codewit-terminal-font-family";
+export const THEME_STORAGE_KEY = "grex-theme";
+export const LIGHT_THEME_STORAGE_KEY = "grex-light-theme";
+export const DARK_THEME_STORAGE_KEY = "grex-dark-theme";
+export const SIDEBAR_GROUPING_STORAGE_KEY = "grex-sidebar-grouping";
+export const SIDEBAR_REPO_FILTER_STORAGE_KEY = "grex-sidebar-repo-filter";
+export const SIDEBAR_SORT_STORAGE_KEY = "grex-sidebar-sort";
+export const UI_FONT_FAMILY_STORAGE_KEY = "grex-ui-font-family";
+export const CODE_FONT_FAMILY_STORAGE_KEY = "grex-code-font-family";
+export const TERMINAL_FONT_FAMILY_STORAGE_KEY = "grex-terminal-font-family";
 
 /** Keys mirrored to localStorage for flash-free synchronous boot reads.
  *  Anything visible in the first paint must live here so we don't wait
@@ -1358,7 +1362,7 @@ export async function saveSettings(patch: Partial<AppSettings>): Promise<void> {
 				localStorage.setItem(lsKey, String(value));
 			}
 		} catch (error) {
-			console.error(`[codewit] localStorage save failed for "${lsKey}"`, error);
+			console.error(`[grex] localStorage save failed for "${lsKey}"`, error);
 		}
 	}
 

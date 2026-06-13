@@ -66,7 +66,7 @@ fn empty_404() -> tauri::http::Response<Vec<u8>> {
         .expect("404 response builder is infallible")
 }
 
-/// Extension-based MIME sniff for the `codewit-attachment` protocol.
+/// Extension-based MIME sniff for the `grex-attachment` protocol.
 fn mime_for_path(path: &std::path::Path) -> &'static str {
     match path
         .extension()
@@ -138,7 +138,7 @@ pub fn run() {
         })
         // Triage priming attachments. Custom scheme so rehype-sanitize can opt it in.
         .register_asynchronous_uri_scheme_protocol(
-            "codewit-attachment",
+            "grex-attachment",
             |_app, request, responder| {
                 let uri = request.uri().to_string();
                 std::thread::spawn(move || {
@@ -159,7 +159,7 @@ pub fn run() {
                                 tracing::warn!(
                                     uri = %uri,
                                     error = %error,
-                                    "codewit-attachment read failed",
+                                    "grex-attachment read failed",
                                 );
                                 empty_404()
                             }
@@ -169,7 +169,7 @@ pub fn run() {
                             tracing::warn!(
                                 uri = %uri,
                                 error = %format!("{error:#}"),
-                                "codewit-attachment resolve failed",
+                                "grex-attachment resolve failed",
                             );
                             empty_404()
                         }
@@ -235,7 +235,7 @@ pub fn run() {
             tracing::info!(
                 mode = data_dir::data_mode_label(),
                 data = %db_path.display(),
-                "Codewit started"
+                "Grex started"
             );
 
             // Sweep `.trash-*` dirs left over from a prior run (worker killed
@@ -244,7 +244,7 @@ pub fn run() {
             // background. Spawned so a slow `read_dir` can't stall startup.
             if let Ok(workspaces_root) = data_dir::workspaces_dir() {
                 std::thread::Builder::new()
-                    .name("codewit-trash-sweep".into())
+                    .name("grex-trash-sweep".into())
                     .spawn(move || {
                         git::trash::sweep_workspaces_root(&workspaces_root);
                     })
@@ -257,7 +257,7 @@ pub fn run() {
             // left alone (historical messages embed absolute paths into
             // them).
             std::thread::Builder::new()
-                .name("codewit-paste-cache-sweep".into())
+                .name("grex-paste-cache-sweep".into())
                 .spawn(|| {
                     if let Err(error) = maintenance::paste_cache::sweep() {
                         tracing::warn!(error = %error, "paste-cache sweep failed");
@@ -284,9 +284,9 @@ pub fn run() {
                 tracing::warn!("Failed to reset stale terminal statuses: {e:#}");
             }
 
-            // Keep the managed `codewit` launcher pointing at THIS app after
+            // Keep the managed `grex` launcher pointing at THIS app after
             // updates / moves (release-only; never elevates, never adopts a
-            // non-Codewit file). Without this the CLI silently lags the app.
+            // non-Grex file). Without this the CLI silently lags the app.
             commands::system_commands::ensure_cli_install_current();
 
             // Repair `.agent-contexts/` provisioning for existing worktree
@@ -411,8 +411,8 @@ pub fn run() {
                 })
                 .ok();
 
-            // Per-version silent re-check of the Codewit CLI symlink and
-            // the Codewit Skills package. Runs once per app version
+            // Per-version silent re-check of the Grex CLI symlink and
+            // the Grex Skills package. Runs once per app version
             // (cached by version string in app_settings); a clean pass
             // updates the cache, a failure leaves it untouched so the
             // next launch retries. Gated on onboarding_completed inside
@@ -424,7 +424,7 @@ pub fn run() {
 
             agents::prewarm_slash_command_cache(app.handle());
 
-            // Reap any orphan llama-server from a prior Codewit process
+            // Reap any orphan llama-server from a prior Grex process
             // that was force-quit / crashed / hot-reloaded — its
             // `local_llm::Manager::drop` never ran. Doing this BEFORE the
             // auto-start guarantees we don't accumulate duplicates
@@ -489,8 +489,8 @@ pub fn run() {
             // Mobile browser companion (experimental, opt-in via env). Starts a
             // loopback-bound HTTP/SSE server that mirrors the IPC surface so the
             // same frontend can be served to a phone browser. Default app
-            // behaviour is unchanged unless `CODEWIT_COMPANION` is set.
-            if std::env::var_os("CODEWIT_COMPANION").is_some() {
+            // behaviour is unchanged unless `GREX_COMPANION` is set.
+            if std::env::var_os("GREX_COMPANION").is_some() {
                 let companion_handle = app.handle().clone();
                 tauri::async_runtime::spawn(async move {
                     let streamer = companion::build_stream_starter(companion_handle.clone());
@@ -508,7 +508,7 @@ pub fn run() {
                         Ok(info) => tracing::info!(
                             addr = %info.addr,
                             token = %info.token,
-                            "companion enabled (CODEWIT_COMPANION) — listening on loopback",
+                            "companion enabled (GREX_COMPANION) — listening on loopback",
                         ),
                         Err(error) => {
                             tracing::error!(error = %format!("{error:#}"), "companion start failed")
@@ -614,14 +614,14 @@ pub fn run() {
             commands::system_commands::get_data_info,
             commands::system_commands::get_agent_login_status,
             commands::system_commands::get_agent_versions,
-            commands::system_commands::get_codewit_skills_status,
+            commands::system_commands::get_grex_skills_status,
             commands::system_commands::install_cli,
             commands::system_commands::read_query_cache,
             commands::system_commands::write_query_cache,
             commands::system_commands::delete_query_cache,
-            commands::system_commands::install_codewit_skills,
-            commands::system_commands::get_codewit_components_update_check,
-            commands::system_commands::recheck_codewit_components,
+            commands::system_commands::install_grex_skills,
+            commands::system_commands::get_grex_components_update_check,
+            commands::system_commands::recheck_grex_components,
             commands::system_commands::enter_onboarding_window_mode,
             commands::system_commands::exit_onboarding_window_mode,
             commands::system_commands::enter_mini_window_mode,
@@ -762,9 +762,9 @@ pub fn run() {
             commands::conductor_commands::list_conductor_repos,
             commands::conductor_commands::list_conductor_workspaces,
             commands::conductor_commands::import_conductor_workspaces,
-            commands::feedback_commands::fork_codewit_upstream,
-            commands::feedback_commands::create_codewit_issue,
-            commands::feedback_commands::find_existing_codewit_repo,
+            commands::feedback_commands::fork_grex_upstream,
+            commands::feedback_commands::create_grex_issue,
+            commands::feedback_commands::find_existing_grex_repo,
             commands::system_commands::save_pasted_image,
             commands::system_commands::save_text_file_as,
             commands::system_commands::show_image_in_finder,
@@ -814,7 +814,7 @@ pub fn run() {
     // app — it hides the window and the app keeps running in the Dock.
     // Clicking the Dock icon (RunEvent::Reopen) shows it again. Only true
     // quit paths (Cmd+Q, Dock Quit) route through the single
-    // `codewit://quit-requested` event, which the frontend's
+    // `grex://quit-requested` event, which the frontend's
     // QuitConfirmDialog listens for, checks for in-flight tasks, and calls
     // back into the `request_quit` IPC command — which cleans up (stops
     // git watchers, SIGTERM's the sidecar) and then invokes `app.exit(0)`.
@@ -824,7 +824,7 @@ pub fn run() {
     //   Red close button / close-window (macOS) | WindowEvent::CloseRequested -> hide
     //   Red close button / close (other OS)     | WindowEvent::CloseRequested -> quit
     //   Dock icon click (macOS)                 | RunEvent::Reopen -> show
-    //   Cmd+Q, app-menu Quit (macOS)            | on_menu_event codewit-quit
+    //   Cmd+Q, app-menu Quit (macOS)            | on_menu_event grex-quit
     //   Dock Quit / system shutdown / SIGINT    | RunEvent::ExitRequested { code: None }
     //   Our own request_quit -> app.exit(0)     | ExitRequested { code: Some(_) }  (passthrough)
     //
@@ -910,7 +910,7 @@ pub fn run() {
 // back to a direct exit is safer than leaving the process hanging with
 // no UI and no way to quit.
 fn emit_quit_requested(app_handle: &tauri::AppHandle) {
-    if let Err(e) = app_handle.emit("codewit://quit-requested", ()) {
+    if let Err(e) = app_handle.emit("grex://quit-requested", ()) {
         tracing::warn!(
             error = %e,
             "Failed to emit quit-requested event; exiting directly",
@@ -920,11 +920,11 @@ fn emit_quit_requested(app_handle: &tauri::AppHandle) {
 }
 
 #[cfg(target_os = "macos")]
-const CODEWIT_QUIT_MENU_ID: &str = "codewit-quit";
+const GREX_QUIT_MENU_ID: &str = "grex-quit";
 #[cfg(target_os = "macos")]
-const CODEWIT_CLOSE_CURRENT_SESSION_MENU_ID: &str = "codewit-close-current-session";
+const GREX_CLOSE_CURRENT_SESSION_MENU_ID: &str = "grex-close-current-session";
 #[cfg(target_os = "macos")]
-const CODEWIT_ALWAYS_ON_TOP_MENU_ID: &str = "codewit-always-on-top";
+const GREX_ALWAYS_ON_TOP_MENU_ID: &str = "grex-always-on-top";
 
 #[cfg(target_os = "macos")]
 fn install_macos_menu(app: &tauri::AppHandle) -> tauri::Result<()> {
@@ -933,7 +933,7 @@ fn install_macos_menu(app: &tauri::AppHandle) -> tauri::Result<()> {
     };
 
     let close_current_session_item = MenuItemBuilder::with_id(
-        CODEWIT_CLOSE_CURRENT_SESSION_MENU_ID,
+        GREX_CLOSE_CURRENT_SESSION_MENU_ID,
         "Close Current Session",
     )
     .accelerator("Cmd+W")
@@ -942,20 +942,20 @@ fn install_macos_menu(app: &tauri::AppHandle) -> tauri::Result<()> {
     // Lets the user float the window above other apps. Decoupled from mini
     // mode — purely a manual toggle, the check mark is the source of truth.
     let always_on_top_item =
-        CheckMenuItemBuilder::with_id(CODEWIT_ALWAYS_ON_TOP_MENU_ID, "Always on Top")
+        CheckMenuItemBuilder::with_id(GREX_ALWAYS_ON_TOP_MENU_ID, "Always on Top")
             .checked(false)
             .build(app)?;
 
-    let quit_item = MenuItemBuilder::with_id(CODEWIT_QUIT_MENU_ID, "Quit Codewit")
+    let quit_item = MenuItemBuilder::with_id(GREX_QUIT_MENU_ID, "Quit Grex")
         .accelerator("Cmd+Q")
         .build(app)?;
 
     let about_metadata = AboutMetadataBuilder::new()
-        .name(Some("Codewit"))
+        .name(Some("Grex"))
         .version(Some(env!("CARGO_PKG_VERSION")))
         .build();
 
-    let app_submenu = SubmenuBuilder::new(app, "Codewit")
+    let app_submenu = SubmenuBuilder::new(app, "Grex")
         .about(Some(about_metadata))
         .separator()
         .services()
@@ -993,9 +993,9 @@ fn install_macos_menu(app: &tauri::AppHandle) -> tauri::Result<()> {
 
     let handle = app.clone();
     app.on_menu_event(move |_, event| match event.id().0.as_str() {
-        CODEWIT_QUIT_MENU_ID => emit_quit_requested(&handle),
-        CODEWIT_CLOSE_CURRENT_SESSION_MENU_ID => emit_close_current_session_requested(&handle),
-        CODEWIT_ALWAYS_ON_TOP_MENU_ID => {
+        GREX_QUIT_MENU_ID => emit_quit_requested(&handle),
+        GREX_CLOSE_CURRENT_SESSION_MENU_ID => emit_close_current_session_requested(&handle),
+        GREX_ALWAYS_ON_TOP_MENU_ID => {
             // muda toggles the check mark before firing, so is_checked() is
             // already the desired post-click state.
             let checked = always_on_top_item.is_checked().unwrap_or(false);
@@ -1013,7 +1013,7 @@ fn install_macos_menu(app: &tauri::AppHandle) -> tauri::Result<()> {
 
 #[cfg(target_os = "macos")]
 fn emit_close_current_session_requested(app_handle: &tauri::AppHandle) {
-    if let Err(e) = app_handle.emit("codewit://close-current-session", ()) {
+    if let Err(e) = app_handle.emit("grex://close-current-session", ()) {
         tracing::warn!(error = %e, "Failed to emit close-current-session event");
     }
 }

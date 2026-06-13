@@ -63,7 +63,7 @@ pub(super) fn glab_api<'a>(
 /// glab emits when both `~/.config/glab-cli/` and `~/Library/…/glab-cli/`
 /// exist) is filtered out — it pollutes every error message even when
 /// the actual failure is unrelated, and the user can't act on it from
-/// inside Codewit.
+/// inside Grex.
 pub(super) fn command_detail(output: &CommandOutput) -> String {
     let stderr = strip_glab_noise(&output.stderr);
     if !stderr.is_empty() {

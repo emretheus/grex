@@ -1,10 +1,10 @@
-//! Resolves the Codewit data directory based on build profile and environment.
+//! Resolves the Grex data directory based on build profile and environment.
 //!
-//! - Debug builds: `~/codewit-dev/`
-//! - Release builds: `~/codewit/`
-//! - `CODEWIT_DATA_DIR` env var overrides both
+//! - Debug builds: `~/grex-dev/`
+//! - Release builds: `~/grex/`
+//! - `GREX_DATA_DIR` env var overrides both
 //!
-//! The SQLite database lives at `{data_dir}/codewit.db`.
+//! The SQLite database lives at `{data_dir}/grex.db`.
 
 use std::fs;
 use std::path::PathBuf;
@@ -15,14 +15,14 @@ use anyhow::{Context, Result};
 pub static TEST_ENV_LOCK: std::sync::Mutex<()> = std::sync::Mutex::new(());
 
 /// Name of the database file inside the data directory.
-const DB_FILENAME: &str = "codewit.db";
+const DB_FILENAME: &str = "grex.db";
 
-/// Default top-level directory name for Codewit app data.
+/// Default top-level directory name for Grex app data.
 const fn default_data_dir_name() -> &'static str {
     if cfg!(debug_assertions) {
-        "codewit-dev"
+        "grex-dev"
     } else {
-        "codewit"
+        "grex"
     }
 }
 
@@ -32,7 +32,7 @@ pub fn data_dir() -> Result<PathBuf> {
 
     if !dir.exists() {
         fs::create_dir_all(&dir)
-            .with_context(|| format!("Failed to create Codewit data directory {}", dir.display()))?;
+            .with_context(|| format!("Failed to create Grex data directory {}", dir.display()))?;
     }
 
     Ok(dir)
@@ -125,7 +125,7 @@ pub fn query_cache_dir() -> Result<PathBuf> {
     cache_dir("query")
 }
 
-/// Returns the directory where Codewit-managed GGUF model files live.
+/// Returns the directory where Grex-managed GGUF model files live.
 ///
 /// Deliberately kept separate from `~/.cache/huggingface/hub/` — we
 /// don't share that cache with other local-LLM tools because (a) we
@@ -194,12 +194,12 @@ pub fn is_dev() -> bool {
 /// Resolve the data directory path without creating it.
 fn resolve_data_dir() -> Result<PathBuf> {
     // 1. Environment variable override
-    if let Ok(dir) = std::env::var("CODEWIT_DATA_DIR") {
+    if let Ok(dir) = std::env::var("GREX_DATA_DIR") {
         return Ok(PathBuf::from(dir));
     }
 
     // Fuse: a unit test reaching this fallback would operate on the REAL
-    // `~/codewit-dev` data directory — DB pools open against it, file
+    // `~/grex-dev` data directory — DB pools open against it, file
     // helpers delete inside it, and a concurrently running dev app gets
     // its writes starved. Fail the offending test loudly instead of
     // polluting silently.
@@ -257,11 +257,11 @@ mod tests {
     use super::*;
 
     /// Test path construction without touching environment variables.
-    /// This avoids races with other test modules that also set CODEWIT_DATA_DIR.
+    /// This avoids races with other test modules that also set GREX_DATA_DIR.
 
     #[test]
-    fn db_filename_is_codewit_db() {
-        assert_eq!(DB_FILENAME, "codewit.db");
+    fn db_filename_is_grex_db() {
+        assert_eq!(DB_FILENAME, "grex.db");
     }
 
     #[test]
@@ -277,7 +277,7 @@ mod tests {
 
     #[test]
     fn default_data_dir_name_returns_dev_directory_in_debug() {
-        assert_eq!(default_data_dir_name(), "codewit-dev");
+        assert_eq!(default_data_dir_name(), "grex-dev");
     }
 
     #[test]

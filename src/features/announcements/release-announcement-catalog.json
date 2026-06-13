@@ -2,6 +2,24 @@
 	"_readme": "AUTO-GENERATED from .announcements during `bun run release:version`. Each item is one released version's in-app announcement. Do not edit released entries by hand.",
 	"items": [
 		{
+			"releaseVersion": "0.2.0",
+			"items": [
+				{
+					"text": "Follow-ups now queue while the agent works — line up your next tasks above the composer and Steer, Edit, or Delete each one. Prefer interrupting the run instead? Switch to Steer in Settings.",
+					"action": {
+						"label": "Open Settings",
+						"value": {
+							"type": "openSettings",
+							"section": "general"
+						}
+					}
+				},
+				{
+					"text": "The composer now shows an explicit Plan vs Auto mode, so it's clear when the agent is running with full access."
+				}
+			]
+		},
+		{
 			"releaseVersion": "0.37.0",
 			"items": [
 				{
@@ -33,7 +51,7 @@
 					"text": "Long messages now collapse to 20 lines — Show more expands them in place without losing your spot."
 				},
 				{
-					"text": "Quick panel: press ⇧⌥Space anywhere to spin up a task in a small floating window — pick a repo, send the prompt, and keep chatting without opening Codewit. Hotkey configurable in Settings → Shortcuts.",
+					"text": "Quick panel: press ⇧⌥Space anywhere to spin up a task in a small floating window — pick a repo, send the prompt, and keep chatting without opening Grex. Hotkey configurable in Settings → Shortcuts.",
 					"action": {
 						"label": "Try it",
 						"value": {
@@ -101,7 +119,7 @@
 			"releaseVersion": "0.31.0",
 			"items": [
 				{
-					"text": "Open Codewit from your phone or any browser — pair a device once, then drive your desktop's workspaces and agents from a stable URL.",
+					"text": "Open Grex from your phone or any browser — pair a device once, then drive your desktop's workspaces and agents from a stable URL.",
 					"action": {
 						"label": "Open Mobile companion",
 						"value": {
@@ -111,7 +129,7 @@
 					}
 				},
 				{
-					"text": "You can now build stacked PRs — a chain of small, dependent PRs. Plan one with /codewit-cli stack, or split a change you've already written with /codewit-cli break; the sidebar groups each stack together."
+					"text": "You can now build stacked PRs — a chain of small, dependent PRs. Plan one with /grex-cli stack, or split a change you've already written with /grex-cli break; the sidebar groups each stack together."
 				}
 			]
 		},
@@ -132,7 +150,7 @@
 					}
 				},
 				{
-					"text": "On macOS, closing the window (or Cmd+Shift+W) now keeps Codewit running in the Dock instead of quitting — click the Dock icon to bring it back. Cmd+Q still quits.",
+					"text": "On macOS, closing the window (or Cmd+Shift+W) now keeps Grex running in the Dock instead of quitting — click the Dock icon to bring it back. Cmd+Q still quits.",
 					"action": {
 						"label": "Open Shortcuts",
 						"value": {
@@ -142,7 +160,7 @@
 					}
 				},
 				{
-					"text": "Use Command+Control+M or the header resize button to switch Codewit between desktop and mini window sizes."
+					"text": "Use Command+Control+M or the header resize button to switch Grex between desktop and mini window sizes."
 				},
 				{
 					"text": "On narrow windows, the sidebars now peek in from the edges so the workspace stays full width."
@@ -213,13 +231,13 @@
 			"releaseVersion": "0.26.0",
 			"items": [
 				{
-					"text": "Coding agents in Codewit can now drive Codewit itself — spawn sibling workspaces, dispatch ship actions, and read other agents' transcripts. Just ask them in any chat. Codewit CLI and skills install automatically in the background."
+					"text": "Coding agents in Grex can now drive Grex itself — spawn sibling workspaces, dispatch ship actions, and read other agents' transcripts. Just ask them in any chat. Grex CLI and skills install automatically in the background."
 				},
 				{
 					"text": "Every new workspace now has a gitignored `.agent-contexts/` directory agents can use to share files across sessions without polluting diffs."
 				},
 				{
-					"text": "Slack, GitHub, and GitLab context detail panels now refresh automatically when you open them or refocus Codewit, and there's a manual refresh button in the toolbar.",
+					"text": "Slack, GitHub, and GitLab context detail panels now refresh automatically when you open them or refocus Grex, and there's a manual refresh button in the toolbar.",
 					"action": {
 						"label": "Open Context",
 						"value": {
@@ -345,7 +363,7 @@
 					"text": "You can now edit code right from the diff view."
 				},
 				{
-					"text": "Send Codewit feedback right from the app — file a GitHub issue or hit \"Quick fix\" to open a workspace with the feedback as the first prompt."
+					"text": "Send Grex feedback right from the app — file a GitHub issue or hit \"Quick fix\" to open a workspace with the feedback as the first prompt."
 				},
 				{
 					"text": "Pick \"Just Chat\" on the start page to open a workspace without binding it to a repo.",

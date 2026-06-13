@@ -3,7 +3,7 @@
 	"changelog": [
 		"@changesets/changelog-github",
 		{
-			"repo": "emretheus/codewit"
+			"repo": "emretheus/grex"
 		}
 	],
 	"commit": false,
@@ -12,7 +12,7 @@
 	"access": "restricted",
 	"baseBranch": "main",
 	"updateInternalDependencies": "patch",
-	"ignore": ["@codewit/marketing"],
+	"ignore": ["@grex/marketing"],
 	"privatePackages": {
 		"version": true,
 		"tag": true

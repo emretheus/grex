@@ -1,5 +1,5 @@
-//! `codewit send` — send a prompt to an agent, stream output.
-//! Also hosts `codewit models list`.
+//! `grex send` — send a prompt to an agent, stream output.
+//! Also hosts `grex models list`.
 
 use std::io::{Read, Write};
 

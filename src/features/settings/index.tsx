@@ -49,7 +49,7 @@ import {
 } from "@/lib/notification-sound";
 import {
 	agentModelSectionsQueryOptions,
-	codewitQueryKeys,
+	grexQueryKeys,
 	repositoriesQueryOptions,
 } from "@/lib/query-client";
 import type {
@@ -640,7 +640,7 @@ export const SettingsDialog = memo(function SettingsDialog({
 									}
 									onRepoSettingsChanged={() => {
 										void queryClient.invalidateQueries({
-											queryKey: codewitQueryKeys.repositories,
+											queryKey: grexQueryKeys.repositories,
 										});
 										requestSidebarReconcile(queryClient);
 										// Invalidate all workspace detail caches so
@@ -652,7 +652,7 @@ export const SettingsDialog = memo(function SettingsDialog({
 									onRepoDeleted={() => {
 										setActiveSection("general");
 										void queryClient.invalidateQueries({
-											queryKey: codewitQueryKeys.repositories,
+											queryKey: grexQueryKeys.repositories,
 										});
 										requestSidebarReconcile(queryClient);
 									}}

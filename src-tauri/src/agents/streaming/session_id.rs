@@ -11,16 +11,16 @@
 ///
 /// Returns `true` only when:
 /// - The observed id is non-empty.
-/// - It does not echo the codewit session id (defensive — sidecar should
+/// - It does not echo the grex session id (defensive — sidecar should
 ///   never send it but we don't trust upstream blindly).
 /// - We have not already adopted one.
 pub(super) fn should_adopt_provider_session_id(
     current_provider_session_id: Option<&str>,
     observed_provider_session_id: &str,
-    codewit_session_id: Option<&str>,
+    grex_session_id: Option<&str>,
 ) -> bool {
     !observed_provider_session_id.is_empty()
-        && codewit_session_id != Some(observed_provider_session_id)
+        && grex_session_id != Some(observed_provider_session_id)
         && current_provider_session_id.is_none()
 }
 
@@ -48,12 +48,12 @@ mod tests {
     }
 
     #[test]
-    fn provider_session_id_rejects_empty_and_codewit_echo_values() {
+    fn provider_session_id_rejects_empty_and_grex_echo_values() {
         assert!(!should_adopt_provider_session_id(None, "", None));
         assert!(!should_adopt_provider_session_id(
             None,
-            "codewit-session-1",
-            Some("codewit-session-1"),
+            "grex-session-1",
+            Some("grex-session-1"),
         ));
     }
 }

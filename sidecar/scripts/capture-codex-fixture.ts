@@ -64,8 +64,8 @@ function sanitizeFixtureText(
 	text = text.replaceAll(homeDir, "$HOME");
 	text = text.replaceAll("/private/tmp/codex-home", "$CODEX_HOME");
 	text = text.replaceAll("/tmp/codex-home", "$CODEX_HOME");
-	text = text.replaceAll("/private/tmp/codewit-sidecar-logs", "$CODEWIT_LOG_DIR");
-	text = text.replaceAll("/tmp/codewit-sidecar-logs", "$CODEWIT_LOG_DIR");
+	text = text.replaceAll("/private/tmp/grex-sidecar-logs", "$GREX_LOG_DIR");
+	text = text.replaceAll("/tmp/grex-sidecar-logs", "$GREX_LOG_DIR");
 	text = text.replace(/\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/gi, (match) =>
 		mapEmail(match),
 	);

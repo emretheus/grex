@@ -9,7 +9,7 @@
 use std::fs;
 use std::path::{Path, PathBuf};
 
-use codewit_lib::pipeline::types::HistoricalRecord;
+use grex_lib::pipeline::types::HistoricalRecord;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 

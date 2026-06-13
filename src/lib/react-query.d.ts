@@ -2,7 +2,7 @@
 // shape closed so typos like `presist` fail at compile time.
 //
 // `persist: true` opts a query into the on-disk cache. See
-// `createCodewitQueryClient` in `query-client.ts` for the wiring and
+// `createGrexQueryClient` in `query-client.ts` for the wiring and
 // AGENTS.md ("Persisting React Query data") for the guideline.
 import "@tanstack/react-query";
 

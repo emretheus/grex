@@ -6,7 +6,7 @@
 import { focusManager, type QueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { useStreamingStore } from "@/features/conversation/state/streaming-store";
-import { codewitQueryKeys } from "@/lib/query-client";
+import { grexQueryKeys } from "@/lib/query-client";
 import { useLatestRef } from "@/shell/hooks/use-stable-actions";
 
 export function useThreadFocusBackstop({
@@ -33,7 +33,7 @@ export function useThreadFocusBackstop({
 				return;
 			}
 			void queryClient.invalidateQueries({
-				queryKey: codewitQueryKeys.sessionMessages(sessionId),
+				queryKey: grexQueryKeys.sessionMessages(sessionId),
 			});
 		});
 	}, [queryClient, getDisplayedSessionIdRef]);

@@ -259,7 +259,7 @@ fn http_runtime() -> &'static tokio::runtime::Runtime {
         tokio::runtime::Builder::new_multi_thread()
             .enable_all()
             .worker_threads(2)
-            .thread_name("codewit-slack-files")
+            .thread_name("grex-slack-files")
             .build()
             .expect("Failed to build tokio runtime for Slack file fetcher")
     })

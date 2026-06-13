@@ -23,8 +23,8 @@
 
 // Re-exported so test files can `use common::*` and reach the production
 // pipeline types without listing each one.
-pub use codewit_lib::pipeline::types::{HistoricalRecord, ThreadMessageLike};
-pub use codewit_lib::pipeline::MessagePipeline;
+pub use grex_lib::pipeline::types::{HistoricalRecord, ThreadMessageLike};
+pub use grex_lib::pipeline::MessagePipeline;
 
 mod builders;
 mod fixtures;

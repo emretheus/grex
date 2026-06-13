@@ -13,7 +13,7 @@ import {
 } from "@/lib/api";
 import type { InspectorFileItem } from "@/lib/editor-session";
 import { extractError, isRecoverableByPurge } from "@/lib/errors";
-import { codewitQueryKeys } from "@/lib/query-client";
+import { grexQueryKeys } from "@/lib/query-client";
 import { requestSidebarReconcile } from "@/lib/sidebar-mutation-gate";
 import { showWorkspaceBrokenToast } from "@/lib/workspace-broken-toast";
 import type { PushWorkspaceToast } from "@/lib/workspace-toast-context";
@@ -53,14 +53,11 @@ export function useGitMutations({
 	const invalidateChanges = useCallback(() => {
 		if (!workspaceRootPath) return;
 		queryClient.invalidateQueries({
-			queryKey: codewitQueryKeys.workspaceChanges(
-				workspaceRootPath,
-				workspaceId,
-			),
+			queryKey: grexQueryKeys.workspaceChanges(workspaceRootPath, workspaceId),
 		});
 		if (workspaceId) {
 			queryClient.invalidateQueries({
-				queryKey: codewitQueryKeys.workspaceGitActionStatus(workspaceId),
+				queryKey: grexQueryKeys.workspaceGitActionStatus(workspaceId),
 			});
 		}
 	}, [queryClient, workspaceId, workspaceRootPath]);
@@ -165,16 +162,16 @@ export function useGitMutations({
 			requestSidebarReconcile(queryClient);
 			await Promise.all([
 				queryClient.invalidateQueries({
-					queryKey: codewitQueryKeys.workspaceDetail(workspaceId),
+					queryKey: grexQueryKeys.workspaceDetail(workspaceId),
 				}),
 				queryClient.invalidateQueries({
-					queryKey: codewitQueryKeys.workspaceGitActionStatus(workspaceId),
+					queryKey: grexQueryKeys.workspaceGitActionStatus(workspaceId),
 				}),
 				queryClient.invalidateQueries({
-					queryKey: codewitQueryKeys.workspaceChangeRequest(workspaceId),
+					queryKey: grexQueryKeys.workspaceChangeRequest(workspaceId),
 				}),
 				queryClient.invalidateQueries({
-					queryKey: codewitQueryKeys.workspaceForgeActionStatus(workspaceId),
+					queryKey: grexQueryKeys.workspaceForgeActionStatus(workspaceId),
 				}),
 			]);
 			invalidateChanges();

@@ -28,10 +28,10 @@ function platformShort(): string {
 	return "";
 }
 
-// Resolution order: CODEWIT_OPENCODE_BIN_PATH (release) → node_modules platform
+// Resolution order: GREX_OPENCODE_BIN_PATH (release) → node_modules platform
 // sub-package (dev/test) → "opencode" on PATH.
 function resolveOpencodeBinPath(): string {
-	const override = process.env.CODEWIT_OPENCODE_BIN_PATH;
+	const override = process.env.GREX_OPENCODE_BIN_PATH;
 	if (override) return override;
 	const platformPkg = `opencode-${platformShort()}`;
 	try {
@@ -50,11 +50,11 @@ export const OPENCODE_BIN_PATH = resolveOpencodeBinPath();
 
 // Session DB MUST be isolated from the user's global opencode: its schema
 // migrates forward and a newer-written DB is unwritable by our bundled binary.
-// (auth.json + opencode.jsonc stay shared.) Parent of CODEWIT_LOG_DIR is the
-// Codewit data dir; fall back to home for standalone/test runs.
+// (auth.json + opencode.jsonc stay shared.) Parent of GREX_LOG_DIR is the
+// Grex data dir; fall back to home for standalone/test runs.
 function resolveOpencodeDbPath(): string {
-	const logDir = process.env.CODEWIT_LOG_DIR;
-	const base = logDir ? dirname(logDir) : join(homedir(), ".codewit");
+	const logDir = process.env.GREX_LOG_DIR;
+	const base = logDir ? dirname(logDir) : join(homedir(), ".grex");
 	return join(base, "opencode", "opencode.db");
 }
 
@@ -84,10 +84,10 @@ function parseServerUrl(buffer: string): string | null {
 // `opencode serve` can re-exec out of the process group we spawn it in, so
 // `process.kill(-pid)` alone sometimes misses the real server. A `ps`-scan
 // catches it. Two matchers, each with a discriminator that CANNOT hit a serve
-// Codewit didn't start (so we never kill the user's own opencode):
+// Grex didn't start (so we never kill the user's own opencode):
 //   • teardown: the exact ephemeral `--port` we just bound (unique system-wide)
 //   • startup:  our full binary path AND ppid==1 (orphaned → parent already dead,
-//               so never a live sibling Codewit's server)
+//               so never a live sibling Grex's server)
 
 interface ServeProcess {
 	readonly pid: number;
@@ -143,7 +143,7 @@ export function matchesServeOnPort(input: {
 
 /** An ORPHANED serve (ppid==1) launched from OUR exact binary path. Full path
  *  rules out a user's separate opencode install; ppid==1 rules out a live
- *  sibling Codewit (whose server still has a live sidecar parent). Returns false
+ *  sibling Grex (whose server still has a live sidecar parent). Returns false
  *  for a bare (path-less) binary, where we can't tell ours apart — caller skips. */
 export function matchesOrphanedServe(input: {
 	command: string;
@@ -394,9 +394,9 @@ export class OpencodeServer {
 	}
 
 	/** One-shot at first spawn: SIGTERM/SIGKILL serve processes orphaned by a
-	 *  prior Codewit that died without a clean shutdown (dev rebuild, crash,
+	 *  prior Grex that died without a clean shutdown (dev rebuild, crash,
 	 *  force-quit). Matches only our binary path + ppid==1, so it never hits a
-	 *  user's own opencode or a live sibling Codewit's server. */
+	 *  user's own opencode or a live sibling Grex's server. */
 	private async reapOrphans(): Promise<void> {
 		if (this.orphanReapDone || process.platform === "win32") return;
 		this.orphanReapDone = true;

@@ -1,4 +1,4 @@
-//! Database schema initialization for Codewit.
+//! Database schema initialization for Grex.
 //!
 //! Creates all required tables if they don't exist, matching the Conductor
 //! schema for data compatibility.
@@ -640,7 +640,7 @@ fn run_migrations(connection: &Connection) -> Result<()> {
         .context("Failed to create repo_run_actions table")?;
 
     // Optional graceful-stop command per run action. `stop_command` is a
-    // shell snippet codewit runs when the user clicks Stop, blocking the
+    // shell snippet grex runs when the user clicks Stop, blocking the
     // SIGTERM/SIGKILL of the main process until it exits (Force Stop
     // re-click short-circuits). Nullable — existing rows are unaffected
     // and continue to use today's `escalating_kill` flow.
@@ -770,7 +770,7 @@ fn run_migrations(connection: &Connection) -> Result<()> {
     }
 
     // Runtime process registry. Tracks every PTY-backed script /
-    // terminal Codewit spawns so a crash recovery sweep on next launch
+    // terminal Grex spawns so a crash recovery sweep on next launch
     // can detect rows whose process is still alive and report them.
     // `ended_at` IS NULL while a process is live; the post-exit code
     // path in `workspace::scripts::run_script_with_shell` stamps it

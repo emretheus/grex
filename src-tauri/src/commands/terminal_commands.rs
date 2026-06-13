@@ -66,7 +66,7 @@ pub async fn spawn_terminal(
         .unwrap_or_else(|| repo.root_path.clone());
 
     // See script_commands.rs for the rationale — embedded terminals
-    // share the same per-workspace CODEWIT_PORT range as the run/setup
+    // share the same per-workspace GREX_PORT range as the run/setup
     // scripts so a `npm run dev` typed into the terminal binds the
     // same ports the script docs reference.
     let port_range = workspace.as_ref().and_then(|ws| {
@@ -76,7 +76,7 @@ pub async fn spawn_terminal(
                 tracing::warn!(
                     workspace_id = %ws.id,
                     %error,
-                    "Failed to allocate workspace port range; skipping CODEWIT_PORT env vars"
+                    "Failed to allocate workspace port range; skipping GREX_PORT env vars"
                 );
                 None
             }
@@ -102,7 +102,7 @@ pub async fn spawn_terminal(
 
     tauri::async_runtime::spawn_blocking(move || {
         // Wrap the preset command: export the hook env (so the agent hook can
-        // report its real session id via `codewit terminal-hook`) and, for
+        // report its real session id via `grex terminal-hook`) and, for
         // Claude, inject a `--settings` file carrying the hook.
         let boot_input = build_terminal_boot(
             &instance_id,
@@ -147,12 +147,12 @@ fn inject_settings_flag(cmd: &str, hooks_path: &str) -> String {
 }
 
 /// Write (idempotently) the settings file Claude loads via `--settings`.
-/// Registers the `codewit terminal-hook` lifecycle hooks (real session id for
+/// Registers the `grex terminal-hook` lifecycle hooks (real session id for
 /// resume, busy state, prompt capture) and, when the composer requested it,
 /// `fastMode` — Claude has no fast-mode flag, only this settings key, and a
 /// second `--settings` would risk clobbering the first, so both ride one
 /// file. Content is static per (agent, fastMode) pair; the session
-/// association rides the CODEWIT_TERMINAL_SESSION_ID env, not the file.
+/// association rides the GREX_TERMINAL_SESSION_ID env, not the file.
 fn ensure_agent_hooks_file(
     cli_path: &str,
     agent: &str,
@@ -183,7 +183,7 @@ fn ensure_agent_hooks_file(
 /// Surgically merge our hook into the user's global `~/.codex/hooks.json`
 /// (Codex has no per-run `--settings`). Only adds our own command to each event
 /// group, preserving any hooks the user already configured. The hook is a no-op
-/// outside Codewit terminals (it checks CODEWIT_TERMINAL_SESSION_ID), so a global
+/// outside Grex terminals (it checks GREX_TERMINAL_SESSION_ID), so a global
 /// install never interferes with the user's own codex runs.
 fn ensure_codex_hooks(cli_path: &str) -> anyhow::Result<()> {
     let home = std::env::var("HOME").map_err(|_| anyhow::anyhow!("HOME not set"))?;
@@ -308,7 +308,7 @@ fn build_terminal_boot(
         )
     };
     let prefix = format!(
-        "{path_prefix}export CODEWIT_TERMINAL_SESSION_ID={}; export CODEWIT_CLI_PATH={}; ",
+        "{path_prefix}export GREX_TERMINAL_SESSION_ID={}; export GREX_CLI_PATH={}; ",
         sh_quote(instance_id),
         sh_quote(&cli_path),
     );
@@ -361,8 +361,8 @@ pub async fn write_terminal_stdin(
     );
     let written = manager.write_stdin(&key, data.as_bytes())?;
     if written {
-        // instance_id == the codewit session id (it rides into the agent as
-        // CODEWIT_TERMINAL_SESSION_ID); see terminal::observe_stdin for why
+        // instance_id == the grex session id (it rides into the agent as
+        // GREX_TERMINAL_SESSION_ID); see terminal::observe_stdin for why
         // interrupt inference hangs off this write path.
         crate::terminal::observe_stdin(&app, &instance_id, &workspace_id, &data);
     }
@@ -413,7 +413,7 @@ pub async fn set_terminal_session_busy(
 mod tests {
     use super::*;
 
-    const CMD: &str = "/path/codewit terminal-hook --agent codex";
+    const CMD: &str = "/path/grex terminal-hook --agent codex";
 
     #[test]
     fn merge_codex_hooks_rejects_invalid_json() {
@@ -447,7 +447,7 @@ mod tests {
     fn merge_codex_hooks_replaces_stale_cli_path() {
         // A dev build wrote its worktree-absolute CLI path; a later run from
         // a different install must replace it, not keep the dead command.
-        let stale = r#"{"hooks":{"Stop":[{"hooks":[{"type":"command","command":"/old/worktree/codewit terminal-hook --agent codex"}]}]}}"#;
+        let stale = r#"{"hooks":{"Stop":[{"hooks":[{"type":"command","command":"/old/worktree/grex terminal-hook --agent codex"}]}]}}"#;
         let root = merge_codex_hooks(Some(stale), CMD).unwrap();
         let list = root["hooks"]["Stop"].as_array().unwrap();
         assert_eq!(list.len(), 1, "replaced in place, not appended");

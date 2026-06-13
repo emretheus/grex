@@ -1,5 +1,7 @@
+import { ArrowLeft } from "lucide-react";
 import { useEffect, useState, useTransition } from "react";
 import Skeleton from "react-loading-skeleton";
+import { Button } from "@/components/ui/button";
 import { InboxSidebar } from "@/features/inbox";
 import type { RepositoryCreateOption } from "@/lib/api";
 import type { ComposerInsertTarget } from "@/lib/composer-insert";
@@ -17,6 +19,10 @@ type WorkspaceStartContextSidebarProps = {
 	composerInsertTarget?: ComposerInsertTarget;
 	selectedCardId?: string | null;
 	onOpenCard?: (card: ContextCard) => void;
+	// When provided, renders a back control in the header that returns the
+	// right sidebar to the inspector (git changes/actions). Omitted on the
+	// workspace-start surface, where there is no inspector to return to.
+	onBackToInspector?: () => void;
 };
 
 export function WorkspaceStartContextSidebar({
@@ -30,6 +36,7 @@ export function WorkspaceStartContextSidebar({
 	composerInsertTarget,
 	selectedCardId,
 	onOpenCard,
+	onBackToInspector,
 }: WorkspaceStartContextSidebarProps) {
 	const [inboxMounted, setInboxMounted] = useState(false);
 	const [, startTransition] = useTransition();
@@ -50,7 +57,20 @@ export function WorkspaceStartContextSidebar({
 			className="flex h-full min-h-0 flex-col bg-sidebar"
 			style={{ contain: "layout paint style" }}
 		>
-			<div className="flex h-8 shrink-0 items-center border-border/60 border-b bg-muted/30 px-3">
+			<div className="flex h-8 shrink-0 items-center gap-1.5 border-border/60 border-b bg-muted/30 px-3">
+				{onBackToInspector ? (
+					<Button
+						type="button"
+						variant="ghost"
+						size="icon-xs"
+						onClick={onBackToInspector}
+						className="-ml-1.5 cursor-pointer text-muted-foreground hover:text-foreground"
+						title="Back to inspector"
+						aria-label="Back to inspector"
+					>
+						<ArrowLeft />
+					</Button>
+				) : null}
 				<h2 className="text-ui font-medium leading-8 tracking-[-0.01em] text-muted-foreground">
 					Contexts
 				</h2>

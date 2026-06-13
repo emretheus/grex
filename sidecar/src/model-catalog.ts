@@ -114,6 +114,21 @@ const MODEL_CATALOG: Record<Provider, readonly ProviderModelInfo[]> = {
 			cliModel: "openai/gpt-5-codex",
 		},
 	],
+	// Static seed for Gemini CLI (ACP). MUST stay in sync with Rust
+	// `gemini_section()` in agents/catalog.rs. No effort tiers / fast mode in
+	// the first cut until the ACP bridge surfaces them.
+	gemini: [
+		{
+			id: "gemini-2.5-pro",
+			label: "Gemini 2.5 Pro",
+			cliModel: "gemini-2.5-pro",
+		},
+		{
+			id: "gemini-2.5-flash",
+			label: "Gemini 2.5 Flash",
+			cliModel: "gemini-2.5-flash",
+		},
+	],
 	// Static fallback only — `CursorSessionManager.listModels` hits the live
 	// `Cursor.models.list` API for the full set with up-to-date capability
 	// metadata. This list is what shows when the API key isn't configured

@@ -3,7 +3,7 @@ import { HttpError, registerDevice, revokeDevice } from "./devices";
 import type { Env } from "./env";
 
 const UUID = "12345678-1234-1234-1234-123456789abc";
-const HOSTNAME_RE = /^remote-[a-z2-7]{8}\.codewit\.ai$/;
+const HOSTNAME_RE = /^remote-[a-z2-7]{8}\.grex\.ai$/;
 
 function fakeKv() {
 	const store = new Map<string, string>();
@@ -24,7 +24,7 @@ function makeEnv(kv: ReturnType<typeof fakeKv>): Env {
 		DEVICES: kv as unknown as KVNamespace,
 		CF_API_TOKEN: "test-token",
 		CF_ZONE_ID: "zone123",
-		ROOT_DOMAIN: "codewit.ai",
+		ROOT_DOMAIN: "grex.ai",
 		HOSTNAME_PREFIX: "remote-",
 		REGISTER_RATE_LIMIT: "10",
 	};

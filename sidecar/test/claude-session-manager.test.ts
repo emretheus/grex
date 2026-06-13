@@ -14,7 +14,7 @@ import { tmpdir } from "node:os";
 import { resolve } from "node:path";
 import { createSidecarEmitter, type SidecarEmitter } from "../src/emitter.js";
 
-process.env.CODEWIT_LOG_DIR = resolve(tmpdir(), "codewit-sidecar-test-logs");
+process.env.GREX_LOG_DIR = resolve(tmpdir(), "grex-sidecar-test-logs");
 
 async function withPlatform<T>(
 	platform: NodeJS.Platform,
@@ -233,7 +233,7 @@ describe("ClaudeSessionManager.sendMessage", () => {
 		await manager.sendMessage(
 			"REQ-1",
 			{
-				sessionId: "codewit-sess-1",
+				sessionId: "grex-sess-1",
 				prompt: "what is this code",
 				model: undefined,
 				cwd: undefined,
@@ -281,7 +281,7 @@ describe("ClaudeSessionManager.sendMessage", () => {
 		await manager.sendMessage(
 			"REQ-ctx",
 			{
-				sessionId: "codewit-sess-ctx",
+				sessionId: "grex-sess-ctx",
 				prompt: "hi",
 				model: "claude-opus-4-7[1m]",
 				cwd: undefined,
@@ -297,7 +297,7 @@ describe("ClaudeSessionManager.sendMessage", () => {
 		const ctxUsage = captured.find((e) => e.type === "contextUsageUpdated");
 		expect(ctxUsage).toBeDefined();
 		expect(ctxUsage?.id).toBe("REQ-ctx");
-		expect(ctxUsage?.sessionId).toBe("codewit-sess-ctx");
+		expect(ctxUsage?.sessionId).toBe("grex-sess-ctx");
 		const meta = JSON.parse(ctxUsage?.meta as string);
 		expect(meta).toEqual({
 			modelId: "claude-opus-4-7[1m]",
@@ -358,7 +358,7 @@ describe("ClaudeSessionManager.sendMessage", () => {
 		void manager.sendMessage(
 			"REQ-live",
 			{
-				sessionId: "codewit-live",
+				sessionId: "grex-live",
 				prompt: "hi",
 				model: undefined,
 				cwd: undefined,
@@ -380,7 +380,7 @@ describe("ClaudeSessionManager.sendMessage", () => {
 		);
 
 		const json = await manager.getContextUsage({
-			codewitSessionId: "codewit-live",
+			grexSessionId: "grex-live",
 			providerSessionId: null,
 			model: "claude-opus-4-7",
 			cwd: undefined,
@@ -402,7 +402,7 @@ describe("ClaudeSessionManager.sendMessage", () => {
 	});
 
 	test("getContextUsage slow path spawns a transient Query + returns rich meta", async () => {
-		// No live session for this codewit id — slow path kicks in. The
+		// No live session for this grex id — slow path kicks in. The
 		// mock query is reused for the transient spawn; `getContextUsage`
 		// resolves immediately so no real 30s timer ever fires.
 		mockQueryImpl = () =>
@@ -420,7 +420,7 @@ describe("ClaudeSessionManager.sendMessage", () => {
 			});
 
 		const json = await manager.getContextUsage({
-			codewitSessionId: "no-live-session",
+			grexSessionId: "no-live-session",
 			providerSessionId: "provider-xyz",
 			model: "claude-opus-4-7",
 			cwd: undefined,
@@ -466,7 +466,7 @@ describe("ClaudeSessionManager.sendMessage", () => {
 		await manager.sendMessage(
 			"REQ-err",
 			{
-				sessionId: "codewit-sess-err",
+				sessionId: "grex-sess-err",
 				prompt: "hi",
 				model: "claude-sonnet-4-5",
 				cwd: undefined,
@@ -506,7 +506,7 @@ describe("ClaudeSessionManager.sendMessage", () => {
 		await manager.sendMessage(
 			"REQ-fast-sonnet",
 			{
-				sessionId: "codewit-sess-fast-sonnet",
+				sessionId: "grex-sess-fast-sonnet",
 				prompt: "test",
 				model: "claude-sonnet-4-7",
 				cwd: undefined,
@@ -537,7 +537,7 @@ describe("ClaudeSessionManager.sendMessage", () => {
 		await manager.sendMessage(
 			`REQ-effort-${level}`,
 			{
-				sessionId: `codewit-sess-effort-${level}`,
+				sessionId: `grex-sess-effort-${level}`,
 				prompt: "test",
 				model: "default",
 				cwd: undefined,
@@ -560,7 +560,7 @@ describe("ClaudeSessionManager.sendMessage", () => {
 		await manager.sendMessage(
 			"REQ-effort-bogus",
 			{
-				sessionId: "codewit-sess-effort-bogus",
+				sessionId: "grex-sess-effort-bogus",
 				prompt: "test",
 				model: "default",
 				cwd: undefined,
@@ -583,7 +583,7 @@ describe("ClaudeSessionManager.sendMessage", () => {
 		await manager.sendMessage(
 			"REQ-mcp-blocking",
 			{
-				sessionId: "codewit-sess-mcp-blocking",
+				sessionId: "grex-sess-mcp-blocking",
 				prompt: "test",
 				model: "default",
 				cwd: undefined,
@@ -631,7 +631,7 @@ describe("ClaudeSessionManager.sendMessage", () => {
 		await manager.sendMessage(
 			"REQ-fm-off",
 			{
-				sessionId: "codewit-sess-fm",
+				sessionId: "grex-sess-fm",
 				prompt: "hi",
 				model: "default",
 				cwd: undefined,
@@ -650,7 +650,7 @@ describe("ClaudeSessionManager.sendMessage", () => {
 		expect(notice).toBeDefined();
 		expect(notice?.type).toBe("system");
 		expect(notice?.id).toBe("REQ-fm-off");
-		expect(notice?.session_id).toBe("codewit-sess-fm");
+		expect(notice?.session_id).toBe("grex-sess-fm");
 		expect(notice?.fastModeState).toBe("off");
 		expect(String(notice?.reason)).toContain("extra usage");
 	});
@@ -673,7 +673,7 @@ describe("ClaudeSessionManager.sendMessage", () => {
 		await manager.sendMessage(
 			"REQ-fm-init",
 			{
-				sessionId: "codewit-sess-fm-init",
+				sessionId: "grex-sess-fm-init",
 				prompt: "hi",
 				model: "default",
 				cwd: undefined,
@@ -712,7 +712,7 @@ describe("ClaudeSessionManager.sendMessage", () => {
 		await manager.sendMessage(
 			"REQ-fm-on",
 			{
-				sessionId: "codewit-sess-fm-on",
+				sessionId: "grex-sess-fm-on",
 				prompt: "hi",
 				model: "default",
 				cwd: undefined,
@@ -766,7 +766,7 @@ describe("ClaudeSessionManager.sendMessage", () => {
 		await manager.sendMessage(
 			"REQ-2",
 			{
-				sessionId: "codewit-sess",
+				sessionId: "grex-sess",
 				prompt: "x",
 				model: undefined,
 				cwd: undefined,
@@ -862,8 +862,8 @@ describe("ClaudeSessionManager.sendMessage", () => {
 	});
 
 	test("forwards only user-linked directories to Claude query options", async () => {
-		const userDirA = makeTempDir("codewit-claude-user-a-");
-		const userDirB = makeTempDir("codewit-claude-user-b-");
+		const userDirA = makeTempDir("grex-claude-user-a-");
+		const userDirB = makeTempDir("grex-claude-user-b-");
 
 		mockQueryImpl = () => asyncIterableFrom([{ type: "result", result: "ok" }]);
 
@@ -933,8 +933,8 @@ describe("ClaudeSessionManager.sendMessage", () => {
 	});
 
 	test("prepends the linked-directories preamble to Claude's first user message", async () => {
-		const linkedDirA = makeTempDir("codewit-claude-prompt-a-");
-		const linkedDirB = makeTempDir("codewit-claude-prompt-b-");
+		const linkedDirA = makeTempDir("grex-claude-prompt-a-");
+		const linkedDirB = makeTempDir("grex-claude-prompt-b-");
 
 		mockQueryImpl = () => asyncIterableFrom([{ type: "result", result: "ok" }]);
 
@@ -974,12 +974,12 @@ describe("ClaudeSessionManager.sendMessage", () => {
 	});
 
 	test("preserves process.env when /add-dir adds an env override", async () => {
-		const userDir = makeTempDir("codewit-claude-env-preserve-");
+		const userDir = makeTempDir("grex-claude-env-preserve-");
 		// Sentinel set in the parent (sidecar) env that the spawned
 		// claude-code child must inherit. Without ...process.env in the
 		// merge, the SDK passes only { CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD: "1" }
 		// and the child loses HOME/credentials → "Not logged in".
-		const sentinelKey = "CODEWIT_TEST_ENV_SENTINEL";
+		const sentinelKey = "GREX_TEST_ENV_SENTINEL";
 		const sentinelValue = `sentinel-${Date.now()}`;
 		const prevSentinel = process.env[sentinelKey];
 		process.env[sentinelKey] = sentinelValue;
@@ -1018,8 +1018,8 @@ describe("ClaudeSessionManager.sendMessage", () => {
 	});
 
 	test("listSlashCommands forwards additionalDirectories and env", async () => {
-		const workspaceDir = makeTempDir("codewit-claude-slash-");
-		const linkedDir = makeTempDir("codewit-claude-slash-linked-");
+		const workspaceDir = makeTempDir("grex-claude-slash-");
+		const linkedDir = makeTempDir("grex-claude-slash-linked-");
 
 		mockQueryImpl = () =>
 			makeMockQuery({
@@ -1107,7 +1107,7 @@ describe("ClaudeSessionManager.sendMessage", () => {
 		const sending = manager.sendMessage(
 			"REQ-DEFER",
 			{
-				sessionId: "codewit-sess-defer",
+				sessionId: "grex-sess-defer",
 				prompt: "x",
 				model: undefined,
 				cwd: undefined,
@@ -1233,7 +1233,7 @@ describe("ClaudeSessionManager.sendMessage", () => {
 		await manager.sendMessage(
 			"REQ-RESULT-END",
 			{
-				sessionId: "codewit-sess-result",
+				sessionId: "grex-sess-result",
 				prompt: "x",
 				model: undefined,
 				cwd: undefined,
@@ -1493,7 +1493,7 @@ describe("ClaudeSessionManager.stopSession", () => {
 
 		manager.resolveUserInput("elicitation-1", {
 			action: "submit",
-			content: { name: "Codewit" },
+			content: { name: "Grex" },
 		});
 
 		await sendPromise;
@@ -1507,7 +1507,7 @@ describe("ClaudeSessionManager.stopSession", () => {
 				content: [
 					{
 						type: "text",
-						text: '{"action":"accept","content":{"name":"Codewit"}}',
+						text: '{"action":"accept","content":{"name":"Grex"}}',
 					},
 				],
 			},
@@ -1832,7 +1832,7 @@ describe("Claude full-fixture round-trip", () => {
 			await manager.sendMessage(
 				`REQ-${fixture}`,
 				{
-					sessionId: `codewit-${fixture}`,
+					sessionId: `grex-${fixture}`,
 					prompt: "fixture replay",
 					model: undefined,
 					cwd: undefined,

@@ -113,7 +113,7 @@ fn bytes_to_rounded_gb(bytes: u64) -> u8 {
     let gb = (bytes as f64) / 1_073_741_824.0;
     // u8 ceiling (255 GB) is comfortably above any current shipping
     // Mac (Studio Ultra tops out at 512 GB but it's vanishingly rare
-    // among Codewit users; we'd promote to u16 in the same week one
+    // among Grex users; we'd promote to u16 in the same week one
     // shows up).
     gb.round().clamp(0.0, u8::MAX as f64) as u8
 }

@@ -105,7 +105,7 @@ function detectInitialTheme(): EditorTheme {
 }
 
 function themeId(theme: EditorTheme): string {
-	return theme === "dark" ? "codewit-editor-dark" : "codewit-editor-light";
+	return theme === "dark" ? "grex-editor-dark" : "grex-editor-light";
 }
 
 function resolveEditorFontFamily(): string {
@@ -275,10 +275,10 @@ export async function createDiffEditor(options: {
 	const language = resolveLanguageId(monaco, options.path);
 
 	const originalUri = monaco.Uri.file(options.path).with({
-		query: "codewit-review=original",
+		query: "grex-review=original",
 	});
 	const modifiedUri = monaco.Uri.file(options.path).with({
-		query: "codewit-review=modified",
+		query: "grex-review=modified",
 	});
 	monaco.editor.getModel(originalUri)?.dispose();
 	monaco.editor.getModel(modifiedUri)?.dispose();
@@ -457,7 +457,7 @@ function installAppearanceObserver(monaco: MonacoModule) {
 	const syncAppearance = () => {
 		scheduled = 0;
 		const nextTheme = detectInitialTheme();
-		defineCodewitThemes(monaco);
+		defineGrexThemes(monaco);
 		desiredTheme = nextTheme;
 		monaco.editor.setTheme(themeId(nextTheme));
 		updateActiveEditorFonts();
@@ -563,7 +563,7 @@ const SYNTAX_RULES_LIGHT = [
 const cssVarColor = (name: string, alphaOverride?: number) =>
 	resolveCssColor(`var(${name})`, alphaOverride);
 
-function buildCodewitTheme(isDark: boolean) {
+function buildGrexTheme(isDark: boolean) {
 	const editorBg = cssVarColor("--editor-content-bg");
 	const editorFg = cssVarColor("--editor-content-fg");
 	const lineActive = cssVarColor("--editor-line-active-bg");
@@ -649,13 +649,13 @@ function buildCodewitTheme(isDark: boolean) {
 	};
 }
 
-function defineCodewitThemes(monaco: MonacoModule) {
-	monaco.editor.defineTheme("codewit-editor-dark", buildCodewitTheme(true));
-	monaco.editor.defineTheme("codewit-editor-light", buildCodewitTheme(false));
+function defineGrexThemes(monaco: MonacoModule) {
+	monaco.editor.defineTheme("grex-editor-dark", buildGrexTheme(true));
+	monaco.editor.defineTheme("grex-editor-light", buildGrexTheme(false));
 }
 
 function installEditorTheme(monaco: MonacoModule) {
-	defineCodewitThemes(monaco);
+	defineGrexThemes(monaco);
 	monaco.editor.setTheme(themeId(desiredTheme));
 }
 

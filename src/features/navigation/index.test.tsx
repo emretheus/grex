@@ -94,7 +94,7 @@ afterEach(() => {
 });
 
 describe("WorkspacesSidebar", () => {
-	it("shows the Codewit thinking indicator when a workspace enters sending state", () => {
+	it("shows the Grex thinking indicator when a workspace enters sending state", () => {
 		const { rerender } = render(
 			<TooltipProvider delayDuration={0}>
 				<WorkspacesSidebar
@@ -108,7 +108,7 @@ describe("WorkspacesSidebar", () => {
 
 		const initialRow = screen.getByRole("button", { name: "Workspace 1" });
 		expect(
-			initialRow.querySelector('[data-slot="codewit-thinking-indicator"]'),
+			initialRow.querySelector('[data-slot="grex-thinking-indicator"]'),
 		).toBeNull();
 
 		rerender(
@@ -124,7 +124,7 @@ describe("WorkspacesSidebar", () => {
 
 		const updatedRow = screen.getByRole("button", { name: "Workspace 1" });
 		expect(
-			updatedRow.querySelector('[data-slot="codewit-thinking-indicator"]'),
+			updatedRow.querySelector('[data-slot="grex-thinking-indicator"]'),
 		).not.toBeNull();
 	});
 
@@ -202,7 +202,7 @@ describe("WorkspacesSidebar", () => {
 
 		expect(screen.queryByPlaceholderText("Search repositories")).toBeNull();
 		expect(screen.queryByText("Repositories")).toBeNull();
-		expect(screen.queryByRole("option", { name: /codewit/i })).toBeNull();
+		expect(screen.queryByRole("option", { name: /grex/i })).toBeNull();
 		expect(onOpenNewWorkspace).toHaveBeenCalledTimes(1);
 	});
 
@@ -266,7 +266,7 @@ describe("WorkspacesSidebar", () => {
 			</TooltipProvider>,
 		);
 
-		fireEvent(window, new CustomEvent("codewit:open-sidebar-filter"));
+		fireEvent(window, new CustomEvent("grex:open-sidebar-filter"));
 
 		expect(screen.getByText("Group by")).toBeInTheDocument();
 		expect(screen.getByText("Sort by")).toBeInTheDocument();
@@ -869,14 +869,14 @@ describe("WorkspacesSidebar", () => {
 		const repoGroups: WorkspaceGroup[] = [
 			{
 				id: "repo:repo-1",
-				label: "codewit",
+				label: "grex",
 				tone: "pinned",
 				rows: [
 					{
 						...workspaceRow,
 						id: "ws-1",
 						repoId: "repo-1",
-						repoName: "codewit",
+						repoName: "grex",
 					},
 				],
 			},
@@ -898,7 +898,7 @@ describe("WorkspacesSidebar", () => {
 			);
 
 			const addButton = screen.getByRole("button", {
-				name: "New workspace in codewit",
+				name: "New workspace in grex",
 			});
 			await user.click(addButton);
 
@@ -922,7 +922,7 @@ describe("WorkspacesSidebar", () => {
 			// `+` button can nest inside it. The header itself shouldn't
 			// surface the rows.length badge.
 			const header = screen
-				.getAllByRole("button", { name: /codewit/i })
+				.getAllByRole("button", { name: /grex/i })
 				.find((el) => el.tagName === "DIV");
 			expect(header).toBeDefined();
 			// Row count badge is `1` for this group — assert it's NOT
@@ -949,7 +949,7 @@ describe("WorkspacesSidebar", () => {
 			expect(screen.getByLabelText("Workspace 1")).toBeInTheDocument();
 
 			await user.click(
-				screen.getByRole("button", { name: "New workspace in codewit" }),
+				screen.getByRole("button", { name: "New workspace in grex" }),
 			);
 
 			// Row STILL visible — click on `+` did not toggle the section
@@ -975,7 +975,7 @@ describe("WorkspacesSidebar", () => {
 			expect(screen.getByLabelText("Workspace 1")).toBeInTheDocument();
 
 			const header = screen
-				.getAllByRole("button", { name: /codewit/i })
+				.getAllByRole("button", { name: /grex/i })
 				.find((el) => el.tagName === "DIV");
 			expect(header).toBeDefined();
 			await user.click(header as HTMLElement);

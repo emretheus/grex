@@ -226,7 +226,7 @@ export function createStreamEventDispatcher(
 				// `event.sessionId` is the *provider* session id (claude/codex
 				// resume token) — only non-null from the second turn onward,
 				// after the SDK has assigned a thread. Read-state tracking
-				// keys off the codewit session id, so feeding the provider id
+				// keys off the grex session id, so feeding the provider id
 				// here would address a row that doesn't exist and
 				// `mark_session_*` would silently no-op (drops the unread dot
 				// on every follow-up turn).

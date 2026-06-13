@@ -3,7 +3,7 @@ import { AnimatePresence, LayoutGroup, motion } from "motion/react";
 import type React from "react";
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 import conductorLogoSrc from "@/assets/conductor.webp";
-import codewitLogoSrc from "@/assets/codewit-logo.png";
+import grexLogoSrc from "@/assets/grex-logo.png";
 import { type ConductorWorkspace, importConductorWorkspaces } from "@/lib/api";
 import { Button } from "./ui/button";
 import { NumberTicker } from "./ui/number-ticker";
@@ -319,7 +319,7 @@ type WorkspaceRowProps = {
 	workspace: ConductorWorkspace;
 	index: number;
 	phase: Phase;
-	forCodewit?: boolean;
+	forGrex?: boolean;
 	setLeftRef?: (id: string, el: BeamAnchorElement | null) => void;
 	setRightRef?: (id: string, el: BeamAnchorElement | null) => void;
 };
@@ -328,14 +328,14 @@ function WorkspaceRow({
 	workspace,
 	index,
 	phase,
-	forCodewit = false,
+	forGrex = false,
 	setLeftRef,
 	setRightRef,
 }: WorkspaceRowProps) {
 	const label = humanize(workspace.directoryName);
 	const initials = label.slice(0, 2).toUpperCase();
-	const transferring = phase === "importing" && !forCodewit;
-	const shouldAnimateEntrance = forCodewit;
+	const transferring = phase === "importing" && !forGrex;
+	const shouldAnimateEntrance = forGrex;
 
 	return (
 		<motion.div
@@ -395,7 +395,7 @@ function WorkspaceRow({
 					)}
 				</div>
 			</div>
-			{forCodewit && (
+			{forGrex && (
 				<Check
 					className="size-3.5 shrink-0"
 					strokeWidth={2.5}
@@ -435,7 +435,7 @@ export function ConductorOnboarding({
 
 	const containerRef = useRef<HTMLDivElement>(null);
 	const conductorAnchorRef = useRef<BeamAnchorElement>(null);
-	const codewitAnchorRef = useRef<BeamAnchorElement>(null);
+	const grexAnchorRef = useRef<BeamAnchorElement>(null);
 	const leftWorkspaceRefs = useRef<Map<string, BeamAnchorElement>>(new Map());
 	const rightWorkspaceRefs = useRef<Map<string, BeamAnchorElement>>(new Map());
 
@@ -489,7 +489,7 @@ export function ConductorOnboarding({
 
 	// Transfer animation finishes around 1.1s (rows stagger at index*0.09 +
 	// 0.75s duration). After that the source columns are visually gone, so
-	// unmount them to free up the flex layout — Codewit can then slide to
+	// unmount them to free up the flex layout — Grex can then slide to
 	// center while the backend import is still in flight, instead of hanging
 	// on the right until the import resolves.
 	const [transferSettled, setTransferSettled] = useState(false);
@@ -571,7 +571,7 @@ export function ConductorOnboarding({
 							>
 								<MultiBeam
 									workspaceRefs={rightWorkspaceRefs}
-									logoRef={codewitAnchorRef}
+									logoRef={grexAnchorRef}
 									containerRef={containerRef}
 									active={!beamTransferring}
 									transferring={beamTransferring}
@@ -677,7 +677,7 @@ export function ConductorOnboarding({
 						)}
 					</AnimatePresence>
 
-					{/* RIGHT: Codewit — layout-animated to center when the aux columns exit */}
+					{/* RIGHT: Grex — layout-animated to center when the aux columns exit */}
 					<motion.div
 						layout
 						transition={{ layout: { duration: 1.0, ease: [0, 0, 0.2, 1] } }}
@@ -697,7 +697,7 @@ export function ConductorOnboarding({
 							<div className="relative inline-flex items-center justify-center">
 								<span
 									aria-hidden="true"
-									ref={codewitAnchorRef}
+									ref={grexAnchorRef}
 									className="pointer-events-none absolute -left-1 top-1/2 size-px -translate-x-1/2 -translate-y-1/2"
 								/>
 								<motion.div
@@ -705,8 +705,8 @@ export function ConductorOnboarding({
 									transition={{ duration: 0.7, ease: [0, 0, 0.2, 1] }}
 								>
 									<img
-										src={codewitLogoSrc}
-										alt="Codewit"
+										src={grexLogoSrc}
+										alt="Grex"
 										className="shrink-0 rounded-[11px]"
 										style={{ width: LOGO_SIZE - 10, height: LOGO_SIZE - 10 }}
 										draggable={false}
@@ -772,7 +772,7 @@ export function ConductorOnboarding({
 												workspace={ws}
 												index={i}
 												phase={phase}
-												forCodewit
+												forGrex
 											/>
 										))}
 										{overflow > 0 && (
@@ -790,7 +790,7 @@ export function ConductorOnboarding({
 									>
 										<div>
 											<p className="text-base font-semibold text-foreground">
-												Welcome to Codewit
+												Welcome to Grex
 											</p>
 											<p className="mt-0.5 text-body text-muted-foreground">
 												{importedCount}{" "}

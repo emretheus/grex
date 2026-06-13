@@ -267,7 +267,7 @@ describe("settings", () => {
 	});
 
 	it("preloads terminal font from localStorage", () => {
-		window.localStorage.setItem("codewit-terminal-font-family", "Berkeley Mono");
+		window.localStorage.setItem("grex-terminal-font-family", "Berkeley Mono");
 
 		const settings = getPreloadedSettings();
 
@@ -275,10 +275,7 @@ describe("settings", () => {
 	});
 
 	it("hydrates and saves terminal font from localStorage", async () => {
-		window.localStorage.setItem(
-			"codewit-terminal-font-family",
-			"JetBrains Mono",
-		);
+		window.localStorage.setItem("grex-terminal-font-family", "JetBrains Mono");
 		invokeMock.mockResolvedValue({});
 
 		const settings = await loadSettings();
@@ -286,14 +283,12 @@ describe("settings", () => {
 		expect(settings.terminalFontFamily).toBe("JetBrains Mono");
 
 		await saveSettings({ terminalFontFamily: "Berkeley Mono" });
-		expect(window.localStorage.getItem("codewit-terminal-font-family")).toBe(
+		expect(window.localStorage.getItem("grex-terminal-font-family")).toBe(
 			"Berkeley Mono",
 		);
 
 		await saveSettings({ terminalFontFamily: null });
-		expect(
-			window.localStorage.getItem("codewit-terminal-font-family"),
-		).toBeNull();
+		expect(window.localStorage.getItem("grex-terminal-font-family")).toBeNull();
 	});
 
 	it("hydrates and saves the last app surface", async () => {

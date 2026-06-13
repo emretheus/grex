@@ -55,12 +55,12 @@ jobs:
       - name: Verify release config
         run: |
           bun run release:verify
-          test -n "${CODEWIT_UPDATER_PUBKEY}"
-          test -n "${CODEWIT_UPDATER_ENDPOINTS}"
+          test -n "${GREX_UPDATER_PUBKEY}"
+          test -n "${GREX_UPDATER_ENDPOINTS}"
           test -n "${TAURI_SIGNING_PRIVATE_KEY}"
         env:
-          CODEWIT_UPDATER_PUBKEY: ${{ secrets.CODEWIT_UPDATER_PUBKEY }}
-          CODEWIT_UPDATER_ENDPOINTS: ${{ secrets.CODEWIT_UPDATER_ENDPOINTS }}
+          GREX_UPDATER_PUBKEY: ${{ secrets.GREX_UPDATER_PUBKEY }}
+          GREX_UPDATER_ENDPOINTS: ${{ secrets.GREX_UPDATER_ENDPOINTS }}
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
 
       - name: Read version
@@ -180,11 +180,11 @@ jobs:
           APPLE_CERTIFICATE_PASSWORD: ${{ secrets.CSC_KEY_PASSWORD }}
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
-          CODEWIT_UPDATER_PUBKEY: ${{ secrets.CODEWIT_UPDATER_PUBKEY }}
-          CODEWIT_UPDATER_ENDPOINTS: ${{ secrets.CODEWIT_UPDATER_ENDPOINTS }}
+          GREX_UPDATER_PUBKEY: ${{ secrets.GREX_UPDATER_PUBKEY }}
+          GREX_UPDATER_ENDPOINTS: ${{ secrets.GREX_UPDATER_ENDPOINTS }}
         with:
           tagName: v__VERSION__
-          releaseName: Codewit v__VERSION__
+          releaseName: Grex v__VERSION__
           releaseBody: ${{ needs.preflight.outputs.release_body }}
           releaseDraft: ${{ needs.preflight.outputs.draft == 'true' }}
           prerelease: false
@@ -197,7 +197,7 @@ jobs:
         shell: bash
         run: |
           bash scripts/verify-bundled-cli.sh \
-            "src-tauri/target/${{ matrix.target-triple }}/release/bundle/macos/Codewit.app"
+            "src-tauri/target/${{ matrix.target-triple }}/release/bundle/macos/Grex.app"
 
       - name: Cleanup macOS signing keychain
         if: always()
@@ -246,8 +246,8 @@ jobs:
           target-triple: x86_64-pc-windows-msvc
 
       # tauri-action's beforeBuildCommand runs prepare-sidecar.mjs, which
-      # stages the win32 vendor tree, builds the bun sidecar + codewit-cli,
-      # then bundles. NSIS only; WiX/MSI is not part of what Codewit ships.
+      # stages the win32 vendor tree, builds the bun sidecar + grex-cli,
+      # then bundles. NSIS only; WiX/MSI is not part of what Grex ships.
       - name: Build and publish Windows NSIS
         id: tauri
         uses: tauri-apps/tauri-action@v0.6
@@ -255,11 +255,11 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
-          CODEWIT_UPDATER_PUBKEY: ${{ secrets.CODEWIT_UPDATER_PUBKEY }}
-          CODEWIT_UPDATER_ENDPOINTS: ${{ secrets.CODEWIT_UPDATER_ENDPOINTS }}
+          GREX_UPDATER_PUBKEY: ${{ secrets.GREX_UPDATER_PUBKEY }}
+          GREX_UPDATER_ENDPOINTS: ${{ secrets.GREX_UPDATER_ENDPOINTS }}
         with:
           tagName: v__VERSION__
-          releaseName: Codewit v__VERSION__
+          releaseName: Grex v__VERSION__
           releaseBody: ${{ needs.preflight.outputs.release_body }}
           releaseDraft: ${{ needs.preflight.outputs.draft == 'true' }}
           prerelease: false
@@ -274,16 +274,16 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 2
     steps:
-      - name: Revalidate codewit.ai
+      - name: Revalidate grex.ai
         env:
-          SECRET: ${{ secrets.CODEWIT_MARKETING_REVALIDATE_SECRET }}
+          SECRET: ${{ secrets.GREX_MARKETING_REVALIDATE_SECRET }}
         run: |
           if [ -z "${SECRET}" ]; then
-            echo "CODEWIT_MARKETING_REVALIDATE_SECRET not set; skipping"
+            echo "GREX_MARKETING_REVALIDATE_SECRET not set; skipping"
             exit 0
           fi
           curl --fail --silent --show-error \
             --retry 3 --retry-delay 10 --retry-connrefused \
-            -X POST "https://codewit.ai/api/revalidate" \
+            -X POST "https://grex.ai/api/revalidate" \
             -H "x-revalidate-secret: ${SECRET}" \
             -H "content-type: application/json"

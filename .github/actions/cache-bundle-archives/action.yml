@@ -2,7 +2,7 @@ name: Cache Bundle Archives
 description: >-
   Restore/save stage-vendor's downloaded vendor archives (gh, glab, cloudflared,
   llama-cpp, node, and any cross-arch claude/codex/opencode tarballs) so CI jobs
-  don't re-download them on every run. Points CODEWIT_BUNDLE_CACHE at a stable
+  don't re-download them on every run. Points GREX_BUNDLE_CACHE at a stable
   per-workspace path and caches it via actions/cache, keyed on the version pins.
 
 inputs:
@@ -19,9 +19,9 @@ runs:
     # Redirect stage-vendor's archive cache to a stable, cacheable path. Set via
     # $GITHUB_ENV so the later staging step (build-sidecar / tauri-action) reads
     # it. Extraction scratch still goes to the per-job sidecar/.bundle-cache.
-    - name: Point CODEWIT_BUNDLE_CACHE at a stable path
+    - name: Point GREX_BUNDLE_CACHE at a stable path
       shell: bash
-      run: echo "CODEWIT_BUNDLE_CACHE=${{ github.workspace }}/.ci-bundle-cache" >> "$GITHUB_ENV"
+      run: echo "GREX_BUNDLE_CACHE=${{ github.workspace }}/.ci-bundle-cache" >> "$GITHUB_ENV"
 
     - name: Cache vendor download archives
       uses: actions/cache@v4

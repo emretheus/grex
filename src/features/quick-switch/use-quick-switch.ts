@@ -196,7 +196,7 @@ export function useQuickSwitch({
 		};
 
 		// Window blur: user Cmd+Tab'd away. Cancel rather than commit so
-		// returning to Codewit doesn't surprise-switch the workspace.
+		// returning to Grex doesn't surprise-switch the workspace.
 		const onBlur = () => cancel();
 
 		window.addEventListener("keydown", onKeyDown, true);

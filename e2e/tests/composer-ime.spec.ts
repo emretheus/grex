@@ -5,7 +5,7 @@ test.describe("composer IME regressions", () => {
 		page,
 	}) => {
 		await page.addInitScript(() => {
-			window.__CODEWIT_E2E__ = {
+			window.__GREX_E2E__ = {
 				invokeOverrides: {
 					get_app_settings: () => ({ "app.onboarding_completed": "true" }),
 					list_agent_model_sections: () => [
@@ -34,7 +34,7 @@ test.describe("composer IME regressions", () => {
 									id: "workspace-ime",
 									title: "IME workspace",
 									directoryName: "ime-workspace",
-									repoName: "codewit",
+									repoName: "grex",
 									state: "ready",
 									hasUnread: false,
 									workspaceUnread: 0,
@@ -58,11 +58,11 @@ test.describe("composer IME regressions", () => {
 						id: "workspace-ime",
 						title: "IME workspace",
 						repoId: "repo-ime",
-						repoName: "codewit",
+						repoName: "grex",
 						repoIconSrc: null,
 						repoInitials: "H",
 						remote: "origin",
-						remoteUrl: "git@github.com:example/codewit.git",
+						remoteUrl: "git@github.com:example/grex.git",
 						defaultBranch: "main",
 						rootPath: "/tmp/ime-workspace",
 						directoryName: "ime-workspace",
@@ -224,13 +224,13 @@ test.describe("composer IME regressions", () => {
 		expect(timeline).toEqual([
 			{
 				label: "after-ascii-commit",
-				text: "codewit",
+				text: "grex",
 				anchorNode: "#text",
 				anchorOffset: 6,
 			},
 			{
 				label: "after-noop-update",
-				text: "codewit",
+				text: "grex",
 				anchorNode: "#text",
 				anchorOffset: 6,
 			},
@@ -241,7 +241,7 @@ test.describe("composer IME regressions", () => {
 		page,
 	}) => {
 		await page.addInitScript(() => {
-			window.__CODEWIT_E2E__ = {
+			window.__GREX_E2E__ = {
 				invokeOverrides: {
 					get_app_settings: () => ({ "app.onboarding_completed": "true" }),
 					list_agent_model_sections: () => [
@@ -270,7 +270,7 @@ test.describe("composer IME regressions", () => {
 									id: "workspace-ime",
 									title: "IME workspace",
 									directoryName: "ime-workspace",
-									repoName: "codewit",
+									repoName: "grex",
 									state: "ready",
 									hasUnread: false,
 									workspaceUnread: 0,
@@ -294,11 +294,11 @@ test.describe("composer IME regressions", () => {
 						id: "workspace-ime",
 						title: "IME workspace",
 						repoId: "repo-ime",
-						repoName: "codewit",
+						repoName: "grex",
 						repoIconSrc: null,
 						repoInitials: "H",
 						remote: "origin",
-						remoteUrl: "git@github.com:example/codewit.git",
+						remoteUrl: "git@github.com:example/grex.git",
 						defaultBranch: "main",
 						rootPath: "/tmp/ime-workspace",
 						directoryName: "ime-workspace",

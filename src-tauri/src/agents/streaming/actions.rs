@@ -118,7 +118,7 @@ pub(super) struct ApplyContext<'a> {
     /// the mobile companion). The hot path is gated on a single atomic load,
     /// so this costs nothing when nobody is watching.
     pub hub: &'a super::stream_hub::SessionStreamHub,
-    /// Codewit session id this stream belongs to; `None` ⇒ no fan-out target.
+    /// Grex session id this stream belongs to; `None` ⇒ no fan-out target.
     pub session_id: Option<&'a str>,
 }
 

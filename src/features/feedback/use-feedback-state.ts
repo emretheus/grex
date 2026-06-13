@@ -1,12 +1,12 @@
 import { useReducer } from "react";
 
-import type { ExistingCodewitRepo } from "@/lib/api";
+import type { ExistingGrexRepo } from "@/lib/api";
 
 /**
  * Feedback dialog state machine. Three meaningful steps:
  *
  *   input  → user types feedback + chooses Create issue / Quick fix
- *   clone  → fork + pick a folder + clone (skipped when a local codewit
+ *   clone  → fork + pick a folder + clone (skipped when a local grex
  *            repo already exists)
  *   prompt → refine the prompt; Send to agent invokes
  *            `onSubmitPrompt(repoId, prompt)` which lives outside this
@@ -31,7 +31,7 @@ export type FeedbackStep =
 			kind: "prompt";
 			input: string;
 			draftPrompt: string;
-			existing: ExistingCodewitRepo | null;
+			existing: ExistingGrexRepo | null;
 			repoId: string | null;
 	  };
 
@@ -39,7 +39,7 @@ export type FeedbackAction =
 	| { type: "set-input"; input: string }
 	| {
 			type: "start-quick-fix";
-			existing: ExistingCodewitRepo | null;
+			existing: ExistingGrexRepo | null;
 	  }
 	| { type: "clone-phase"; phase: "forking" | "picking" | "cloning" | "idle" }
 	| { type: "clone-fork-succeeded"; cloneUrl: string }

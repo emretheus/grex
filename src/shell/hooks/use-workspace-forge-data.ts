@@ -3,7 +3,7 @@ import { useMemo } from "react";
 import { useRefreshForgeOnWorkspaceSwitch } from "@/features/inspector/hooks/use-refresh-forge-on-switch";
 import type { WorkspaceDetail } from "@/lib/api";
 import {
-	codewitQueryKeys,
+	grexQueryKeys,
 	workspaceChangeRequestQueryOptions,
 	workspaceDetailQueryOptions,
 	workspaceForgeActionStatusQueryOptions,
@@ -38,7 +38,7 @@ export function useWorkspaceForgeData({
 		selectedWorkspaceDetailQuery.data ??
 		(selectedWorkspaceId
 			? queryClient.getQueryData<WorkspaceDetail | null>(
-					codewitQueryKeys.workspaceDetail(selectedWorkspaceId),
+					grexQueryKeys.workspaceDetail(selectedWorkspaceId),
 				)
 			: null) ??
 		null;

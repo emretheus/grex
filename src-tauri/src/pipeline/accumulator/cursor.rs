@@ -583,7 +583,7 @@ fn translate_cursor_tool(tool: &CursorToolCall) -> (String, Value) {
             //           the `tool_call_end` event.
             //
             // We pass the args through unchanged but rename the tool to
-            // `cursor_task` — a Codewit-internal namespace so the frontend
+            // `cursor_task` — a Grex-internal namespace so the frontend
             // dispatcher (`assistant-message.tsx`) can route it to the
             // dedicated `<CursorSubagentToolCall>` renderer without
             // colliding with claude's `Task`/`Agent` (TitleCase, different
@@ -900,7 +900,7 @@ mod tests {
     #[test]
     fn task_translates_to_cursor_task_with_args_passthrough() {
         // Cursor's subagent-invocation tool surfaces as `task` (lowercase).
-        // We rename it to `cursor_task` (Codewit-internal namespace) and
+        // We rename it to `cursor_task` (Grex-internal namespace) and
         // pass the args through unchanged; the dedicated frontend
         // `<CursorSubagentToolCall>` renderer reads agentId/subagentType/
         // description/prompt/model/mode + result.

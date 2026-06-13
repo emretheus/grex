@@ -8,7 +8,7 @@
  *
  * When the page is served by the mobile **companion** HTTP server, the same
  * frontend runs in a plain browser with no Tauri runtime. The companion server
- * injects `window.__CODEWIT_COMPANION__` into the served `index.html` before the
+ * injects `window.__GREX_COMPANION__` into the served `index.html` before the
  * app bundle loads; that marker flips these primitives onto HTTP/SSE against
  * the companion server (`/rpc/{cmd}`, `/rpc-stream/{cmd}`, `/v1/stream`).
  *
@@ -49,17 +49,17 @@ interface CompanionGlobal {
 	token?: string | null;
 }
 
-const TOKEN_KEY = "codewit.companion.pat";
+const TOKEN_KEY = "grex.companion.pat";
 // Staged (scanned-but-not-yet-confirmed) pairing token. Kept in sessionStorage,
 // not localStorage, so it survives the confirm-screen reload but never becomes
 // the active credential until the user explicitly confirms — and is dropped
 // when the tab closes.
-const PENDING_KEY = "codewit.companion.pending";
+const PENDING_KEY = "grex.companion.pending";
 
 function companionConfig(): CompanionGlobal | null {
 	if (typeof window === "undefined") return null;
-	const w = window as Window & { __CODEWIT_COMPANION__?: CompanionGlobal };
-	return w.__CODEWIT_COMPANION__ ?? null;
+	const w = window as Window & { __GREX_COMPANION__?: CompanionGlobal };
+	return w.__GREX_COMPANION__ ?? null;
 }
 
 /** True only when this page is served by the companion server in a browser. */
@@ -115,7 +115,7 @@ if (COMPANION && typeof window !== "undefined") {
  *
  * Forward-looking — the eventual native shell:
  *   This `#pair=<token>` URL is also the intended deep-link contract for a future
- *   native (React Native) Codewit app whose main content area is a single WebView.
+ *   native (React Native) Grex app whose main content area is a single WebView.
  *   The plan: scanning a code opens that app directly; the app hands the
  *   `#pair=` URL to its WebView, which pairs through exactly this code path. In
  *   a WebView there's only one storage context (no Safari-vs-standalone split),
@@ -191,7 +191,7 @@ function syncCompanionCookie(): void {
 	if (!token) return;
 	try {
 		// biome-ignore lint/suspicious/noDocumentCookie: Cookie Store API is unsupported in Safari (iPhone); document.cookie is the cross-browser path.
-		document.cookie = `codewit_companion_pat=${token}; path=/; SameSite=Strict`;
+		document.cookie = `grex_companion_pat=${token}; path=/; SameSite=Strict`;
 	} catch {
 		// Cookies unavailable (rare embedded contexts) — `<img>` assets just
 		// won't load; everything else still works via the localStorage token.

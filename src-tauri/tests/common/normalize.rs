@@ -4,7 +4,7 @@
 //! exact text content. Strips IDs/timestamps, lowercases the role enum,
 //! truncates long strings, and reports tool args as sorted key sets.
 
-use codewit_lib::pipeline::types::{
+use grex_lib::pipeline::types::{
     ExtendedMessagePart, ImageSource, MessagePart, MessageRole, StreamingStatus, ThreadMessageLike,
 };
 use serde::Serialize;

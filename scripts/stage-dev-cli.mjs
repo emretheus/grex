@@ -3,15 +3,15 @@
  * Dev-only CLI staging.
  *
  * `tauri dev`'s `beforeDevCommand` is just Vite — unlike `tauri build` it never
- * runs `prepare-sidecar.mjs`, so nothing stages the companion `codewit-cli`.
+ * runs `prepare-sidecar.mjs`, so nothing stages the companion `grex-cli`.
  * Without this step `build.rs`'s `externalBin` placeholder (`#!/bin/sh; exit 0`)
- * is what Tauri copies to `target/debug/codewit-cli`: the dev CLI then runs,
- * prints nothing, and any agent told to drive `codewit` from the terminal
- * silently gets no output (e.g. `codewit workspace stack` can't run at all).
+ * is what Tauri copies to `target/debug/grex-cli`: the dev CLI then runs,
+ * prints nothing, and any agent told to drive `grex` from the terminal
+ * silently gets no output (e.g. `grex workspace stack` can't run at all).
  *
- * This builds the debug `codewit-cli` and stages it as the target-suffixed
+ * This builds the debug `grex-cli` and stages it as the target-suffixed
  * external bin Tauri ingests, so the dev build lands a REAL CLI at
- * `target/debug/codewit-cli`. Combined with the app's startup symlink self-heal,
+ * `target/debug/grex-cli`. Combined with the app's startup symlink self-heal,
  * a plain `bun run dev` restart fixes the dev CLI instead of a manual rebuild.
  */
 import { execFileSync, execSync } from "node:child_process";
@@ -47,7 +47,7 @@ const artifacts = resolveBundleArtifacts({
 // it must not survive as the "built" CLI.
 rmSync(artifacts.cliSource, { force: true });
 
-console.log("[stage-dev-cli] building debug codewit-cli…");
+console.log("[stage-dev-cli] building debug grex-cli…");
 execFileSync(
 	"cargo",
 	[
@@ -55,7 +55,7 @@ execFileSync(
 		"--manifest-path",
 		resolve(srcTauriDir, "Cargo.toml"),
 		"--bin",
-		"codewit-cli",
+		"grex-cli",
 	],
 	{ stdio: "inherit" },
 );

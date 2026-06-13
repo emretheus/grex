@@ -19,10 +19,10 @@ for var_name in "${required_vars[@]}"; do
   fi
 done
 
-KEYCHAIN_NAME="${KEYCHAIN_NAME:-codewit-release.keychain-db}"
+KEYCHAIN_NAME="${KEYCHAIN_NAME:-grex-release.keychain-db}"
 KEYCHAIN_PASSWORD="${KEYCHAIN_PASSWORD:-$(uuidgen)}"
 KEYCHAIN_PATH="${HOME}/Library/Keychains/${KEYCHAIN_NAME}"
-CERT_PATH="$(mktemp -t codewit-cert).p12"
+CERT_PATH="$(mktemp -t grex-cert).p12"
 OUTPUT_FORMAT="${OUTPUT_FORMAT:-shell}"
 
 cleanup() {

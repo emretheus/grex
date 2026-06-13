@@ -1,6 +1,6 @@
-//! Cross-platform local IPC socket for Codewit's single-instance UI-sync channel.
+//! Cross-platform local IPC socket for Grex's single-instance UI-sync channel.
 //!
-//! A running Codewit instance binds an `AF_UNIX` stream socket under the app's
+//! A running Grex instance binds an `AF_UNIX` stream socket under the app's
 //! run directory; a second invocation (e.g. opening a deep link) connects to it
 //! to hand off the event instead of starting a duplicate window. `AF_UNIX` is
 //! native on Unix and on Windows 10 1803+ (exposed here via `uds_windows`), so

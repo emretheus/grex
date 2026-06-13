@@ -1,6 +1,6 @@
 //! Terminal-side helpers for the gh / glab auth-login flow:
 //!   - [`forge_cli_auth_command`] — produces the shell command we hand
-//!     off to the embedded Codewit terminal session.
+//!     off to the embedded Grex terminal session.
 //!   - [`labels_for`] — provider-name / cli-name / connect-action
 //!     copy used by [`crate::forge::types::ForgeDetection`].
 //!
@@ -49,7 +49,7 @@ fn bundled_program_token(program: &str) -> Result<String> {
     if cfg!(debug_assertions) {
         return Ok(program.to_string());
     }
-    bail!("Bundled `{program}` is missing; reinstall Codewit to recover")
+    bail!("Bundled `{program}` is missing; reinstall Grex to recover")
 }
 
 /// `'foo'\''bar'`-style single quoting safe for /bin/sh.
@@ -91,8 +91,8 @@ mod tests {
     fn shell_single_quote_handles_embedded_single_quotes() {
         assert_eq!(shell_single_quote("/usr/bin/gh"), "'/usr/bin/gh'");
         assert_eq!(
-            shell_single_quote("/Apps/Tom's Stuff/Codewit.app/Contents/Resources/vendor/gh/gh"),
-            "'/Apps/Tom'\\''s Stuff/Codewit.app/Contents/Resources/vendor/gh/gh'"
+            shell_single_quote("/Apps/Tom's Stuff/Grex.app/Contents/Resources/vendor/gh/gh"),
+            "'/Apps/Tom'\\''s Stuff/Grex.app/Contents/Resources/vendor/gh/gh'"
         );
         assert_eq!(shell_single_quote("a'b'c"), "'a'\\''b'\\''c'");
     }

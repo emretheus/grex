@@ -1,7 +1,7 @@
 import { ArrowRight } from "lucide-react";
-import codewitLogoSrc from "@/assets/codewit-logo-light.png";
+import grexLogoSrc from "@/assets/grex-logo-light.png";
 import { Button } from "@/components/ui/button";
-import { CodewitOnboardingMockup } from "../mockup";
+import { GrexOnboardingMockup } from "../mockup";
 import type { OnboardingStep } from "../types";
 
 export function IntroPreview({
@@ -24,17 +24,17 @@ export function IntroPreview({
 				className={`flex min-w-0 flex-col items-start transition-transform duration-1000 ease-[cubic-bezier(.22,.82,.2,1)] ${step !== "intro" ? "pointer-events-none -translate-x-[58vw]" : "translate-x-0"}`}
 			>
 				<img
-					src={codewitLogoSrc}
-					alt="Codewit"
+					src={grexLogoSrc}
+					alt="Grex"
 					draggable={false}
 					className="size-14 rounded-[10px] opacity-95"
 				/>
 				<h1 className="mt-7 text-[2.625rem] font-semibold leading-[1.1] tracking-normal text-foreground max-lg:text-3xl">
-					Hi, Codewit!
+					Hi, Grex!
 				</h1>
 				<p className="mt-6 max-w-md text-base font-medium leading-7 text-muted-foreground">
-					AI generates the code. Codewit is where you orchestrate, review, and
-					ship it.
+					AI generates the code. Grex is where you orchestrate, review, and ship
+					it.
 				</p>
 
 				<Button
@@ -49,7 +49,7 @@ export function IntroPreview({
 			</section>
 
 			<section
-				aria-label="Codewit preview"
+				aria-label="Grex preview"
 				className={`relative flex min-h-[560px] min-w-0 items-center justify-center transition-transform duration-1000 ease-[cubic-bezier(.22,.82,.2,1)] max-lg:hidden ${
 					step === "skills"
 						? "translate-x-[28vw] translate-y-0"
@@ -93,7 +93,7 @@ export function IntroPreview({
 													: "scale-100"
 					}`}
 				>
-					<CodewitOnboardingMockup
+					<GrexOnboardingMockup
 						interactive={step !== "intro"}
 						providerSpotlight={step === "agents"}
 						gitHeaderSpotlight={step === "corner"}

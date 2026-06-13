@@ -1,4 +1,4 @@
-//! `codewit conductor` — migrate from Codewit v1 (Conductor).
+//! `grex conductor` — migrate from Grex v1 (Conductor).
 
 use anyhow::Result;
 

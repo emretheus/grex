@@ -2,9 +2,9 @@
  * Project-scope MCP server discovery for Claude.
  *
  * Claude Agent SDK looks up project-scope MCP servers in
- * `~/.claude.json` keyed by `cwd`. Codewit sessions run in the workspace
+ * `~/.claude.json` keyed by `cwd`. Grex sessions run in the workspace
  * worktree (never matches the user's registered project path), so the
- * SDK only surfaces user-scope MCPs by default. Codewit passes the
+ * SDK only surfaces user-scope MCPs by default. Grex passes the
  * source repo `root_path` separately and we pull `projects[<root>]
  * .mcpServers` here, then inject via `options.mcpServers`.
  *

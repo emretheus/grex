@@ -10,7 +10,7 @@ control_events:
     provider: claude
     resolvedModel: test-model
     sessionId: provider-session-1
-    workingDirectory: /tmp/codewit
+    workingDirectory: /tmp/grex
 final_messages:
   - role: assistant
     id: msg-1

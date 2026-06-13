@@ -26,7 +26,7 @@ import { listSessionDrafts, setSessionDraft } from "@/lib/api";
  * mount uses a `session:` key.
  */
 
-const STORAGE_PREFIX = "codewit:composer-draft:";
+const STORAGE_PREFIX = "grex:composer-draft:";
 
 /** Public — used by tests that want to address the legacy localStorage
  * key (still produced for backwards compat during the transition). */
@@ -47,7 +47,7 @@ function notifySubscribers(): void {
 		try {
 			fn();
 		} catch (error) {
-			console.error("[codewit] draft subscriber threw", error);
+			console.error("[grex] draft subscriber threw", error);
 		}
 	}
 }
@@ -80,7 +80,7 @@ export function hydrateDraftCache(): Promise<void> {
 			}
 			await migrateLegacyLocalStorageDrafts();
 		} catch (error) {
-			console.error("[codewit] composer draft hydration failed", error);
+			console.error("[grex] composer draft hydration failed", error);
 		} finally {
 			hydrationDone = true;
 			notifySubscribers();
@@ -173,7 +173,7 @@ async function flushWrite(
 			}
 		} catch (error) {
 			console.error(
-				`[codewit] composer draft localStorage fallback failed for "${contextKey}"`,
+				`[grex] composer draft localStorage fallback failed for "${contextKey}"`,
 				error,
 			);
 		}
@@ -186,7 +186,7 @@ async function flushWrite(
 		);
 	} catch (error) {
 		console.error(
-			`[codewit] composer draft DB write failed for ${contextKey}`,
+			`[grex] composer draft DB write failed for ${contextKey}`,
 			error,
 		);
 	}
@@ -208,7 +208,7 @@ function parseEditorState(raw: string): SerializedEditorState | null {
 	}
 }
 
-/** Move any leftover `codewit:composer-draft:session:*` keys from
+/** Move any leftover `grex:composer-draft:session:*` keys from
  * localStorage into the DB. Runs once per app session — idempotent
  * (DB write would no-op on re-run since localStorage was cleared). */
 async function migrateLegacyLocalStorageDrafts(): Promise<void> {
@@ -239,7 +239,7 @@ async function migrateLegacyLocalStorageDrafts(): Promise<void> {
 					await setSessionDraft(sessionId, raw);
 				} catch (error) {
 					console.error(
-						`[codewit] legacy draft migration failed for ${sessionId}`,
+						`[grex] legacy draft migration failed for ${sessionId}`,
 						error,
 					);
 					// Leave the localStorage entry alone so we can retry

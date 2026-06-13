@@ -1,4 +1,4 @@
-//! Clap argument definitions for every installed Codewit CLI subcommand.
+//! Clap argument definitions for every installed Grex CLI subcommand.
 //!
 //! Split out from `mod.rs` so dispatch logic and argument schema evolve
 //! independently — adding a new flag only touches this file plus the
@@ -11,15 +11,15 @@
 //! `EXAMPLES:` section underneath the standard `--help` output. These
 //! blocks are the single source of truth for "how do I use this
 //! command in practice" — both human users and AI agents working
-//! inside Codewit are pointed at them by the system prompt instead of
+//! inside Grex are pointed at them by the system prompt instead of
 //! getting a command cheat-sheet baked into every turn's preamble.
 //!
-//! Command strings in the examples use the literal name `codewit`.
+//! Command strings in the examples use the literal name `grex`.
 //! That's the right copy for release users (the binary on their PATH
-//! IS `codewit`). Dev users invoke the CLI through an absolute path
-//! handed to them by Codewit's system prompt, and the prompt's trust
+//! IS `grex`). Dev users invoke the CLI through an absolute path
+//! handed to them by Grex's system prompt, and the prompt's trust
 //! signal already tells the agent to call its path verbatim — so we
-//! intentionally don't try to runtime-rewrite `codewit` to the dev
+//! intentionally don't try to runtime-rewrite `grex` to the dev
 //! binary name inside these strings.
 
 use clap::{Args, Parser, Subcommand, ValueEnum};
@@ -29,95 +29,95 @@ use clap::{Args, Parser, Subcommand, ValueEnum};
 // subcommand's `--help`)
 // ---------------------------------------------------------------------------
 
-const EXAMPLES_WORKSPACE_NEW: &str = "EXAMPLES (substitute `codewit` with the binary name in the Usage line above if it differs):
+const EXAMPLES_WORKSPACE_NEW: &str = "EXAMPLES (substitute `grex` with the binary name in the Usage line above if it differs):
     # Create a workspace on a repo by name (matches the repo column in `workspace list`)
-    codewit workspace new --repo dohooo/hello
+    grex workspace new --repo dohooo/hello
 
     # Repo argument also accepts a UUID
-    codewit workspace new --repo 7f3e9b2a-1234-5678-90ab-cdef12345678
+    grex workspace new --repo 7f3e9b2a-1234-5678-90ab-cdef12345678
 
     # Pre-stage a prompt into the new workspace's session without sending
-    NEW_WS_ID=$(codewit workspace new --repo dohooo/hello --json | jq -r .id)
-    codewit send --workspace \"$NEW_WS_ID\" --plan 'Analyse the routing layer and propose a refactor.'";
+    NEW_WS_ID=$(grex workspace new --repo dohooo/hello --json | jq -r .id)
+    grex send --workspace \"$NEW_WS_ID\" --plan 'Analyse the routing layer and propose a refactor.'";
 
 const EXAMPLES_WORKSPACE_LIST: &str =
-    "EXAMPLES (substitute `codewit` with the binary name in the Usage line above if it differs):
+    "EXAMPLES (substitute `grex` with the binary name in the Usage line above if it differs):
     # All active workspaces, grouped by status
-    codewit workspace list
+    grex workspace list
 
     # Machine-readable form (for scripting / agent piping)
-    codewit workspace list --json
+    grex workspace list --json
 
     # Just the ones in a single repo
-    codewit workspace list --repo dohooo/hello
+    grex workspace list --repo dohooo/hello
 
     # Filter by status group
-    codewit workspace list --status review";
+    grex workspace list --status review";
 
 const EXAMPLES_WORKSPACE_RUN_ACTION: &str =
-    "EXAMPLES (substitute `codewit` with the binary name in the Usage line above if it differs):
+    "EXAMPLES (substitute `grex` with the binary name in the Usage line above if it differs):
     # Dispatch an agent-driven 'commit + push' run against a workspace
-    codewit workspace run-action dohooo/hello/feature-x commit-and-push
+    grex workspace run-action dohooo/hello/feature-x commit-and-push
 
     # Same shape with a workspace UUID
-    codewit workspace run-action 7f3e9b2a-1234-5678-90ab-cdef12345678 create-pr
+    grex workspace run-action 7f3e9b2a-1234-5678-90ab-cdef12345678 create-pr
 
     # Other agent-dispatched flows
-    codewit workspace run-action <ref> fix-errors
-    codewit workspace run-action <ref> resolve-conflicts
+    grex workspace run-action <ref> fix-errors
+    grex workspace run-action <ref> resolve-conflicts
 
     # Inline flows (no agent involved; run synchronously)
-    codewit workspace run-action <ref> merge-pr
-    codewit workspace run-action <ref> pull-latest";
+    grex workspace run-action <ref> merge-pr
+    grex workspace run-action <ref> pull-latest";
 
 const EXAMPLES_SESSION_SEARCH: &str =
-    "EXAMPLES (substitute `codewit` with the binary name in the Usage line above if it differs):
+    "EXAMPLES (substitute `grex` with the binary name in the Usage line above if it differs):
     # Find sessions whose title or messages mention 'auth'
-    codewit session search --query auth
+    grex session search --query auth
 
     # Restrict to one repo
-    codewit session search --query auth --repo dohooo/hello
+    grex session search --query auth --repo dohooo/hello
 
     # Status-only filter (no keyword needed)
-    codewit session search --status streaming
+    grex session search --status streaming
 
     # Include archived workspaces
-    codewit session search --query auth --include-archived --json";
+    grex session search --query auth --include-archived --json";
 
 const EXAMPLES_SESSION_GET_MESSAGES: &str =
-    "EXAMPLES (substitute `codewit` with the binary name in the Usage line above if it differs):
+    "EXAMPLES (substitute `grex` with the binary name in the Usage line above if it differs):
     # Last 5 messages of a session (default window)
-    codewit session get-messages 7f3e9b2a-1234-5678-90ab-cdef12345678
+    grex session get-messages 7f3e9b2a-1234-5678-90ab-cdef12345678
 
     # Wider tail window
-    codewit session get-messages <session-id> --limit 20
+    grex session get-messages <session-id> --limit 20
 
     # Oldest messages first (good for reading another agent's plan)
-    codewit session get-messages <session-id> --position head --limit 10
+    grex session get-messages <session-id> --position head --limit 10
 
     # Truncate long messages to 300 chars from the end
-    codewit session get-messages <session-id> --body-limit 300 --body-position end";
+    grex session get-messages <session-id> --body-limit 300 --body-position end";
 
 const EXAMPLES_SEND: &str =
-    "EXAMPLES (substitute `codewit` with the binary name in the Usage line above if it differs):
+    "EXAMPLES (substitute `grex` with the binary name in the Usage line above if it differs):
     # Send a prompt to a workspace's active session (sends immediately)
-    codewit send --workspace dohooo/hello/feature-x 'Add a test for the parser edge case.'
+    grex send --workspace dohooo/hello/feature-x 'Add a test for the parser edge case.'
 
     # Target a specific session by UUID
-    codewit send --workspace <ws-ref> --session <session-id> 'Continue from where you left off.'
+    grex send --workspace <ws-ref> --session <session-id> 'Continue from where you left off.'
 
     # Plan mode (shortcut for --permission-mode plan)
-    codewit send --workspace <ws-ref> --plan 'Sketch the refactor before changing anything.'
+    grex send --workspace <ws-ref> --plan 'Sketch the refactor before changing anything.'
 
     # Read the prompt body from stdin (useful for long / piped prompts)
-    cat prompt.md | codewit send --workspace <ws-ref> -";
+    cat prompt.md | grex send --workspace <ws-ref> -";
 
 #[derive(Parser)]
 #[command(
-    name = "codewit",
+    name = "grex",
     version,
-    about = "Codewit workspace, session, and agent CLI",
-    long_about = "Remote-control Codewit from the terminal. Works against the same SQLite \
+    about = "Grex workspace, session, and agent CLI",
+    long_about = "Remote-control Grex from the terminal. Works against the same SQLite \
                   database the desktop app uses — run commands even while the app is \
                   running."
 )]
@@ -130,7 +130,7 @@ pub struct Cli {
     #[arg(long, global = true)]
     pub quiet: bool,
 
-    /// Override the data directory (default: ~/codewit or ~/codewit-dev).
+    /// Override the data directory (default: ~/grex or ~/grex-dev).
     #[arg(long, global = true, value_name = "DIR")]
     pub data_dir: Option<String>,
 
@@ -187,7 +187,7 @@ pub enum Commands {
         #[command(subcommand)]
         action: ScriptsAction,
     },
-    /// Migrate from Codewit v1 (Conductor).
+    /// Migrate from Grex v1 (Conductor).
     Conductor {
         #[command(subcommand)]
         action: ConductorAction,
@@ -197,15 +197,15 @@ pub enum Commands {
         #[arg(value_enum)]
         shell: CompletionShell,
     },
-    /// Report whether the current Codewit CLI entrypoint is installed to PATH and which data mode it uses.
+    /// Report whether the current Grex CLI entrypoint is installed to PATH and which data mode it uses.
     CliStatus,
-    /// Ask a running Codewit app to quit (noop when it isn't running).
+    /// Ask a running Grex app to quit (noop when it isn't running).
     Quit,
     /// Run as an MCP (Model Context Protocol) server over stdio.
     Mcp,
     /// Internal: receive an agent hook callback (invoked by agent CLIs, not
     /// users). Reads the hook payload from stdin; the owning terminal session
-    /// is passed via the CODEWIT_TERMINAL_SESSION_ID env var.
+    /// is passed via the GREX_TERMINAL_SESSION_ID env var.
     #[command(hide = true)]
     TerminalHook {
         /// Agent kind: claude / codex.
@@ -264,7 +264,7 @@ pub enum RepoAction {
         #[arg(name = "ref")]
         repo_ref: String,
     },
-    /// Change the default branch saved in the Codewit DB.
+    /// Change the default branch saved in the Grex DB.
     DefaultBranch {
         #[arg(name = "ref")]
         repo_ref: String,
@@ -286,7 +286,7 @@ pub enum RepoAction {
         #[arg(name = "ref")]
         repo_ref: String,
         /// Optional workspace_id — scripts resolve from that workspace's
-        /// `codewit.json` when present.
+        /// `grex.json` when present.
         #[arg(long)]
         workspace: Option<String>,
     },

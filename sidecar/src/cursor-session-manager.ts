@@ -31,14 +31,14 @@ import type {
 /// Resolve the Node binary that runs the worker. Release passes an absolute
 /// path; dev falls back to `node` on PATH.
 function resolveNodeBin(): string {
-	return process.env.CODEWIT_NODE_BIN_PATH?.trim() || "node";
+	return process.env.GREX_NODE_BIN_PATH?.trim() || "node";
 }
 
 /// Resolve the built worker entry. Release passes an absolute path to the
 /// staged `cursor-worker.mjs`; dev derives it from the sidecar root (cwd is
 /// anchored to `sidecar/`, see sidecar.rs).
 function resolveWorkerPath(): string | null {
-	const override = process.env.CODEWIT_CURSOR_WORKER_PATH?.trim();
+	const override = process.env.GREX_CURSOR_WORKER_PATH?.trim();
 	if (override) return override;
 	const devPath = join(process.cwd(), "dist", "cursor-worker.mjs");
 	return existsSync(devPath) ? devPath : null;
@@ -189,7 +189,7 @@ export class CursorSessionManager implements SessionManager {
 		const workerPath = resolveWorkerPath();
 		if (!workerPath) {
 			const msg =
-				"Cursor worker not found. Set CODEWIT_CURSOR_WORKER_PATH or build sidecar/dist/cursor-worker.mjs.";
+				"Cursor worker not found. Set GREX_CURSOR_WORKER_PATH or build sidecar/dist/cursor-worker.mjs.";
 			logger.error(msg);
 			if (emitter && requestId) {
 				emitter.error(requestId, msg);

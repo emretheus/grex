@@ -58,7 +58,7 @@ async function createRepo(options?: {
 
 describe("consumeReleaseAnnouncements", () => {
 	beforeEach(async () => {
-		repoRoot = await mkdtemp(join(tmpdir(), "codewit-announcements-"));
+		repoRoot = await mkdtemp(join(tmpdir(), "grex-announcements-"));
 	});
 
 	afterEach(async () => {

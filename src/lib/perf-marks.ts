@@ -10,7 +10,7 @@
  *   - React DevTools Profiler "Interactions" timeline
  *   - `performance.getEntriesByType("measure")` for programmatic readback
  *
- * All measure names are prefixed with `codewit:` so they are trivial to
+ * All measure names are prefixed with `grex:` so they are trivial to
  * filter in the DevTools UI.
  *
  * Usage:
@@ -24,7 +24,7 @@
  *   );
  */
 
-const MARK_PREFIX = "codewit:";
+const MARK_PREFIX = "grex:";
 
 let cachedEnabled: boolean | null = null;
 
@@ -65,7 +65,7 @@ export function mark(name: string): void {
 
 /**
  * Manually record a measure between two named marks. Marks are namespaced to
- * `codewit:` automatically — pass the bare names you used with `mark()`.
+ * `grex:` automatically — pass the bare names you used with `mark()`.
  */
 export function measure(name: string, start: string, end?: string): void {
 	if (!enabled()) return;
@@ -83,7 +83,7 @@ export function measure(name: string, start: string, end?: string): void {
 
 /**
  * Measure a synchronous block. Returns the function's value. Records a
- * `codewit:<name>` PerformanceMeasure entry with optional `detail` payload
+ * `grex:<name>` PerformanceMeasure entry with optional `detail` payload
  * (useful for embedding e.g. message counts so the trace UI can group by
  * input size).
  *
@@ -121,7 +121,7 @@ export function measureSync<T>(
 }
 
 /**
- * Reset all `codewit:*` performance entries. Useful between scenarios in a
+ * Reset all `grex:*` performance entries. Useful between scenarios in a
  * perf test so the second scenario's entries don't get drowned by the first.
  * Safe to call when perfMarks is disabled (becomes a noop).
  */
@@ -148,7 +148,7 @@ export function clearPerfMarks(): void {
 }
 
 /**
- * Read all currently-recorded `codewit:*` measures. Returned in start-time
+ * Read all currently-recorded `grex:*` measures. Returned in start-time
  * order. Used by the perf test harness to assert specific phases ran and
  * to dump a per-stage cost summary.
  */
@@ -218,7 +218,7 @@ export function aggregatePerfMarks(): PerfMarkAggregate[] {
 
 declare global {
 	interface Window {
-		__CODEWIT_PERF_MARKS__?: {
+		__GREX_PERF_MARKS__?: {
 			enabled: () => boolean;
 			get: () => PerfMarkSummary[];
 			aggregate: () => PerfMarkAggregate[];
@@ -228,7 +228,7 @@ declare global {
 }
 
 if (typeof window !== "undefined" && computeEnabled()) {
-	window.__CODEWIT_PERF_MARKS__ = {
+	window.__GREX_PERF_MARKS__ = {
 		enabled: isPerfMarksEnabled,
 		get: getPerfMarkSummaries,
 		aggregate: aggregatePerfMarks,

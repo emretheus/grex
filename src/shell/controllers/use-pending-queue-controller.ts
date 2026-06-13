@@ -12,7 +12,7 @@ import {
 	type ResolvedComposerInsertRequest,
 	resolveComposerInsertTarget,
 } from "@/lib/composer-insert";
-import { codewitQueryKeys } from "@/lib/query-client";
+import { grexQueryKeys } from "@/lib/query-client";
 import { requestSidebarReconcile } from "@/lib/sidebar-mutation-gate";
 import type { PushWorkspaceToast } from "@/lib/workspace-toast-context";
 import { CLI_SEND_AUTO_SUBMIT_DELAY_MS } from "@/shell/constants";
@@ -126,7 +126,7 @@ export function usePendingQueueController(
 			requestSidebarReconcile(queryClient);
 			if (first.workspaceId) {
 				await queryClient.invalidateQueries({
-					queryKey: codewitQueryKeys.workspaceSessions(first.workspaceId),
+					queryKey: grexQueryKeys.workspaceSessions(first.workspaceId),
 				});
 			}
 

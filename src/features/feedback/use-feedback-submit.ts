@@ -7,7 +7,7 @@ import type {
 } from "@/features/conversation";
 import { createWorkspaceFromStartComposer } from "@/features/workspace-start/create-workspace";
 import type { AgentModelOption, AgentModelSection } from "@/lib/api";
-import { codewitQueryKeys } from "@/lib/query-client";
+import { grexQueryKeys } from "@/lib/query-client";
 import type { AppSettings } from "@/lib/settings";
 import { requestSidebarReconcile } from "@/lib/sidebar-mutation-gate";
 import { describeUnknownError } from "@/lib/workspace-helpers";
@@ -54,7 +54,7 @@ export function useFeedbackSubmit(deps: Deps) {
 		async (input: { repoId: string; prompt: string }) => {
 			const sections =
 				queryClient.getQueryData<AgentModelSection[]>(
-					codewitQueryKeys.agentModelSections,
+					grexQueryKeys.agentModelSections,
 				) ?? [];
 			const allModels = sections.flatMap((section) => section.options);
 			const preferred = appSettings.defaultModelId

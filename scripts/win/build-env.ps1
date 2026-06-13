@@ -1,4 +1,4 @@
-# Windows build environment for Codewit.
+# Windows build environment for Grex.
 # Dot-source this before running cargo/tauri:  . scripts\win\build-env.ps1
 # Prepends the native toolchain (sccache, cmake, ninja, go, nasm) needed to
 # build boring-sys/BoringSSL, and appends Git's usr/bin LAST so MSVC's link.exe

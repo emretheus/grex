@@ -1,6 +1,6 @@
 # Release Announcements
 
-Use the Codewit release skill to create both the Changesets entry and any in-app release announcement fragment for a PR.
+Use the Grex release skill to create both the Changesets entry and any in-app release announcement fragment for a PR.
 
 Each `*.json` file in this directory is pending release content. It is intentionally unversioned. During `bun run release:version`, the release script consumes every pending file, merges all items into one catalog entry for the final package version, and deletes the pending files.
 

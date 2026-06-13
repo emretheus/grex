@@ -1,4 +1,4 @@
-// Reverse IPC: call Codewit's Rust host from the sidecar.
+// Reverse IPC: call Grex's Rust host from the sidecar.
 
 import { randomUUID } from "node:crypto";
 

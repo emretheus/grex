@@ -35,7 +35,7 @@ pub fn toggle(app: &AppHandle) -> Result<()> {
 fn create(app: &AppHandle) -> Result<()> {
     let (x, y) = initial_position(app, PANEL_HEIGHT);
     WebviewWindowBuilder::new(app, QUICK_PANEL_LABEL, WebviewUrl::App("index.html".into()))
-        .title("Codewit")
+        .title("Grex")
         .inner_size(PANEL_WIDTH, PANEL_HEIGHT)
         .position(x, y)
         .decorations(false)
@@ -50,7 +50,7 @@ fn create(app: &AppHandle) -> Result<()> {
         // Runs before any page script: lets index.html's CSS make the body
         // transparent for this window only, so the dark main-window background
         // never flashes behind the rounded card.
-        .initialization_script("document.documentElement.classList.add('codewit-quick-window');")
+        .initialization_script("document.documentElement.classList.add('grex-quick-window');")
         .build()
         .context("Failed to create quick panel window")?;
     Ok(())
@@ -94,7 +94,7 @@ pub fn hide_quick_panel(app: AppHandle) -> Result<(), CommandError> {
     Ok(())
 }
 
-/// "Open in Codewit" from the quick panel: bring the main window forward and
+/// "Open in Grex" from the quick panel: bring the main window forward and
 /// broadcast a reveal request. The main window's ui-sync bridge navigates to
 /// the workspace; the quick panel ignores the event.
 #[tauri::command]

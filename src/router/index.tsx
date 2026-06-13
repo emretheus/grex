@@ -10,7 +10,7 @@ import {
 import { type ComponentType, useMemo } from "react";
 import type { SettingsSection } from "@/features/settings";
 
-// Memory history: Codewit has no address bar and `window.location.hash` is owned
+// Memory history: Grex has no address bar and `window.location.hash` is owned
 // by companion pairing (see `src/lib/ipc.ts`). Created at MODULE SCOPE so the
 // StrictMode double-mount in `main.tsx` cannot spawn two histories.
 const memoryHistory = createMemoryHistory({ initialEntries: ["/"] });

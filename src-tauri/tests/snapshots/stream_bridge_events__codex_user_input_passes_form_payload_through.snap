@@ -31,6 +31,6 @@ control_events:
     sessionId: provider-session-1
     source: Codex
     userInputId: user-input-1
-    workingDirectory: /tmp/codewit
+    workingDirectory: /tmp/grex
 final_messages: []
 dropped_event_types: []

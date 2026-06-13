@@ -26,7 +26,7 @@ export type MockWorkspaceRow = {
 	/**
 	 * When true, this row is a spotlight target during the `cliSplitSpotlight`
 	 * onboarding pass — used to highlight the three workspaces the assistant
-	 * just spun up via `codewit workspace new` so the punch-through effect
+	 * just spun up via `grex workspace new` so the punch-through effect
 	 * draws the eye to them.
 	 */
 	cliSplitTarget?: boolean;
@@ -214,19 +214,19 @@ export const mockConversation: {
 				{
 					type: "tool",
 					name: "Bash",
-					detail: "codewit workspace new --repo codewit  # DB",
+					detail: "grex workspace new --repo grex  # DB",
 					cliSplitTarget: true,
 				},
 				{
 					type: "tool",
 					name: "Bash",
-					detail: "codewit workspace new --repo codewit  # backend",
+					detail: "grex workspace new --repo grex  # backend",
 					cliSplitTarget: true,
 				},
 				{
 					type: "tool",
 					name: "Bash",
-					detail: "codewit workspace new --repo codewit  # frontend",
+					detail: "grex workspace new --repo grex  # frontend",
 					cliSplitTarget: true,
 				},
 				{

@@ -12,9 +12,9 @@ name: Release Plan
 #      package.json version and creates a single `v<version>` git tag.
 #    → Why NOT `changeset tag`: once we added `apps/marketing` to the
 #      workspace, `@manypkg/get-packages` flips changesets into monorepo
-#      mode and tags become `<name>@<version>` (e.g. `codewit@0.2.0`),
+#      mode and tags become `<name>@<version>` (e.g. `grex@0.2.0`),
 #      which (a) doesn't match publish.yml's `tags: v*` trigger and
-#      (b) additionally tags `@codewit/marketing@...` which we don't want.
+#      (b) additionally tags `@grex/marketing@...` which we don't want.
 #
 # 3. The tag push triggers `publish.yml` for signed/notarized macOS DMGs,
 #    macOS updater artifacts, and the Windows NSIS installer, which attach
@@ -51,7 +51,7 @@ jobs:
         uses: actions/checkout@v6
         with:
           fetch-depth: 0
-          token: ${{ secrets.CODEWIT_RELEASE_PAT }}
+          token: ${{ secrets.GREX_RELEASE_PAT }}
 
       - name: Setup JS toolchain
         uses: ./.github/actions/setup-js
@@ -67,4 +67,4 @@ jobs:
           commit: "chore(release): version packages"
           title: "chore(release): version packages"
         env:
-          GITHUB_TOKEN: ${{ secrets.CODEWIT_RELEASE_PAT }}
+          GITHUB_TOKEN: ${{ secrets.GREX_RELEASE_PAT }}

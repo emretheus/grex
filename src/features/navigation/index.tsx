@@ -326,7 +326,7 @@ export const WorkspacesSidebar = memo(function WorkspacesSidebar({
 		if (!activeDragWorkspaceId) return null;
 		for (const group of groups) {
 			const meta = group.stackMeta?.get(activeDragWorkspaceId);
-			if (!meta || meta.role !== "tip") continue;
+			if (meta?.role !== "tip") continue;
 			const members = group.rows
 				.filter((row) => group.stackMeta?.get(row.id)?.tipId === meta.tipId)
 				.sort(
@@ -741,7 +741,7 @@ export const WorkspacesSidebar = memo(function WorkspacesSidebar({
 		(workspaceId: string | null) => {
 			// Root stays the sidebar's own scroll container (NOT a document-wide
 			// query) so standalone renders — and the pointerdown preview they
-			// test — keep working without `[data-codewit-sidebar-root]`.
+			// test — keep working without `[data-grex-sidebar-root]`.
 			applyImmediateWorkspaceHighlight(scrollContainerRef.current, workspaceId);
 		},
 		[],
@@ -784,13 +784,10 @@ export const WorkspacesSidebar = memo(function WorkspacesSidebar({
 			onOpenNewWorkspace?.();
 		};
 
-		window.addEventListener(
-			"codewit:open-new-workspace",
-			handleOpenNewWorkspace,
-		);
+		window.addEventListener("grex:open-new-workspace", handleOpenNewWorkspace);
 		return () =>
 			window.removeEventListener(
-				"codewit:open-new-workspace",
+				"grex:open-new-workspace",
 				handleOpenNewWorkspace,
 			);
 	}, [addRepositoryBusy, createBusy, onOpenNewWorkspace, workspaceActionsBusy]);
@@ -802,12 +799,12 @@ export const WorkspacesSidebar = memo(function WorkspacesSidebar({
 		};
 
 		window.addEventListener(
-			"codewit:open-add-repository",
+			"grex:open-add-repository",
 			handleOpenAddRepository,
 		);
 		return () =>
 			window.removeEventListener(
-				"codewit:open-add-repository",
+				"grex:open-add-repository",
 				handleOpenAddRepository,
 			);
 	}, [addRepositoryBusy, createBusy, workspaceActionsBusy]);

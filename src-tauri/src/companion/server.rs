@@ -88,7 +88,7 @@ pub fn router(state: AppState) -> Router {
 async fn health() -> Json<Value> {
     Json(json!({
         "status": "ok",
-        "service": "codewit-companion",
+        "service": "grex-companion",
         "version": env!("CARGO_PKG_VERSION"),
     }))
 }
@@ -217,7 +217,7 @@ fn load_asset(state: &AppState, path: &str) -> Option<Response> {
 /// the transport onto HTTP/SSE. The bearer token is delivered separately (URL
 /// hash → localStorage), so the marker itself carries no secret.
 fn inject_companion_marker(html: Vec<u8>) -> Vec<u8> {
-    const MARKER: &str = "<script>window.__CODEWIT_COMPANION__={};</script>";
+    const MARKER: &str = "<script>window.__GREX_COMPANION__={};</script>";
     let Ok(text) = String::from_utf8(html) else {
         return Vec::new();
     };
@@ -272,11 +272,11 @@ struct AssetQuery {
 
 /// `GET /v1/asset?path=<local file>` — serves an on-disk image so the phone can
 /// render avatars / pasted / generated images (`convertFileSrc` targets in
-/// companion mode). Auth is via the `codewit_companion_pat` cookie because an
+/// companion mode). Auth is via the `grex_companion_pat` cookie because an
 /// `<img>` element can't send an `Authorization` header.
 ///
 /// HARD-restricted to the avatar / generated-image / paste-cache directories so
-/// a paired device can never pull `codewit.db`, logs, or arbitrary workspace
+/// a paired device can never pull `grex.db`, logs, or arbitrary workspace
 /// files. Paths are canonicalised first, so `..` / symlink escapes are rejected.
 async fn asset_handler(
     State(state): State<AppState>,
@@ -298,11 +298,11 @@ async fn asset_handler(
     }
 }
 
-/// Extract the `codewit_companion_pat` value from the `Cookie` header.
+/// Extract the `grex_companion_pat` value from the `Cookie` header.
 fn cookie_token(headers: &HeaderMap) -> Option<String> {
     let raw = headers.get(axum::http::header::COOKIE)?.to_str().ok()?;
     raw.split(';')
-        .filter_map(|pair| pair.trim().strip_prefix("codewit_companion_pat="))
+        .filter_map(|pair| pair.trim().strip_prefix("grex_companion_pat="))
         .map(str::to_string)
         .next()
 }
@@ -365,7 +365,7 @@ mod tests {
         let mut headers = HeaderMap::new();
         headers.insert(
             COOKIE,
-            HeaderValue::from_static("foo=1; codewit_companion_pat=hlm_abc; bar=2"),
+            HeaderValue::from_static("foo=1; grex_companion_pat=hlm_abc; bar=2"),
         );
         assert_eq!(cookie_token(&headers).as_deref(), Some("hlm_abc"));
         assert_eq!(cookie_token(&HeaderMap::new()), None);
@@ -378,7 +378,7 @@ mod tests {
             Path::new("/data/cache/avatars/x.png"),
             &dirs
         ));
-        assert!(!path_is_within(Path::new("/data/codewit.db"), &dirs));
+        assert!(!path_is_within(Path::new("/data/grex.db"), &dirs));
         assert!(!path_is_within(Path::new("/etc/passwd"), &dirs));
     }
 
@@ -394,12 +394,12 @@ mod tests {
         assert!(resolve_allowed_image_file(img.to_str().unwrap()).is_some());
 
         // Rejected: the SQLite DB under the data dir.
-        let db = crate::data_dir::data_dir().unwrap().join("codewit.db");
+        let db = crate::data_dir::data_dir().unwrap().join("grex.db");
         std::fs::write(&db, b"db").unwrap();
         assert!(resolve_allowed_image_file(db.to_str().unwrap()).is_none());
 
         // Rejected: a `..` escape out of the avatar dir back to the DB.
-        let traversal = format!("{}/../../codewit.db", avatars.display());
+        let traversal = format!("{}/../../grex.db", avatars.display());
         assert!(resolve_allowed_image_file(&traversal).is_none());
     }
 }

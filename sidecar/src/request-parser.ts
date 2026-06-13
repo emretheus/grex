@@ -88,7 +88,8 @@ export function parseProvider(value: unknown): Provider {
 		value === "claude" ||
 		value === "codex" ||
 		value === "cursor" ||
-		value === "opencode"
+		value === "opencode" ||
+		value === "gemini"
 	)
 		return value;
 	throw new Error(`unknown provider: ${String(value)}`);
@@ -202,7 +203,7 @@ export function parseGetContextUsageParams(
 	params: Record<string, unknown>,
 ): GetContextUsageParams {
 	return {
-		codewitSessionId: requireString(params, "sessionId"),
+		grexSessionId: requireString(params, "sessionId"),
 		providerSessionId: optionalString(params, "providerSessionId") ?? null,
 		model: requireString(params, "model"),
 		cwd: optionalString(params, "cwd"),

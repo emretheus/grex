@@ -88,7 +88,7 @@ class Logger {
 	private bytes = 0;
 
 	constructor() {
-		const envLevel = process.env.CODEWIT_LOG?.toLowerCase();
+		const envLevel = process.env.GREX_LOG?.toLowerCase();
 		const level: Level =
 			envLevel === "debug" || envLevel === "trace"
 				? "debug"
@@ -100,11 +100,11 @@ class Logger {
 
 		// Skip file writes under `bun test`. This singleton is created on first
 		// import, before any test-level env override can fire, so agent-spawned
-		// shells inheriting CODEWIT_LOG_DIR from a release codewit would otherwise
-		// pollute ~/codewit/logs. Bun auto-sets NODE_ENV=test.
+		// shells inheriting GREX_LOG_DIR from a release grex would otherwise
+		// pollute ~/grex/logs. Bun auto-sets NODE_ENV=test.
 		const isTest =
 			process.env.NODE_ENV === "test" || process.env.BUN_TEST === "1";
-		const logDir = process.env.CODEWIT_LOG_DIR;
+		const logDir = process.env.GREX_LOG_DIR;
 		if (logDir && !isTest) {
 			mkdirSync(logDir, { recursive: true });
 			this.primaryPath = `${logDir}/sidecar.jsonl`;

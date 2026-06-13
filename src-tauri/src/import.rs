@@ -1,4 +1,4 @@
-//! Workspace-granular import of Conductor data into Codewit.
+//! Workspace-granular import of Conductor data into Grex.
 //!
 //! Users browse Conductor repos/workspaces, select individual workspaces,
 //! and import both database records and filesystem context files.
@@ -58,9 +58,9 @@ pub struct ImportWorkspacesResult {
 
 /// List all repositories in the Conductor database with workspace counts.
 pub fn list_conductor_repos() -> Result<Vec<ConductorRepo>> {
-    let (codewit_conn, _source_path) = open_with_conductor_attached()?;
+    let (grex_conn, _source_path) = open_with_conductor_attached()?;
 
-    let mut stmt = codewit_conn
+    let mut stmt = grex_conn
         .prepare(
             r#"
             SELECT
@@ -97,16 +97,16 @@ pub fn list_conductor_repos() -> Result<Vec<ConductorRepo>> {
 
     drop(stmt);
 
-    codewit_conn.execute("DETACH DATABASE source", []).ok();
+    grex_conn.execute("DETACH DATABASE source", []).ok();
 
     Ok(repos)
 }
 
 /// List workspaces for a given repo in the Conductor database.
 pub fn list_conductor_workspaces(repo_id: &str) -> Result<Vec<ConductorWorkspace>> {
-    let (codewit_conn, _source_path) = open_with_conductor_attached()?;
+    let (grex_conn, _source_path) = open_with_conductor_attached()?;
 
-    let mut stmt = codewit_conn
+    let mut stmt = grex_conn
         .prepare(
             r#"
             SELECT
@@ -165,16 +165,16 @@ pub fn list_conductor_workspaces(repo_id: &str) -> Result<Vec<ConductorWorkspace
         })
         .collect();
 
-    codewit_conn.execute("DETACH DATABASE source", []).ok();
+    grex_conn.execute("DETACH DATABASE source", []).ok();
 
     Ok(workspaces)
 }
 
 // ---------------------------------------------------------------------------
-// Import — copy selected workspaces into Codewit
+// Import — copy selected workspaces into Grex
 // ---------------------------------------------------------------------------
 
-/// Import selected workspaces from Conductor into Codewit.
+/// Import selected workspaces from Conductor into Grex.
 ///
 /// For each workspace:
 /// 1. Copies database records (repo, workspace, sessions, messages)
@@ -189,10 +189,10 @@ pub fn import_conductor_workspaces(workspace_ids: &[String]) -> Result<ImportWor
         });
     }
 
-    let (codewit_conn, _source_path) = open_with_conductor_attached()?;
+    let (grex_conn, _source_path) = open_with_conductor_attached()?;
 
     let conductor_root = crate::data_dir::conductor_root_path();
-    let codewit_data_dir = crate::data_dir::data_dir()?;
+    let grex_data_dir = crate::data_dir::data_dir()?;
 
     let mut imported_count: i64 = 0;
     let mut skipped_count: i64 = 0;
@@ -200,7 +200,7 @@ pub fn import_conductor_workspaces(workspace_ids: &[String]) -> Result<ImportWor
 
     // Phase 1: Import DB records in a transaction.
     // Git and filesystem operations happen in Phase 2 (after commit).
-    codewit_conn
+    grex_conn
         .execute_batch("BEGIN IMMEDIATE")
         .context("Failed to start transaction")?;
 
@@ -209,27 +209,27 @@ pub fn import_conductor_workspaces(workspace_ids: &[String]) -> Result<ImportWor
 
     for ws_id in workspace_ids {
         // Savepoint per workspace so a partial failure rolls back only this workspace's rows
-        codewit_conn.execute_batch("SAVEPOINT ws_import").ok();
+        grex_conn.execute_batch("SAVEPOINT ws_import").ok();
 
-        match import_workspace_db_records(&codewit_conn, ws_id) {
+        match import_workspace_db_records(&grex_conn, ws_id) {
             Ok(ImportDbResult::Imported(meta)) => {
-                codewit_conn
+                grex_conn
                     .execute_batch("RELEASE SAVEPOINT ws_import")
                     .ok();
                 imported_workspaces.push(meta);
                 imported_count += 1;
             }
             Ok(ImportDbResult::Skipped) => {
-                codewit_conn
+                grex_conn
                     .execute_batch("RELEASE SAVEPOINT ws_import")
                     .ok();
                 skipped_count += 1;
             }
             Err(error) => {
-                codewit_conn
+                grex_conn
                     .execute_batch("ROLLBACK TO SAVEPOINT ws_import")
                     .ok();
-                codewit_conn
+                grex_conn
                     .execute_batch("RELEASE SAVEPOINT ws_import")
                     .ok();
                 errors.push(format!("{ws_id}: {error}"));
@@ -238,14 +238,14 @@ pub fn import_conductor_workspaces(workspace_ids: &[String]) -> Result<ImportWor
     }
 
     if imported_count > 0 || skipped_count > 0 {
-        codewit_conn
+        grex_conn
             .execute_batch("COMMIT")
             .context("Failed to commit")?;
     } else {
-        codewit_conn.execute_batch("ROLLBACK").ok();
+        grex_conn.execute_batch("ROLLBACK").ok();
     }
 
-    codewit_conn.execute("DETACH DATABASE source", []).ok();
+    grex_conn.execute("DETACH DATABASE source", []).ok();
 
     // Phase 2: Git worktree and filesystem copy.
     // If a workspace cannot be materialized locally, clean up the imported DB
@@ -259,7 +259,7 @@ pub fn import_conductor_workspaces(workspace_ids: &[String]) -> Result<ImportWor
             meta.branch.as_deref(),
             meta.repo_root.as_deref(),
             conductor_root.as_deref(),
-            &codewit_data_dir,
+            &grex_data_dir,
         ) {
             if let Err(cleanup_error) = delete_imported_workspace_records(&meta.workspace_id) {
                 errors.push(format!(
@@ -453,7 +453,7 @@ fn setup_workspace_filesystem(
     branch: Option<&str>,
     repo_root: Option<&Path>,
     conductor_root: Option<&Path>,
-    codewit_data_dir: &Path,
+    grex_data_dir: &Path,
 ) -> Result<()> {
     if state != "archived" {
         // Active workspace: create the git worktree.
@@ -506,12 +506,12 @@ fn setup_workspace_filesystem(
         }
     }
 
-    // Copy Claude Code session files from Conductor's project dir to Codewit's.
+    // Copy Claude Code session files from Conductor's project dir to Grex's.
     // Claude Code stores sessions under ~/.claude/projects/{encoded-cwd}/ and
-    // the cwd changed from Conductor's worktree to Codewit's worktree, so
+    // the cwd changed from Conductor's worktree to Grex's worktree, so
     // sessions are invisible unless we copy them over.
     if let Some(root) = conductor_root {
-        copy_claude_sessions_for_workspace(root, codewit_data_dir, repo_name, directory_name);
+        copy_claude_sessions_for_workspace(root, grex_data_dir, repo_name, directory_name);
     }
 
     Ok(())
@@ -558,10 +558,10 @@ fn delete_imported_workspace_records(workspace_id: &str) -> Result<()> {
 }
 
 /// Copy Claude Code session .jsonl files from the Conductor project dir
-/// to the Codewit project dir so that imported sessions can be resumed.
+/// to the Grex project dir so that imported sessions can be resumed.
 fn copy_claude_sessions_for_workspace(
     conductor_root: &Path,
-    codewit_data_dir: &Path,
+    grex_data_dir: &Path,
     repo_name: &str,
     directory_name: &str,
 ) {
@@ -579,7 +579,7 @@ fn copy_claude_sessions_for_workspace(
         .join("workspaces")
         .join(repo_name)
         .join(directory_name);
-    let codewit_ws_path = codewit_data_dir
+    let grex_ws_path = grex_data_dir
         .join("workspaces")
         .join(repo_name)
         .join(directory_name);
@@ -588,7 +588,7 @@ fn copy_claude_sessions_for_workspace(
         &conductor_ws_path,
     ));
     let dst_dir = claude_projects.join(crate::agents::claude_project_files::encode_project_dir(
-        &codewit_ws_path,
+        &grex_ws_path,
     ));
 
     if !src_dir.is_dir() {
@@ -706,7 +706,7 @@ fn setup_imported_worktree(
     Ok(())
 }
 
-/// Open the Codewit DB and attach Conductor DB as `source`.
+/// Open the Grex DB and attach Conductor DB as `source`.
 fn open_with_conductor_attached() -> Result<(Connection, String)> {
     let source_path =
         crate::data_dir::conductor_source_db_path().context("Conductor database not found")?;
@@ -717,7 +717,7 @@ fn open_with_conductor_attached() -> Result<(Connection, String)> {
         &dest_path,
         OpenFlags::SQLITE_OPEN_READ_WRITE | OpenFlags::SQLITE_OPEN_NO_MUTEX,
     )
-    .context("Failed to open Codewit database")?;
+    .context("Failed to open Grex database")?;
 
     conn.busy_timeout(std::time::Duration::from_secs(5))
         .context("Failed to set busy timeout")?;
@@ -750,12 +750,12 @@ fn get_table_columns(conn: &Connection, table: &str) -> Result<Vec<String>> {
     Ok(columns)
 }
 
-/// Column name mappings from Conductor (source) → Codewit (main).
+/// Column name mappings from Conductor (source) → Grex (main).
 /// Used during import to bridge schema renames.
 const COLUMN_RENAMES: &[(&str, &str)] = &[("claude_session_id", "provider_session_id")];
 
 /// Build INSERT-SELECT column lists that handle renamed columns between
-/// source (Conductor) and main (Codewit) schemas.
+/// source (Conductor) and main (Grex) schemas.
 ///
 /// Returns `(main_col_list, source_col_list)` where renamed columns use
 /// `source_name AS main_name` in the SELECT list.
@@ -848,7 +848,7 @@ fn resolve_canonical_repo(
                 source_repo_id,
                 canonical_repo_id = %repo.id,
                 root_path,
-                "Resolved Conductor repo to existing Codewit repo by root_path"
+                "Resolved Conductor repo to existing Grex repo by root_path"
             );
             return Ok(repo);
         }
@@ -865,7 +865,7 @@ fn resolve_canonical_repo(
 
     load_main_repo(conn, "id = ?1", [source_repo_id])?.with_context(|| {
         format!(
-            "Repo import did not create or resolve a Codewit repo for source repo {source_repo_name} ({source_repo_id})"
+            "Repo import did not create or resolve a Grex repo for source repo {source_repo_name} ({source_repo_id})"
         )
     })
 }
@@ -922,7 +922,7 @@ fn import_workspace_column_lists(conn: &Connection) -> Result<(String, String)> 
             // Imported rows arrive with display_order = 0; the schema migration
             // (`seed_workspace_display_orders`) lays them out on the sparse
             // grid on the next startup. Avoids leaking Conductor's ordering
-            // (which used a different column) into Codewit's sidebar.
+            // (which used a different column) into Grex's sidebar.
             source_parts.push(if source_set.contains("display_order") {
                 "COALESCE(display_order, 0) AS display_order".to_string()
             } else {
@@ -1102,7 +1102,7 @@ mod tests {
         conn.execute_batch(
             r#"
             INSERT INTO main.repos (id, name, root_path)
-            VALUES ('r-main', 'codewit', '/tmp/codewit');
+            VALUES ('r-main', 'grex', '/tmp/grex');
 
             ATTACH DATABASE ':memory:' AS source;
             CREATE TABLE source.repos AS SELECT * FROM main.repos WHERE 0;
@@ -1111,7 +1111,7 @@ mod tests {
             CREATE TABLE source.session_messages AS SELECT * FROM main.session_messages WHERE 0;
 
             INSERT INTO source.repos (id, name, root_path, created_at, updated_at)
-            VALUES ('r-source', 'conductor-codewit', '/tmp/codewit', datetime('now'), datetime('now'));
+            VALUES ('r-source', 'conductor-grex', '/tmp/grex', datetime('now'), datetime('now'));
             INSERT INTO source.workspaces (id, repository_id, directory_name, state, created_at, updated_at)
             VALUES ('w1', 'r-source', 'hyperion', 'ready', datetime('now'), datetime('now'));
             "#,
@@ -1136,8 +1136,8 @@ mod tests {
 
         assert_eq!(repo_count, 1);
         assert_eq!(workspace_repo_id, "r-main");
-        assert_eq!(meta.repo_name, "codewit");
-        assert_eq!(meta.repo_root, Some(PathBuf::from("/tmp/codewit")));
+        assert_eq!(meta.repo_name, "grex");
+        assert_eq!(meta.repo_root, Some(PathBuf::from("/tmp/grex")));
     }
 
     #[test]

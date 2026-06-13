@@ -1,10 +1,10 @@
-//! `codewit` / `codewit-dev` meta / system commands.
+//! `grex` / `grex-dev` meta / system commands.
 //!
 //! `install_cli` is intentionally omitted: the installer copies the
-//! currently-running binary to `/usr/local/bin/codewit` (or `codewit-dev` in
+//! currently-running binary to `/usr/local/bin/grex` (or `grex-dev` in
 //! debug builds), which is how the
 //! desktop Settings UI already handles it. From the CLI, the analogous
-//! operation is just `cp "$(command -v codewit)" /usr/local/bin/<name>`
+//! operation is just `cp "$(command -v grex)" /usr/local/bin/<name>`
 //! and we shouldn't invite accidental privilege escalation.
 
 use std::io::Write;
@@ -92,10 +92,10 @@ pub fn completions(shell: CompletionShell) -> Result<()> {
 pub fn quit() -> Result<()> {
     if service::is_app_running() {
         anyhow::bail!(
-            "Codewit is running but the CLI cannot stop it remotely yet. \
-             Close the app from the menu bar (Codewit → Quit) or press ⌘Q."
+            "Grex is running but the CLI cannot stop it remotely yet. \
+             Close the app from the menu bar (Grex → Quit) or press ⌘Q."
         );
     }
-    println!("Codewit is not running.");
+    println!("Grex is not running.");
     Ok(())
 }

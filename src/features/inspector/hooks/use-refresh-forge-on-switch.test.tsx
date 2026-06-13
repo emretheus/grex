@@ -1,7 +1,7 @@
 import { act, cleanup } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { ForgeActionStatus } from "@/lib/api";
-import { codewitQueryKeys } from "@/lib/query-client";
+import { grexQueryKeys } from "@/lib/query-client";
 import { renderWithProviders } from "@/test/render-with-providers";
 import { useRefreshForgeOnWorkspaceSwitch } from "./use-refresh-forge-on-switch";
 
@@ -42,7 +42,7 @@ describe("useRefreshForgeOnWorkspaceSwitch", () => {
 
 	it("invalidates when cached checks are still running", () => {
 		const { queryClient } = renderWithProviders(<Harness workspaceId={null} />);
-		const key = codewitQueryKeys.workspaceForgeActionStatus("ws-1");
+		const key = grexQueryKeys.workspaceForgeActionStatus("ws-1");
 		queryClient.setQueryData<ForgeActionStatus>(
 			key,
 			makeStatus({
@@ -81,7 +81,7 @@ describe("useRefreshForgeOnWorkspaceSwitch", () => {
 	it("does NOT invalidate when PR is merged", () => {
 		const { queryClient } = renderWithProviders(<Harness workspaceId={null} />);
 		queryClient.setQueryData<ForgeActionStatus>(
-			codewitQueryKeys.workspaceForgeActionStatus("ws-1"),
+			grexQueryKeys.workspaceForgeActionStatus("ws-1"),
 			makeStatus({
 				changeRequest: {
 					url: "https://example.com/pr/1",
@@ -104,7 +104,7 @@ describe("useRefreshForgeOnWorkspaceSwitch", () => {
 	it("does NOT invalidate when all checks have succeeded", () => {
 		const { queryClient } = renderWithProviders(<Harness workspaceId={null} />);
 		queryClient.setQueryData<ForgeActionStatus>(
-			codewitQueryKeys.workspaceForgeActionStatus("ws-1"),
+			grexQueryKeys.workspaceForgeActionStatus("ws-1"),
 			makeStatus({
 				checks: [
 					{
@@ -128,7 +128,7 @@ describe("useRefreshForgeOnWorkspaceSwitch", () => {
 	it("debounces rapid workspace switches", () => {
 		const { queryClient } = renderWithProviders(<Harness workspaceId={null} />);
 		queryClient.setQueryData<ForgeActionStatus>(
-			codewitQueryKeys.workspaceForgeActionStatus("ws-1"),
+			grexQueryKeys.workspaceForgeActionStatus("ws-1"),
 			makeStatus({
 				checks: [
 					{ id: "c1", name: "a", provider: "github", status: "running" },
@@ -136,7 +136,7 @@ describe("useRefreshForgeOnWorkspaceSwitch", () => {
 			}),
 		);
 		queryClient.setQueryData<ForgeActionStatus>(
-			codewitQueryKeys.workspaceForgeActionStatus("ws-2"),
+			grexQueryKeys.workspaceForgeActionStatus("ws-2"),
 			makeStatus({
 				checks: [
 					{ id: "c2", name: "a", provider: "github", status: "running" },
@@ -159,7 +159,7 @@ describe("useRefreshForgeOnWorkspaceSwitch", () => {
 		// ws-1's invalidate should have been cancelled by the cleanup.
 		expect(spy).toHaveBeenCalledTimes(1);
 		expect(spy).toHaveBeenCalledWith({
-			queryKey: codewitQueryKeys.workspaceForgeActionStatus("ws-2"),
+			queryKey: grexQueryKeys.workspaceForgeActionStatus("ws-2"),
 		});
 	});
 });

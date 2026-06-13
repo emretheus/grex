@@ -38,8 +38,8 @@ import { $extractComposerContent } from "../utils";
 
 /** Tags on recall-plugin edits; `DraftPersistencePlugin` watches these
  *  to avoid persisting recalled prompts over the in-progress draft. */
-export const HISTORY_RECALL_TAG = "codewit-input-recall";
-export const HISTORY_RECALL_RESTORE_TAG = "codewit-input-recall-restore";
+export const HISTORY_RECALL_TAG = "grex-input-recall";
+export const HISTORY_RECALL_RESTORE_TAG = "grex-input-recall-restore";
 
 const TYPEAHEAD_SELECTABLE_SELECTOR = "[data-typeahead-popup] [cmdk-item]";
 

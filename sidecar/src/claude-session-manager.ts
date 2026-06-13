@@ -62,7 +62,7 @@ const CONTEXT_USAGE_TIMEOUT_MS = 30_000;
 
 /**
  * Resolve the Claude Code native binary for `pathToClaudeCodeExecutable`.
- * Prefers `CODEWIT_CLAUDE_CODE_BIN_PATH` (release), then the platform
+ * Prefers `GREX_CLAUDE_CODE_BIN_PATH` (release), then the platform
  * sub-package (dev/test); falls back to the wrapper bin for `--omit=optional`.
  * Mirrors the codex resolver in `codex-app-server-manager.ts`.
  *
@@ -74,7 +74,7 @@ const CONTEXT_USAGE_TIMEOUT_MS = 30_000;
  * the individual Claude session instead of the entire process.
  */
 function resolveClaudeBinPath(): string | undefined {
-	const override = process.env.CODEWIT_CLAUDE_CODE_BIN_PATH;
+	const override = process.env.GREX_CLAUDE_CODE_BIN_PATH;
 	if (override) {
 		return override;
 	}
@@ -92,7 +92,7 @@ function resolveClaudeBinPath(): string | undefined {
 		return join(dirname(pkgJson), "bin", "claude.exe");
 	} catch {
 		logger.info(
-			"Claude Code binary not resolved (no CODEWIT_CLAUDE_CODE_BIN_PATH and no resolvable package); deferring to SDK default resolution",
+			"Claude Code binary not resolved (no GREX_CLAUDE_CODE_BIN_PATH and no resolvable package); deferring to SDK default resolution",
 		);
 		return undefined;
 	}
@@ -136,7 +136,7 @@ function mergeQueryEnv(
 // claude-agent-sdk v0.3.142 changed MCP servers to connect in the
 // BACKGROUND by default: the session starts immediately and a slow server
 // reports `status: "pending"` in the `init` event, so a turn-1 tool call can
-// race a not-yet-connected MCP. Codewit doesn't surface a "MCP loading" state,
+// race a not-yet-connected MCP. Grex doesn't surface a "MCP loading" state,
 // and the pre-0.3 behavior was to block until MCP servers were ready — so we
 // pin the env flag back to blocking to keep behavior identical across the
 // upgrade. Revisit if/when the UI renders pending-MCP status.
@@ -166,7 +166,7 @@ interface LiveSession {
 	readonly emitter: SidecarEmitter;
 }
 
-// Codewit models permission as a binary: `plan` (read-only) or full access.
+// Grex models permission as a binary: `plan` (read-only) or full access.
 const VALID_PERMISSION_MODES = ["plan", "bypassPermissions"] as const;
 type ClaudePermissionMode = (typeof VALID_PERMISSION_MODES)[number];
 
@@ -1124,7 +1124,7 @@ export class ClaudeSessionManager implements SessionManager {
 	/**
 	 * Rich context-usage breakdown for the hover popover. Two paths:
 	 *
-	 *   - **Fast**: a live `Query` is already open for this codewit session
+	 *   - **Fast**: a live `Query` is already open for this grex session
 	 *     (user just sent a turn, the stream is still running). Reuse it;
 	 *     the SDK answers the control call in <100ms.
 	 *   - **Slow**: between turns — spawn a transient `Query` with
@@ -1137,16 +1137,16 @@ export class ClaudeSessionManager implements SessionManager {
 	 * Returns the slim JSON string ready to ship back over IPC.
 	 */
 	async getContextUsage(params: GetContextUsageParams): Promise<string> {
-		const { codewitSessionId, providerSessionId, model, cwd } = params;
+		const { grexSessionId, providerSessionId, model, cwd } = params;
 
-		const live = this.sessions.get(codewitSessionId);
+		const live = this.sessions.get(grexSessionId);
 		if (live) {
 			const raw = await live.query.getContextUsage();
 			return JSON.stringify(buildClaudeRichMeta(raw, model));
 		}
 
 		// Slow path: spawn a transient Query. `resume` is optional — when
-		// the codewit session hasn't run a turn yet there's no provider
+		// the grex session hasn't run a turn yet there's no provider
 		// session id to resume, but `q.getContextUsage()` still reports
 		// the baseline (system prompt + tools + memory + skills) for the
 		// selected model, which is exactly what the hover popover should

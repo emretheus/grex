@@ -159,7 +159,12 @@ export type DataInfo = {
 	archiveRoot: string;
 };
 
-export type AgentProvider = "claude" | "codex" | "cursor" | "opencode";
+export type AgentProvider =
+	| "claude"
+	| "codex"
+	| "cursor"
+	| "opencode"
+	| "gemini";
 
 export type LocalLlmStatus = {
 	enabled: boolean;
@@ -196,7 +201,7 @@ export type AgentModelSection = {
 	options: AgentModelOption[];
 };
 
-/** Wire strings the sidecars accept for permission mode. Codewit models
+/** Wire strings the sidecars accept for permission mode. Grex models
  *  permission as a binary: `plan` (read-only) or full access. */
 export type PermissionModeLiteral = "plan" | "bypassPermissions";
 
@@ -231,7 +236,7 @@ export type AgentSendRequest = {
 	 *  the chat bubble. */
 	promptPrefix?: string | null;
 	sessionId?: string | null;
-	codewitSessionId?: string | null;
+	grexSessionId?: string | null;
 	workingDirectory?: string | null;
 	effortLevel?: string | null;
 	permissionMode?: string | null;
@@ -817,19 +822,19 @@ export async function getCliStatus(): Promise<CliStatus> {
 	return await invoke<CliStatus>("get_cli_status");
 }
 
-export type CodewitSkillsStatus = {
+export type GrexSkillsStatus = {
 	installed: boolean;
 	claude: boolean;
 	codex: boolean;
 	command: string;
 };
 
-export async function getCodewitSkillsStatus(): Promise<CodewitSkillsStatus> {
+export async function getGrexSkillsStatus(): Promise<GrexSkillsStatus> {
 	try {
-		return await invoke<CodewitSkillsStatus>("get_codewit_skills_status");
+		return await invoke<GrexSkillsStatus>("get_grex_skills_status");
 	} catch (error) {
 		throw new Error(
-			describeInvokeError(error, "Unable to load Codewit skills status."),
+			describeInvokeError(error, "Unable to load Grex skills status."),
 		);
 	}
 }
@@ -891,40 +896,40 @@ export async function installCli(): Promise<CliStatus> {
 	return await invoke<CliStatus>("install_cli");
 }
 
-export async function installCodewitSkills(): Promise<CodewitSkillsStatus> {
+export async function installGrexSkills(): Promise<GrexSkillsStatus> {
 	try {
-		return await invoke<CodewitSkillsStatus>("install_codewit_skills");
+		return await invoke<GrexSkillsStatus>("install_grex_skills");
 	} catch (error) {
 		throw new Error(
-			describeInvokeError(error, "Unable to install Codewit skills."),
+			describeInvokeError(error, "Unable to install Grex skills."),
 		);
 	}
 }
 
 /**
- * Combined snapshot for the Settings → General "Codewit components"
+ * Combined snapshot for the Settings → General "Grex components"
  * row. Pairs the live CLI / Skills status with whatever the per-version
  * silent startup check cached. `lastCheckedVersion === currentVersion`
  * means the silent pass finished cleanly for this build; mismatch (or
  * null) means it never completed and the panel should surface a nudge.
  */
-export type CodewitComponentsUpdateCheck = {
+export type GrexComponentsUpdateCheck = {
 	cli: CliStatus;
-	skills: CodewitSkillsStatus;
+	skills: GrexSkillsStatus;
 	lastCheckedVersion: string | null;
 	currentVersion: string;
 	cliError: string | null;
 	skillsError: string | null;
 };
 
-export async function getCodewitComponentsUpdateCheck(): Promise<CodewitComponentsUpdateCheck> {
-	return await invoke<CodewitComponentsUpdateCheck>(
-		"get_codewit_components_update_check",
+export async function getGrexComponentsUpdateCheck(): Promise<GrexComponentsUpdateCheck> {
+	return await invoke<GrexComponentsUpdateCheck>(
+		"get_grex_components_update_check",
 	);
 }
 
-export async function recheckCodewitComponents(): Promise<CodewitComponentsUpdateCheck> {
-	return await invoke<CodewitComponentsUpdateCheck>("recheck_codewit_components");
+export async function recheckGrexComponents(): Promise<GrexComponentsUpdateCheck> {
+	return await invoke<GrexComponentsUpdateCheck>("recheck_grex_components");
 }
 
 export async function enterOnboardingWindowMode(): Promise<void> {
@@ -1700,7 +1705,7 @@ export async function listRemoteBranches(opts: {
 	try {
 		return await invoke<string[]>("list_remote_branches", opts);
 	} catch (error) {
-		console.warn("[codewit] listRemoteBranches failed:", error);
+		console.warn("[grex] listRemoteBranches failed:", error);
 		return [];
 	}
 }
@@ -1719,7 +1724,7 @@ export async function getRepoCurrentBranch(
 			repoId,
 		});
 	} catch (error) {
-		console.warn("[codewit] getRepoCurrentBranch failed:", error);
+		console.warn("[grex] getRepoCurrentBranch failed:", error);
 		return null;
 	}
 }
@@ -1737,7 +1742,7 @@ export async function listBranchesForLocalPicker(
 			repoId,
 		});
 	} catch (error) {
-		console.warn("[codewit] listBranchesForLocalPicker failed:", error);
+		console.warn("[grex] listBranchesForLocalPicker failed:", error);
 		return [];
 	}
 }
@@ -1763,7 +1768,7 @@ export async function listBranchesForWorkspacePicker(
 			{ repoId },
 		);
 	} catch (error) {
-		console.warn("[codewit] listBranchesForWorkspacePicker failed:", error);
+		console.warn("[grex] listBranchesForWorkspacePicker failed:", error);
 		return [];
 	}
 }
@@ -3109,7 +3114,7 @@ export type PendingCliSend = {
 
 /**
  * Atomically read and delete all pending CLI sends. Called on window focus
- * so the App can stream prompts that `codewit send` queued while the CLI
+ * so the App can stream prompts that `grex send` queued while the CLI
  * detected the App was running.
  */
 export async function drainPendingCliSends(): Promise<PendingCliSend[]> {
@@ -3259,7 +3264,7 @@ export async function prepareWorkspaceFromRepo(
 
 /**
  * Phase 2 of workspace creation. Slow (~200ms-2s): creates the git
- * worktree, probes `codewit.json`, and flips the
+ * worktree, probes `grex.json`, and flips the
  * workspace row from `initializing` to `ready` / `setup_pending`. On
  * failure, the workspace row is cleaned up automatically.
  */
@@ -4427,10 +4432,10 @@ export type RunScriptMode = "concurrent" | "non-concurrent";
  * One named run script for a repository. Multiple actions can be defined
  * per repo (e.g. "Dev server", "Tests"); each gets its own dropdown entry
  * and PTY lifecycle. `fromProject` is true when the entry comes from a
- * `codewit.json` declaration — the settings UI renders it read-only.
+ * `grex.json` declaration — the settings UI renders it read-only.
  *
  * `stopCommand`: optional cleanup shell snippet. When set, clicking Stop
- * runs this to completion (same env + cwd as `command`) before codewit
+ * runs this to completion (same env + cwd as `command`) before grex
  * signals the main process. Second Stop click short-circuits to SIGKILL.
  */
 export type RunAction = {
@@ -4446,7 +4451,7 @@ export type RepoScripts = {
 	setupScript?: string | null;
 	archiveScript?: string | null;
 	setupFromProject: boolean;
-	/** True when ANY run action was declared in `codewit.json`. */
+	/** True when ANY run action was declared in `grex.json`. */
 	runFromProject: boolean;
 	archiveFromProject: boolean;
 	/** Auto-run the setup script on workspace creation. Defaults to true. */
@@ -4476,9 +4481,9 @@ export type ScriptEvent =
 
 /**
  * Resolve repo scripts using a fixed priority (enforced in Rust):
- *   1. Workspace worktree `codewit.json` (when `workspaceId` is given AND
+ *   1. Workspace worktree `grex.json` (when `workspaceId` is given AND
  *      the worktree exists on disk)
- *   2. Source repo root `codewit.json` (fallback for any missing workspace
+ *   2. Source repo root `grex.json` (fallback for any missing workspace
  *      / worktree — archived, broken, or caller with no workspace context)
  *   3. DB-level override (Settings UI edit)
  *
@@ -4815,13 +4820,13 @@ export type ForkResult = {
 	htmlUrl: string;
 };
 
-export type ExistingCodewitRepo = {
+export type ExistingGrexRepo = {
 	repoId: string;
 	repoName: string;
 };
 
-export async function forkCodewitUpstream(): Promise<ForkResult> {
-	return invoke<ForkResult>("fork_codewit_upstream");
+export async function forkGrexUpstream(): Promise<ForkResult> {
+	return invoke<ForkResult>("fork_grex_upstream");
 }
 
 export type IssueResult = {
@@ -4829,15 +4834,15 @@ export type IssueResult = {
 	number: number;
 };
 
-export async function createCodewitIssue(
+export async function createGrexIssue(
 	title: string,
 	body: string,
 ): Promise<IssueResult> {
-	return invoke<IssueResult>("create_codewit_issue", { title, body });
+	return invoke<IssueResult>("create_grex_issue", { title, body });
 }
 
-export async function findExistingCodewitRepo(): Promise<ExistingCodewitRepo | null> {
-	return invoke<ExistingCodewitRepo | null>("find_existing_codewit_repo");
+export async function findExistingGrexRepo(): Promise<ExistingGrexRepo | null> {
+	return invoke<ExistingGrexRepo | null>("find_existing_grex_repo");
 }
 
 function describeInvokeError(error: unknown, fallback: string): string {
@@ -4928,7 +4933,7 @@ export async function signInCloudflare(): Promise<void> {
 	}
 }
 
-/** Provision a permanent remote-*.codewit.ai URL and bring it up. */
+/** Provision a permanent remote-*.grex.ai URL and bring it up. */
 export async function allocateStableUrl(): Promise<CompanionStatus> {
 	try {
 		return await invoke<CompanionStatus>("companion_allocate_stable_url");

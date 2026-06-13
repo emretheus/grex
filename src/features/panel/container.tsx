@@ -13,7 +13,7 @@ import type {
 } from "@/lib/api";
 import { createSession, loadRepoScripts } from "@/lib/api";
 import {
-	codewitQueryKeys,
+	grexQueryKeys,
 	sessionThreadMessagesQueryOptions,
 	workspaceDetailQueryOptions,
 	workspaceSessionsQueryOptions,
@@ -180,7 +180,7 @@ export const WorkspacePanelContainer = memo(function WorkspacePanelContainer({
 
 				const now = new Date().toISOString();
 				queryClient.setQueryData(
-					codewitQueryKeys.workspaceDetail(displayedWorkspaceId),
+					grexQueryKeys.workspaceDetail(displayedWorkspaceId),
 					(current: WorkspaceDetail | null | undefined) => {
 						if (!current) {
 							return current;
@@ -197,7 +197,7 @@ export const WorkspacePanelContainer = memo(function WorkspacePanelContainer({
 					},
 				);
 				queryClient.setQueryData(
-					codewitQueryKeys.workspaceSessions(displayedWorkspaceId),
+					grexQueryKeys.workspaceSessions(displayedWorkspaceId),
 					(current: WorkspaceSessionSummary[] | undefined) => {
 						if ((current ?? []).some((session) => session.id === sessionId)) {
 							return current;
@@ -228,16 +228,16 @@ export const WorkspacePanelContainer = memo(function WorkspacePanelContainer({
 					},
 				);
 				queryClient.setQueryData(
-					[...codewitQueryKeys.sessionMessages(sessionId), "thread"],
+					[...grexQueryKeys.sessionMessages(sessionId), "thread"],
 					[],
 				);
 
 				await Promise.all([
 					queryClient.invalidateQueries({
-						queryKey: codewitQueryKeys.workspaceDetail(displayedWorkspaceId),
+						queryKey: grexQueryKeys.workspaceDetail(displayedWorkspaceId),
 					}),
 					queryClient.invalidateQueries({
-						queryKey: codewitQueryKeys.workspaceSessions(displayedWorkspaceId),
+						queryKey: grexQueryKeys.workspaceSessions(displayedWorkspaceId),
 					}),
 				]);
 			})
@@ -313,7 +313,7 @@ export const WorkspacePanelContainer = memo(function WorkspacePanelContainer({
 		enabled: Boolean(threadSessionId),
 	});
 	const repoScriptsQuery = useQuery({
-		queryKey: codewitQueryKeys.repoScripts(
+		queryKey: grexQueryKeys.repoScripts(
 			workspace?.repoId ?? "__none__",
 			displayedWorkspaceId,
 		),
@@ -326,7 +326,7 @@ export const WorkspacePanelContainer = memo(function WorkspacePanelContainer({
 	const sessionDisplayProviders = useMemo<Record<string, AgentProvider>>(() => {
 		const modelSections =
 			queryClient.getQueryData<AgentModelSection[]>(
-				codewitQueryKeys.agentModelSections,
+				grexQueryKeys.agentModelSections,
 			) ?? [];
 		return Object.fromEntries(
 			sessions
@@ -459,10 +459,10 @@ export const WorkspacePanelContainer = memo(function WorkspacePanelContainer({
 		requestSidebarReconcile(queryClient);
 		await Promise.all([
 			queryClient.invalidateQueries({
-				queryKey: codewitQueryKeys.workspaceDetail(displayedWorkspaceId),
+				queryKey: grexQueryKeys.workspaceDetail(displayedWorkspaceId),
 			}),
 			queryClient.invalidateQueries({
-				queryKey: codewitQueryKeys.workspaceSessions(displayedWorkspaceId),
+				queryKey: grexQueryKeys.workspaceSessions(displayedWorkspaceId),
 			}),
 		]);
 	}, [displayedWorkspaceId, queryClient]);
@@ -475,10 +475,7 @@ export const WorkspacePanelContainer = memo(function WorkspacePanelContainer({
 		await invalidateWorkspaceQueries();
 		if (threadSessionId) {
 			await queryClient.invalidateQueries({
-				queryKey: [
-					...codewitQueryKeys.sessionMessages(threadSessionId),
-					"thread",
-				],
+				queryKey: [...grexQueryKeys.sessionMessages(threadSessionId), "thread"],
 			});
 		}
 	}, [
@@ -495,14 +492,14 @@ export const WorkspacePanelContainer = memo(function WorkspacePanelContainer({
 			}
 
 			queryClient.setQueryData(
-				codewitQueryKeys.workspaceSessions(displayedWorkspaceId),
+				grexQueryKeys.workspaceSessions(displayedWorkspaceId),
 				(current: typeof sessions | undefined) =>
 					(current ?? []).map((session) =>
 						session.id === sessionId ? { ...session, title } : session,
 					),
 			);
 			queryClient.setQueryData(
-				codewitQueryKeys.workspaceDetail(displayedWorkspaceId),
+				grexQueryKeys.workspaceDetail(displayedWorkspaceId),
 				(current: typeof workspace | undefined) => {
 					if (!current || current.activeSessionId !== sessionId) {
 						return current;
@@ -623,7 +620,7 @@ export const WorkspacePanelContainer = memo(function WorkspacePanelContainer({
 				// cached workspace detail so the chat panel re-renders
 				// against the new session right away.
 				queryClient.setQueryData(
-					codewitQueryKeys.workspaceDetail(targetWorkspaceId),
+					grexQueryKeys.workspaceDetail(targetWorkspaceId),
 					(current: WorkspaceDetail | null | undefined) => {
 						if (!current) return current;
 						return {
@@ -642,9 +639,9 @@ export const WorkspacePanelContainer = memo(function WorkspacePanelContainer({
 				onSelectSessionLatest.current(sessionId);
 			});
 		};
-		window.addEventListener("codewit:create-prefilled-session", handler);
+		window.addEventListener("grex:create-prefilled-session", handler);
 		return () =>
-			window.removeEventListener("codewit:create-prefilled-session", handler);
+			window.removeEventListener("grex:create-prefilled-session", handler);
 	}, [displayedWorkspaceId, queryClient]);
 
 	return (

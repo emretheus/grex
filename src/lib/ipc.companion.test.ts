@@ -6,24 +6,24 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 // through to the onboarding flow (which shows demo workspaces).
 //
 // `isTauriRuntime()` is false under jsdom (no `__TAURI_INTERNALS__`), so setting
-// `window.__CODEWIT_COMPANION__` flips the module onto the HTTP/fetch path.
+// `window.__GREX_COMPANION__` flips the module onto the HTTP/fetch path.
 // `vi.resetModules()` re-evaluates the module-level `COMPANION` const per test.
 describe("companion auth state", () => {
-	const TOKEN_KEY = "codewit.companion.pat";
-	type CompanionWindow = { __CODEWIT_COMPANION__?: unknown };
+	const TOKEN_KEY = "grex.companion.pat";
+	type CompanionWindow = { __GREX_COMPANION__?: unknown };
 
 	beforeEach(() => {
 		vi.resetModules();
 		localStorage.clear();
 		sessionStorage.clear();
 		window.history.replaceState(null, "", "/");
-		(window as unknown as CompanionWindow).__CODEWIT_COMPANION__ = {
+		(window as unknown as CompanionWindow).__GREX_COMPANION__ = {
 			base: "https://companion.test",
 		};
 	});
 
 	afterEach(() => {
-		(window as unknown as CompanionWindow).__CODEWIT_COMPANION__ = undefined;
+		(window as unknown as CompanionWindow).__GREX_COMPANION__ = undefined;
 		vi.unstubAllGlobals();
 		localStorage.clear();
 		sessionStorage.clear();

@@ -30,9 +30,9 @@ vi.mock("@/lib/api", async () => {
 	const actual = await vi.importActual<typeof api>("@/lib/api");
 	return {
 		...actual,
-		findExistingCodewitRepo: vi.fn(),
-		createCodewitIssue: vi.fn(),
-		forkCodewitUpstream: vi.fn(),
+		findExistingGrexRepo: vi.fn(),
+		createGrexIssue: vi.fn(),
+		forkGrexUpstream: vi.fn(),
 		cloneRepositoryFromUrl: vi.fn(),
 		prepareWorkspaceFromRepo: vi.fn(),
 		finalizeWorkspaceFromRepo: vi.fn(),
@@ -96,7 +96,7 @@ afterEach(() => {
 beforeEach(() => {
 	vi.resetAllMocks();
 	setGithubConnected(true);
-	mockedApi.findExistingCodewitRepo.mockResolvedValue(null);
+	mockedApi.findExistingGrexRepo.mockResolvedValue(null);
 });
 
 describe("FeedbackDialog — input step", () => {
@@ -142,8 +142,8 @@ describe("FeedbackDialog — input step", () => {
 
 describe("FeedbackDialog — create issue flow", () => {
 	it("requires a second click to confirm, then sends via API and shows a toast", async () => {
-		mockedApi.createCodewitIssue.mockResolvedValue({
-			url: "https://github.com/emretheus/codewit/issues/7",
+		mockedApi.createGrexIssue.mockResolvedValue({
+			url: "https://github.com/emretheus/grex/issues/7",
 			number: 7,
 		});
 
@@ -156,14 +156,14 @@ describe("FeedbackDialog — create issue flow", () => {
 
 		// First click arms the confirmation UI but doesn't send.
 		await user.click(createIssue);
-		expect(mockedApi.createCodewitIssue).not.toHaveBeenCalled();
+		expect(mockedApi.createGrexIssue).not.toHaveBeenCalled();
 		expect(await screen.findByText(/confirm\?/i)).toBeInTheDocument();
 
 		// Second click actually sends.
 		await user.click(screen.getByRole("button", { name: /confirm send/i }));
 
 		await waitFor(() =>
-			expect(mockedApi.createCodewitIssue).toHaveBeenCalledWith(
+			expect(mockedApi.createGrexIssue).toHaveBeenCalledWith(
 				"Dark mode plz",
 				"",
 			),
@@ -175,7 +175,7 @@ describe("FeedbackDialog — create issue flow", () => {
 		expect(toastSuccess).toHaveBeenCalledWith(
 			expect.anything(),
 			expect.objectContaining({
-				description: "https://github.com/emretheus/codewit/issues/7",
+				description: "https://github.com/emretheus/grex/issues/7",
 			}),
 		);
 	});
@@ -199,7 +199,7 @@ describe("FeedbackDialog — create issue flow", () => {
 	});
 
 	it("surfaces API failure via an error toast and leaves the input intact", async () => {
-		mockedApi.createCodewitIssue.mockRejectedValue(new Error("rate limited"));
+		mockedApi.createGrexIssue.mockRejectedValue(new Error("rate limited"));
 
 		const { user } = renderDialog();
 
@@ -223,16 +223,16 @@ describe("FeedbackDialog — create issue flow", () => {
 });
 
 describe("FeedbackDialog — quick fix flow", () => {
-	it("skips fork + clone when a local codewit repo already exists", async () => {
-		mockedApi.findExistingCodewitRepo.mockResolvedValue({
+	it("skips fork + clone when a local grex repo already exists", async () => {
+		mockedApi.findExistingGrexRepo.mockResolvedValue({
 			repoId: "repo-1",
-			repoName: "codewit",
+			repoName: "grex",
 		});
 
 		const { user } = renderDialog();
 
 		await waitFor(() =>
-			expect(mockedApi.findExistingCodewitRepo).toHaveBeenCalled(),
+			expect(mockedApi.findExistingGrexRepo).toHaveBeenCalled(),
 		);
 
 		await user.type(
@@ -246,13 +246,13 @@ describe("FeedbackDialog — quick fix flow", () => {
 		expect(
 			await screen.findByRole("button", { name: /send to agent/i }),
 		).toBeInTheDocument();
-		expect(mockedApi.forkCodewitUpstream).not.toHaveBeenCalled();
+		expect(mockedApi.forkGrexUpstream).not.toHaveBeenCalled();
 	});
 
 	it("Send to agent invokes onSubmitPrompt with the draft and closes the dialog", async () => {
-		mockedApi.findExistingCodewitRepo.mockResolvedValue({
+		mockedApi.findExistingGrexRepo.mockResolvedValue({
 			repoId: "repo-9",
-			repoName: "codewit",
+			repoName: "grex",
 		});
 
 		const { user, onSubmitPrompt, onOpenChange } = renderDialog();

@@ -1,7 +1,7 @@
 export type WorkspaceScriptType = "setup" | "run" | "archive";
 
 export const WORKSPACE_SCRIPT_PROMPTS: Record<WorkspaceScriptType, string> = {
-	setup: `Please help me initialize the Codewit setup script for this workspace and write the final result into the current workspace's codewit.json.
+	setup: `Please help me initialize the Grex setup script for this workspace and write the final result into the current workspace's grex.json.
 
 Context:
 - This setup script runs automatically right after a new workspace is created.
@@ -11,30 +11,30 @@ Context:
 
 Rules:
 1. Inspect the repository first before asking questions.
-2. Your goal is to actually create or update scripts.setup in codewit.json, not just give advice.
+2. Your goal is to actually create or update scripts.setup in grex.json, not just give advice.
 3. This is a worktree-based workspace. Use the environment variables correctly:
-   - CODEWIT_ROOT_PATH: the original repository root, not this workspace worktree path.
-   - CODEWIT_WORKSPACE_PATH: the current workspace's worktree path, and the directory where the script runs.
-   - CODEWIT_WORKSPACE_NAME: the current workspace name.
-   - CODEWIT_DEFAULT_BRANCH: the repository default branch.
-   - CODEWIT_PORT: the first port in this workspace's stable, non-overlapping port range.
-   - CODEWIT_PORT_COUNT: how many ports are reserved starting at CODEWIT_PORT.
+   - GREX_ROOT_PATH: the original repository root, not this workspace worktree path.
+   - GREX_WORKSPACE_PATH: the current workspace's worktree path, and the directory where the script runs.
+   - GREX_WORKSPACE_NAME: the current workspace name.
+   - GREX_DEFAULT_BRANCH: the repository default branch.
+   - GREX_PORT: the first port in this workspace's stable, non-overlapping port range.
+   - GREX_PORT_COUNT: how many ports are reserved starting at GREX_PORT.
 4. Migration from conductor.json:
-   - If codewit.json does not exist but conductor.json exists, copy conductor.json to codewit.json.
-   - Rename every CONDUCTOR_* environment variable reference in codewit.json to its Codewit equivalent. Cover both $VAR and \${VAR} forms. Do this whether codewit.json was just copied or an earlier incomplete migration left stale references:
-     - CONDUCTOR_WORKSPACE_NAME → CODEWIT_WORKSPACE_NAME
-     - CONDUCTOR_WORKSPACE_PATH → CODEWIT_WORKSPACE_PATH
-     - CONDUCTOR_ROOT_PATH → CODEWIT_ROOT_PATH
-     - CONDUCTOR_DEFAULT_BRANCH → CODEWIT_DEFAULT_BRANCH
-     - CONDUCTOR_PORT → CODEWIT_PORT
-   - After this step, only work on codewit.json.
-5. If the migrated codewit.json already contains scripts.setup, stop and tell me the migration is complete.
+   - If grex.json does not exist but conductor.json exists, copy conductor.json to grex.json.
+   - Rename every CONDUCTOR_* environment variable reference in grex.json to its Grex equivalent. Cover both $VAR and \${VAR} forms. Do this whether grex.json was just copied or an earlier incomplete migration left stale references:
+     - CONDUCTOR_WORKSPACE_NAME → GREX_WORKSPACE_NAME
+     - CONDUCTOR_WORKSPACE_PATH → GREX_WORKSPACE_PATH
+     - CONDUCTOR_ROOT_PATH → GREX_ROOT_PATH
+     - CONDUCTOR_DEFAULT_BRANCH → GREX_DEFAULT_BRANCH
+     - CONDUCTOR_PORT → GREX_PORT
+   - After this step, only work on grex.json.
+5. If the migrated grex.json already contains scripts.setup, stop and tell me the migration is complete.
 6. Keep setup minimal and idempotent.
 7. Do not hardcode absolute local paths.
 8. Ask at most 3 rounds of questions, and only when they materially change the script design.
 
 What to inspect:
-- codewit.json, conductor.json
+- grex.json, conductor.json
 - README and developer docs
 - package.json, lockfiles, workspace config, Cargo.toml, pyproject.toml, go.mod, Gemfile
 - Makefile, justfile
@@ -42,7 +42,7 @@ What to inspect:
 - .gitignore
 - git status --short --ignored
 
-Pay special attention to ignored or untracked local files that a fresh worktree may be missing. If some of them are likely required, identify them clearly before deciding whether setup should copy them from CODEWIT_ROOT_PATH into CODEWIT_WORKSPACE_PATH.
+Pay special attention to ignored or untracked local files that a fresh worktree may be missing. If some of them are likely required, identify them clearly before deciding whether setup should copy them from GREX_ROOT_PATH into GREX_WORKSPACE_PATH.
 
 Your flow:
 1. Inspect silently first.
@@ -52,19 +52,19 @@ Your flow:
    - why
    - which local files look like likely migration candidates
 3. Only ask concise blocking questions if needed.
-4. Then create or update codewit.json.
+4. Then create or update grex.json.
 5. End with a short summary:
    - which file you changed
    - the final scripts.setup
    - any local files that still need confirmation
    - your key assumptions`,
-	run: `Please help me initialize the Codewit run actions for this workspace and write the final result into the current workspace's codewit.json.
+	run: `Please help me initialize the Grex run actions for this workspace and write the final result into the current workspace's grex.json.
 
 Context:
 - Run actions are named commands I can pick from the Inspector's Run dropdown. Cmd+R fires whichever action is currently selected.
 - One workspace can have several run actions (e.g. "Dev", "Tests", "Lint", "DB"). Each runs in its own PTY, independently startable / stoppable.
-- They are configured via the \`scripts.run\` array in codewit.json. Every entry must have a non-blank \`name\` and a non-blank \`command\` — entries missing either are silently ignored.
-- An entry may also carry an optional \`stopCommand\`: a short cleanup shell snippet that runs (same env + cwd as \`command\`) when I click Stop, before Codewit signals the main process. Use it when the main command leaves external state behind (containers up, services running, ports held by detached children). A second Stop click force-kills, so \`stopCommand\` should be short and non-interactive.
+- They are configured via the \`scripts.run\` array in grex.json. Every entry must have a non-blank \`name\` and a non-blank \`command\` — entries missing either are silently ignored.
+- An entry may also carry an optional \`stopCommand\`: a short cleanup shell snippet that runs (same env + cwd as \`command\`) when I click Stop, before Grex signals the main process. Use it when the main command leaves external state behind (containers up, services running, ports held by detached children). A second Stop click force-kills, so \`stopCommand\` should be short and non-interactive.
 - An entry may also carry an optional \`mode\`: \`"concurrent"\` (default) or \`"non-concurrent"\`. \`"non-concurrent"\` makes starting a new run of this action stop any other run of the same action across workspaces in the repo — the Exclusive toggle in the UI. Use it when the command binds a fixed port, holds a single named resource (a DB socket, a debugger port, a unique container name), or otherwise can't safely coexist with itself across workspaces.
 
 Required shape (use the array form, even when there is only one action):
@@ -84,35 +84,35 @@ A legacy string form (\`"run": "npm dev"\`) is still parsed for backwards compat
 
 Rules:
 1. Inspect the repository first before asking questions.
-2. Your goal is to actually create or update \`scripts.run\` (the array) in codewit.json, not just give advice.
+2. Your goal is to actually create or update \`scripts.run\` (the array) in grex.json, not just give advice.
 3. This is a worktree-based workspace. Use the environment variables correctly:
-   - CODEWIT_ROOT_PATH: the original repository root.
-   - CODEWIT_WORKSPACE_PATH: the current workspace's worktree path, and the directory where the script runs.
-   - CODEWIT_WORKSPACE_NAME: the current workspace name.
-   - CODEWIT_DEFAULT_BRANCH: the repository default branch.
-   - CODEWIT_PORT: the first port in this workspace's stable, non-overlapping port range.
-   - CODEWIT_PORT_COUNT: how many ports are reserved starting at CODEWIT_PORT.
+   - GREX_ROOT_PATH: the original repository root.
+   - GREX_WORKSPACE_PATH: the current workspace's worktree path, and the directory where the script runs.
+   - GREX_WORKSPACE_NAME: the current workspace name.
+   - GREX_DEFAULT_BRANCH: the repository default branch.
+   - GREX_PORT: the first port in this workspace's stable, non-overlapping port range.
+   - GREX_PORT_COUNT: how many ports are reserved starting at GREX_PORT.
 4. Migration from conductor.json:
-   - If codewit.json does not exist but conductor.json exists, copy conductor.json to codewit.json.
-   - Rename every CONDUCTOR_* environment variable reference in codewit.json to its Codewit equivalent. Cover both $VAR and \${VAR} forms. Do this whether codewit.json was just copied or an earlier incomplete migration left stale references:
-     - CONDUCTOR_WORKSPACE_NAME → CODEWIT_WORKSPACE_NAME
-     - CONDUCTOR_WORKSPACE_PATH → CODEWIT_WORKSPACE_PATH
-     - CONDUCTOR_ROOT_PATH → CODEWIT_ROOT_PATH
-     - CONDUCTOR_DEFAULT_BRANCH → CODEWIT_DEFAULT_BRANCH
-     - CONDUCTOR_PORT → CODEWIT_PORT
-   - After this step, only work on codewit.json.
+   - If grex.json does not exist but conductor.json exists, copy conductor.json to grex.json.
+   - Rename every CONDUCTOR_* environment variable reference in grex.json to its Grex equivalent. Cover both $VAR and \${VAR} forms. Do this whether grex.json was just copied or an earlier incomplete migration left stale references:
+     - CONDUCTOR_WORKSPACE_NAME → GREX_WORKSPACE_NAME
+     - CONDUCTOR_WORKSPACE_PATH → GREX_WORKSPACE_PATH
+     - CONDUCTOR_ROOT_PATH → GREX_ROOT_PATH
+     - CONDUCTOR_DEFAULT_BRANCH → GREX_DEFAULT_BRANCH
+     - CONDUCTOR_PORT → GREX_PORT
+   - After this step, only work on grex.json.
    - If the migrated \`scripts.run\` is still in the legacy string form, convert it to the array form (\`[{"name": "Default", "command": "<old string>"}]\`) before writing.
 5. If \`scripts.run\` already exists with one or more valid array entries, stop and tell me the configuration is complete.
 6. Do not overfit any single action to the current task, a single test file, or a one-off command.
 7. Do not quietly choose a heavy, destructive, or highly opinionated command when multiple reasonable defaults exist.
-8. For dev servers or local services, prefer CODEWIT_PORT over hardcoded defaults so parallel workspaces do not collide. If the project needs multiple ports, use the range from CODEWIT_PORT through CODEWIT_PORT + CODEWIT_PORT_COUNT - 1.
+8. For dev servers or local services, prefer GREX_PORT over hardcoded defaults so parallel workspaces do not collide. If the project needs multiple ports, use the range from GREX_PORT through GREX_PORT + GREX_PORT_COUNT - 1.
 9. Action names should be short, capitalized, and describe intent (e.g. "Dev", "Tests", "Lint", "DB"). Avoid duplicates.
 10. Add \`stopCommand\` only for actions whose \`command\` leaves external state behind that won't be cleaned up by killing the process tree — typical cases are \`docker compose up\`, \`supabase start\`, or long-running services that detach. Skip \`stopCommand\` for plain dev servers, test runners, lint, and anything that exits cleanly on SIGTERM.
-11. Set \`"mode": "non-concurrent"\` only when the command can't safely run twice at once in the same repo — it binds a fixed port that doesn't read \`CODEWIT_PORT\`, attaches to a single shared resource (named container, exclusive DB lock, debugger port), or otherwise has cross-workspace contention. Leave \`mode\` off (defaulting to concurrent) for everything that reads \`CODEWIT_PORT\` or has no shared state — parallel workspaces are the whole point.
+11. Set \`"mode": "non-concurrent"\` only when the command can't safely run twice at once in the same repo — it binds a fixed port that doesn't read \`GREX_PORT\`, attaches to a single shared resource (named container, exclusive DB lock, debugger port), or otherwise has cross-workspace contention. Leave \`mode\` off (defaulting to concurrent) for everything that reads \`GREX_PORT\` or has no shared state — parallel workspaces are the whole point.
 12. Ask at most 3 rounds of questions, and only when they materially change the lineup.
 
 What to inspect:
-- codewit.json, conductor.json
+- grex.json, conductor.json
 - README and developer docs
 - package.json, workspace config, Cargo.toml
 - Makefile, justfile
@@ -132,13 +132,13 @@ Your flow:
    - If only ONE candidate genuinely fits, propose a single-entry array (\`[{ "name": "Default", "command": "…" }]\`).
    - If 2+ fit, propose them all as named entries (\`[{ "name": "Dev", … }, { "name": "Tests", … }]\`).
 5. Ask me to confirm, ideally so I can answer with A / B / C / "all".
-6. After I confirm, create or update codewit.json with the ARRAY form.
+6. After I confirm, create or update grex.json with the ARRAY form.
 7. End with a short summary:
    - which file you changed
    - the final \`scripts.run\` array (formatted JSON)
    - what each entry does
-   - reminder that I can add or rename actions later by editing codewit.json (or via the repo's Scripts settings panel)`,
-	archive: `Please help me initialize the Codewit archive script for this workspace and write the final result into the current workspace's codewit.json.
+   - reminder that I can add or rename actions later by editing grex.json (or via the repo's Scripts settings panel)`,
+	archive: `Please help me initialize the Grex archive script for this workspace and write the final result into the current workspace's grex.json.
 
 Context:
 - This archive script runs when this workspace is archived.
@@ -147,30 +147,30 @@ Context:
 
 Rules:
 1. Inspect the repository and workspace context first before asking questions.
-2. Your goal is to actually create or update scripts.archive in codewit.json, not just give advice.
+2. Your goal is to actually create or update scripts.archive in grex.json, not just give advice.
 3. This is a worktree-based workspace. Use the environment variables correctly:
-   - CODEWIT_ROOT_PATH: the original repository root.
-   - CODEWIT_WORKSPACE_PATH: the current workspace's worktree path, and the directory where the script runs.
-   - CODEWIT_WORKSPACE_NAME: the current workspace name.
-   - CODEWIT_DEFAULT_BRANCH: the repository default branch.
-   - CODEWIT_PORT: the first port in this workspace's stable, non-overlapping port range.
-   - CODEWIT_PORT_COUNT: how many ports are reserved starting at CODEWIT_PORT.
+   - GREX_ROOT_PATH: the original repository root.
+   - GREX_WORKSPACE_PATH: the current workspace's worktree path, and the directory where the script runs.
+   - GREX_WORKSPACE_NAME: the current workspace name.
+   - GREX_DEFAULT_BRANCH: the repository default branch.
+   - GREX_PORT: the first port in this workspace's stable, non-overlapping port range.
+   - GREX_PORT_COUNT: how many ports are reserved starting at GREX_PORT.
 4. Migration from conductor.json:
-   - If codewit.json does not exist but conductor.json exists, copy conductor.json to codewit.json.
-   - Rename every CONDUCTOR_* environment variable reference in codewit.json to its Codewit equivalent. Cover both $VAR and \${VAR} forms. Do this whether codewit.json was just copied or an earlier incomplete migration left stale references:
-     - CONDUCTOR_WORKSPACE_NAME → CODEWIT_WORKSPACE_NAME
-     - CONDUCTOR_WORKSPACE_PATH → CODEWIT_WORKSPACE_PATH
-     - CONDUCTOR_ROOT_PATH → CODEWIT_ROOT_PATH
-     - CONDUCTOR_DEFAULT_BRANCH → CODEWIT_DEFAULT_BRANCH
-     - CONDUCTOR_PORT → CODEWIT_PORT
-   - After this step, only work on codewit.json.
-5. If the migrated codewit.json already contains scripts.archive, stop and tell me the migration is complete.
+   - If grex.json does not exist but conductor.json exists, copy conductor.json to grex.json.
+   - Rename every CONDUCTOR_* environment variable reference in grex.json to its Grex equivalent. Cover both $VAR and \${VAR} forms. Do this whether grex.json was just copied or an earlier incomplete migration left stale references:
+     - CONDUCTOR_WORKSPACE_NAME → GREX_WORKSPACE_NAME
+     - CONDUCTOR_WORKSPACE_PATH → GREX_WORKSPACE_PATH
+     - CONDUCTOR_ROOT_PATH → GREX_ROOT_PATH
+     - CONDUCTOR_DEFAULT_BRANCH → GREX_DEFAULT_BRANCH
+     - CONDUCTOR_PORT → GREX_PORT
+   - After this step, only work on grex.json.
+5. If the migrated grex.json already contains scripts.archive, stop and tell me the migration is complete.
 6. Default to conservative behavior.
 7. Ask at most 3 rounds of questions, and only when they materially change the script design.
 8. Without my explicit confirmation, do not write any destructive action such as deleting databases, volumes, caches, build outputs, secrets, logs, screenshots, files outside the workspace, remote resources, or broad rm -rf / git clean behavior.
 
 What to inspect:
-- codewit.json, conductor.json
+- grex.json, conductor.json
 - README and developer docs
 - package.json, Cargo.toml
 - Makefile, justfile
@@ -188,7 +188,7 @@ Your flow:
    - which ones need confirmation
    - which ones are too risky to write by default
 3. Only ask concise blocking questions if needed.
-4. Then create or update codewit.json.
+4. Then create or update grex.json.
 5. End with a short summary:
    - which file you changed
    - the final scripts.archive

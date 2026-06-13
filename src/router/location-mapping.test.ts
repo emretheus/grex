@@ -307,7 +307,7 @@ describe("round-trip (path)", () => {
 // router whose route tree matches `src/router/index.tsx` (distinct `/start`,
 // `?view` search param with the conversation default stripped). Facts the gate
 // depends on:
-//   1. For plain ids (Codewit's are UUID v4), `selectionToPath` is byte-equal to
+//   1. For plain ids (Grex's are UUID v4), `selectionToPath` is byte-equal to
 //      `router.state.location.pathname`.
 //   2. For ids with URL-reserved chars TanStack normalises the stored pathname
 //      with `decodeURI`, so a raw-string compare is NOT reliable — the gate

@@ -4,7 +4,7 @@ import type { QueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
 import { toast } from "sonner";
 import { syncWorkspaceWithTargetBranch } from "@/lib/api";
-import { codewitQueryKeys } from "@/lib/query-client";
+import { grexQueryKeys } from "@/lib/query-client";
 import { requestSidebarReconcile } from "@/lib/sidebar-mutation-gate";
 
 export function usePullLatest(opts: {
@@ -34,18 +34,17 @@ export function usePullLatest(opts: {
 			requestSidebarReconcile(queryClient);
 			await Promise.all([
 				queryClient.invalidateQueries({
+					queryKey: grexQueryKeys.workspaceGitActionStatus(selectedWorkspaceId),
+				}),
+				queryClient.invalidateQueries({
+					queryKey: grexQueryKeys.workspaceChangeRequest(selectedWorkspaceId),
+				}),
+				queryClient.invalidateQueries({
 					queryKey:
-						codewitQueryKeys.workspaceGitActionStatus(selectedWorkspaceId),
+						grexQueryKeys.workspaceForgeActionStatus(selectedWorkspaceId),
 				}),
 				queryClient.invalidateQueries({
-					queryKey: codewitQueryKeys.workspaceChangeRequest(selectedWorkspaceId),
-				}),
-				queryClient.invalidateQueries({
-					queryKey:
-						codewitQueryKeys.workspaceForgeActionStatus(selectedWorkspaceId),
-				}),
-				queryClient.invalidateQueries({
-					queryKey: codewitQueryKeys.workspaceDetail(selectedWorkspaceId),
+					queryKey: grexQueryKeys.workspaceDetail(selectedWorkspaceId),
 				}),
 				queryClient.invalidateQueries({ queryKey: ["workspaceChanges"] }),
 			]);

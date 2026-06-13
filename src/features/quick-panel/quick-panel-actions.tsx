@@ -69,7 +69,7 @@ export function QuickPanelActions({
 			</ActionButton>
 			{selectedWorkspaceId ? (
 				<ActionButton
-					label="Open in Codewit"
+					label="Open in Grex"
 					onClick={() =>
 						void revealWorkspaceInMainWindow(
 							selectedWorkspaceId,

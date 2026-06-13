@@ -4,7 +4,7 @@
 //! cloudflared tunnel (quick or named/stable), and the `paired_devices` store.
 //! Enabling starts a loopback server plus a tunnel; pairing mints a per-device
 //! PAT and returns the QR payload the phone scans; the stable-URL commands
-//! provision a permanent `remote-*.codewit.ai` hostname.
+//! provision a permanent `remote-*.grex.ai` hostname.
 
 use serde::Serialize;
 use tauri::{AppHandle, State};
@@ -112,7 +112,7 @@ pub async fn companion_sign_in_cloudflare() -> CmdResult<()> {
     Ok(())
 }
 
-/// Provision a permanent `remote-*.codewit.ai` URL: create a named tunnel,
+/// Provision a permanent `remote-*.grex.ai` URL: create a named tunnel,
 /// register the hostname, persist it, and bring the named tunnel up now.
 #[tauri::command]
 pub async fn companion_allocate_stable_url(
@@ -124,7 +124,7 @@ pub async fn companion_allocate_stable_url(
         return Err(anyhow::anyhow!("sign in to Cloudflare first").into());
     }
 
-    let name = format!("codewit-{}", short_id());
+    let name = format!("grex-{}", short_id());
     let (uuid, creds_path) =
         tauri::async_runtime::spawn_blocking(move || companion::create_named_tunnel(&name))
             .await
@@ -221,7 +221,7 @@ pub async fn companion_revoke_device(app: AppHandle, device_id: String) -> CmdRe
     Ok(())
 }
 
-/// Short random suffix for the named-tunnel name (`codewit-<8 hex>`).
+/// Short random suffix for the named-tunnel name (`grex-<8 hex>`).
 fn short_id() -> String {
     uuid::Uuid::new_v4().simple().to_string()[..8].to_string()
 }

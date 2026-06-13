@@ -94,7 +94,7 @@ export function DownloadDropdown({ data }: Props) {
 				onClick={closeNow}
 			>
 				<DownloadIcon />
-				Download Codewit
+				Download Grex
 				<CaretIcon />
 			</a>
 			<div className="dl-panel" role="menu">

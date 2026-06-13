@@ -133,7 +133,7 @@ export async function readImageWithResize(
 	});
 
 	const ext = extname(filePath) || ".png";
-	const tmpDir = await mkdtemp(join(tmpdir(), "codewit-img-"));
+	const tmpDir = await mkdtemp(join(tmpdir(), "grex-img-"));
 	const tmpPath = join(tmpDir, `resized${ext}`);
 
 	const ok = await resizeWithSips(filePath, tmpPath);

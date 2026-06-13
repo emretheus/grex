@@ -10,8 +10,8 @@
 //! through `cargo insta review` and the matching frontend type in
 //! `src/lib/api.ts` must be updated in the same PR.
 
-use codewit_lib::agents::AgentStreamEvent;
-use codewit_lib::pipeline::types::ThreadMessageLike;
+use grex_lib::agents::AgentStreamEvent;
+use grex_lib::pipeline::types::ThreadMessageLike;
 use insta::assert_yaml_snapshot;
 use serde_json::{json, Value};
 
@@ -49,7 +49,7 @@ fn wire_format_done() {
         model_id: "opus-1m".into(),
         resolved_model: "claude-opus-4-20250514".into(),
         session_id: Some("provider-session-1".into()),
-        working_directory: "/tmp/codewit".into(),
+        working_directory: "/tmp/grex".into(),
         persisted: true,
     }));
 }
@@ -61,7 +61,7 @@ fn wire_format_aborted() {
         model_id: "opus-1m".into(),
         resolved_model: "claude-opus-4-20250514".into(),
         session_id: Some("provider-session-1".into()),
-        working_directory: "/tmp/codewit".into(),
+        working_directory: "/tmp/grex".into(),
         persisted: true,
         reason: "user_requested".into(),
     }));
@@ -85,7 +85,7 @@ fn wire_format_user_input_request_ask_user_question() {
         model_id: "opus-1m".into(),
         resolved_model: "claude-opus-4-20250514".into(),
         session_id: Some("provider-session-1".into()),
-        working_directory: "/tmp/codewit".into(),
+        working_directory: "/tmp/grex".into(),
         permission_mode: Some("default".into()),
         user_input_id: "tool-1".into(),
         source: "Claude".into(),
@@ -104,7 +104,7 @@ fn wire_format_user_input_request_form() {
         model_id: "opus-1m".into(),
         resolved_model: "claude-opus-4-20250514".into(),
         session_id: Some("provider-session-1".into()),
-        working_directory: "/tmp/codewit".into(),
+        working_directory: "/tmp/grex".into(),
         permission_mode: None,
         user_input_id: "elicitation-1".into(),
         source: "design-server".into(),
@@ -127,7 +127,7 @@ fn wire_format_user_input_request_url() {
         model_id: "opus-1m".into(),
         resolved_model: "claude-opus-4-20250514".into(),
         session_id: Some("provider-session-1".into()),
-        working_directory: "/tmp/codewit".into(),
+        working_directory: "/tmp/grex".into(),
         permission_mode: None,
         user_input_id: "elicitation-2".into(),
         source: "auth-server".into(),

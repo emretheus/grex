@@ -28,8 +28,8 @@ pub use text::truncate_middle;
 
 const SETTINGS_KEY: &str = "app.local_llm";
 // Alias the bundled `llama-server` advertises to the OpenAI-compatible
-// API. Frontends POST to `model: codewit-local`.
-const API_MODEL: &str = "codewit-local";
+// API. Frontends POST to `model: grex-local`.
+const API_MODEL: &str = "grex-local";
 const GPU_LAYERS: &str = "99";
 const REASONING_MODE: &str = "off";
 const LOG_TAG: &str = "local-llm";

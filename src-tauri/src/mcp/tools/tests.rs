@@ -14,21 +14,21 @@ fn tool_catalog_lists_expected_names() {
         .collect();
     // Frozen list — drift between this and `dispatch_tool` would be a bug.
     let expected = vec![
-        "codewit_data_info",
-        "codewit_repo_list",
-        "codewit_repo_add",
-        "codewit_workspace_list",
-        "codewit_workspace_show",
-        "codewit_workspace_create",
-        "codewit_workspace_set_status",
-        "codewit_workspace_archive",
-        "codewit_workspace_permanently_delete",
-        "codewit_workspace_run_action",
-        "codewit_session_list",
-        "codewit_session_create",
-        "codewit_session_search",
-        "codewit_session_get_messages",
-        "codewit_send",
+        "grex_data_info",
+        "grex_repo_list",
+        "grex_repo_add",
+        "grex_workspace_list",
+        "grex_workspace_show",
+        "grex_workspace_create",
+        "grex_workspace_set_status",
+        "grex_workspace_archive",
+        "grex_workspace_permanently_delete",
+        "grex_workspace_run_action",
+        "grex_session_list",
+        "grex_session_create",
+        "grex_session_search",
+        "grex_session_get_messages",
+        "grex_send",
     ];
     assert_eq!(names, expected);
 }
@@ -57,8 +57,8 @@ fn workspace_list_schema_advertises_filter_props() {
     let catalog = tool_catalog();
     let list = catalog
         .iter()
-        .find(|t| t["name"] == "codewit_workspace_list")
-        .expect("codewit_workspace_list present");
+        .find(|t| t["name"] == "grex_workspace_list")
+        .expect("grex_workspace_list present");
     let props = &list["inputSchema"]["properties"];
     assert!(props.get("status").is_some());
     assert!(props.get("repo").is_some());
@@ -87,8 +87,8 @@ fn every_tool_schema_advertises_response_options() {
 fn compact_response_strips_icons_and_filters_fields() {
     let data = json!([{
         "id": "repo-1",
-        "name": "codewit",
-        "remoteUrl": "git@github.com:emretheus/codewit.git",
+        "name": "grex",
+        "remoteUrl": "git@github.com:emretheus/grex.git",
         "repoIconSrc": "data:image/png;base64,AAAA",
         "unused": "drop-me"
     }]);
@@ -100,7 +100,7 @@ fn compact_response_strips_icons_and_filters_fields() {
         Some(REPO_COMPACT_FIELDS),
     )
     .unwrap();
-    assert!(rendered.contains("codewit"));
+    assert!(rendered.contains("grex"));
     assert!(rendered.contains("remoteUrl"));
     assert!(!rendered.contains("repoIconSrc"));
     assert!(!rendered.contains("drop-me"));

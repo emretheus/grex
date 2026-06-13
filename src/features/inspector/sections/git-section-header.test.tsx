@@ -16,7 +16,7 @@ vi.mock("./forge-cli-onboarding", () => ({
 }));
 
 const changeRequest: ChangeRequestInfo = {
-	url: "https://gitlab.com/codewit/codewit/-/merge_requests/182",
+	url: "https://gitlab.com/grex/grex/-/merge_requests/182",
 	number: 182,
 	state: "OPEN",
 	title: "Add GitLab forge support",
@@ -27,9 +27,9 @@ function gitlabDetection(patch: Partial<ForgeDetection> = {}): ForgeDetection {
 	return {
 		provider: "gitlab",
 		host: "gitlab.com",
-		namespace: "codewit",
-		repo: "codewit",
-		remoteUrl: "git@gitlab.com:codewit/codewit.git",
+		namespace: "grex",
+		repo: "grex",
+		remoteUrl: "git@gitlab.com:grex/grex.git",
 		labels: {
 			providerName: "GitLab",
 			cliName: "glab",
@@ -46,9 +46,9 @@ function githubDetection(patch: Partial<ForgeDetection> = {}): ForgeDetection {
 	return {
 		provider: "github",
 		host: "github.com",
-		namespace: "codewit",
-		repo: "codewit",
-		remoteUrl: "git@github.com:codewit/codewit.git",
+		namespace: "grex",
+		repo: "grex",
+		remoteUrl: "git@github.com:grex/grex.git",
 		labels: {
 			providerName: "GitHub",
 			cliName: "gh",

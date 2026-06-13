@@ -78,7 +78,7 @@ pub fn child_is_running(child: &mut Child) -> bool {
 /// resolution function for the whole crate so the LLM and STT
 /// managers can't drift out of sync.
 pub fn resolve_llama_server_path() -> Result<PathBuf> {
-    if let Some(path) = std::env::var_os("CODEWIT_LLAMA_SERVER_BIN_PATH") {
+    if let Some(path) = std::env::var_os("GREX_LLAMA_SERVER_BIN_PATH") {
         let path = PathBuf::from(path);
         if path.is_file() {
             return Ok(path);
@@ -115,7 +115,7 @@ pub fn resolve_llama_server_path() -> Result<PathBuf> {
 pub fn spawn(args: SpawnArgs) -> Result<ServerInstance> {
     let bin = resolve_llama_server_path()?;
     let port = free_port()?;
-    let token = format!("codewit-local-{}", uuid::Uuid::new_v4());
+    let token = format!("grex-local-{}", uuid::Uuid::new_v4());
 
     fs::create_dir_all(&args.hf_home).context("create local AI HF cache dir")?;
     fs::create_dir_all(&args.logs_dir).context("create local AI logs dir")?;
@@ -275,7 +275,7 @@ fn write_pid_file(path: &Path, pid: u32) {
     }
 }
 
-/// Reap an orphan llama-server left behind by a prior Codewit process
+/// Reap an orphan llama-server left behind by a prior Grex process
 /// that was force-quit / crashed / hot-reloaded without running `Drop`.
 /// Called from the app setup hook before the auto-start, so we never
 /// spawn alongside a stale one. Verifies the pid is still ours by

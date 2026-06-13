@@ -14,7 +14,7 @@ import {
 	XCircleFillIcon,
 } from "@primer/octicons-react";
 import { Pin } from "lucide-react";
-import codewitLogo from "@/assets/codewit-logo-light.png";
+import grexLogo from "@/assets/grex-logo-light.png";
 import {
 	Avatar,
 	AvatarBadge,
@@ -154,8 +154,8 @@ export function GroupIcon({ tone }: { tone: GroupTone }) {
 	}
 }
 
-// ─── Avatar (Codewit logo, mockup-private) ─────────────────────────────────
-// All mockup rows show the Codewit logo — this is a marketing/onboarding
+// ─── Avatar (Grex logo, mockup-private) ─────────────────────────────────
+// All mockup rows show the Grex logo — this is a marketing/onboarding
 // preview, not a real multi-repo workspace. The `repoInitials` / `repoName`
 // props are kept on the signature for shape parity with the production
 // `WorkspaceAvatarUI`, but only feed the fallback shown if the image fails
@@ -193,7 +193,7 @@ export function WorkspaceAvatarUI({
 				className,
 			)}
 		>
-			<AvatarImage src={codewitLogo} alt="" className="object-contain" />
+			<AvatarImage src={grexLogo} alt="" className="object-contain" />
 			<AvatarFallback
 				delayMs={0}
 				className={cn(

@@ -1,4 +1,4 @@
-import { CodewitThinkingIndicator } from "@/components/codewit-thinking-indicator";
+import { GrexThinkingIndicator } from "@/components/grex-thinking-indicator";
 import type { DisplayResolution } from "./parse";
 import {
 	AutoCompactNote,
@@ -55,7 +55,7 @@ export function ContextUsagePopoverContent({
 
 			{richLoading && !showCategories ? (
 				<div className="flex items-center gap-2 text-mini text-muted-foreground">
-					<CodewitThinkingIndicator size={12} />
+					<GrexThinkingIndicator size={12} />
 					<span>Loading context details…</span>
 				</div>
 			) : null}

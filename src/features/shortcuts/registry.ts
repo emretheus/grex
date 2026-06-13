@@ -207,7 +207,7 @@ export const SHORTCUT_DEFINITIONS: ShortcutDefinition[] = [
 	{
 		id: "global.hotkey",
 		title: "Global hotkey",
-		description: "Show/hide Codewit from anywhere.",
+		description: "Show/hide Grex from anywhere.",
 		group: "System",
 		defaultHotkey: null,
 		scopes: ["app"],

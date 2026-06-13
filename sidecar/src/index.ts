@@ -1,11 +1,11 @@
 /**
- * Codewit Sidecar — Agent SDK bridge.
+ * Grex Sidecar — Agent SDK bridge.
  *
  * Bridges the Claude Agent SDK and Codex SDK behind a unified
  * stdin/stdout JSON Lines protocol. Requests come in via stdin, responses
  * and streaming events go out via stdout. stderr is for debug logging.
  *
- * Log level controlled by CODEWIT_LOG (debug|info|error), defaults to info.
+ * Log level controlled by GREX_LOG (debug|info|error), defaults to info.
  */
 
 import { createInterface } from "node:readline";
@@ -16,6 +16,7 @@ import { ClaudeSessionManager } from "./claude-session-manager.js";
 import { CodexAppServerManager } from "./codex-app-server-manager.js";
 import { CursorSessionManager } from "./cursor-session-manager.js";
 import { createSidecarEmitter } from "./emitter.js";
+import { GeminiAcpManager } from "./gemini-acp-manager.js";
 import { resolveHostResponse, setHostWriter } from "./host-bridge.js";
 import { errorDetails, logger } from "./logger.js";
 import { OpencodeSessionManager } from "./opencode-session-manager.js";
@@ -44,11 +45,13 @@ const claudeManager = new ClaudeSessionManager();
 const codexManager = new CodexAppServerManager();
 const cursorManager = new CursorSessionManager();
 const opencodeManager = new OpencodeSessionManager();
+const geminiManager = new GeminiAcpManager();
 const managers: Record<Provider, SessionManager> = {
 	claude: claudeManager,
 	codex: codexManager,
 	cursor: cursorManager,
 	opencode: opencodeManager,
+	gemini: geminiManager,
 };
 
 // `parentGone` flips to true only when stdin EOFs — that's the
@@ -73,7 +76,7 @@ function handleStdioError(stream: "stdout" | "stderr") {
 		// Report through the OTHER stream to avoid recursion.
 		if (stream === "stdout") {
 			try {
-				process.stderr.write(`[codewit-sidecar] stdout error: ${err.message}\n`);
+				process.stderr.write(`[grex-sidecar] stdout error: ${err.message}\n`);
 			} catch {}
 		}
 	};
@@ -256,7 +259,8 @@ function parseTitleAttempts(raw: unknown): TitleAttempt[] {
 				obj.provider === "claude" ||
 				obj.provider === "codex" ||
 				obj.provider === "cursor" ||
-				obj.provider === "opencode"
+				obj.provider === "opencode" ||
+				obj.provider === "gemini"
 					? obj.provider
 					: null;
 			if (!provider) continue;
@@ -410,7 +414,7 @@ async function handleGetContextUsage(
 	try {
 		const getParams = parseGetContextUsageParams(params);
 		logger.debug(`[${id}] getContextUsage`, {
-			sessionId: getParams.codewitSessionId,
+			sessionId: getParams.grexSessionId,
 			providerSessionId: getParams.providerSessionId ?? "(none)",
 			model: getParams.model ?? "(default)",
 			cwd: getParams.cwd ?? "(none)",
@@ -645,6 +649,8 @@ for await (const line of rl) {
 					codexManager.resolvePermission(permissionId, behavior);
 				} else if (permissionId.startsWith("opencode-")) {
 					opencodeManager.resolvePermission(permissionId, behavior);
+				} else if (permissionId.startsWith("gemini-")) {
+					geminiManager.resolvePermission(permissionId, behavior);
 				} else {
 					claudeManager.resolvePermission(
 						permissionId,
@@ -686,7 +692,8 @@ for await (const line of rl) {
 				const claimed =
 					claudeManager.resolveUserInput(userInputId, resolution) ||
 					codexManager.resolveUserInput(userInputId, resolution) ||
-					opencodeManager.resolveUserInput(userInputId, resolution);
+					opencodeManager.resolveUserInput(userInputId, resolution) ||
+					geminiManager.resolveUserInput(userInputId, resolution);
 				if (!claimed) {
 					// No live waiter — the parked promise was lost (sidecar
 					// restart, session ended, or duplicate submit). Surface

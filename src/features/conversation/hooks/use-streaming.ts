@@ -38,7 +38,7 @@ import {
 import { extractError, isRecoverableByPurge } from "@/lib/errors";
 import {
 	agentModelSectionsQueryOptions,
-	codewitQueryKeys,
+	grexQueryKeys,
 	providerCapabilitiesQueryOptions,
 	sessionThreadMessagesQueryOptions,
 } from "@/lib/query-client";
@@ -421,7 +421,7 @@ export function useConversationStreaming({
 		);
 		if (caps?.supportsActiveGoal) {
 			const goal = queryClient.getQueryData<CodexGoalState | null>(
-				codewitQueryKeys.sessionCodexGoal(sessionId),
+				grexQueryKeys.sessionCodexGoal(sessionId),
 			);
 			if (goal && goal.status === "active") {
 				try {
@@ -453,7 +453,7 @@ export function useConversationStreaming({
 		) => {
 			storeActions.removePendingPermission(composerContextKey, permissionId);
 			respondToPermissionRequest(permissionId, behavior, options).catch((err) =>
-				console.error("[codewit] permission response:", err),
+				console.error("[grex] permission response:", err),
 			);
 		},
 		[composerContextKey, storeActions],
@@ -496,10 +496,10 @@ export function useConversationStreaming({
 			if (workspaceId) {
 				invalidations.push(
 					queryClient.invalidateQueries({
-						queryKey: codewitQueryKeys.workspaceDetail(workspaceId),
+						queryKey: grexQueryKeys.workspaceDetail(workspaceId),
 					}),
 					queryClient.invalidateQueries({
-						queryKey: codewitQueryKeys.workspaceSessions(workspaceId),
+						queryKey: grexQueryKeys.workspaceSessions(workspaceId),
 					}),
 				);
 			}
@@ -507,7 +507,7 @@ export function useConversationStreaming({
 			if (sessionId) {
 				invalidations.push(
 					queryClient.invalidateQueries({
-						queryKey: [...codewitQueryKeys.sessionMessages(sessionId), "thread"],
+						queryKey: [...grexQueryKeys.sessionMessages(sessionId), "thread"],
 					}),
 				);
 			}
@@ -818,7 +818,7 @@ export function useConversationStreaming({
 			const currentThread = readSessionThread(queryClient, cacheSessionId);
 			const currentSessions = targetWorkspaceId
 				? queryClient.getQueryData<Array<Record<string, unknown>>>(
-						codewitQueryKeys.workspaceSessions(targetWorkspaceId),
+						grexQueryKeys.workspaceSessions(targetWorkspaceId),
 					)
 				: undefined;
 			const currentSession = currentSessions?.find(
@@ -912,13 +912,13 @@ export function useConversationStreaming({
 								targetWorkspaceId
 									? queryClient.invalidateQueries({
 											queryKey:
-												codewitQueryKeys.workspaceSessions(targetWorkspaceId),
+												grexQueryKeys.workspaceSessions(targetWorkspaceId),
 										})
 									: undefined,
 								targetWorkspaceId
 									? queryClient.invalidateQueries({
 											queryKey:
-												codewitQueryKeys.workspaceDetail(targetWorkspaceId),
+												grexQueryKeys.workspaceDetail(targetWorkspaceId),
 										})
 									: undefined,
 							]);
@@ -948,7 +948,7 @@ export function useConversationStreaming({
 				const refreshChanges = () => {
 					if (!workingDirectory) return;
 					void queryClient.invalidateQueries({
-						queryKey: codewitQueryKeys.workspaceChanges(
+						queryKey: grexQueryKeys.workspaceChanges(
 							workingDirectory,
 							targetWorkspaceId,
 						),
@@ -979,7 +979,7 @@ export function useConversationStreaming({
 						prompt: trimmedPrompt,
 						promptPrefix,
 						sessionId: providerSessionId,
-						codewitSessionId: targetSessionId,
+						grexSessionId: targetSessionId,
 						workingDirectory,
 						effortLevel,
 						permissionMode,

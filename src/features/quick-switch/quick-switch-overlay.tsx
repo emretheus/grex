@@ -2,7 +2,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { GitBranch, MessageCircle } from "lucide-react";
 import { useEffect, useMemo } from "react";
 import { createPortal } from "react-dom";
-import { CodewitThinkingIndicator } from "@/components/codewit-thinking-indicator";
+import { GrexThinkingIndicator } from "@/components/grex-thinking-indicator";
 import { WorkspaceAvatar } from "@/features/navigation/avatar";
 import { deriveWorkspaceDisplay } from "@/features/navigation/workspace-display";
 import { extractLiveActivity } from "@/features/navigation/workspace-hover-card";
@@ -148,7 +148,7 @@ function QuickSwitchCard({
 					{title}
 				</span>
 				{isStreaming ? (
-					<CodewitThinkingIndicator size={12} className="shrink-0" />
+					<GrexThinkingIndicator size={12} className="shrink-0" />
 				) : null}
 				<span
 					aria-label={statusDot.label}

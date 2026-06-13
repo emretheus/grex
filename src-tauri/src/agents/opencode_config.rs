@@ -99,7 +99,7 @@ fn read_custom_providers_at(path: &Path) -> Result<Vec<OpencodeCustomProvider>> 
 
     let mut out = Vec::new();
     for (id, block) in providers {
-        // Only Codewit-managed blocks (have apiKey and/or baseURL); skip built-ins and bare overrides.
+        // Only Grex-managed blocks (have apiKey and/or baseURL); skip built-ins and bare overrides.
         let options = block.get("options").and_then(serde_json::Value::as_object);
         let api_key = options
             .and_then(|o| o.get("apiKey"))

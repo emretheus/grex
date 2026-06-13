@@ -12,7 +12,7 @@ import {
 	type WorkspaceGroup,
 	type WorkspaceSessionSummary,
 } from "@/lib/api";
-import { codewitQueryKeys } from "@/lib/query-client";
+import { grexQueryKeys } from "@/lib/query-client";
 import { requestSidebarReconcile } from "@/lib/sidebar-mutation-gate";
 import {
 	recomputeWorkspaceDetailUnread,
@@ -155,32 +155,32 @@ export function useReadStateController(
 
 		// Snapshot for rollback on IPC failure.
 		const previousGroups = queryClient.getQueryData(
-			codewitQueryKeys.workspaceGroups,
+			grexQueryKeys.workspaceGroups,
 		);
 		const previousDetail = workspaceId
-			? queryClient.getQueryData(codewitQueryKeys.workspaceDetail(workspaceId))
+			? queryClient.getQueryData(grexQueryKeys.workspaceDetail(workspaceId))
 			: undefined;
 		const previousSessions = workspaceId
-			? queryClient.getQueryData(codewitQueryKeys.workspaceSessions(workspaceId))
+			? queryClient.getQueryData(grexQueryKeys.workspaceSessions(workspaceId))
 			: undefined;
 
 		let remainingUnread = 0;
 		if (workspaceId) {
 			const currentSessions = queryClient.getQueryData<
 				WorkspaceSessionSummary[] | undefined
-			>(codewitQueryKeys.workspaceSessions(workspaceId));
+			>(grexQueryKeys.workspaceSessions(workspaceId));
 			if (Array.isArray(currentSessions)) {
 				const patched = currentSessions.map((session) =>
 					session.id === sessionId ? { ...session, unreadCount: 0 } : session,
 				);
 				remainingUnread = patched.filter((s) => s.unreadCount > 0).length;
 				queryClient.setQueryData<WorkspaceSessionSummary[]>(
-					codewitQueryKeys.workspaceSessions(workspaceId),
+					grexQueryKeys.workspaceSessions(workspaceId),
 					patched,
 				);
 			}
 			queryClient.setQueryData<WorkspaceGroup[] | undefined>(
-				codewitQueryKeys.workspaceGroups,
+				grexQueryKeys.workspaceGroups,
 				(current) =>
 					recomputeWorkspaceUnreadInGroups(
 						current,
@@ -189,7 +189,7 @@ export function useReadStateController(
 					),
 			);
 			queryClient.setQueryData<WorkspaceDetail | null | undefined>(
-				codewitQueryKeys.workspaceDetail(workspaceId),
+				grexQueryKeys.workspaceDetail(workspaceId),
 				(current) =>
 					current
 						? recomputeWorkspaceDetailUnread(current, remainingUnread)
@@ -204,27 +204,24 @@ export function useReadStateController(
 				if (workspaceId) {
 					invalidations.push(
 						queryClient.invalidateQueries({
-							queryKey: codewitQueryKeys.workspaceDetail(workspaceId),
+							queryKey: grexQueryKeys.workspaceDetail(workspaceId),
 						}),
 						queryClient.invalidateQueries({
-							queryKey: codewitQueryKeys.workspaceSessions(workspaceId),
+							queryKey: grexQueryKeys.workspaceSessions(workspaceId),
 						}),
 					);
 				}
 				return Promise.all(invalidations);
 			})
 			.catch((error) => {
-				queryClient.setQueryData(
-					codewitQueryKeys.workspaceGroups,
-					previousGroups,
-				);
+				queryClient.setQueryData(grexQueryKeys.workspaceGroups, previousGroups);
 				if (workspaceId) {
 					queryClient.setQueryData(
-						codewitQueryKeys.workspaceDetail(workspaceId),
+						grexQueryKeys.workspaceDetail(workspaceId),
 						previousDetail,
 					);
 					queryClient.setQueryData(
-						codewitQueryKeys.workspaceSessions(workspaceId),
+						grexQueryKeys.workspaceSessions(workspaceId),
 						previousSessions,
 					);
 				}
@@ -257,10 +254,10 @@ export function useReadStateController(
 						requestSidebarReconcile(queryClient);
 						return Promise.all([
 							queryClient.invalidateQueries({
-								queryKey: codewitQueryKeys.workspaceDetail(workspaceId),
+								queryKey: grexQueryKeys.workspaceDetail(workspaceId),
 							}),
 							queryClient.invalidateQueries({
-								queryKey: codewitQueryKeys.workspaceSessions(workspaceId),
+								queryKey: grexQueryKeys.workspaceSessions(workspaceId),
 							}),
 						]);
 					})
@@ -272,7 +269,7 @@ export function useReadStateController(
 			if (document.hasFocus() && isCurrentSession) return;
 			const name =
 				queryClient.getQueryData<WorkspaceDetail | null>(
-					codewitQueryKeys.workspaceDetail(workspaceId),
+					grexQueryKeys.workspaceDetail(workspaceId),
 				)?.title ?? "Workspace";
 			notifyRef.current({ title: "Session completed", body: name });
 		},
@@ -291,9 +288,9 @@ export function useReadStateController(
 			if (!detail) return;
 			onSessionCompleted(detail.sessionId, detail.workspaceId);
 		};
-		window.addEventListener("codewit:terminal-session-idle", handler);
+		window.addEventListener("grex:terminal-session-idle", handler);
 		return () =>
-			window.removeEventListener("codewit:terminal-session-idle", handler);
+			window.removeEventListener("grex:terminal-session-idle", handler);
 	}, [onSessionCompleted]);
 
 	const onSessionAborted = useCallback((sessionId: string) => {
@@ -313,7 +310,7 @@ export function useReadStateController(
 				if (count > prev) {
 					const name =
 						queryClient.getQueryData<WorkspaceDetail | null>(
-							codewitQueryKeys.workspaceDetail(workspaceId),
+							grexQueryKeys.workspaceDetail(workspaceId),
 						)?.title ?? "Workspace";
 					notifyRef.current({ title: "Input needed", body: name });
 				}
@@ -363,10 +360,10 @@ export function useReadStateController(
 			requestSidebarReconcile(queryClient);
 			await Promise.all([
 				queryClient.invalidateQueries({
-					queryKey: codewitQueryKeys.workspaceDetail(next.workspaceId),
+					queryKey: grexQueryKeys.workspaceDetail(next.workspaceId),
 				}),
 				queryClient.invalidateQueries({
-					queryKey: codewitQueryKeys.workspaceSessions(next.workspaceId),
+					queryKey: grexQueryKeys.workspaceSessions(next.workspaceId),
 				}),
 			]);
 			onReopenSelectWorkspaceRef.current(next.workspaceId);

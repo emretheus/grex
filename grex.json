@@ -1,0 +1,13 @@
+{
+	"scripts": {
+		"setup": "cp \"$GREX_ROOT_PATH/.env.local\" \"$GREX_WORKSPACE_PATH/.env.local\"\ncp -r \"$GREX_ROOT_PATH/sidecar/dist\" \"$GREX_WORKSPACE_PATH/sidecar/dist\"\nbun install",
+		"run": [
+			{
+				"name": "Default",
+				"command": "bun run dev",
+				"stopCommand": "",
+				"mode": "non-concurrent"
+			}
+		]
+	}
+}

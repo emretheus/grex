@@ -7,9 +7,9 @@ import {
 	DialogTitle,
 } from "@/components/ui/dialog";
 import {
-	createCodewitIssue,
-	type ExistingCodewitRepo,
-	findExistingCodewitRepo,
+	createGrexIssue,
+	type ExistingGrexRepo,
+	findExistingGrexRepo,
 } from "@/lib/api";
 import { openUrl } from "@/lib/platform-bridge";
 import { useForgeAccountsAll } from "@/lib/use-forge-accounts";
@@ -42,9 +42,9 @@ export function FeedbackDialog({
 	// re-fetch on every open is fine. GitHub connection state comes from
 	// the shared `useForgeAccountsAll` cache so we don't pay the
 	// `gh api /user` round-trip every time the dialog opens.
-	const [existing, setExisting] = useState<ExistingCodewitRepo | null>(null);
+	const [existing, setExisting] = useState<ExistingGrexRepo | null>(null);
 	// `existingLoaded` gates Quick fix: clicking it before the lookup
-	// settles would force the fork+clone path even when a local codewit
+	// settles would force the fork+clone path even when a local grex
 	// repo already exists. The lookup hits local SQLite + package.json,
 	// usually ~50ms, but a fast typer can outrun it.
 	const [existingLoaded, setExistingLoaded] = useState(false);
@@ -61,7 +61,7 @@ export function FeedbackDialog({
 	useEffect(() => {
 		let cancelled = false;
 		void (async () => {
-			const e = await findExistingCodewitRepo().catch(() => null);
+			const e = await findExistingGrexRepo().catch(() => null);
 			if (cancelled) return;
 			setExisting(e);
 			setExistingLoaded(true);
@@ -81,7 +81,7 @@ export function FeedbackDialog({
 		const { title, body } = splitIssueTitleAndBody(state.step.input);
 		setSending(true);
 		try {
-			const result = await createCodewitIssue(title, body);
+			const result = await createGrexIssue(title, body);
 			dispatch({ type: "reset" });
 			setConfirming(false);
 			toast.success(`Issue #${result.number} created`, {
@@ -137,7 +137,7 @@ export function FeedbackDialog({
 					<DialogTitle className="text-ui font-medium tracking-[-0.01em]">
 						{state.step.kind === "input"
 							? "Send feedback"
-							: "Contribute to Codewit"}
+							: "Contribute to Grex"}
 					</DialogTitle>
 				</DialogHeader>
 

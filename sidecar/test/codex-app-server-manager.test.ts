@@ -3,7 +3,7 @@ import { tmpdir } from "node:os";
 import { resolve } from "node:path";
 import { createSidecarEmitter, type SidecarEmitter } from "../src/emitter.js";
 
-process.env.CODEWIT_LOG_DIR = resolve(tmpdir(), "codewit-sidecar-test-logs");
+process.env.GREX_LOG_DIR = resolve(tmpdir(), "grex-sidecar-test-logs");
 
 type RequestRecord = {
 	method: string;

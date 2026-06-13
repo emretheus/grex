@@ -48,7 +48,7 @@ export function useSettingsOpenHandlers({
 					onOpenSettings(null, null, `repo:${repoId}`);
 					requestAnimationFrame(() => {
 						window.dispatchEvent(
-							new CustomEvent("codewit:scroll-to-repo-scripts"),
+							new CustomEvent("grex:scroll-to-repo-scripts"),
 						);
 					});
 					return;

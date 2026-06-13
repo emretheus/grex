@@ -16,12 +16,12 @@
 
 import type { QueryClient } from "@tanstack/react-query";
 import type { ThreadMessageLike } from "./api";
-import { codewitQueryKeys } from "./query-client";
+import { grexQueryKeys } from "./query-client";
 import { messagesStructurallyEqual } from "./structural-equality";
 
 /** Cache key for a session's rendered thread messages. */
 export function sessionThreadCacheKey(sessionId: string): readonly unknown[] {
-	return [...codewitQueryKeys.sessionMessages(sessionId), "thread"];
+	return [...grexQueryKeys.sessionMessages(sessionId), "thread"];
 }
 
 /**

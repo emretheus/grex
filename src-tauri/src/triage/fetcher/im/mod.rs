@@ -46,7 +46,7 @@ pub trait ImBackend: Send + Sync {
     /// Cheap auth check. `Err` means "skip this tick silently".
     fn preflight(&self) -> Result<()>;
 
-    /// Enumerate conversations Codewit should poll.
+    /// Enumerate conversations Grex should poll.
     fn discover_conversations(&self, limit: usize) -> Result<Vec<ImConversation>>;
 
     /// Pull messages from one conversation since `since`. Caller may

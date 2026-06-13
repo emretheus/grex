@@ -3,8 +3,8 @@ use std::path::PathBuf;
 use std::process::ExitCode;
 
 use anyhow::{Context, Result};
-use codewit_lib::pipeline::types::HistoricalRecord;
-use codewit_lib::pipeline::MessagePipeline;
+use grex_lib::pipeline::types::HistoricalRecord;
+use grex_lib::pipeline::MessagePipeline;
 use serde::Serialize;
 use serde_json::Value;
 

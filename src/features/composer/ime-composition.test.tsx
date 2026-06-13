@@ -34,7 +34,7 @@ import {
 } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import type { AgentModelSection } from "@/lib/api";
-import { createCodewitQueryClient } from "@/lib/query-client";
+import { createGrexQueryClient } from "@/lib/query-client";
 
 vi.mock("@tauri-apps/api/core", () => ({
 	invoke: vi.fn(),
@@ -81,7 +81,7 @@ const MODEL_SECTIONS = [
 ] satisfies AgentModelSection[];
 
 function renderComposer({ onSubmit }: { onSubmit: () => void }) {
-	const queryClient = createCodewitQueryClient();
+	const queryClient = createGrexQueryClient();
 	return render(
 		<QueryClientProvider client={queryClient}>
 			<WorkspaceComposer

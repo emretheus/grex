@@ -66,9 +66,9 @@ export function RepositorySettingsPanel({
 				block: "start",
 			});
 		};
-		window.addEventListener("codewit:scroll-to-repo-scripts", handler);
+		window.addEventListener("grex:scroll-to-repo-scripts", handler);
 		return () =>
-			window.removeEventListener("codewit:scroll-to-repo-scripts", handler);
+			window.removeEventListener("grex:scroll-to-repo-scripts", handler);
 	}, []);
 
 	const currentBranch = repo.defaultBranch ?? "main";

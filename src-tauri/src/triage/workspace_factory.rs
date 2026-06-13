@@ -164,7 +164,7 @@ pub fn create_ai_workspace(params: &CreateAiWorkspaceParams) -> Result<CreateAiW
 /// Append a markdown `## Attachments` block to the plan message, moving
 /// the anchor's staged images into the workspace's persistent store so
 /// the downstream agent can both `Read` the absolute path and the
-/// webview can render the `codewit-attachment://` URL. Best-effort: a
+/// webview can render the `grex-attachment://` URL. Best-effort: a
 /// failure on one attachment skips just that entry.
 fn render_plan_with_attachments(
     plan: &str,

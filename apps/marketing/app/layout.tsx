@@ -3,11 +3,11 @@ import type { ReactNode } from "react";
 import "./globals.css";
 
 export const metadata: Metadata = {
-	title: "Codewit — One minimal desktop app for every AI coding agent",
+	title: "Grex — One minimal desktop app for every AI coding agent",
 	description:
 		"Run Claude Code, Codex, Cursor, Gemini, Grok and more from a single local-first interface. Multi-provider GUI for coding agents with built-in chat, diff review, and terminals.",
 	icons: {
-		icon: "/codewit-logo-dark.svg",
+		icon: "/grex-logo-dark.svg",
 	},
 };
 
@@ -32,7 +32,7 @@ const THEME_BOOTSTRAP = `
 (function(){
   try {
     var m = null;
-    var raw = localStorage.getItem('codewit-marketing-theme');
+    var raw = localStorage.getItem('grex-marketing-theme');
     if (raw) {
       try {
         var p = JSON.parse(raw);

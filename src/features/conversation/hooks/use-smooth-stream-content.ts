@@ -1,6 +1,6 @@
 // Smooths bursty agent SDK deltas into a steady character-per-frame reveal.
 // Vendored from lobe-ui (src/Markdown/SyntaxMarkdown/useSmoothStreamContent.ts,
-// MIT); profiler hooks + multi-preset API stripped — single codewit-tuned
+// MIT); profiler hooks + multi-preset API stripped — single grex-tuned
 // config below: deeper buffer + tighter output ceilings to absorb sidecar
 // adapter jitter while staying steady when the model pauses.
 

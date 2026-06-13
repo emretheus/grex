@@ -6,7 +6,7 @@ import type { QueryClient } from "@tanstack/react-query";
 import { useCallback, useState } from "react";
 import { renameWorkspaceBranch, type WorkspaceDetail } from "@/lib/api";
 import { extractError } from "@/lib/errors";
-import { codewitQueryKeys } from "@/lib/query-client";
+import { grexQueryKeys } from "@/lib/query-client";
 import type { PushWorkspaceToast } from "@/lib/workspace-toast-context";
 import { normalizeBranchRenameInput } from "../branch-rename";
 
@@ -43,7 +43,7 @@ export function useBranchRename({
 		if (editingBranch === null || !workspace) return;
 		const normalized = normalizeBranchRenameInput(editingBranch);
 		if (normalized && normalized !== workspace.branch) {
-			const detailKey = codewitQueryKeys.workspaceDetail(workspace.id);
+			const detailKey = grexQueryKeys.workspaceDetail(workspace.id);
 			const previous = queryClient.getQueryData<WorkspaceDetail | null>(
 				detailKey,
 			);

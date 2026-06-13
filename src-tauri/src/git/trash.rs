@@ -40,13 +40,13 @@ impl TrashCleanupQueue {
     fn start() -> Self {
         let (tx, rx) = sync_channel::<PathBuf>(QUEUE_CAPACITY);
         thread::Builder::new()
-            .name("codewit-trash-cleanup".into())
+            .name("grex-trash-cleanup".into())
             .spawn(move || {
                 while let Ok(path) = rx.recv() {
                     cleanup_path(&path);
                 }
             })
-            .expect("spawn codewit-trash-cleanup thread");
+            .expect("spawn grex-trash-cleanup thread");
         Self { sender: tx }
     }
 
@@ -94,7 +94,7 @@ fn cleanup_path(path: &Path) {
 
 fn detached_cleanup(path: PathBuf) {
     thread::Builder::new()
-        .name("codewit-trash-detached".into())
+        .name("grex-trash-detached".into())
         .spawn(move || cleanup_path(&path))
         .ok();
 }

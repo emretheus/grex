@@ -1,10 +1,10 @@
-//! Persistent attachment store + `codewit-attachment://` resolver.
+//! Persistent attachment store + `grex-attachment://` resolver.
 //!
 //! Two-stage life:
 //!   - Fetcher stages files under `<data>/triage/attachments-staging/<source>/<safe(candidate_id)>/`
 //!   - workspace_factory moves the chosen ones into
 //!     `<data>/triage/attachments/<workspace_id>/`, which the
-//!     `codewit-attachment` Tauri protocol handler serves.
+//!     `grex-attachment` Tauri protocol handler serves.
 //!
 //! Staging is swept when the owning candidate row is deleted; the
 //! workspace-scoped store is swept on archive.
@@ -18,7 +18,7 @@ use serde::{Deserialize, Serialize};
 
 const STORE_SUBDIR: &str = "triage/attachments";
 const STAGING_SUBDIR: &str = "triage/attachments-staging";
-const ATTACHMENT_URL_SCHEME: &str = "codewit-attachment";
+const ATTACHMENT_URL_SCHEME: &str = "grex-attachment";
 
 /// Cap on bytes inlined into a vision block.
 pub const INLINE_PREVIEW_MAX_BYTES: u64 = 5 * 1024 * 1024;
@@ -53,7 +53,7 @@ pub fn staging_path(source: &str, candidate_id: &str, filename: &str) -> Result<
     Ok(staging_dir(source, candidate_id)?.join(sanitize_segment(filename)))
 }
 
-/// Resolve `codewit-attachment://<workspace_id>/<filename>` for the Tauri protocol handler in `lib.rs`.
+/// Resolve `grex-attachment://<workspace_id>/<filename>` for the Tauri protocol handler in `lib.rs`.
 pub fn resolve_attachment_url(url: &str) -> Result<Option<PathBuf>> {
     let prefix = format!("{ATTACHMENT_URL_SCHEME}://");
     let rest = match url.strip_prefix(&prefix) {
@@ -78,7 +78,7 @@ pub fn resolve_attachment_url(url: &str) -> Result<Option<PathBuf>> {
 }
 
 /// Move a staged file into a workspace's persistent store.
-/// Returns the `codewit-attachment://` URL + absolute path the caller
+/// Returns the `grex-attachment://` URL + absolute path the caller
 /// can render into priming markdown.
 pub fn move_into_store(src: &Path, workspace_id: &str) -> Result<MovedAttachment> {
     let filename = src

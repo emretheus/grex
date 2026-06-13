@@ -1,7 +1,7 @@
 /**
  * SessionManager backed by the Codex App Server (JSON-RPC over stdin/stdout).
  *
- * Each Codewit session maps to one `codex app-server` child process.
+ * Each Grex session maps to one `codex app-server` child process.
  * Events are stripped of their JSON-RPC envelope and forwarded as flat
  * JSON via `emitter.passthrough()`. All semantic normalization (camelCase,
  * delta accumulation) happens downstream in Rust.
@@ -51,15 +51,15 @@ import {
  * every `codex app-server` child process.
  *
  * Resolution order:
- *   1. `CODEWIT_CODEX_BIN_PATH` — set by the Tauri host in release builds,
- *      pointing at `Codewit.app/Contents/Resources/vendor/codex/codex`.
+ *   1. `GREX_CODEX_BIN_PATH` — set by the Tauri host in release builds,
+ *      pointing at `Grex.app/Contents/Resources/vendor/codex/codex`.
  *   2. `createRequire` lookup of the platform sub-package's binary inside
  *      `node_modules`. Used in dev (`bun run src/index.ts`) and `bun test`.
  *   3. Fall back to `"codex"` so the OS resolves it from PATH — last-resort
  *      for unusual setups; surfaces as ENOENT if not installed.
  */
 function resolveCodexBinPath(): string {
-	const override = process.env.CODEWIT_CODEX_BIN_PATH;
+	const override = process.env.GREX_CODEX_BIN_PATH;
 	if (override) {
 		return override;
 	}
@@ -170,10 +170,10 @@ function dispatchGoalCommand(
 const RETRY_SUPPRESSION_MS = 30_000;
 const RETRY_NOTICE_DEDUPE_MS = 1_000;
 
-const CODEWIT_CLIENT_INFO = {
+const GREX_CLIENT_INFO = {
 	clientInfo: {
-		name: "codewit_desktop",
-		title: "Codewit Desktop",
+		name: "grex_desktop",
+		title: "Grex Desktop",
 		version: "0.1.0",
 	},
 	capabilities: { experimentalApi: true },
@@ -1091,7 +1091,7 @@ export class CodexAppServerManager implements SessionManager {
 		const timeout = setTimeout(() => server.kill(), timeoutMs);
 
 		try {
-			await server.sendRequest("initialize", CODEWIT_CLIENT_INFO);
+			await server.sendRequest("initialize", GREX_CLIENT_INFO);
 			server.writeNotification("initialized");
 
 			const threadStartParams: Record<string, unknown> = {
@@ -1206,7 +1206,7 @@ export class CodexAppServerManager implements SessionManager {
 		});
 
 		try {
-			await server.sendRequest("initialize", CODEWIT_CLIENT_INFO);
+			await server.sendRequest("initialize", GREX_CLIENT_INFO);
 			server.writeNotification("initialized");
 
 			// 20s — mirrors the Claude sidecar slash-command timeout so both
@@ -1269,7 +1269,7 @@ export class CodexAppServerManager implements SessionManager {
 
 		// Pause-only: codex's `thread/goal/set { paused }` stops the
 		// continuation loop but doesn't abort the in-flight turn, leaving
-		// codewit's loading spinner stuck. Issue `turn/interrupt` ourselves
+		// grex's loading spinner stuck. Issue `turn/interrupt` ourselves
 		// to match the user intent ("pause = stop now"). The interrupt
 		// produces a normal turn/completed downstream, which lets the
 		// streaming pipeline transition out of the loading state.
@@ -1693,7 +1693,7 @@ export class CodexAppServerManager implements SessionManager {
 			},
 		});
 
-		await server.sendRequest("initialize", CODEWIT_CLIENT_INFO);
+		await server.sendRequest("initialize", GREX_CLIENT_INFO);
 		server.writeNotification("initialized");
 
 		let threadId: string | null = null;
@@ -1993,7 +1993,7 @@ function buildAgentProxyKey(agentProxy?: AgentProxySettings): string {
 }
 
 /**
- * Map Codewit's binary permissionMode to Codex's collaborationMode: `plan`
+ * Map Grex's binary permissionMode to Codex's collaborationMode: `plan`
  * (read-only) or full access. Always sent explicitly — Codex stays in plan mode
  * across turns unless told otherwise.
  */

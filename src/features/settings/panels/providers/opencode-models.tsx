@@ -16,7 +16,7 @@ import {
 	TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { stopAgentStream } from "@/lib/api";
-import { activeStreamsQueryOptions, codewitQueryKeys } from "@/lib/query-client";
+import { activeStreamsQueryOptions, grexQueryKeys } from "@/lib/query-client";
 import {
 	OPENCODE_CACHE_VERSION,
 	type OpencodeProviderSettings,
@@ -50,7 +50,7 @@ export function OpencodeModels({
 				updateSettings({ opencodeProvider: { ...opencode, ...patch } }),
 			);
 			queryClient.invalidateQueries({
-				queryKey: codewitQueryKeys.agentModelSections,
+				queryKey: grexQueryKeys.agentModelSections,
 			});
 		},
 		[opencode, queryClient, updateSettings],

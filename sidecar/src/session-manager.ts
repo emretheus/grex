@@ -8,7 +8,7 @@
 import type { AgentProxySettings } from "./agent-proxy.js";
 import type { SidecarEmitter } from "./emitter.js";
 
-export type Provider = "claude" | "codex" | "cursor" | "opencode";
+export type Provider = "claude" | "codex" | "cursor" | "opencode" | "gemini";
 
 export interface SendMessageParams {
 	readonly sessionId: string;
@@ -59,11 +59,11 @@ export interface ListSlashCommandsParams {
 /**
  * Ad-hoc context-usage query for the hover popover. `providerSessionId`
  * is the SDK's own session id (what `resume:` takes) — used when no live
- * `Query` is held for this codewit session. `model` is the composer's
+ * `Query` is held for this grex session. `model` is the composer's
  * current model id; `cwd` lets the transient query load project settings.
  */
 export interface GetContextUsageParams {
-	readonly codewitSessionId: string;
+	readonly grexSessionId: string;
 	readonly providerSessionId: string | null;
 	readonly model: string;
 	readonly cwd: string | undefined;

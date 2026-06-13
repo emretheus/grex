@@ -177,7 +177,7 @@ pub struct AgentSendRequest {
     #[serde(default)]
     pub prompt_prefix: Option<String>,
     pub session_id: Option<String>,
-    pub codewit_session_id: Option<String>,
+    pub grex_session_id: Option<String>,
     pub working_directory: Option<String>,
     pub effort_level: Option<String>,
     pub permission_mode: Option<String>,
@@ -204,7 +204,7 @@ use crate::pipeline::types::{AgentUsage, CollectedTurn, MessageRole};
 
 /// Context shared across incremental persistence calls within a single exchange.
 pub(crate) struct ExchangeContext {
-    pub(crate) codewit_session_id: String,
+    pub(crate) grex_session_id: String,
     pub(crate) model_id: String,
     pub(crate) model_provider: String,
     pub(crate) user_message_id: String,
@@ -215,7 +215,7 @@ pub async fn list_agent_model_sections() -> CmdResult<Vec<AgentModelSection>> {
     Ok(queries::fetch_agent_model_sections())
 }
 
-/// Return the provider-capability table for every provider Codewit
+/// Return the provider-capability table for every provider Grex
 /// ships today. Static — no DB hit, no IPC fan-out — so callers are
 /// expected to cache the result for the lifetime of the app. Drives
 /// the composer's feature-flag branches (active-goal interception,
@@ -260,7 +260,7 @@ pub async fn send_agent_message_stream(
     }
 
     // Inject triage priming as a hidden prefix; consumed flag flips only after sidecar accepts.
-    let priming_session_to_consume: Option<String> = match request.codewit_session_id.as_deref() {
+    let priming_session_to_consume: Option<String> = match request.grex_session_id.as_deref() {
         Some(session_id) => match crate::triage::load_priming_prefix_for_session(session_id) {
             Ok(Some(priming_prefix)) => {
                 request.prompt_prefix = crate::triage::combine_prefixes(
@@ -811,7 +811,7 @@ mod tests {
     // -----------------------------------------------------------------------
 
     fn setup_test_db(dir: &std::path::Path) -> std::path::PathBuf {
-        let db_path = dir.join("codewit.db");
+        let db_path = dir.join("grex.db");
         let conn = rusqlite::Connection::open(&db_path).unwrap();
         crate::schema::ensure_schema(&conn).unwrap();
         conn.execute(
@@ -832,7 +832,7 @@ mod tests {
     fn incremental_persist_writes_effort_and_permission_mode() {
         let dir = tempfile::tempdir().unwrap();
         let _guard = crate::data_dir::TEST_ENV_LOCK.lock().unwrap();
-        std::env::set_var("CODEWIT_DATA_DIR", dir.path());
+        std::env::set_var("GREX_DATA_DIR", dir.path());
 
         let db_path = setup_test_db(dir.path());
         let conn = rusqlite::Connection::open(&db_path).unwrap();
@@ -842,7 +842,7 @@ mod tests {
         ).unwrap();
 
         let ctx = ExchangeContext {
-            codewit_session_id: "s1".to_string(),
+            grex_session_id: "s1".to_string(),
             model_id: "opus-1m".to_string(),
             model_provider: "claude".to_string(),
             user_message_id: Uuid::new_v4().to_string(),
@@ -898,14 +898,14 @@ mod tests {
             "Should have at least user + result messages, got {msg_count}"
         );
 
-        std::env::remove_var("CODEWIT_DATA_DIR");
+        std::env::remove_var("GREX_DATA_DIR");
     }
 
     #[test]
     fn incremental_persist_preserves_existing_values_when_null() {
         let dir = tempfile::tempdir().unwrap();
         let _guard = crate::data_dir::TEST_ENV_LOCK.lock().unwrap();
-        std::env::set_var("CODEWIT_DATA_DIR", dir.path());
+        std::env::set_var("GREX_DATA_DIR", dir.path());
 
         let db_path = setup_test_db(dir.path());
         let conn = rusqlite::Connection::open(&db_path).unwrap();
@@ -915,7 +915,7 @@ mod tests {
         ).unwrap();
 
         let ctx = ExchangeContext {
-            codewit_session_id: "s1".to_string(),
+            grex_session_id: "s1".to_string(),
             model_id: "opus-1m".to_string(),
             model_provider: "claude".to_string(),
             user_message_id: Uuid::new_v4().to_string(),
@@ -956,14 +956,14 @@ mod tests {
             "permission_mode should be preserved when None passed"
         );
 
-        std::env::remove_var("CODEWIT_DATA_DIR");
+        std::env::remove_var("GREX_DATA_DIR");
     }
 
     #[test]
     fn incremental_persist_turn_messages() {
         let dir = tempfile::tempdir().unwrap();
         let _guard = crate::data_dir::TEST_ENV_LOCK.lock().unwrap();
-        std::env::set_var("CODEWIT_DATA_DIR", dir.path());
+        std::env::set_var("GREX_DATA_DIR", dir.path());
 
         let db_path = setup_test_db(dir.path());
         let conn = rusqlite::Connection::open(&db_path).unwrap();
@@ -973,7 +973,7 @@ mod tests {
         ).unwrap();
 
         let ctx = ExchangeContext {
-            codewit_session_id: "s1".to_string(),
+            grex_session_id: "s1".to_string(),
             model_id: "opus-1m".to_string(),
             model_provider: "claude".to_string(),
             user_message_id: Uuid::new_v4().to_string(),
@@ -1011,7 +1011,7 @@ mod tests {
             .unwrap();
         assert_eq!(msg_count, 3, "Should have user + 2 turn messages");
 
-        std::env::remove_var("CODEWIT_DATA_DIR");
+        std::env::remove_var("GREX_DATA_DIR");
     }
 
     /// End-to-end: simulate the sidecar firing a `user_prompt` passthrough
@@ -1033,7 +1033,7 @@ mod tests {
 
         let dir = tempfile::tempdir().unwrap();
         let _guard = crate::data_dir::TEST_ENV_LOCK.lock().unwrap();
-        std::env::set_var("CODEWIT_DATA_DIR", dir.path());
+        std::env::set_var("GREX_DATA_DIR", dir.path());
 
         let db_path = setup_test_db(dir.path());
         let conn = rusqlite::Connection::open(&db_path).unwrap();
@@ -1044,7 +1044,7 @@ mod tests {
         .unwrap();
 
         let ctx = ExchangeContext {
-            codewit_session_id: "s1".to_string(),
+            grex_session_id: "s1".to_string(),
             model_id: "opus-1m".to_string(),
             model_provider: "claude".to_string(),
             user_message_id: "user-initial".to_string(),
@@ -1129,6 +1129,6 @@ mod tests {
         assert_eq!(messages[2].role, PipelineRole::User);
         assert_eq!(messages[3].role, PipelineRole::Assistant);
 
-        std::env::remove_var("CODEWIT_DATA_DIR");
+        std::env::remove_var("GREX_DATA_DIR");
     }
 }

@@ -9,7 +9,7 @@ import {
 import {
 	claudeRateLimitsQueryOptions,
 	codexRateLimitsQueryOptions,
-	codewitQueryKeys,
+	grexQueryKeys,
 } from "@/lib/query-client";
 import { useSettings } from "@/lib/settings";
 import { cn } from "@/lib/utils";
@@ -55,9 +55,9 @@ export function UsageStatsIndicator({ agentType, disabled, className }: Props) {
 			if (!next || disabled) return;
 			const key =
 				agentType === "claude"
-					? codewitQueryKeys.claudeRateLimits
+					? grexQueryKeys.claudeRateLimits
 					: agentType === "codex"
-						? codewitQueryKeys.codexRateLimits
+						? grexQueryKeys.codexRateLimits
 						: null;
 			if (key) {
 				void queryClient.refetchQueries({ queryKey: key });

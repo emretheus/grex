@@ -1,4 +1,4 @@
-//! `codewit data` — data directory / database info.
+//! `grex data` — data directory / database info.
 
 use anyhow::Result;
 

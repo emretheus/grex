@@ -52,6 +52,8 @@ type Props = {
 	workspacePreviewCardId: string | null;
 	onOpenStartContextCard: (card: ContextCard) => void;
 	onOpenWorkspaceContextCard: (card: ContextCard) => void;
+	// Returns the right sidebar to the inspector from the Contexts panel.
+	onBackToInspector: () => void;
 
 	// Inspector-sidebar props
 	// Settle-gated workspace id (lags the router-instant selection only for cold
@@ -92,6 +94,7 @@ export function ShellInspectorPane({
 	workspacePreviewCardId,
 	onOpenStartContextCard,
 	onOpenWorkspaceContextCard,
+	onBackToInspector,
 	workspaceId,
 	workspaceRootPath,
 	selectedWorkspaceDetail,
@@ -218,6 +221,7 @@ export function ShellInspectorPane({
 							onOpenCard={
 								isStart ? onOpenStartContextCard : onOpenWorkspaceContextCard
 							}
+							onBackToInspector={isStart ? undefined : onBackToInspector}
 						/>
 					) : (
 						<WorkspaceInspectorSidebar

@@ -59,6 +59,7 @@ fn model_sections_for_inputs(
     let mut sections = vec![claude_section];
     sections.push(codex_section());
     sections.push(opencode_section_from_prefs(opencode_prefs));
+    sections.push(gemini_section());
     if let Some(cursor) = cursor_section_from_prefs(cursor_prefs) {
         sections.push(cursor);
     }
@@ -125,6 +126,22 @@ fn codex_section() -> AgentModelSection {
             codex_model("gpt-5.5", "GPT-5.5"),
             codex_model("gpt-5.4", "GPT-5.4"),
             codex_model("gpt-5.4-mini", "GPT-5.4-Mini"),
+        ],
+    }
+}
+
+// Static Gemini section (Gemini CLI via ACP). First cut: a fixed model list so
+// the provider is selectable; runtime availability depends on the bundled
+// `gemini` CLI being authenticated (embedded Google login). MUST stay in sync
+// with the provider id used by `GeminiAcpManager` in the sidecar.
+fn gemini_section() -> AgentModelSection {
+    AgentModelSection {
+        id: "gemini".to_string(),
+        label: "Gemini".to_string(),
+        status: AgentModelSectionStatus::Ready,
+        options: vec![
+            gemini_model("gemini-2.5-pro", "Gemini 2.5 Pro"),
+            gemini_model("gemini-2.5-flash", "Gemini 2.5 Flash"),
         ],
     }
 }
@@ -457,6 +474,21 @@ fn claude_model(
     }
 }
 
+fn gemini_model(id: &str, label: &str) -> AgentModelOption {
+    AgentModelOption {
+        id: id.to_string(),
+        provider: "gemini".to_string(),
+        label: label.to_string(),
+        cli_model: id.to_string(),
+        provider_key: None,
+        // First cut: no effort tiers / fast mode / context ring until the ACP
+        // bridge surfaces them (mirrors the conservative capability flags).
+        effort_levels: Vec::new(),
+        supports_fast_mode: false,
+        supports_context_usage: false,
+    }
+}
+
 fn codex_model(id: &str, label: &str) -> AgentModelOption {
     AgentModelOption {
         id: id.to_string(),
@@ -488,7 +520,7 @@ fn opencode_model(slug: &str, label: &str, effort_levels: Vec<String>) -> AgentM
 }
 
 /// Build a Cursor option. Cursor wire ids collide with claude/codex
-/// (e.g. `default` = Claude Opus), so Codewit `id` is namespaced
+/// (e.g. `default` = Claude Opus), so Grex `id` is namespaced
 /// `cursor-<wire>`; `cli_model` keeps the bare wire id for `agent.send`.
 fn cursor_model(
     wire_id: &str,
@@ -539,7 +571,7 @@ pub struct ResolvedModel {
     pub claude_auth_token: Option<String>,
 }
 
-/// Resolve a Codewit model id to provider + cli_model. `provider_hint`
+/// Resolve a Grex model id to provider + cli_model. `provider_hint`
 /// is the inbound request's provider field (tie-breaker for ambiguous
 /// ids); falls back to prefix inference (`cursor-`/`composer-` →
 /// cursor, `gpt-` → codex, else claude). For cursor, strips the
@@ -561,11 +593,13 @@ pub fn resolve_model(model_id: &str, provider_hint: Option<&str>) -> ResolvedMod
         Some("codex") => "codex",
         Some("claude") => "claude",
         Some("opencode") => "opencode",
+        Some("gemini") => "gemini",
         _ if model_id.starts_with("cursor-") => "cursor",
         _ if model_id.starts_with("composer-") => "cursor",
         // `/` is unique to opencode slugs (claude uses `|`, codex/cursor have none).
         _ if model_id.contains('/') => "opencode",
         _ if model_id.starts_with("gpt-") => "codex",
+        _ if model_id.starts_with("gemini-") => "gemini",
         _ => "claude",
     };
 
@@ -598,7 +632,7 @@ mod tests {
         // `None` cursor_prefs (no API key) → cursor section omitted entirely.
         let sections = model_sections_for_inputs(Vec::new(), None, None);
 
-        assert_eq!(sections.len(), 3);
+        assert_eq!(sections.len(), 4);
         assert_eq!(sections[0].id, "claude");
         assert_eq!(sections[0].status, AgentModelSectionStatus::Ready);
         assert_eq!(
@@ -641,6 +675,18 @@ mod tests {
         assert_eq!(sections[2].status, AgentModelSectionStatus::Unavailable);
         assert!(sections[2].options.is_empty());
 
+        // Static Gemini section: always Ready with the seeded model list.
+        assert_eq!(sections[3].id, "gemini");
+        assert_eq!(sections[3].status, AgentModelSectionStatus::Ready);
+        assert_eq!(
+            sections[3]
+                .options
+                .iter()
+                .map(|model| model.id.as_str())
+                .collect::<Vec<_>>(),
+            vec!["gemini-2.5-pro", "gemini-2.5-flash"]
+        );
+
         // No `app.cursor_provider` row → no API key → no Cursor section.
         assert!(sections.iter().all(|s| s.id != "cursor"));
     }
@@ -660,7 +706,7 @@ mod tests {
             None,
         );
 
-        assert_eq!(sections.len(), 3);
+        assert_eq!(sections.len(), 4);
         assert_eq!(sections[0].id, "claude");
         assert_eq!(sections[0].label, "Claude Code");
         assert_eq!(
@@ -911,7 +957,7 @@ mod tests {
     fn cursor_namespaced_id_strips_to_wire_for_cli_model() {
         let _env = crate::testkit::TestEnv::new("cursor-namespaced-id-strips-to-wire-for-");
         // Composer's selected model id from the picker is `cursor-default`
-        // (Codewit namespace). Resolver must emit `cli_model = "default"`
+        // (Grex namespace). Resolver must emit `cli_model = "default"`
         // so the SDK's `Cursor.models.list` token survives the round-trip.
         let m = resolve_model("cursor-default", Some("cursor"));
         assert_eq!(m.provider, "cursor");

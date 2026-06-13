@@ -1,7 +1,7 @@
 import { waitFor } from "@testing-library/react";
 import { useEffect } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { createCodewitQueryClient, codewitQueryKeys } from "@/lib/query-client";
+import { createGrexQueryClient, grexQueryKeys } from "@/lib/query-client";
 import { DEFAULT_SETTINGS, SettingsContext } from "@/lib/settings";
 import { renderWithProviders } from "@/test/render-with-providers";
 
@@ -80,8 +80,8 @@ function createWorkspaceDetail(
 		id: workspaceId,
 		title: `Workspace ${workspaceId}`,
 		repoId: "repo-1",
-		repoName: "codewit",
-		directoryName: "codewit",
+		repoName: "grex",
+		directoryName: "grex",
 		state: "ready",
 		hasUnread: false,
 		workspaceUnread: 0,
@@ -99,7 +99,7 @@ function createWorkspaceDetail(
 		archiveCommit: null,
 		sessionCount: 2,
 		messageCount: 2,
-		rootPath: "/tmp/codewit",
+		rootPath: "/tmp/grex",
 	};
 }
 
@@ -279,13 +279,13 @@ describe("WorkspacePanelContainer loading semantics", () => {
 	});
 
 	it("shows a cold session loader for the first open of an uncached session", async () => {
-		const queryClient = createCodewitQueryClient();
+		const queryClient = createGrexQueryClient();
 		queryClient.setQueryData(
-			codewitQueryKeys.workspaceDetail("workspace-1"),
+			grexQueryKeys.workspaceDetail("workspace-1"),
 			createWorkspaceDetail("workspace-1"),
 		);
 		queryClient.setQueryData(
-			codewitQueryKeys.workspaceSessions("workspace-1"),
+			grexQueryKeys.workspaceSessions("workspace-1"),
 			createWorkspaceSessions("workspace-1"),
 		);
 
@@ -316,17 +316,17 @@ describe("WorkspacePanelContainer loading semantics", () => {
 	});
 
 	it("renders cached session data immediately when revisiting a previously opened session", async () => {
-		const queryClient = createCodewitQueryClient();
+		const queryClient = createGrexQueryClient();
 		queryClient.setQueryData(
-			codewitQueryKeys.workspaceDetail("workspace-1"),
+			grexQueryKeys.workspaceDetail("workspace-1"),
 			createWorkspaceDetail("workspace-1"),
 		);
 		queryClient.setQueryData(
-			codewitQueryKeys.workspaceSessions("workspace-1"),
+			grexQueryKeys.workspaceSessions("workspace-1"),
 			createWorkspaceSessions("workspace-1"),
 		);
 		queryClient.setQueryData(
-			[...codewitQueryKeys.sessionMessages("session-2"), "thread"],
+			[...grexQueryKeys.sessionMessages("session-2"), "thread"],
 			createMessages("session-2"),
 		);
 		apiMocks.loadSessionThreadMessages.mockResolvedValue(
@@ -364,17 +364,17 @@ describe("WorkspacePanelContainer loading semantics", () => {
 		// incoming workspace (with its own session guess) while the paint
 		// track still shows the old one. The old pane must stay mounted —
 		// the incoming session intent belongs to a different workspace.
-		const queryClient = createCodewitQueryClient();
+		const queryClient = createGrexQueryClient();
 		queryClient.setQueryData(
-			codewitQueryKeys.workspaceDetail("workspace-1"),
+			grexQueryKeys.workspaceDetail("workspace-1"),
 			createWorkspaceDetail("workspace-1"),
 		);
 		queryClient.setQueryData(
-			codewitQueryKeys.workspaceSessions("workspace-1"),
+			grexQueryKeys.workspaceSessions("workspace-1"),
 			createWorkspaceSessions("workspace-1"),
 		);
 		queryClient.setQueryData(
-			[...codewitQueryKeys.sessionMessages("session-1"), "thread"],
+			[...grexQueryKeys.sessionMessages("session-1"), "thread"],
 			createMessages("session-1"),
 		);
 
@@ -396,8 +396,8 @@ describe("WorkspacePanelContainer loading semantics", () => {
 	});
 
 	it("derives the new-session tab provider from the default model setting", () => {
-		const queryClient = createCodewitQueryClient();
-		queryClient.setQueryData(codewitQueryKeys.agentModelSections, [
+		const queryClient = createGrexQueryClient();
+		queryClient.setQueryData(grexQueryKeys.agentModelSections, [
 			{
 				id: "claude",
 				label: "Claude",
@@ -424,10 +424,10 @@ describe("WorkspacePanelContainer loading semantics", () => {
 			},
 		]);
 		queryClient.setQueryData(
-			codewitQueryKeys.workspaceDetail("workspace-1"),
+			grexQueryKeys.workspaceDetail("workspace-1"),
 			createWorkspaceDetail("workspace-1", "session-new"),
 		);
-		queryClient.setQueryData(codewitQueryKeys.workspaceSessions("workspace-1"), [
+		queryClient.setQueryData(grexQueryKeys.workspaceSessions("workspace-1"), [
 			{
 				id: "session-new",
 				workspaceId: "workspace-1",
@@ -468,7 +468,7 @@ describe("WorkspacePanelContainer loading semantics", () => {
 			},
 		]);
 		queryClient.setQueryData(
-			[...codewitQueryKeys.sessionMessages("session-new"), "thread"],
+			[...grexQueryKeys.sessionMessages("session-new"), "thread"],
 			[],
 		);
 
@@ -508,7 +508,7 @@ describe("WorkspacePanelContainer loading semantics", () => {
 	// resolves), but the container-level contract stays load-bearing for
 	// races/direct writes.
 	it("falls back to loading when revisiting a session after query cache eviction", async () => {
-		const queryClient = createCodewitQueryClient();
+		const queryClient = createGrexQueryClient();
 		const workspace1Sessions = createWorkspaceSessions("workspace-1", [
 			"session-1",
 			"session-2",
@@ -519,27 +519,27 @@ describe("WorkspacePanelContainer loading semantics", () => {
 		]);
 
 		queryClient.setQueryData(
-			codewitQueryKeys.workspaceDetail("workspace-1"),
+			grexQueryKeys.workspaceDetail("workspace-1"),
 			createWorkspaceDetail("workspace-1", "session-1"),
 		);
 		queryClient.setQueryData(
-			codewitQueryKeys.workspaceSessions("workspace-1"),
+			grexQueryKeys.workspaceSessions("workspace-1"),
 			workspace1Sessions,
 		);
 		queryClient.setQueryData(
-			[...codewitQueryKeys.sessionMessages("session-1"), "thread"],
+			[...grexQueryKeys.sessionMessages("session-1"), "thread"],
 			createMessages("session-1"),
 		);
 		queryClient.setQueryData(
-			codewitQueryKeys.workspaceDetail("workspace-2"),
+			grexQueryKeys.workspaceDetail("workspace-2"),
 			createWorkspaceDetail("workspace-2", "session-3"),
 		);
 		queryClient.setQueryData(
-			codewitQueryKeys.workspaceSessions("workspace-2"),
+			grexQueryKeys.workspaceSessions("workspace-2"),
 			workspace2Sessions,
 		);
 		queryClient.setQueryData(
-			[...codewitQueryKeys.sessionMessages("session-3"), "thread"],
+			[...grexQueryKeys.sessionMessages("session-3"), "thread"],
 			createMessages("session-3"),
 		);
 
@@ -579,7 +579,7 @@ describe("WorkspacePanelContainer loading semantics", () => {
 		);
 
 		queryClient.removeQueries({
-			queryKey: [...codewitQueryKeys.sessionMessages("session-1"), "thread"],
+			queryKey: [...grexQueryKeys.sessionMessages("session-1"), "thread"],
 		});
 
 		rendered.rerender(
@@ -622,21 +622,21 @@ describe("WorkspacePanelContainer loading semantics", () => {
 	});
 
 	it("renders only the active session pane when switching between sessions", async () => {
-		const queryClient = createCodewitQueryClient();
+		const queryClient = createGrexQueryClient();
 		queryClient.setQueryData(
-			codewitQueryKeys.workspaceDetail("workspace-1"),
+			grexQueryKeys.workspaceDetail("workspace-1"),
 			createWorkspaceDetail("workspace-1", "session-2"),
 		);
 		queryClient.setQueryData(
-			codewitQueryKeys.workspaceSessions("workspace-1"),
+			grexQueryKeys.workspaceSessions("workspace-1"),
 			createWorkspaceSessions("workspace-1"),
 		);
 		queryClient.setQueryData(
-			[...codewitQueryKeys.sessionMessages("session-2"), "thread"],
+			[...grexQueryKeys.sessionMessages("session-2"), "thread"],
 			[],
 		);
 		queryClient.setQueryData(
-			[...codewitQueryKeys.sessionMessages("session-1"), "thread"],
+			[...grexQueryKeys.sessionMessages("session-1"), "thread"],
 			createMessages("session-1"),
 		);
 
@@ -677,21 +677,21 @@ describe("WorkspacePanelContainer loading semantics", () => {
 	});
 
 	it("shows an empty session immediately without a prepare phase", async () => {
-		const queryClient = createCodewitQueryClient();
+		const queryClient = createGrexQueryClient();
 		queryClient.setQueryData(
-			codewitQueryKeys.workspaceDetail("workspace-1"),
+			grexQueryKeys.workspaceDetail("workspace-1"),
 			createWorkspaceDetail("workspace-1", "session-2"),
 		);
 		queryClient.setQueryData(
-			codewitQueryKeys.workspaceSessions("workspace-1"),
+			grexQueryKeys.workspaceSessions("workspace-1"),
 			createWorkspaceSessions("workspace-1"),
 		);
 		queryClient.setQueryData(
-			[...codewitQueryKeys.sessionMessages("session-2"), "thread"],
+			[...grexQueryKeys.sessionMessages("session-2"), "thread"],
 			[],
 		);
 		queryClient.setQueryData(
-			[...codewitQueryKeys.sessionMessages("session-1"), "thread"],
+			[...grexQueryKeys.sessionMessages("session-1"), "thread"],
 			createMessages("session-1"),
 		);
 
@@ -727,12 +727,12 @@ describe("WorkspacePanelContainer loading semantics", () => {
 	});
 
 	it("renders sessions in query order", async () => {
-		const queryClient = createCodewitQueryClient();
+		const queryClient = createGrexQueryClient();
 		queryClient.setQueryData(
-			codewitQueryKeys.workspaceDetail("workspace-1"),
+			grexQueryKeys.workspaceDetail("workspace-1"),
 			createWorkspaceDetail("workspace-1", "idle"),
 		);
-		queryClient.setQueryData(codewitQueryKeys.workspaceSessions("workspace-1"), [
+		queryClient.setQueryData(grexQueryKeys.workspaceSessions("workspace-1"), [
 			createWorkspaceSessionSummary("action-idle", {
 				actionKind: "create-pr",
 				updatedAt: "2026-04-05T00:00:00Z",
@@ -750,7 +750,7 @@ describe("WorkspacePanelContainer loading semantics", () => {
 			}),
 		]);
 		queryClient.setQueryData(
-			[...codewitQueryKeys.sessionMessages("idle"), "thread"],
+			[...grexQueryKeys.sessionMessages("idle"), "thread"],
 			createMessages("idle"),
 		);
 
@@ -778,7 +778,7 @@ describe("WorkspacePanelContainer loading semantics", () => {
 	});
 
 	it("uses the first visible session as the default displayed thread", async () => {
-		const queryClient = createCodewitQueryClient();
+		const queryClient = createGrexQueryClient();
 		const onResolveDisplayedSession = vi.fn();
 		const workspaceDetail = createWorkspaceDetail("workspace-1", null);
 		const workspaceSessions = [
@@ -799,15 +799,15 @@ describe("WorkspacePanelContainer loading semantics", () => {
 		);
 
 		queryClient.setQueryData(
-			codewitQueryKeys.workspaceDetail("workspace-1"),
+			grexQueryKeys.workspaceDetail("workspace-1"),
 			workspaceDetail,
 		);
 		queryClient.setQueryData(
-			codewitQueryKeys.workspaceSessions("workspace-1"),
+			grexQueryKeys.workspaceSessions("workspace-1"),
 			workspaceSessions,
 		);
 		queryClient.setQueryData(
-			[...codewitQueryKeys.sessionMessages("unread"), "thread"],
+			[...grexQueryKeys.sessionMessages("unread"), "thread"],
 			createMessages("unread"),
 		);
 
@@ -830,7 +830,7 @@ describe("WorkspacePanelContainer loading semantics", () => {
 	});
 
 	it("auto-creates a session when the selected workspace has none", async () => {
-		const queryClient = createCodewitQueryClient();
+		const queryClient = createGrexQueryClient();
 		let created = false;
 		const onResolveDisplayedSession = vi.fn();
 
@@ -904,14 +904,14 @@ describe("WorkspacePanelContainer loading semantics", () => {
 	});
 
 	it("does not auto-create a duplicate session for a newly created workspace", async () => {
-		const queryClient = createCodewitQueryClient();
+		const queryClient = createGrexQueryClient();
 		const detailDeferred =
 			createDeferred<ReturnType<typeof createWorkspaceDetail>>();
 		const sessionsDeferred =
 			createDeferred<ReturnType<typeof createWorkspaceSessions>>();
 
 		queryClient.setQueryData(
-			codewitQueryKeys.workspaceDetail("workspace-created"),
+			grexQueryKeys.workspaceDetail("workspace-created"),
 			{
 				...createWorkspaceDetail("workspace-created", null),
 				activeSessionAgentType: null,
@@ -920,7 +920,7 @@ describe("WorkspacePanelContainer loading semantics", () => {
 			},
 		);
 		queryClient.setQueryData(
-			codewitQueryKeys.workspaceSessions("workspace-created"),
+			grexQueryKeys.workspaceSessions("workspace-created"),
 			[],
 		);
 
@@ -984,7 +984,7 @@ describe("WorkspacePanelContainer loading semantics", () => {
 	});
 
 	it("does not auto-create when workspace detail already reports a session", async () => {
-		const queryClient = createCodewitQueryClient();
+		const queryClient = createGrexQueryClient();
 
 		apiMocks.createSession.mockResolvedValue({
 			sessionId: "session-duplicate",
@@ -1024,22 +1024,22 @@ describe("WorkspacePanelContainer loading semantics", () => {
 		// The thread messages query's staleTime: Infinity (event-driven
 		// invalidation) keeps the seeded empty array fresh, so no backend
 		// fetch fires while Phase 2 is still materializing the worktree.
-		const queryClient = createCodewitQueryClient();
+		const queryClient = createGrexQueryClient();
 		const workspaceId = crypto.randomUUID();
 		const sessionId = crypto.randomUUID();
 
-		queryClient.setQueryData(codewitQueryKeys.workspaceDetail(workspaceId), {
+		queryClient.setQueryData(grexQueryKeys.workspaceDetail(workspaceId), {
 			...createWorkspaceDetail(workspaceId, sessionId),
 			state: "initializing",
 		});
-		queryClient.setQueryData(codewitQueryKeys.workspaceSessions(workspaceId), [
+		queryClient.setQueryData(grexQueryKeys.workspaceSessions(workspaceId), [
 			createWorkspaceSessionSummary(sessionId, {
 				workspaceId,
 				active: true,
 			}),
 		]);
 		queryClient.setQueryData(
-			[...codewitQueryKeys.sessionMessages(sessionId), "thread"],
+			[...grexQueryKeys.sessionMessages(sessionId), "thread"],
 			[],
 		);
 
@@ -1066,17 +1066,17 @@ describe("WorkspacePanelContainer loading semantics", () => {
 	});
 
 	it("renders plan-review messages from DB as read-only cards", async () => {
-		const queryClient = createCodewitQueryClient();
+		const queryClient = createGrexQueryClient();
 		queryClient.setQueryData(
-			codewitQueryKeys.workspaceDetail("workspace-1"),
+			grexQueryKeys.workspaceDetail("workspace-1"),
 			createWorkspaceDetail("workspace-1"),
 		);
 		queryClient.setQueryData(
-			codewitQueryKeys.workspaceSessions("workspace-1"),
+			grexQueryKeys.workspaceSessions("workspace-1"),
 			createWorkspaceSessions("workspace-1"),
 		);
 		queryClient.setQueryData(
-			[...codewitQueryKeys.sessionMessages("session-1"), "thread"],
+			[...grexQueryKeys.sessionMessages("session-1"), "thread"],
 			createPlanReviewMessages("session-1"),
 		);
 

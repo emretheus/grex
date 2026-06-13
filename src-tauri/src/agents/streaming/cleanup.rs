@@ -48,7 +48,7 @@ pub(crate) fn cleanup_abnormal_stream_exit(
         Err(e) => {
             tracing::error!(
                 rid = %rid,
-                session_id = %ctx.codewit_session_id,
+                session_id = %ctx.grex_session_id,
                 "cleanup_abnormal_stream_exit: write_conn borrow failed — session may be stuck: {e}"
             );
             return AbnormalExitCleanup {
@@ -63,7 +63,7 @@ pub(crate) fn cleanup_abnormal_stream_exit(
         Err(error) => {
             tracing::error!(
                 rid = %rid,
-                session_id = %ctx.codewit_session_id,
+                session_id = %ctx.grex_session_id,
                 "cleanup_abnormal_stream_exit: persist_error_message failed: {error}"
             );
             false
@@ -75,11 +75,11 @@ pub(crate) fn cleanup_abnormal_stream_exit(
     // instead of replaying a broken target (issue #398).
     if let Err(error) = conn.execute(
         "UPDATE sessions SET provider_session_id = NULL WHERE id = ?1",
-        rusqlite::params![ctx.codewit_session_id],
+        rusqlite::params![ctx.grex_session_id],
     ) {
         tracing::error!(
             rid = %rid,
-            session_id = %ctx.codewit_session_id,
+            session_id = %ctx.grex_session_id,
             "cleanup_abnormal_stream_exit: failed to clear provider_session_id: {error}"
         );
     }
@@ -89,7 +89,7 @@ pub(crate) fn cleanup_abnormal_stream_exit(
             Ok(_) => {
                 tracing::debug!(
                     rid = %rid,
-                    session_id = %ctx.codewit_session_id,
+                    session_id = %ctx.grex_session_id,
                     err_persist_ok,
                     "cleanup_abnormal_stream_exit: session finalized to idle"
                 );
@@ -98,7 +98,7 @@ pub(crate) fn cleanup_abnormal_stream_exit(
             Err(error) => {
                 tracing::error!(
                     rid = %rid,
-                    session_id = %ctx.codewit_session_id,
+                    session_id = %ctx.grex_session_id,
                     "cleanup_abnormal_stream_exit: finalize_session_metadata failed: {error}"
                 );
                 false
@@ -127,7 +127,7 @@ pub(crate) fn finalize_aborted_exchange(
         Err(error) => {
             tracing::error!(
                 rid = %rid,
-                session_id = %ctx.codewit_session_id,
+                session_id = %ctx.grex_session_id,
                 "finalize_aborted_exchange: finalize_session_metadata failed: {error}"
             );
             false
@@ -152,7 +152,7 @@ mod tests {
         let _guard = crate::data_dir::TEST_ENV_LOCK
             .lock()
             .unwrap_or_else(|poisoned| poisoned.into_inner());
-        std::env::set_var("CODEWIT_DATA_DIR", dir.path());
+        std::env::set_var("GREX_DATA_DIR", dir.path());
         crate::data_dir::ensure_directory_structure().unwrap();
 
         let db_path = crate::data_dir::db_path().unwrap();
@@ -179,7 +179,7 @@ mod tests {
 
         f();
 
-        std::env::remove_var("CODEWIT_DATA_DIR");
+        std::env::remove_var("GREX_DATA_DIR");
     }
 
     fn provider_session_id() -> Option<String> {
@@ -195,7 +195,7 @@ mod tests {
 
     fn ctx() -> ExchangeContext {
         ExchangeContext {
-            codewit_session_id: "s-1".to_string(),
+            grex_session_id: "s-1".to_string(),
             model_id: "opus".to_string(),
             model_provider: "claude".to_string(),
             user_message_id: "user-1".to_string(),
@@ -266,7 +266,7 @@ mod tests {
     fn returns_false_when_session_row_does_not_exist() {
         with_session("streaming", || {
             let mut bad_ctx = ctx();
-            bad_ctx.codewit_session_id = "nonexistent".to_string();
+            bad_ctx.grex_session_id = "nonexistent".to_string();
             let outcome = cleanup_abnormal_stream_exit(
                 "rid-3",
                 Some(&bad_ctx),
@@ -330,7 +330,7 @@ mod tests {
     fn finalize_aborted_exchange_returns_false_for_missing_session() {
         with_session("streaming", || {
             let mut bad_ctx = ctx();
-            bad_ctx.codewit_session_id = "nonexistent".to_string();
+            bad_ctx.grex_session_id = "nonexistent".to_string();
             let finalized = {
                 let conn = crate::models::db::write_conn().unwrap();
                 finalize_aborted_exchange("rid-abort-2", &conn, &bad_ctx, "aborted", None, None)

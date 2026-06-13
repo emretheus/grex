@@ -31,7 +31,7 @@ import {
 import { extractError, isRecoverableByPurge } from "@/lib/errors";
 import {
 	archivedWorkspacesQueryOptions,
-	codewitQueryKeys,
+	grexQueryKeys,
 	repositoriesQueryOptions,
 	sessionThreadMessagesQueryOptions,
 	workspaceDetailQueryOptions,
@@ -362,7 +362,7 @@ export function useWorkspacesSidebarController({
 			if (payload.origin === "autoAfterMerge") {
 				requestSidebarReconcile(queryClient);
 				void queryClient.invalidateQueries({
-					queryKey: codewitQueryKeys.archivedWorkspaces,
+					queryKey: grexQueryKeys.archivedWorkspaces,
 				});
 				return;
 			}
@@ -570,7 +570,7 @@ export function useWorkspacesSidebarController({
 		// what wires the loadedGroups / loadedArchived return values.
 		requestSidebarReconcile(queryClient);
 		await queryClient.invalidateQueries({
-			queryKey: codewitQueryKeys.repositories,
+			queryKey: grexQueryKeys.repositories,
 		});
 
 		const [loadedGroups, loadedArchived] = await Promise.all([
@@ -588,10 +588,10 @@ export function useWorkspacesSidebarController({
 		async (workspaceId: string, opts?: { skipSidebarFlush?: boolean }) => {
 			await Promise.all([
 				queryClient.invalidateQueries({
-					queryKey: codewitQueryKeys.workspaceDetail(workspaceId),
+					queryKey: grexQueryKeys.workspaceDetail(workspaceId),
 				}),
 				queryClient.invalidateQueries({
-					queryKey: codewitQueryKeys.workspaceSessions(workspaceId),
+					queryKey: grexQueryKeys.workspaceSessions(workspaceId),
 				}),
 			]);
 			if (!opts?.skipSidebarFlush) {
@@ -614,20 +614,20 @@ export function useWorkspacesSidebarController({
 	const handleMarkWorkspaceUnread = useCallback(
 		(workspaceId: string) => {
 			const previousGroups = queryClient.getQueryData(
-				codewitQueryKeys.workspaceGroups,
+				grexQueryKeys.workspaceGroups,
 			);
 			const previousArchived = queryClient.getQueryData(
-				codewitQueryKeys.archivedWorkspaces,
+				grexQueryKeys.archivedWorkspaces,
 			);
 			const previousDetail = queryClient.getQueryData(
-				codewitQueryKeys.workspaceDetail(workspaceId),
+				grexQueryKeys.workspaceDetail(workspaceId),
 			);
 
 			// Optimistic flash of the red dot. The backend sets
 			// `workspaces.unread = 1` directly without touching sessions, so
 			// mirror that here: flip `workspaceUnread` + `hasUnread`, leave
 			// `unreadSessionCount` alone. The post-IPC invalidation backfills.
-			queryClient.setQueryData(codewitQueryKeys.workspaceGroups, (current) =>
+			queryClient.setQueryData(grexQueryKeys.workspaceGroups, (current) =>
 				Array.isArray(current)
 					? (current as typeof groups).map((group) => ({
 							...group,
@@ -639,7 +639,7 @@ export function useWorkspacesSidebarController({
 						}))
 					: current,
 			);
-			queryClient.setQueryData(codewitQueryKeys.archivedWorkspaces, (current) =>
+			queryClient.setQueryData(grexQueryKeys.archivedWorkspaces, (current) =>
 				Array.isArray(current)
 					? (current as typeof archivedSummaries).map((summary) =>
 							summary.id === workspaceId
@@ -649,7 +649,7 @@ export function useWorkspacesSidebarController({
 					: current,
 			);
 			queryClient.setQueryData(
-				codewitQueryKeys.workspaceDetail(workspaceId),
+				grexQueryKeys.workspaceDetail(workspaceId),
 				(current) =>
 					current
 						? {
@@ -668,15 +668,15 @@ export function useWorkspacesSidebarController({
 				)
 				.catch((error) => {
 					queryClient.setQueryData(
-						codewitQueryKeys.workspaceGroups,
+						grexQueryKeys.workspaceGroups,
 						previousGroups,
 					);
 					queryClient.setQueryData(
-						codewitQueryKeys.archivedWorkspaces,
+						grexQueryKeys.archivedWorkspaces,
 						previousArchived,
 					);
 					queryClient.setQueryData(
-						codewitQueryKeys.workspaceDetail(workspaceId),
+						grexQueryKeys.workspaceDetail(workspaceId),
 						previousDetail,
 					);
 					pushWorkspaceToast(
@@ -694,7 +694,7 @@ export function useWorkspacesSidebarController({
 			// pin/unpin move (the row migrates between Pinned and its status
 			// group).
 			const releaseSidebar = holdSidebarMutation(queryClient);
-			queryClient.setQueryData(codewitQueryKeys.workspaceGroups, (current) => {
+			queryClient.setQueryData(grexQueryKeys.workspaceGroups, (current) => {
 				if (!Array.isArray(current)) {
 					return current;
 				}
@@ -786,7 +786,7 @@ export function useWorkspacesSidebarController({
 			// / mount / another mutation) reconciles `repos.display_order` to
 			// the canonical sparse values; the relative order is identical.
 			queryClient.setQueryData(
-				codewitQueryKeys.workspaceGroups,
+				grexQueryKeys.workspaceGroups,
 				(current: WorkspaceGroup[] | undefined) =>
 					applyRepoReorder(current, repoId, beforeRepoId),
 			);
@@ -795,7 +795,7 @@ export function useWorkspacesSidebarController({
 				await moveRepositoryInSidebar(repoId, beforeRepoId);
 			} catch (error) {
 				void queryClient.invalidateQueries({
-					queryKey: codewitQueryKeys.workspaceGroups,
+					queryKey: grexQueryKeys.workspaceGroups,
 				});
 				pushWorkspaceToast(
 					describeUnknownError(error, "Unable to reorder repository."),
@@ -812,7 +812,7 @@ export function useWorkspacesSidebarController({
 			beforeWorkspaceId: string | null,
 		) => {
 			queryClient.setQueryData(
-				codewitQueryKeys.workspaceGroups,
+				grexQueryKeys.workspaceGroups,
 				(current: WorkspaceGroup[] | undefined) =>
 					reorderWorkspaceInSidebar(
 						current,
@@ -838,7 +838,7 @@ export function useWorkspacesSidebarController({
 				});
 			} catch (error) {
 				void queryClient.invalidateQueries({
-					queryKey: codewitQueryKeys.workspaceGroups,
+					queryKey: grexQueryKeys.workspaceGroups,
 				});
 				pushWorkspaceToast(
 					describeUnknownError(error, "Unable to move workspace."),
@@ -908,7 +908,7 @@ export function useWorkspacesSidebarController({
 				return next;
 			});
 			queryClient.setQueryData<WorkspaceDetail | null>(
-				codewitQueryKeys.workspaceDetail(prepareResponse.workspaceId),
+				grexQueryKeys.workspaceDetail(prepareResponse.workspaceId),
 				() => ({
 					...createOptimisticCreatingWorkspaceDetail(
 						preparedRow,
@@ -934,7 +934,7 @@ export function useWorkspacesSidebarController({
 				}),
 			);
 			queryClient.setQueryData<WorkspaceSessionSummary[]>(
-				codewitQueryKeys.workspaceSessions(prepareResponse.workspaceId),
+				grexQueryKeys.workspaceSessions(prepareResponse.workspaceId),
 				[preparedSession],
 			);
 			// Empty thread array — the panel renders the final "nothing here
@@ -942,7 +942,7 @@ export function useWorkspacesSidebarController({
 			// the cold placeholder.
 			queryClient.setQueryData(
 				[
-					...codewitQueryKeys.sessionMessages(prepareResponse.initialSessionId),
+					...grexQueryKeys.sessionMessages(prepareResponse.initialSessionId),
 					"thread",
 				],
 				[],
@@ -950,7 +950,7 @@ export function useWorkspacesSidebarController({
 			// Real repo scripts delivered by Phase 1 — the EmptyState shows
 			// the correct "missing script" button count immediately.
 			queryClient.setQueryData(
-				codewitQueryKeys.repoScripts(repoId, prepareResponse.workspaceId),
+				grexQueryKeys.repoScripts(repoId, prepareResponse.workspaceId),
 				prepareResponse.repoScripts,
 			);
 			// Seed git + PR statuses so the inspector's Actions section
@@ -963,7 +963,7 @@ export function useWorkspacesSidebarController({
 			// `get_workspace_git_action_status` and
 			// `get_workspace_forge_action_status` — keep them in sync.
 			queryClient.setQueryData(
-				codewitQueryKeys.workspaceGitActionStatus(prepareResponse.workspaceId),
+				grexQueryKeys.workspaceGitActionStatus(prepareResponse.workspaceId),
 				{
 					uncommittedCount: 0,
 					conflictCount: 0,
@@ -976,11 +976,11 @@ export function useWorkspacesSidebarController({
 				},
 			);
 			queryClient.setQueryData(
-				codewitQueryKeys.workspaceChangeRequest(prepareResponse.workspaceId),
+				grexQueryKeys.workspaceChangeRequest(prepareResponse.workspaceId),
 				null,
 			);
 			queryClient.setQueryData(
-				codewitQueryKeys.workspaceForgeActionStatus(prepareResponse.workspaceId),
+				grexQueryKeys.workspaceForgeActionStatus(prepareResponse.workspaceId),
 				{
 					changeRequest: null,
 					reviewDecision: null,
@@ -1000,7 +1000,7 @@ export function useWorkspacesSidebarController({
 			finalizeWorkspaceFromRepo(prepareResponse.workspaceId)
 				.then((finalized) => {
 					queryClient.setQueryData<WorkspaceDetail | null>(
-						codewitQueryKeys.workspaceDetail(prepareResponse.workspaceId),
+						grexQueryKeys.workspaceDetail(prepareResponse.workspaceId),
 						(current) =>
 							current ? { ...current, state: finalized.finalState } : current,
 					);
@@ -1021,17 +1021,17 @@ export function useWorkspacesSidebarController({
 						return next;
 					});
 					void queryClient.invalidateQueries({
-						queryKey: codewitQueryKeys.workspaceDetail(
+						queryKey: grexQueryKeys.workspaceDetail(
 							prepareResponse.workspaceId,
 						),
 					});
-					// Phase 1 probed codewit.json at the source repo root, which
+					// Phase 1 probed grex.json at the source repo root, which
 					// matches the worktree for a fresh clone. If the user had
-					// uncommitted local edits to codewit.json the two can
+					// uncommitted local edits to grex.json the two can
 					// diverge — invalidate so the canonical worktree-side
 					// probe runs once the dir exists.
 					void queryClient.invalidateQueries({
-						queryKey: codewitQueryKeys.repoScripts(
+						queryKey: grexQueryKeys.repoScripts(
 							repoId,
 							prepareResponse.workspaceId,
 						),
@@ -1043,7 +1043,7 @@ export function useWorkspacesSidebarController({
 					// any divergence — e.g. a setup script that edited
 					// files — shows up promptly).
 					void queryClient.invalidateQueries({
-						queryKey: codewitQueryKeys.workspaceGitActionStatus(
+						queryKey: grexQueryKeys.workspaceGitActionStatus(
 							prepareResponse.workspaceId,
 						),
 					});
@@ -1063,20 +1063,20 @@ export function useWorkspacesSidebarController({
 						return next;
 					});
 					queryClient.removeQueries({
-						queryKey: codewitQueryKeys.workspaceDetail(
+						queryKey: grexQueryKeys.workspaceDetail(
 							prepareResponse.workspaceId,
 						),
 						exact: true,
 					});
 					queryClient.removeQueries({
-						queryKey: codewitQueryKeys.workspaceSessions(
+						queryKey: grexQueryKeys.workspaceSessions(
 							prepareResponse.workspaceId,
 						),
 						exact: true,
 					});
 					queryClient.removeQueries({
 						queryKey: [
-							...codewitQueryKeys.sessionMessages(
+							...grexQueryKeys.sessionMessages(
 								prepareResponse.initialSessionId,
 							),
 							"thread",
@@ -1084,32 +1084,30 @@ export function useWorkspacesSidebarController({
 						exact: true,
 					});
 					queryClient.removeQueries({
-						queryKey: codewitQueryKeys.repoScripts(
+						queryKey: grexQueryKeys.repoScripts(
 							repoId,
 							prepareResponse.workspaceId,
 						),
 						exact: true,
 					});
 					queryClient.removeQueries({
-						queryKey: codewitQueryKeys.workspaceGitActionStatus(
+						queryKey: grexQueryKeys.workspaceGitActionStatus(
 							prepareResponse.workspaceId,
 						),
 						exact: true,
 					});
 					queryClient.removeQueries({
-						queryKey: codewitQueryKeys.workspaceChangeRequest(
+						queryKey: grexQueryKeys.workspaceChangeRequest(
 							prepareResponse.workspaceId,
 						),
 						exact: true,
 					});
 					queryClient.removeQueries({
-						queryKey: codewitQueryKeys.workspaceForge(
-							prepareResponse.workspaceId,
-						),
+						queryKey: grexQueryKeys.workspaceForge(prepareResponse.workspaceId),
 						exact: true,
 					});
 					queryClient.removeQueries({
-						queryKey: codewitQueryKeys.workspaceForgeActionStatus(
+						queryKey: grexQueryKeys.workspaceForgeActionStatus(
 							prepareResponse.workspaceId,
 						),
 						exact: true,
@@ -1253,13 +1251,13 @@ export function useWorkspacesSidebarController({
 				return next;
 			});
 			const previousGroups = queryClient.getQueryData(
-				codewitQueryKeys.workspaceGroups,
+				grexQueryKeys.workspaceGroups,
 			);
 			const previousArchived = queryClient.getQueryData(
-				codewitQueryKeys.archivedWorkspaces,
+				grexQueryKeys.archivedWorkspaces,
 			);
 
-			queryClient.setQueryData(codewitQueryKeys.workspaceGroups, (current) =>
+			queryClient.setQueryData(grexQueryKeys.workspaceGroups, (current) =>
 				Array.isArray(current)
 					? (current as typeof groups).map((group) => ({
 							...group,
@@ -1267,7 +1265,7 @@ export function useWorkspacesSidebarController({
 						}))
 					: current,
 			);
-			queryClient.setQueryData(codewitQueryKeys.archivedWorkspaces, (current) =>
+			queryClient.setQueryData(grexQueryKeys.archivedWorkspaces, (current) =>
 				Array.isArray(current)
 					? (current as typeof archivedSummaries).filter(
 							(summary) => summary.id !== workspaceId,
@@ -1279,7 +1277,7 @@ export function useWorkspacesSidebarController({
 				// Pick the neighbour so virtualizer doesn't fling to the top.
 				const optimisticGroups =
 					(queryClient.getQueryData(
-						codewitQueryKeys.workspaceGroups,
+						grexQueryKeys.workspaceGroups,
 					) as typeof groups) ?? [];
 				const nextArchivedRows = archivedRows.filter(
 					(row) => row.id !== workspaceId,
@@ -1301,11 +1299,11 @@ export function useWorkspacesSidebarController({
 			void permanentlyDeleteWorkspace(workspaceId)
 				.catch((error) => {
 					queryClient.setQueryData(
-						codewitQueryKeys.workspaceGroups,
+						grexQueryKeys.workspaceGroups,
 						previousGroups,
 					);
 					queryClient.setQueryData(
-						codewitQueryKeys.archivedWorkspaces,
+						grexQueryKeys.archivedWorkspaces,
 						previousArchived,
 					);
 					if (wasSelected) {
@@ -1414,7 +1412,7 @@ export function useWorkspacesSidebarController({
 				}
 
 				const previousGroups =
-					queryClient.getQueryData(codewitQueryKeys.workspaceGroups) ?? groups;
+					queryClient.getQueryData(grexQueryKeys.workspaceGroups) ?? groups;
 
 				const moved = {
 					row: null as WorkspaceRow | null,
@@ -1481,7 +1479,7 @@ export function useWorkspacesSidebarController({
 				// fires (see listener effect) or the .catch path rolls back.
 				archiveGate.begin(workspaceId);
 				queryClient.setQueryData(
-					codewitQueryKeys.workspaceGroups,
+					grexQueryKeys.workspaceGroups,
 					optimisticGroups,
 				);
 
@@ -1578,10 +1576,10 @@ export function useWorkspacesSidebarController({
 			const releaseSidebar = holdSidebarMutation(queryClient);
 
 			const previousGroups = queryClient.getQueryData(
-				codewitQueryKeys.workspaceGroups,
+				grexQueryKeys.workspaceGroups,
 			);
 			const previousArchived = queryClient.getQueryData(
-				codewitQueryKeys.archivedWorkspaces,
+				grexQueryKeys.archivedWorkspaces,
 			);
 
 			const archivedSummary = Array.isArray(previousArchived)
@@ -1612,7 +1610,7 @@ export function useWorkspacesSidebarController({
 				return;
 			}
 
-			queryClient.setQueryData(codewitQueryKeys.archivedWorkspaces, (current) =>
+			queryClient.setQueryData(grexQueryKeys.archivedWorkspaces, (current) =>
 				Array.isArray(current)
 					? (current as typeof archivedSummaries).filter(
 							(summary) => summary.id !== workspaceId,
@@ -1633,7 +1631,7 @@ export function useWorkspacesSidebarController({
 			// will place it — avoids the reorder flicker we'd get from a naive
 			// prepend or a createdAt-only sort. The archived summary carries
 			// `displayOrder`, which restore_workspace_impl does NOT reset.
-			queryClient.setQueryData(codewitQueryKeys.workspaceGroups, (current) =>
+			queryClient.setQueryData(grexQueryKeys.workspaceGroups, (current) =>
 				Array.isArray(current)
 					? (current as typeof groups).map((group) =>
 							group.id === targetGroupId
@@ -1663,10 +1661,10 @@ export function useWorkspacesSidebarController({
 				.then(async (response) => {
 					await Promise.all([
 						queryClient.invalidateQueries({
-							queryKey: codewitQueryKeys.workspaceDetail(workspaceId),
+							queryKey: grexQueryKeys.workspaceDetail(workspaceId),
 						}),
 						queryClient.invalidateQueries({
-							queryKey: codewitQueryKeys.workspaceSessions(workspaceId),
+							queryKey: grexQueryKeys.workspaceSessions(workspaceId),
 						}),
 					]);
 					prefetchWorkspace(workspaceId);
@@ -1678,11 +1676,11 @@ export function useWorkspacesSidebarController({
 				})
 				.catch((error) => {
 					queryClient.setQueryData(
-						codewitQueryKeys.workspaceGroups,
+						grexQueryKeys.workspaceGroups,
 						previousGroups,
 					);
 					queryClient.setQueryData(
-						codewitQueryKeys.archivedWorkspaces,
+						grexQueryKeys.archivedWorkspaces,
 						previousArchived,
 					);
 					pushPermanentDeleteRecoveryToast(

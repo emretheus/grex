@@ -1,4 +1,4 @@
-import { CodewitLogoAnimated } from "@/components/codewit-logo-animated";
+import { GrexLogoAnimated } from "@/components/grex-logo-animated";
 import { Button } from "@/components/ui/button";
 import { confirmCompanionPairing } from "@/lib/ipc";
 
@@ -12,13 +12,13 @@ export function CompanionPairingConfirm() {
 	return (
 		<div className="fixed inset-0 z-[9998] flex items-center justify-center bg-background p-6">
 			<div className="flex w-full max-w-sm flex-col items-center gap-6 text-center">
-				<CodewitLogoAnimated size={56} className="opacity-90" />
+				<GrexLogoAnimated size={56} className="opacity-90" />
 				<div className="flex flex-col gap-2">
 					<h1 className="font-semibold text-foreground text-heading">
 						Pair this browser
 					</h1>
 					<p className="text-muted-foreground text-body">
-						Connect this browser to your Codewit desktop so you can open your
+						Connect this browser to your Grex desktop so you can open your
 						workspaces, sessions, and agents from here. Only continue if you
 						started this pairing yourself.
 					</p>

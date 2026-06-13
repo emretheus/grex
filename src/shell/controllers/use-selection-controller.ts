@@ -24,7 +24,7 @@ import {
 	type WorkspaceSessionSummary,
 } from "@/lib/api";
 import {
-	codewitQueryKeys,
+	grexQueryKeys,
 	sessionThreadMessagesQueryOptions,
 	workspaceDetailQueryOptions,
 	workspaceSessionsQueryOptions,
@@ -289,11 +289,11 @@ export function useSelectionController(
 	const resolveCachedWorkspaceDisplay = useCallback(
 		(workspaceId: string, preferredSessionId?: string | null) => {
 			const workspaceDetail = queryClient.getQueryData<WorkspaceDetail | null>(
-				codewitQueryKeys.workspaceDetail(workspaceId),
+				grexQueryKeys.workspaceDetail(workspaceId),
 			);
 			const workspaceSessions = queryClient.getQueryData<
 				WorkspaceSessionSummary[] | undefined
-			>(codewitQueryKeys.workspaceSessions(workspaceId));
+			>(grexQueryKeys.workspaceSessions(workspaceId));
 
 			if (!workspaceDetail || !Array.isArray(workspaceSessions)) {
 				return null;
@@ -308,7 +308,7 @@ export function useSelectionController(
 			const hasSessionMessages =
 				sessionId === null ||
 				queryClient.getQueryData([
-					...codewitQueryKeys.sessionMessages(sessionId),
+					...grexQueryKeys.sessionMessages(sessionId),
 					"thread",
 				]) !== undefined;
 
@@ -326,11 +326,11 @@ export function useSelectionController(
 			const sessionHistory =
 				sessionSelectionHistoryByWorkspaceRef.current[workspaceId] ?? [];
 			const workspaceDetail = queryClient.getQueryData<WorkspaceDetail | null>(
-				codewitQueryKeys.workspaceDetail(workspaceId),
+				grexQueryKeys.workspaceDetail(workspaceId),
 			);
 			const workspaceSessions =
 				queryClient.getQueryData<WorkspaceSessionSummary[] | undefined>(
-					codewitQueryKeys.workspaceSessions(workspaceId),
+					grexQueryKeys.workspaceSessions(workspaceId),
 				) ?? [];
 
 			const sessionIds =
@@ -552,7 +552,7 @@ export function useSelectionController(
 						const live = getRouterSelection();
 						const liveSessions =
 							queryClient.getQueryData<WorkspaceSessionSummary[] | undefined>(
-								codewitQueryKeys.workspaceSessions(workspaceId),
+								grexQueryKeys.workspaceSessions(workspaceId),
 							) ?? sessions;
 						return live.workspaceId === workspaceId &&
 							live.sessionId !== null &&
@@ -564,7 +564,7 @@ export function useSelectionController(
 					while (
 						explicitSessionId !== null &&
 						queryClient.getQueryData([
-							...codewitQueryKeys.sessionMessages(explicitSessionId),
+							...grexQueryKeys.sessionMessages(explicitSessionId),
 							"thread",
 						]) === undefined
 					) {
@@ -732,7 +732,7 @@ export function useSelectionController(
 					if (workspaceSelectionRequestRef.current !== settleRequestId) return;
 					// Skip git fetch while the worktree is still initializing.
 					const cachedDetail = queryClient.getQueryData<WorkspaceDetail | null>(
-						codewitQueryKeys.workspaceDetail(workspaceId),
+						grexQueryKeys.workspaceDetail(workspaceId),
 					);
 					if (cachedDetail?.state !== "initializing") {
 						triggerWorkspaceFetch(workspaceId);
@@ -846,7 +846,7 @@ export function useSelectionController(
 
 			if (
 				queryClient.getQueryData([
-					...codewitQueryKeys.sessionMessages(sessionId),
+					...grexQueryKeys.sessionMessages(sessionId),
 					"thread",
 				]) !== undefined
 			) {
@@ -941,7 +941,7 @@ export function useSelectionController(
 			if (!workspaceId) return;
 			const workspaceSessions =
 				queryClient.getQueryData<WorkspaceSessionSummary[]>(
-					codewitQueryKeys.workspaceSessions(workspaceId),
+					grexQueryKeys.workspaceSessions(workspaceId),
 				) ?? [];
 			const nextSessionId = findAdjacentSessionId(
 				workspaceSessions,

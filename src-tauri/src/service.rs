@@ -1,4 +1,4 @@
-//! Public service facade for non-Tauri consumers (e.g. `codewitctl`).
+//! Public service facade for non-Tauri consumers (e.g. `grexctl`).
 //!
 //! Re-exports domain types and functions from the core backend modules so
 //! that `[[bin]]` targets can use them without going through Tauri commands.
@@ -101,7 +101,7 @@ fn looks_like_uuid(s: &str) -> bool {
 }
 
 // ---------------------------------------------------------------------------
-// Agent streaming — `codewit send`
+// Agent streaming — `grex send`
 // ---------------------------------------------------------------------------
 
 pub struct SendMessageParams {
@@ -124,7 +124,7 @@ pub struct SendMessageResult {
     pub persisted: bool,
 }
 
-/// Send a prompt to an AI agent. When the Codewit desktop app is running,
+/// Send a prompt to an AI agent. When the Grex desktop app is running,
 /// the message is queued as a pending CLI send so the app's shared sidecar
 /// handles it — this gives the frontend live streaming updates. When the
 /// app is not running, falls back to creating an independent sidecar.
@@ -290,18 +290,18 @@ pub fn send_message(
             crate::agents::lookup_workspace_linked_directories(Some(&session_id));
     }
 
-    // Prepend the same Codewit `<codewit_context>` preamble the in-app
+    // Prepend the same Grex `<grex_context>` preamble the in-app
     // streaming path uses, so a CLI-launched agent self-locates and
     // sees the chat-vs-workspace framing. Persisted user message
     // (further down) still stores `params.prompt` only, matching the
     // in-app contract that the DB never sees the preamble.
-    let codewit_prefix = crate::agents::streaming::build_codewit_system_prompt_for_workspace(
+    let grex_prefix = crate::agents::streaming::build_grex_system_prompt_for_workspace(
         Some(&session_id),
         Some(&workspace_id),
         std::path::Path::new(&cwd),
     );
-    let wire_prompt = match codewit_prefix.as_deref() {
-        Some(codewit) => format!("{codewit}\n\nUser request:\n{}", params.prompt),
+    let wire_prompt = match grex_prefix.as_deref() {
+        Some(grex) => format!("{grex}\n\nUser request:\n{}", params.prompt),
         None => params.prompt.clone(),
     };
 
@@ -670,7 +670,7 @@ pub fn drain_pending_cli_sends() -> Result<Vec<PendingCliSend>> {
     Ok(row.into_iter().collect())
 }
 
-/// Check if the Codewit App is running by testing the MCP bridge port.
+/// Check if the Grex App is running by testing the MCP bridge port.
 pub fn is_app_running() -> bool {
     crate::ui_sync::is_listener_running()
 }
@@ -686,7 +686,7 @@ mod tests {
     use std::fs;
     use std::path::PathBuf;
 
-    /// Helper: set CODEWIT_DATA_DIR to a temp dir for tests that hit the DB.
+    /// Helper: set GREX_DATA_DIR to a temp dir for tests that hit the DB.
     struct TestDataDir {
         root: PathBuf,
     }
@@ -694,8 +694,8 @@ mod tests {
     impl TestDataDir {
         fn new(name: &str) -> Self {
             let root =
-                std::env::temp_dir().join(format!("codewit-test-{name}-{}", uuid::Uuid::new_v4()));
-            std::env::set_var("CODEWIT_DATA_DIR", root.display().to_string());
+                std::env::temp_dir().join(format!("grex-test-{name}-{}", uuid::Uuid::new_v4()));
+            std::env::set_var("GREX_DATA_DIR", root.display().to_string());
             crate::data_dir::ensure_directory_structure().unwrap();
             let db_path = crate::data_dir::db_path().unwrap();
             let conn = rusqlite::Connection::open(&db_path).unwrap();
@@ -717,7 +717,7 @@ mod tests {
 
     impl Drop for TestDataDir {
         fn drop(&mut self) {
-            std::env::remove_var("CODEWIT_DATA_DIR");
+            std::env::remove_var("GREX_DATA_DIR");
             let _ = fs::remove_dir_all(&self.root);
         }
     }

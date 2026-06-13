@@ -28,7 +28,7 @@ function showDownloadedUpdateToast(
 ) {
 	toast("Update ready to install", {
 		id: toastIdForUpdate(status) ?? undefined,
-		description: `Codewit ${status.update.version} has been downloaded.`,
+		description: `Grex ${status.update.version} has been downloaded.`,
 		action: createElement(
 			"button",
 			{

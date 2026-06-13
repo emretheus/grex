@@ -11,7 +11,7 @@ control_events:
     reason: user_requested
     resolvedModel: test-model
     sessionId: provider-session-1
-    workingDirectory: /tmp/codewit
+    workingDirectory: /tmp/grex
 final_messages:
   - role: assistant
     id: msg-1

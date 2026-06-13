@@ -33,8 +33,8 @@ mod tests {
     #[test]
     fn quote_posix_arg_wraps_plain_value() {
         assert_eq!(
-            quote_posix_arg("/usr/local/bin/codewit"),
-            "'/usr/local/bin/codewit'"
+            quote_posix_arg("/usr/local/bin/grex"),
+            "'/usr/local/bin/grex'"
         );
     }
 

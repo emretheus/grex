@@ -336,7 +336,7 @@ mod tests {
     fn truncate_respects_utf8_char_boundaries() {
         // 6 narrow chars + 1 wide char — the cut must land on a char,
         // not a byte. Naive `text[..max]` would panic.
-        let input = "你好世界Codewit";
+        let input = "你好世界Grex";
         let out = truncate(input, 4);
         assert_eq!(out, "你好世界…");
     }

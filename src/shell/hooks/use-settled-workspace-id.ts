@@ -25,7 +25,7 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
 import type { WorkspaceDetail } from "@/lib/api";
-import { codewitQueryKeys } from "@/lib/query-client";
+import { grexQueryKeys } from "@/lib/query-client";
 
 // Trailing window for cold targets only. Short enough that a single cold switch
 // feels immediate; long enough to coalesce a held Cmd+Opt+Down burst (keys
@@ -46,7 +46,7 @@ export function useSettledWorkspaceId(
 	const isWarm =
 		selectedWorkspaceId === null ||
 		queryClient.getQueryData<WorkspaceDetail | null>(
-			codewitQueryKeys.workspaceDetail(selectedWorkspaceId),
+			grexQueryKeys.workspaceDetail(selectedWorkspaceId),
 		) !== undefined;
 
 	// Fallback id shown while a COLD target is still settling. Held in a ref so

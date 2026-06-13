@@ -2,9 +2,9 @@ use std::env;
 use std::fs;
 use std::path::{Path, PathBuf};
 
-const GITHUB_CLIENT_ID_KEY: &str = "CODEWIT_GITHUB_CLIENT_ID";
-const UPDATER_ENDPOINTS_KEY: &str = "CODEWIT_UPDATER_ENDPOINTS";
-const UPDATER_PUBKEY_KEY: &str = "CODEWIT_UPDATER_PUBKEY";
+const GITHUB_CLIENT_ID_KEY: &str = "GREX_GITHUB_CLIENT_ID";
+const UPDATER_ENDPOINTS_KEY: &str = "GREX_UPDATER_ENDPOINTS";
+const UPDATER_PUBKEY_KEY: &str = "GREX_UPDATER_PUBKEY";
 
 fn main() {
     ensure_external_bin_placeholders();
@@ -95,7 +95,7 @@ fn ensure_external_bin_placeholders() {
         manifest_dir
             .join("target")
             .join("bundled")
-            .join(format!("codewit-cli-{target}{exe}")),
+            .join(format!("grex-cli-{target}{exe}")),
     );
 
     if let Some(repo_root) = manifest_dir.parent() {
@@ -103,7 +103,7 @@ fn ensure_external_bin_placeholders() {
             repo_root
                 .join("sidecar")
                 .join("dist")
-                .join(format!("codewit-sidecar-{target}{exe}")),
+                .join(format!("grex-sidecar-{target}{exe}")),
         );
     }
 }

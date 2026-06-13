@@ -17,7 +17,7 @@ import {
 	useRef,
 	useState,
 } from "react";
-import { CodewitThinkingIndicator } from "@/components/codewit-thinking-indicator";
+import { GrexThinkingIndicator } from "@/components/grex-thinking-indicator";
 import {
 	LazyStreamdown,
 	preloadStreamdown,
@@ -280,7 +280,7 @@ export function formatElapsed(ms: number): string {
 	return remMin > 0 ? `${hr}h ${remMin}m` : `${hr}h`;
 }
 
-/** "Running for X" timer next to the Codewit logo. Start time = last user
+/** "Running for X" timer next to the Grex logo. Start time = last user
  *  message's optimistic createdAt (in thread cache the moment Send is hit). */
 function StreamingElapsed({
 	workspaceId,
@@ -584,9 +584,7 @@ export function WorkspaceHoverCard({
 				`[data-workspace-row-id="${row.id}"]`,
 			);
 			if (!rowEl) return;
-			const sidebarEl = rowEl.closest<HTMLElement>(
-				"[data-codewit-sidebar-root]",
-			);
+			const sidebarEl = rowEl.closest<HTMLElement>("[data-grex-sidebar-root]");
 			if (!sidebarEl) return;
 			const rowRight = rowEl.getBoundingClientRect().right;
 			const sidebarRight = sidebarEl.getBoundingClientRect().right;
@@ -677,10 +675,10 @@ export function WorkspaceHoverCard({
 						) : null}
 					</div>
 
-					{/* Title row + Codewit logo + elapsed timer (when streaming). */}
+					{/* Title row + Grex logo + elapsed timer (when streaming). */}
 					<div className="flex items-start gap-2">
 						{isSending ? (
-							<CodewitThinkingIndicator size={14} className="mt-0.5 shrink-0" />
+							<GrexThinkingIndicator size={14} className="mt-0.5 shrink-0" />
 						) : null}
 						<div className="min-w-0 flex-1 text-body font-semibold leading-snug text-foreground line-clamp-2">
 							{title}

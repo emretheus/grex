@@ -1,9 +1,9 @@
-// Typed shell event bus. Replaces ad-hoc `window.dispatchEvent("codewit:foo")`
+// Typed shell event bus. Replaces ad-hoc `window.dispatchEvent("grex:foo")`
 // strings with a single discriminated union, so emitters and listeners share
 // one source of truth.
 //
 // The transport is still `window.dispatchEvent` so existing
-// `addEventListener("codewit:foo")` callsites in features/* keep working
+// `addEventListener("grex:foo")` callsites in features/* keep working
 // during the gradual migration.
 import { useEffect, useRef } from "react";
 import type {
@@ -62,7 +62,7 @@ export type ShellEventOf<T extends ShellEventType> = Extract<
 	{ type: T }
 >;
 
-const EVENT_PREFIX = "codewit:";
+const EVENT_PREFIX = "grex:";
 
 export function shellEventName(type: ShellEventType): string {
 	return `${EVENT_PREFIX}${type}`;
