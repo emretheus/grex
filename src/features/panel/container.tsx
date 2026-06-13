@@ -475,10 +475,7 @@ export const WorkspacePanelContainer = memo(function WorkspacePanelContainer({
 		await invalidateWorkspaceQueries();
 		if (threadSessionId) {
 			await queryClient.invalidateQueries({
-				queryKey: [
-					...grexQueryKeys.sessionMessages(threadSessionId),
-					"thread",
-				],
+				queryKey: [...grexQueryKeys.sessionMessages(threadSessionId), "thread"],
 			});
 		}
 	}, [

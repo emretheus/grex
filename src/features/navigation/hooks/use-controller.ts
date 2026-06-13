@@ -1103,9 +1103,7 @@ export function useWorkspacesSidebarController({
 						exact: true,
 					});
 					queryClient.removeQueries({
-						queryKey: grexQueryKeys.workspaceForge(
-							prepareResponse.workspaceId,
-						),
+						queryKey: grexQueryKeys.workspaceForge(prepareResponse.workspaceId),
 						exact: true,
 					});
 					queryClient.removeQueries({

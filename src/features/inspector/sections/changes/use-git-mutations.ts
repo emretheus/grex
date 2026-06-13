@@ -53,10 +53,7 @@ export function useGitMutations({
 	const invalidateChanges = useCallback(() => {
 		if (!workspaceRootPath) return;
 		queryClient.invalidateQueries({
-			queryKey: grexQueryKeys.workspaceChanges(
-				workspaceRootPath,
-				workspaceId,
-			),
+			queryKey: grexQueryKeys.workspaceChanges(workspaceRootPath, workspaceId),
 		});
 		if (workspaceId) {
 			queryClient.invalidateQueries({

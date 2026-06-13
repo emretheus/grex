@@ -12,10 +12,7 @@
 	"plugins": {
 		"deep-link": {
 			"desktop": {
-				"schemes": [
-					"grex",
-					"grex-dev"
-				]
+				"schemes": ["grex", "grex-dev"]
 			}
 		},
 		"updater": {
@@ -49,9 +46,7 @@
 			"assetProtocol": {
 				"enable": true,
 				"scope": {
-					"allow": [
-						"**"
-					]
+					"allow": ["**"]
 				}
 			}
 		}

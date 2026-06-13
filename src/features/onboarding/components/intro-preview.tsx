@@ -33,8 +33,8 @@ export function IntroPreview({
 					Hi, Grex!
 				</h1>
 				<p className="mt-6 max-w-md text-base font-medium leading-7 text-muted-foreground">
-					AI generates the code. Grex is where you orchestrate, review, and
-					ship it.
+					AI generates the code. Grex is where you orchestrate, review, and ship
+					it.
 				</p>
 
 				<Button

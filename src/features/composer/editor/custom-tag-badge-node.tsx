@@ -184,7 +184,7 @@ export class CustomTagBadgeNode extends DecoratorNode<ReactNode> {
 	// In-place edit (text previews only): keep submitText / label / preview.text in sync.
 	setText(nextText: string): void {
 		const current = this.__preview;
-		if (!current || current.kind !== "text") return;
+		if (current?.kind !== "text") return;
 		if (nextText === this.__submitText) return;
 		const writable = this.getWritable();
 		const nextLabel = buildComposerPreviewLabel(nextText, "text");

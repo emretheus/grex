@@ -3,8 +3,8 @@ import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
-	getGrexComponentsUpdateCheck,
 	type GrexComponentsUpdateCheck,
+	getGrexComponentsUpdateCheck,
 	installCli,
 	installGrexSkills,
 	recheckGrexComponents,

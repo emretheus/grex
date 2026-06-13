@@ -298,8 +298,8 @@ export function MarketingShell({ data }: { data: RepoData }) {
 				{/* LEFT — pitch */}
 				<div className="pitch">
 					<a className="changelog-chip" href={data.latestReleaseUrl}>
-						<span className="tag">{data.versionShort}</span>
-						8 coding agents, one clean interface
+						<span className="tag">{data.versionShort}</span>8 coding agents, one
+						clean interface
 						<span className="arrow">→</span>
 					</a>
 
@@ -311,8 +311,8 @@ export function MarketingShell({ data }: { data: RepoData }) {
 
 					<p className="sub">
 						Run Claude Code, Codex, Cursor, Gemini, Grok, Kilo Code, OpenCode
-						and Pi from a single, clean, local-first interface with built-in chat,
-						diff review, file explorer + editor, and terminals.
+						and Pi from a single, clean, local-first interface with built-in
+						chat, diff review, file explorer + editor, and terminals.
 					</p>
 
 					<div className="cta">

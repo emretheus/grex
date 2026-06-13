@@ -29,12 +29,12 @@ describe("parseLocalFileLink", () => {
 	});
 
 	it("resolves workspace-relative file links", () => {
-		expect(
-			parseLocalFileLink("src-tauri/src/lib.rs#L12", "/tmp/grex"),
-		).toEqual({
-			path: "/tmp/grex/src-tauri/src/lib.rs",
-			line: 12,
-		});
+		expect(parseLocalFileLink("src-tauri/src/lib.rs#L12", "/tmp/grex")).toEqual(
+			{
+				path: "/tmp/grex/src-tauri/src/lib.rs",
+				line: 12,
+			},
+		);
 	});
 
 	it("ignores external urls", () => {

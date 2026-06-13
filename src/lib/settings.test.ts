@@ -275,10 +275,7 @@ describe("settings", () => {
 	});
 
 	it("hydrates and saves terminal font from localStorage", async () => {
-		window.localStorage.setItem(
-			"grex-terminal-font-family",
-			"JetBrains Mono",
-		);
+		window.localStorage.setItem("grex-terminal-font-family", "JetBrains Mono");
 		invokeMock.mockResolvedValue({});
 
 		const settings = await loadSettings();
@@ -291,9 +288,7 @@ describe("settings", () => {
 		);
 
 		await saveSettings({ terminalFontFamily: null });
-		expect(
-			window.localStorage.getItem("grex-terminal-font-family"),
-		).toBeNull();
+		expect(window.localStorage.getItem("grex-terminal-font-family")).toBeNull();
 	});
 
 	it("hydrates and saves the last app surface", async () => {

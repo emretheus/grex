@@ -693,8 +693,7 @@ export const WorkspaceComposerContainer = memo(
 							await createSession(displayedWorkspaceId);
 						await Promise.all([
 							queryClient.invalidateQueries({
-								queryKey:
-									grexQueryKeys.workspaceSessions(displayedWorkspaceId),
+								queryKey: grexQueryKeys.workspaceSessions(displayedWorkspaceId),
 							}),
 							...(workspaceDetailQuery.data?.repoId
 								? [

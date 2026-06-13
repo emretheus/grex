@@ -32,10 +32,7 @@ import {
 	buildCommitButtonPrompt,
 	isActionSessionMode,
 } from "@/lib/commit-button-prompts";
-import {
-	grexQueryKeys,
-	workspaceForgeQueryOptions,
-} from "@/lib/query-client";
+import { grexQueryKeys, workspaceForgeQueryOptions } from "@/lib/query-client";
 import {
 	holdSidebarMutation,
 	requestSidebarReconcile,
@@ -355,8 +352,7 @@ export function useWorkspaceCommitLifecycle({
 								"[commitButton] merge cancelled: checks have not passed",
 							);
 							void queryClient.invalidateQueries({
-								queryKey:
-									grexQueryKeys.workspaceForgeActionStatus(workspaceId),
+								queryKey: grexQueryKeys.workspaceForgeActionStatus(workspaceId),
 							});
 							return;
 						}
@@ -375,8 +371,7 @@ export function useWorkspaceCommitLifecycle({
 								"[commitButton] merge cancelled: GitHub blocked merge",
 							);
 							void queryClient.invalidateQueries({
-								queryKey:
-									grexQueryKeys.workspaceForgeActionStatus(workspaceId),
+								queryKey: grexQueryKeys.workspaceForgeActionStatus(workspaceId),
 							});
 							return;
 						}

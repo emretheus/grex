@@ -326,7 +326,7 @@ export const WorkspacesSidebar = memo(function WorkspacesSidebar({
 		if (!activeDragWorkspaceId) return null;
 		for (const group of groups) {
 			const meta = group.stackMeta?.get(activeDragWorkspaceId);
-			if (!meta || meta.role !== "tip") continue;
+			if (meta?.role !== "tip") continue;
 			const members = group.rows
 				.filter((row) => group.stackMeta?.get(row.id)?.tipId === meta.tipId)
 				.sort(
@@ -784,10 +784,7 @@ export const WorkspacesSidebar = memo(function WorkspacesSidebar({
 			onOpenNewWorkspace?.();
 		};
 
-		window.addEventListener(
-			"grex:open-new-workspace",
-			handleOpenNewWorkspace,
-		);
+		window.addEventListener("grex:open-new-workspace", handleOpenNewWorkspace);
 		return () =>
 			window.removeEventListener(
 				"grex:open-new-workspace",

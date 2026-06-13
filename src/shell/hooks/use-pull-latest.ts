@@ -34,8 +34,7 @@ export function usePullLatest(opts: {
 			requestSidebarReconcile(queryClient);
 			await Promise.all([
 				queryClient.invalidateQueries({
-					queryKey:
-						grexQueryKeys.workspaceGitActionStatus(selectedWorkspaceId),
+					queryKey: grexQueryKeys.workspaceGitActionStatus(selectedWorkspaceId),
 				}),
 				queryClient.invalidateQueries({
 					queryKey: grexQueryKeys.workspaceChangeRequest(selectedWorkspaceId),

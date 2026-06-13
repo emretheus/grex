@@ -214,10 +214,7 @@ export function useReadStateController(
 				return Promise.all(invalidations);
 			})
 			.catch((error) => {
-				queryClient.setQueryData(
-					grexQueryKeys.workspaceGroups,
-					previousGroups,
-				);
+				queryClient.setQueryData(grexQueryKeys.workspaceGroups, previousGroups);
 				if (workspaceId) {
 					queryClient.setQueryData(
 						grexQueryKeys.workspaceDetail(workspaceId),

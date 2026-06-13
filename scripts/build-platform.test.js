@@ -67,8 +67,7 @@ describe("build platform boundary", () => {
 			sidecarSource: "/repo/sidecar/dist/grex-sidecar",
 			sidecarExternalBin:
 				"/repo/sidecar/dist/grex-sidecar-aarch64-apple-darwin",
-			cliSource:
-				"/repo/src-tauri/target/aarch64-apple-darwin/release/grex-cli",
+			cliSource: "/repo/src-tauri/target/aarch64-apple-darwin/release/grex-cli",
 			cliExternalBin:
 				"/repo/src-tauri/target/bundled/grex-cli-aarch64-apple-darwin",
 		});

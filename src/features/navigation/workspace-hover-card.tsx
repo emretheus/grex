@@ -584,9 +584,7 @@ export function WorkspaceHoverCard({
 				`[data-workspace-row-id="${row.id}"]`,
 			);
 			if (!rowEl) return;
-			const sidebarEl = rowEl.closest<HTMLElement>(
-				"[data-grex-sidebar-root]",
-			);
+			const sidebarEl = rowEl.closest<HTMLElement>("[data-grex-sidebar-root]");
 			if (!sidebarEl) return;
 			const rowRight = rowEl.getBoundingClientRect().right;
 			const sidebarRight = sidebarEl.getBoundingClientRect().right;

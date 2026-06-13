@@ -298,10 +298,7 @@ describe("WorkspaceComposerContainer", () => {
 
 	it("does not remount the composer when switching displayed sessions", () => {
 		const queryClient = createGrexQueryClient();
-		queryClient.setQueryData(
-			grexQueryKeys.agentModelSections,
-			MODEL_SECTIONS,
-		);
+		queryClient.setQueryData(grexQueryKeys.agentModelSections, MODEL_SECTIONS);
 		queryClient.setQueryData(
 			grexQueryKeys.workspaceDetail("workspace-1"),
 			WORKSPACE_DETAIL,
@@ -363,10 +360,7 @@ describe("WorkspaceComposerContainer", () => {
 	it("uses the context-key model selection before a workspace exists", () => {
 		const queryClient = createGrexQueryClient();
 		const handleSelectModel = vi.fn();
-		queryClient.setQueryData(
-			grexQueryKeys.agentModelSections,
-			MODEL_SECTIONS,
-		);
+		queryClient.setQueryData(grexQueryKeys.agentModelSections, MODEL_SECTIONS);
 
 		render(
 			<QueryClientProvider client={queryClient}>
@@ -412,10 +406,7 @@ describe("WorkspaceComposerContainer", () => {
 		const handleSelectEffort = vi.fn();
 		const handleChangePermissionMode = vi.fn();
 		const handleChangeFastMode = vi.fn();
-		queryClient.setQueryData(
-			grexQueryKeys.agentModelSections,
-			MODEL_SECTIONS,
-		);
+		queryClient.setQueryData(grexQueryKeys.agentModelSections, MODEL_SECTIONS);
 
 		render(
 			<QueryClientProvider client={queryClient}>
@@ -470,10 +461,7 @@ describe("WorkspaceComposerContainer", () => {
 	it("forwards the start submit mode into the composer payload", () => {
 		const queryClient = createGrexQueryClient();
 		const handleSubmit = vi.fn();
-		queryClient.setQueryData(
-			grexQueryKeys.agentModelSections,
-			MODEL_SECTIONS,
-		);
+		queryClient.setQueryData(grexQueryKeys.agentModelSections, MODEL_SECTIONS);
 		queryClient.setQueryData(
 			grexQueryKeys.workspaceDetail("workspace-1"),
 			WORKSPACE_DETAIL,
@@ -524,10 +512,7 @@ describe("WorkspaceComposerContainer", () => {
 	it("persists the selected start submit mode in settings", () => {
 		const queryClient = createGrexQueryClient();
 		const updateSettings = vi.fn();
-		queryClient.setQueryData(
-			grexQueryKeys.agentModelSections,
-			MODEL_SECTIONS,
-		);
+		queryClient.setQueryData(grexQueryKeys.agentModelSections, MODEL_SECTIONS);
 		queryClient.setQueryData(
 			grexQueryKeys.workspaceDetail("workspace-1"),
 			WORKSPACE_DETAIL,
@@ -592,10 +577,7 @@ describe("WorkspaceComposerContainer", () => {
 	it("persists the start composer's terminal toggle in settings", () => {
 		const queryClient = createGrexQueryClient();
 		const updateSettings = vi.fn();
-		queryClient.setQueryData(
-			grexQueryKeys.agentModelSections,
-			MODEL_SECTIONS,
-		);
+		queryClient.setQueryData(grexQueryKeys.agentModelSections, MODEL_SECTIONS);
 
 		const settings = {
 			...DEFAULT_SETTINGS,
@@ -653,10 +635,7 @@ describe("WorkspaceComposerContainer", () => {
 
 	it("hides the terminal toggle on chat surfaces (no repo to spawn the PTY in)", () => {
 		const queryClient = createGrexQueryClient();
-		queryClient.setQueryData(
-			grexQueryKeys.agentModelSections,
-			MODEL_SECTIONS,
-		);
+		queryClient.setQueryData(grexQueryKeys.agentModelSections, MODEL_SECTIONS);
 
 		const settings = {
 			...DEFAULT_SETTINGS,
@@ -730,10 +709,7 @@ describe("WorkspaceComposerContainer", () => {
 
 	it("auto-submits queued CLI prompts using the model + permission_mode pinned on the session row", async () => {
 		const queryClient = createGrexQueryClient();
-		queryClient.setQueryData(
-			grexQueryKeys.agentModelSections,
-			MODEL_SECTIONS,
-		);
+		queryClient.setQueryData(grexQueryKeys.agentModelSections, MODEL_SECTIONS);
 		queryClient.setQueryData(
 			grexQueryKeys.workspaceDetail("workspace-1"),
 			WORKSPACE_DETAIL,
@@ -799,10 +775,7 @@ describe("WorkspaceComposerContainer", () => {
 
 	it("loads slash commands when the composer mounts", async () => {
 		const queryClient = createGrexQueryClient();
-		queryClient.setQueryData(
-			grexQueryKeys.agentModelSections,
-			MODEL_SECTIONS,
-		);
+		queryClient.setQueryData(grexQueryKeys.agentModelSections, MODEL_SECTIONS);
 		queryClient.setQueryData(
 			grexQueryKeys.workspaceDetail("workspace-1"),
 			WORKSPACE_DETAIL,
@@ -849,10 +822,7 @@ describe("WorkspaceComposerContainer", () => {
 
 	it("uses the default fast mode setting for new sessions", () => {
 		const queryClient = createGrexQueryClient();
-		queryClient.setQueryData(
-			grexQueryKeys.agentModelSections,
-			MODEL_SECTIONS,
-		);
+		queryClient.setQueryData(grexQueryKeys.agentModelSections, MODEL_SECTIONS);
 		queryClient.setQueryData(
 			grexQueryKeys.workspaceDetail("workspace-1"),
 			WORKSPACE_DETAIL,
@@ -929,10 +899,7 @@ describe("WorkspaceComposerContainer", () => {
 	// is blocked, so users can type-ahead without a visible 60% dim.
 	const renderContainerForState = (workspaceState: string) => {
 		const queryClient = createGrexQueryClient();
-		queryClient.setQueryData(
-			grexQueryKeys.agentModelSections,
-			MODEL_SECTIONS,
-		);
+		queryClient.setQueryData(grexQueryKeys.agentModelSections, MODEL_SECTIONS);
 		queryClient.setQueryData(grexQueryKeys.workspaceDetail("workspace-1"), {
 			...WORKSPACE_DETAIL,
 			state: workspaceState,
@@ -996,10 +963,7 @@ describe("WorkspaceComposerContainer", () => {
 
 	it("renders queued follow-ups as an overlay above the composer", () => {
 		const queryClient = createGrexQueryClient();
-		queryClient.setQueryData(
-			grexQueryKeys.agentModelSections,
-			MODEL_SECTIONS,
-		);
+		queryClient.setQueryData(grexQueryKeys.agentModelSections, MODEL_SECTIONS);
 		queryClient.setQueryData(
 			grexQueryKeys.workspaceDetail("workspace-1"),
 			WORKSPACE_DETAIL,

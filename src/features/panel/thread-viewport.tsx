@@ -1017,7 +1017,7 @@ function ProgressiveConversationViewport({
 			const row = rowsRef.current.find((entry) => entry.key === rowKey);
 			// Only message rows flow through here. The indicator pseudo row
 			// has a fixed height and does not use `MeasuredConversationRow`.
-			if (!row || row.kind !== "message") {
+			if (row?.kind !== "message") {
 				return;
 			}
 

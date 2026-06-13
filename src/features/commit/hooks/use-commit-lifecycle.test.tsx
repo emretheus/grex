@@ -198,30 +198,27 @@ describe("useWorkspaceCommitLifecycle", () => {
 			} as unknown as WorkspaceDetail,
 		);
 		// Seed the sidebar so we can assert the optimistic move to "review".
-		queryClient.setQueryData<WorkspaceGroup[]>(
-			grexQueryKeys.workspaceGroups,
-			[
-				{
-					id: "progress",
-					label: "In progress",
-					tone: "progress",
-					rows: [
-						{
-							id: "workspace-1",
-							title: "Workspace 1",
-							status: "in-progress",
-							createdAt: "2024-04-01T00:00:00Z",
-						},
-					],
-				},
-				{
-					id: "review",
-					label: "In review",
-					tone: "review",
-					rows: [],
-				},
-			] as WorkspaceGroup[],
-		);
+		queryClient.setQueryData<WorkspaceGroup[]>(grexQueryKeys.workspaceGroups, [
+			{
+				id: "progress",
+				label: "In progress",
+				tone: "progress",
+				rows: [
+					{
+						id: "workspace-1",
+						title: "Workspace 1",
+						status: "in-progress",
+						createdAt: "2024-04-01T00:00:00Z",
+					},
+				],
+			},
+			{
+				id: "review",
+				label: "In review",
+				tone: "review",
+				rows: [],
+			},
+		] as WorkspaceGroup[]);
 
 		const getSelectedWorkspaceId = () => "workspace-1" as string | null;
 		const onSelectSession = vi.fn();
@@ -792,25 +789,22 @@ describe("useWorkspaceCommitLifecycle", () => {
 				status: "review",
 			} as unknown as WorkspaceDetail,
 		);
-		queryClient.setQueryData<WorkspaceGroup[]>(
-			grexQueryKeys.workspaceGroups,
-			[
-				{
-					id: "review",
-					label: "In review",
-					tone: "review",
-					rows: [
-						{
-							id: "workspace-1",
-							title: "W1",
-							status: "review",
-							createdAt: "2024-04-01T00:00:00Z",
-						},
-					],
-				},
-				{ id: "done", label: "Done", tone: "done", rows: [] },
-			] as WorkspaceGroup[],
-		);
+		queryClient.setQueryData<WorkspaceGroup[]>(grexQueryKeys.workspaceGroups, [
+			{
+				id: "review",
+				label: "In review",
+				tone: "review",
+				rows: [
+					{
+						id: "workspace-1",
+						title: "W1",
+						status: "review",
+						createdAt: "2024-04-01T00:00:00Z",
+					},
+				],
+			},
+			{ id: "done", label: "Done", tone: "done", rows: [] },
+		] as WorkspaceGroup[]);
 
 		// Slow-resolve so we can observe the optimistic state before the
 		// promise settles.

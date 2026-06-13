@@ -133,8 +133,7 @@ export function RepositoryPreferencesSection({ repoId }: { repoId: string }) {
 													})
 														.then(async () => {
 															await queryClient.invalidateQueries({
-																queryKey:
-																	grexQueryKeys.repoPreferences(repoId),
+																queryKey: grexQueryKeys.repoPreferences(repoId),
 															});
 														})
 														.finally(() => setSavingKey(null));
