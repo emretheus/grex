@@ -2,10 +2,10 @@ import { getRepoData } from "@/lib/github";
 import "./marketing.css";
 import { MarketingShell } from "./marketing-shell";
 
-// ISR: statically render at build time, refresh in the background every hour
-// so version / commit / license stay current without a redeploy.
-export const revalidate = 3600;
-
+// Static export: this page is rendered once at build time, so `getRepoData()`
+// runs during the build and bakes the release / version / commit into the
+// static HTML. The deploy workflow rebuilds on `release: published`, which
+// keeps those values current without a runtime revalidation server.
 export default async function HomePage() {
 	const data = await getRepoData();
 	return <MarketingShell data={data} />;

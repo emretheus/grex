@@ -1,21 +1,23 @@
 /**
  * GitHub data fetchers for the marketing hero.
  *
- * Rendering strategy: called from the root Server Component; Next.js caches
- * each `fetch` with `revalidate: 3600`, so the page stays statically-served
- * while still picking up new releases / commits within the hour.
+ * Rendering strategy: called from the root Server Component at BUILD time
+ * (the site is a Next.js static export — `output: export`). The fetched
+ * release / version / commit are baked into the static HTML. The deploy
+ * workflow rebuilds on `release: published`, so the values refresh on every
+ * release without a runtime revalidation server.
  *
- * Rate limits: anonymous GitHub API is 60 req/hr per IP. With 1 rebuild/hr
- * ceiling × 3 calls, we're nowhere near the cap. Set `GITHUB_TOKEN` in Vercel
- * env vars if you ever want the headroom (5000 req/hr authenticated).
+ * Rate limits: anonymous GitHub API is 60 req/hr per IP. With ~3 calls per
+ * build we're nowhere near the cap. Set `GITHUB_TOKEN` in the build env
+ * (the deploy workflow passes the Actions token) for the 5000 req/hr ceiling.
  *
  * Failure mode: every call returns `null` on non-200, and the caller falls
- * back to hard-coded defaults below. The page never renders blank.
+ * back to hard-coded defaults below. The build never fails on an offline or
+ * rate-limited GitHub API; the page never renders blank.
  */
 
 const REPO = "emretheus/grex";
 const API = "https://api.github.com";
-const REVALIDATE_SECONDS = 3600;
 
 // Fallbacks mirror what the design shipped with. Used when the GitHub API is
 // unreachable, rate-limited, or the repo has no releases yet.
@@ -83,10 +85,7 @@ async function ghFetch<T>(path: string): Promise<T | null> {
 	if (token) headers.Authorization = `Bearer ${token}`;
 
 	try {
-		const res = await fetch(`${API}${path}`, {
-			headers,
-			next: { revalidate: REVALIDATE_SECONDS },
-		});
+		const res = await fetch(`${API}${path}`, { headers, cache: "no-store" });
 		if (!res.ok) return null;
 		return (await res.json()) as T;
 	} catch {

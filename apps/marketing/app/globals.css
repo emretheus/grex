@@ -25,13 +25,25 @@
 :root {
 	color-scheme: light;
 
+	/* ---- Brand palette ----
+	 * Brand blue is #0359FC (oklch below). The logo mark also carries a teal
+	 * (#02CCA4), but the site UI is intentionally blue-only. Hues cascade to
+	 * dark mode unless overridden. */
+	--brand-blue: oklch(0.537 0.252 262.3);
+	--brand-blue-bright: oklch(0.62 0.22 262);
+	--brand-gradient: linear-gradient(
+		110deg,
+		var(--brand-blue) 0%,
+		var(--brand-blue-bright) 100%
+	);
+
 	--background: oklch(1 0 0);
 	--foreground: oklch(0.145 0 0);
 	--card: oklch(1 0 0);
 	--card-foreground: oklch(0.145 0 0);
 	--popover: oklch(1 0 0);
 	--popover-foreground: oklch(0.145 0 0);
-	--primary: oklch(0.205 0 0);
+	--primary: oklch(0.537 0.252 262.3);
 	--primary-foreground: oklch(0.985 0 0);
 	--secondary: oklch(0.97 0 0);
 	--secondary-foreground: oklch(0.205 0 0);
@@ -51,7 +63,8 @@
 
 	--status-done: oklch(0.62 0.11 150);
 	--status-review: oklch(0.7 0.12 85);
-	--status-progress: oklch(0.62 0.11 150);
+	/* Brand-blue "online / notarized" cue (used by .meta .ok, .dl-foot .ok). */
+	--status-progress: oklch(0.55 0.2 262);
 	--status-backlog: oklch(0.62 0 0);
 	--status-canceled: oklch(0.62 0.14 25);
 	--status-archived: oklch(0.5 0 0);
@@ -103,8 +116,8 @@ html.dark {
 	--card-foreground: oklch(0.985 0 0);
 	--popover: oklch(0.205 0 0);
 	--popover-foreground: oklch(0.985 0 0);
-	--primary: oklch(0.922 0 0);
-	--primary-foreground: oklch(0.205 0 0);
+	--primary: oklch(0.62 0.22 262);
+	--primary-foreground: oklch(0.985 0 0);
 	--secondary: oklch(0.269 0 0);
 	--secondary-foreground: oklch(0.985 0 0);
 	--muted: oklch(0.269 0 0);
@@ -123,7 +136,7 @@ html.dark {
 
 	--status-done: oklch(0.78 0.14 150);
 	--status-review: oklch(0.82 0.14 85);
-	--status-progress: oklch(0.78 0.14 150);
+	--status-progress: oklch(0.7 0.18 262);
 	--status-backlog: oklch(0.72 0 0);
 	--status-canceled: oklch(0.74 0.15 25);
 	--status-archived: oklch(0.58 0 0);

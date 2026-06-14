@@ -266,24 +266,3 @@ jobs:
           includeUpdaterJson: true
           args: --bundles nsis
           tauriScript: bun run tauri
-
-  notify-marketing:
-    name: Notify marketing site
-    needs: [preflight, build-and-publish, build-and-publish-windows]
-    if: needs.preflight.outputs.draft == 'false'
-    runs-on: ubuntu-latest
-    timeout-minutes: 2
-    steps:
-      - name: Revalidate grex.ai
-        env:
-          SECRET: ${{ secrets.GREX_MARKETING_REVALIDATE_SECRET }}
-        run: |
-          if [ -z "${SECRET}" ]; then
-            echo "GREX_MARKETING_REVALIDATE_SECRET not set; skipping"
-            exit 0
-          fi
-          curl --fail --silent --show-error \
-            --retry 3 --retry-delay 10 --retry-connrefused \
-            -X POST "https://grex.ai/api/revalidate" \
-            -H "x-revalidate-secret: ${SECRET}" \
-            -H "content-type: application/json"
