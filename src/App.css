@@ -233,6 +233,32 @@ body {
 	}
 }
 
+/* Splash / app-reload loading screen: the static Grex mark breathes gently to
+   signal the app is still loading. Distinct from the tile-flip mark used by
+   the in-app loaders. Reduced-motion users get a static logo. */
+.grex-splash-logo {
+	animation: grex-splash-pulse 1800ms ease-in-out infinite;
+}
+
+@keyframes grex-splash-pulse {
+	0%,
+	100% {
+		opacity: 0.55;
+		transform: scale(0.97);
+	}
+	50% {
+		opacity: 1;
+		transform: scale(1);
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.grex-splash-logo {
+		animation: none;
+		opacity: 1;
+	}
+}
+
 .shortcut-recording-pulse::after {
 	position: absolute;
 	inset: -2px;
