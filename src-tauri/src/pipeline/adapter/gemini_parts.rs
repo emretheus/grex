@@ -84,9 +84,7 @@ fn render_tool(part: &Value) -> MessagePart {
     let result = part.get("output").and_then(Value::as_str).and_then(|o| {
         // With a rendered diff the success summary is redundant — drop it unless
         // it carries extra feedback.
-        if file_diffs.is_some() && o.len() < 80 {
-            None
-        } else if o.is_empty() {
+        if (file_diffs.is_some() && o.len() < 80) || o.is_empty() {
             None
         } else {
             Some(Value::String(o.to_string()))
