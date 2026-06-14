@@ -3,6 +3,7 @@ import { useRef } from "react";
 import {
 	ClaudeColorIcon,
 	CursorIcon,
+	GeminiColorIcon,
 	OpenAIIcon,
 	OpenCodeIcon,
 } from "@/components/icons";
@@ -113,6 +114,15 @@ export function ProvidersPanel() {
 						<CursorCardBody />
 					</ProviderConfigRow>
 				</ProviderRow>
+				<ProviderRow
+					icon={GeminiColorIcon}
+					name="Gemini"
+					version={versions?.gemini}
+					ready={Boolean(status?.gemini)}
+					connecting={statusLoading}
+					loginProvider="gemini"
+					onLoginExit={refetchStatus}
+				/>
 				<AgentProxyPanel />
 			</SettingsGroup>
 		</TooltipProvider>

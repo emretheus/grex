@@ -952,13 +952,19 @@ export async function toggleMiniWindowMode(): Promise<boolean> {
 	return await invoke("toggle_mini_window_mode");
 }
 
-export type AgentLoginProvider = "claude" | "codex" | "cursor" | "opencode";
+export type AgentLoginProvider =
+	| "claude"
+	| "codex"
+	| "cursor"
+	| "opencode"
+	| "gemini";
 
 export type AgentLoginStatusResult = {
 	claude: boolean;
 	codex: boolean;
 	cursor: boolean;
 	opencode: boolean;
+	gemini: boolean;
 	codexProvider?: string | null;
 	codexAuthMethod?: "login" | "apiKey" | string | null;
 };
@@ -972,6 +978,7 @@ export type AgentVersionsResult = {
 	claude: string | null;
 	codex: string | null;
 	opencode: string | null;
+	gemini: string | null;
 };
 
 export async function getAgentVersions(): Promise<AgentVersionsResult> {

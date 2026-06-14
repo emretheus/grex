@@ -93,19 +93,20 @@ pub fn capabilities_for_provider(provider: &str) -> ProviderCapabilities {
             supports_slash_commands: true,
             requires_api_key: false,
         },
-        // Gemini CLI via ACP (Agent Client Protocol). First-cut flags are
-        // intentionally conservative — only features proven against the live
-        // `gemini --acp` bridge are enabled. Plan mode (ACP session modes),
-        // mid-turn steer, slash commands, and context usage are left off until
-        // the bridge is runtime-validated; flip them on with a matrix update.
+        // Gemini CLI via ACP (Agent Client Protocol). Plan mode maps to ACP
+        // session modes + real permission round-trips; steer to a follow-up
+        // `session/prompt`; slash commands to streamed `available_commands_update`.
+        // `supports_context_usage` stays off: usage is forwarded live via the
+        // `usage_update` → `contextUsageUpdated` stream, but the ad-hoc hover
+        // RPC (getContextUsage) is Claude-only, so the popover isn't wired yet.
         "gemini" => ProviderCapabilities {
             provider: "gemini".into(),
             display_name: "Gemini".into(),
-            supports_plan_mode: false,
+            supports_plan_mode: true,
             supports_active_goal: false,
             supports_context_usage: false,
-            supports_steer: false,
-            supports_slash_commands: false,
+            supports_steer: true,
+            supports_slash_commands: true,
             requires_api_key: false,
         },
         // Default arm covers "claude" and anything we haven't onboarded
@@ -224,12 +225,14 @@ mod tests {
         let caps = capabilities_for_provider("gemini");
         assert_eq!(caps.provider, "gemini");
         assert_eq!(caps.display_name, "Gemini", "must not fall back to Claude");
-        // First-cut: conservative until the ACP bridge is runtime-validated.
-        assert!(!caps.supports_plan_mode);
+        // ACP-backed: plan mode (session modes), steer (follow-up prompt),
+        // slash commands (available_commands_update) are wired.
+        assert!(caps.supports_plan_mode);
         assert!(!caps.supports_active_goal);
+        // Context usage streams live but the hover RPC isn't wired yet.
         assert!(!caps.supports_context_usage);
-        assert!(!caps.supports_steer);
-        assert!(!caps.supports_slash_commands);
+        assert!(caps.supports_steer);
+        assert!(caps.supports_slash_commands);
         assert!(!caps.requires_api_key, "Gemini uses embedded Google login");
     }
 

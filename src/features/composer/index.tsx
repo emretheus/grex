@@ -7,10 +7,8 @@ import type { LexicalEditor, SerializedEditorState } from "lexical";
 import { $createParagraphNode, $createTextNode, $getRoot } from "lexical";
 import {
 	ArrowUp,
-	Bot,
 	Check,
 	ChevronDown,
-	ClipboardList,
 	Clock3,
 	Layers,
 	MessageSquareMore,
@@ -1202,13 +1200,11 @@ export const WorkspaceComposer = memo(function WorkspaceComposer({
 												disabled={toolbarDisabled}
 												isPlan={permissionMode === "plan"}
 												className={cn(
-													`size-7 justify-center px-0 ${composerToolbarTriggerClassName}`,
-													permissionMode === "plan"
-														? composerToolbarActiveClassName
-														: // Auto is a deliberate, full-access mode — keep it
-															// clearly legible (not dimmed like an "off" toggle)
-															// so the user can see the agent runs autonomously.
-															"text-foreground/70 hover:text-foreground/70",
+													// Icon + label, styled like the effort selector so both
+													// Plan and Auto stay clearly legible (Auto is a deliberate
+													// full-access mode, not a dimmed "off" toggle).
+													`flex items-center gap-1 ${composerToolbarTriggerClassName}`,
+													composerToolbarActiveClassName,
 												)}
 												onToggle={() =>
 													onChangePermissionMode(
@@ -1470,8 +1466,8 @@ export const WorkspaceComposer = memo(function WorkspaceComposer({
 
 // Two-state permission toggle. Plan = read-only planning; Auto = full
 // access where the agent runs tools autonomously without approval prompts.
-// Both states render an explicit icon + label so "Auto" is a visible,
-// deliberate mode rather than the implicit "Plan is off" state.
+// Each state renders a plain text label ("Plan" / "Auto") so the mode is an
+// explicit, visible choice rather than the implicit "Plan is off" state.
 function PermissionModeButton({
 	disabled,
 	className,
@@ -1491,11 +1487,7 @@ function PermissionModeButton({
 			className={className}
 			onClick={onToggle}
 		>
-			{isPlan ? (
-				<ClipboardList className="size-[14px]" strokeWidth={1.8} />
-			) : (
-				<Bot className="size-[14px]" strokeWidth={1.8} />
-			)}
+			<span>{isPlan ? "Plan" : "Auto"}</span>
 		</ComposerButton>
 	);
 	return (

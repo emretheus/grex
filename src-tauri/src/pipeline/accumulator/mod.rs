@@ -11,6 +11,7 @@
 
 mod codex;
 mod cursor;
+mod gemini;
 mod opencode;
 mod streaming;
 
@@ -163,6 +164,12 @@ pub struct StreamAccumulator {
     opencode_state: opencode::OpencodeRunState,
     /// Index into `collected[]` driving `build_opencode_partial`.
     opencode_partial_idx: Option<usize>,
+
+    // ── Gemini state ─────────────────────────────────────────────────
+    /// Per-turn Gemini (ACP) part accumulation; see `gemini.rs`.
+    gemini_state: gemini::GeminiRunState,
+    /// Index into `collected[]` driving `build_gemini_partial`.
+    gemini_partial_idx: Option<usize>,
 
     // ── Coverage guard ───────────────────────────────────────────────
     /// Top-level event types that fell through `push_event`'s match
@@ -352,6 +359,8 @@ impl StreamAccumulator {
             cursor_state: cursor::new_run_state(),
             opencode_state: opencode::new_run_state(),
             opencode_partial_idx: None,
+            gemini_state: gemini::new_run_state(),
+            gemini_partial_idx: None,
             dropped_event_types: Vec::new(),
         }
     }
@@ -570,6 +579,20 @@ impl StreamAccumulator {
             | Some("opencode/message.removed")
             | Some("opencode/message.part.removed") => PushOutcome::NoOp,
 
+            // ── Gemini CLI (ACP) events (normalized by the sidecar) ───
+            Some("gemini/session_init") => gemini::handle_session_init(self, value),
+            Some("gemini/agent_message_chunk") => gemini::handle_message_delta(self, value),
+            Some("gemini/agent_thought_chunk") => gemini::handle_thought_delta(self, value),
+            Some("gemini/tool_call") => gemini::handle_tool_call(self, value),
+            Some("gemini/tool_call_update") => gemini::handle_tool_call_update(self, value),
+            Some("gemini/plan") => gemini::handle_plan(self, value),
+            Some("gemini/turn_complete") => gemini::handle_turn_complete(self, value),
+            // Context-usage stream + informational ACP updates — explicit NoOps
+            // (context ring is fed via the dedicated getContextUsage path).
+            Some("gemini/usage")
+            | Some("gemini/available_commands_update")
+            | Some("gemini/current_mode_update") => PushOutcome::NoOp,
+
             // ── Codex informational notifications (no render) ────────
             Some("thread/status/changed")
             | Some("thread/tokenUsage/updated")
@@ -689,6 +712,20 @@ impl StreamAccumulator {
         })
     }
 
+    /// Streaming partial = clone of the last gemini `collected[]` snapshot.
+    pub fn build_gemini_partial(&mut self) -> Option<IntermediateMessage> {
+        let idx = self.gemini_partial_idx.take()?;
+        let entry = self.collected.get(idx)?;
+        Some(IntermediateMessage {
+            id: entry.id.clone(),
+            role: entry.role,
+            raw_json: entry.raw_json.clone(),
+            parsed: entry.parsed.clone(),
+            created_at: entry.created_at.clone(),
+            is_streaming: true,
+        })
+    }
+
     /// Whether the accumulator has an active streaming partial.
     pub fn has_active_partial(&self) -> bool {
         !self.blocks.is_empty()
@@ -696,6 +733,7 @@ impl StreamAccumulator {
             || !self.fallback_thinking.trim().is_empty()
             || self.codex_partial_idx.is_some()
             || self.opencode_partial_idx.is_some()
+            || self.gemini_partial_idx.is_some()
     }
 
     // ── Persistence accessors ───────────────────────────────────────
@@ -830,6 +868,11 @@ impl StreamAccumulator {
     /// Finalize the in-flight opencode message on abort. Idempotent.
     pub fn flush_opencode_in_progress(&mut self) {
         opencode::flush_in_progress(self);
+    }
+
+    /// Finalize the in-flight Gemini message on abort. Idempotent.
+    pub fn flush_gemini_in_progress(&mut self) {
+        gemini::flush_in_progress(self);
     }
 
     /// Convert any active streaming partial into a finalized assistant

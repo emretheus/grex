@@ -81,6 +81,7 @@ pub struct AgentLoginStatus {
     pub codex: bool,
     pub cursor: bool,
     pub opencode: bool,
+    pub gemini: bool,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub codex_provider: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -94,6 +95,7 @@ pub struct AgentVersions {
     pub claude: Option<String>,
     pub codex: Option<String>,
     pub opencode: Option<String>,
+    pub gemini: Option<String>,
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -495,6 +497,7 @@ fn grex_skills_status() -> anyhow::Result<GrexSkillsStatus> {
             cursor: cursor_login_ready(),
             // opencode readiness comes from the login-status path, not here.
             opencode: false,
+            gemini: false,
             codex_provider: None,
             codex_auth_method: None,
         },
@@ -636,6 +639,7 @@ pub async fn install_grex_skills() -> CmdResult<GrexSkillsStatus> {
             cursor: cursor_login_ready(),
             // opencode readiness comes from the login-status path, not here.
             opencode: false,
+            gemini: false,
             codex_provider: None,
             codex_auth_method: None,
         };
@@ -842,6 +846,7 @@ fn run_components_check_inner(force: bool) -> ComponentsUpdateCheck {
         codex: codex_auth_status().ready,
         cursor: cursor_login_ready(),
         opencode: false,
+        gemini: false,
         codex_provider: None,
         codex_auth_method: None,
     };
@@ -1200,6 +1205,7 @@ pub async fn get_agent_login_status() -> CmdResult<AgentLoginStatus> {
             codex: codex.ready,
             cursor: cursor_login_ready(),
             opencode: opencode_login_ready(),
+            gemini: gemini_login_ready(),
             codex_provider: codex.provider,
             codex_auth_method: codex.auth_method.map(str::to_string),
         })
@@ -1214,6 +1220,7 @@ pub async fn get_agent_versions() -> CmdResult<AgentVersions> {
             claude: agent_cli_version("claude"),
             codex: agent_cli_version("codex"),
             opencode: agent_cli_version("opencode"),
+            gemini: agent_cli_version("gemini"),
         })
     })
     .await
@@ -1251,6 +1258,24 @@ fn parse_semver(text: &str) -> Option<String> {
         }
     }
     None
+}
+
+/// Gemini "ready" = a usable credential for the ACP bridge: an API-key env var
+/// or an existing gemini-cli OAuth credential file. The CLI itself ultimately
+/// gates auth at `session/new`; this is the best-effort hint for the badge.
+fn gemini_login_ready() -> bool {
+    for key in ["GEMINI_API_KEY", "GOOGLE_API_KEY", "GOOGLE_GENAI_API_KEY"] {
+        if std::env::var(key).is_ok_and(|v| !v.trim().is_empty()) {
+            return true;
+        }
+    }
+    let Some(home) = std::env::var_os("HOME") else {
+        return false;
+    };
+    let gemini_dir = PathBuf::from(home).join(".gemini");
+    ["oauth_creds.json", "google_accounts.json"]
+        .iter()
+        .any(|name| gemini_dir.join(name).exists())
 }
 
 /// Cursor "ready" = non-empty `app.cursor_provider.apiKey`.
@@ -1428,6 +1453,9 @@ fn agent_login_command(provider: &str) -> anyhow::Result<String> {
         "claude" => "auth login",
         "codex" => "login",
         "opencode" => "auth login",
+        // gemini-cli has no `auth login` subcommand — bare `gemini` opens the
+        // interactive TUI where the user picks "Login with Google".
+        "gemini" => "",
         _ => anyhow::bail!("Unknown agent provider: {provider}"),
     };
     // Quote the resolved binary path so spaces in `Grex.app` survive
@@ -2209,8 +2237,7 @@ mod tests {
     #[cfg(target_os = "macos")]
     #[test]
     fn build_elevated_install_script_produces_expected_osascript_payload() {
-        let bundled_cli =
-            std::path::Path::new("/Applications/Grex.app/Contents/MacOS/grex-cli");
+        let bundled_cli = std::path::Path::new("/Applications/Grex.app/Contents/MacOS/grex-cli");
         let install_path = std::path::Path::new("/usr/local/bin/grex");
 
         let script = build_elevated_install_script(bundled_cli, install_path);
