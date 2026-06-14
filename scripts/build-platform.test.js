@@ -110,7 +110,7 @@ describe("build platform boundary", () => {
 		});
 		expect(config.plugins.updater).toEqual({
 			pubkey:
-				"dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDM5QkE5MEUwRjc5N0EzQ0QKUldUTm81ZjM0SkM2T2RweXFnOTYvanRkSENTRW9Zc25sMXRmeFlxazN1MFNZdjZPb2crVWNISzMK",
+				"dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDc2NTAwQTQ2NUMzNDk2RTQKUldUa2xqUmNSZ3BRZGtsT3pQbFhGQkxxdmZ3bzdxUnZzdFBIR0ZENng2YzEvYy9kcWcrekEyU24K",
 			endpoints: [
 				"https://github.com/emretheus/grex/releases/latest/download/latest.json",
 			],
