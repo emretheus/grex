@@ -79,10 +79,11 @@ describe("App", () => {
 		const inspectorResizeHandle = screen.getByRole("separator", {
 			name: "Resize inspector sidebar",
 		});
-		const doneGroup = screen.getByRole("button", { name: "Done" });
-		const progressGroup = screen.getByRole("button", {
-			name: /^In progress/,
-		});
+		// Sidebar groups by repository by default (no workspaces in the
+		// default mock), so the always-present collapsible sections are
+		// "Backlog" and "Archived" rather than status groups.
+		const backlogGroup = screen.getByRole("button", { name: "Backlog" });
+		const archivedGroup = screen.getByRole("button", { name: "Archived" });
 		const addRepositoryButton = screen.getByRole("button", {
 			name: "Add repository",
 		});
@@ -140,8 +141,8 @@ describe("App", () => {
 		expect(groupsScrollRegion).toHaveClass("overflow-y-auto");
 		expect(groupsScrollRegion).toHaveClass("flex-1");
 		expect(screen.getByText("Workspaces")).toBeInTheDocument();
-		expect(doneGroup).toBeInTheDocument();
-		expect(progressGroup).toBeInTheDocument();
+		expect(backlogGroup).toBeInTheDocument();
+		expect(archivedGroup).toBeInTheDocument();
 
 		expect(addRepositoryButton).toBeInTheDocument();
 		expect(newWorkspaceButton).toBeInTheDocument();
@@ -553,7 +554,7 @@ describe("App", () => {
 		const workspaceAvatar = workspaceRow.querySelector(
 			'[data-slot="workspace-avatar"]',
 		);
-		expect(workspaceAvatar).toHaveAttribute("data-fallback", "HC");
+		expect(workspaceAvatar).toHaveAttribute("data-fallback", "GC");
 	});
 
 	it("calls restore for archived workspaces and shows restore errors", async () => {

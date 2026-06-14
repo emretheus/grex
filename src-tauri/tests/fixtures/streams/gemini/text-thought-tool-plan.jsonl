@@ -1,0 +1,10 @@
+{"type":"gemini/session_init","session_id":"acp-sess-1","model":"gemini-2.5-pro","id":"cap-1"}
+{"type":"gemini/agent_thought_chunk","session_id":"acp-sess-1","part_id":"thought:1","delta":"I should list the files first.","id":"cap-1"}
+{"type":"gemini/agent_message_chunk","session_id":"acp-sess-1","part_id":"text:2","delta":"Let me list ","id":"cap-1"}
+{"type":"gemini/agent_message_chunk","session_id":"acp-sess-1","part_id":"text:2","delta":"the files.","id":"cap-1"}
+{"type":"gemini/tool_call","session_id":"acp-sess-1","tool_call_id":"tc1","title":"ls -la","kind":"execute","status":"in_progress","input":{"command":"ls -la"},"id":"cap-1"}
+{"type":"gemini/tool_call_update","session_id":"acp-sess-1","tool_call_id":"tc1","status":"completed","output":"a.txt\nb.txt","id":"cap-1"}
+{"type":"gemini/plan","session_id":"acp-sess-1","entries":[{"content":"List the files","status":"completed"},{"content":"Summarize them","status":"in_progress"}],"id":"cap-1"}
+{"type":"gemini/agent_message_chunk","session_id":"acp-sess-1","part_id":"text:3","delta":"There are two files.","id":"cap-1"}
+{"type":"gemini/turn_complete","session_id":"acp-sess-1","duration_ms":1500,"id":"cap-1"}
+{"id":"cap-1","type":"end"}

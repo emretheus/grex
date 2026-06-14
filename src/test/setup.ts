@@ -9,10 +9,17 @@ import { vi } from "vitest";
 // is unchanged.
 configure({ asyncUtilTimeout: 3000 });
 
-if (typeof window !== "undefined" && !window.localStorage) {
+if (
+	typeof window !== "undefined" &&
+	(!window.localStorage || typeof window.localStorage.setItem !== "function")
+) {
 	const store = new Map<string, string>();
-	const localStorageMock = Object.create(Storage.prototype) as Storage;
-	Object.defineProperties(localStorageMock, {
+	// Define the methods on `Storage.prototype` (not as own properties on the
+	// instance) so they are inherited exactly like real browser/jsdom
+	// localStorage. Tests that do `vi.spyOn(Storage.prototype, "setItem")`
+	// rely on the methods living on the prototype, so an own-property shim
+	// would silently bypass their spies.
+	Object.defineProperties(Storage.prototype, {
 		clear: {
 			value: () => store.clear(),
 			configurable: true,
@@ -23,10 +30,6 @@ if (typeof window !== "undefined" && !window.localStorage) {
 		},
 		key: {
 			value: (index: number) => Array.from(store.keys())[index] ?? null,
-			configurable: true,
-		},
-		length: {
-			get: () => store.size,
 			configurable: true,
 		},
 		removeItem: {
@@ -41,6 +44,11 @@ if (typeof window !== "undefined" && !window.localStorage) {
 			},
 			configurable: true,
 		},
+	});
+	const localStorageMock = Object.create(Storage.prototype) as Storage;
+	Object.defineProperty(localStorageMock, "length", {
+		get: () => store.size,
+		configurable: true,
 	});
 	Object.defineProperty(window, "localStorage", {
 		value: localStorageMock,

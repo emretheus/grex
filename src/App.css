@@ -188,19 +188,74 @@ body {
 	animation: conversation-fade-in 70ms ease-out;
 }
 
-.grex-logo-pulse {
-	animation: grex-logo-pulse 1400ms ease-in-out infinite;
+/* Isometric "G" tiles flip around their vertical axis, like the Helmor mark.
+   Each tile squishes edge-on (scaleX -> 0), turns to its shaded back face, then
+   swings back to front. Per-tile animation-delay (set inline) staggers the flip
+   into a diagonal wave. */
+.grex-tile {
+	transform-box: fill-box;
+	transform-origin: center;
+	animation:
+		grex-tile-flip 2200ms cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite,
+		grex-tile-shade 2200ms step-end infinite;
 }
 
-@keyframes grex-logo-pulse {
+@keyframes grex-tile-flip {
+	0% {
+		transform: scaleX(1);
+	}
+	25% {
+		transform: scaleX(0.04);
+	}
+	50% {
+		transform: scaleX(-1);
+	}
+	75% {
+		transform: scaleX(0.04);
+	}
+	100% {
+		transform: scaleX(1);
+	}
+}
+
+@keyframes grex-tile-shade {
+	0%,
+	24.99% {
+		fill: var(--g-front);
+	}
+	25%,
+	74.99% {
+		fill: var(--g-back);
+	}
+	75%,
+	100% {
+		fill: var(--g-front);
+	}
+}
+
+/* Splash / app-reload loading screen: the static Grex mark breathes gently to
+   signal the app is still loading. Distinct from the tile-flip mark used by
+   the in-app loaders. Reduced-motion users get a static logo. */
+.grex-splash-logo {
+	animation: grex-splash-pulse 1800ms ease-in-out infinite;
+}
+
+@keyframes grex-splash-pulse {
 	0%,
 	100% {
+		opacity: 0.55;
+		transform: scale(0.97);
+	}
+	50% {
 		opacity: 1;
 		transform: scale(1);
 	}
-	50% {
-		opacity: 0.55;
-		transform: scale(0.9);
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.grex-splash-logo {
+		animation: none;
+		opacity: 1;
 	}
 }
 

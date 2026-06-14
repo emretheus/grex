@@ -126,7 +126,7 @@ export const WorkspacesSidebar = memo(function WorkspacesSidebar({
 	groups,
 	archivedRows,
 	availableRepositories = [],
-	sidebarGrouping = "status",
+	sidebarGrouping = "repo",
 	sidebarRepoFilterIds = [],
 	sidebarSort = "custom",
 	onSidebarGroupingChange,

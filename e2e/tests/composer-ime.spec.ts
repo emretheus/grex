@@ -224,13 +224,13 @@ test.describe("composer IME regressions", () => {
 		expect(timeline).toEqual([
 			{
 				label: "after-ascii-commit",
-				text: "grex",
+				text: "helmor",
 				anchorNode: "#text",
 				anchorOffset: 6,
 			},
 			{
 				label: "after-noop-update",
-				text: "grex",
+				text: "helmor",
 				anchorNode: "#text",
 				anchorOffset: 6,
 			},

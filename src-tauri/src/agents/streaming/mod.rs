@@ -614,6 +614,7 @@ pub(super) fn stream_via_sidecar(
                             pipeline_state.accumulator.flush_codex_in_progress();
                             pipeline_state.accumulator.flush_cursor_in_progress();
                             pipeline_state.accumulator.flush_opencode_in_progress();
+                            pipeline_state.accumulator.flush_gemini_in_progress();
                             pipeline_state.materialize_partial();
                             pipeline_state.accumulator.append_aborted_notice();
                         }

@@ -447,7 +447,7 @@ export const DEFAULT_SETTINGS: AppSettings = {
 	},
 	inboxSourceConfig: { accounts: {} },
 	startSurfacePreferences: DEFAULT_START_SURFACE_PREFERENCES,
-	sidebarGrouping: "status",
+	sidebarGrouping: "repo",
 	sidebarRepoFilterIds: [],
 	sidebarSort: "custom",
 };

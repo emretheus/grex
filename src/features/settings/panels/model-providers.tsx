@@ -73,7 +73,7 @@ export function AgentProxyPanel() {
 	return (
 		<SettingsRow
 			title="Proxy"
-			description="Routes all provider traffic — Claude Code, Codex, OpenCode, and Cursor."
+			description="Routes all provider traffic — Claude Code, Codex, OpenCode, Cursor, and Gemini."
 			align="start"
 			className="gap-8"
 		>
