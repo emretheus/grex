@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="src-tauri/icons/brand/grex-logo-light.png" alt="Grex" width="112" height="112" />
+<img src="src/assets/grex-logo.png" alt="Grex" width="112" height="112" />
 
 # Grex
 
