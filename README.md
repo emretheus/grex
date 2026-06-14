@@ -1,12 +1,14 @@
 <div align="center">
 
+<img src="src-tauri/icons/brand/grex-logo-light.png" alt="Grex" width="112" height="112" />
+
 # Grex
 
 **One minimal desktop app for every AI coding agent.**
 
-Grex is an open, multi-provider GUI for coding agents — run Claude Code, Codex, and
-OpenCode from a single clean, local-first interface, with built-in chat, diff review,
-a file explorer + editor, and terminals.
+Grex is an open, multi-provider GUI for coding agents — run Claude Code, Codex,
+OpenCode, Cursor, and Gemini from a single clean, local-first interface, with built-in
+chat, diff review, a file explorer + editor, and terminals.
 
 [![Latest release](https://img.shields.io/github/v/release/emretheus/grex?label=release&labelColor=1c2933&color=0158fd)](https://github.com/emretheus/grex/releases)
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-1c2933.svg?labelColor=1c2933&color=666)](./LICENSE)
@@ -37,6 +39,8 @@ Grex auto-detects the provider CLIs you already have installed:
 | **Claude Code** | Anthropic |
 | **Codex** | OpenAI |
 | **OpenCode** | OpenCode |
+| **Cursor** | Anysphere |
+| **Gemini** | Google |
 
 > More providers are on the way.
 
