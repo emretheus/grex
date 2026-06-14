@@ -1,5 +1,34 @@
 # Changelog
 
+## 0.3.0
+
+### Minor Changes
+
+- [#20](https://github.com/emretheus/grex/pull/20) [`c833913`](https://github.com/emretheus/grex/commit/c833913070d8b8f5ddfec4bf3a498d030a53d3b6) Thanks [@emretheus](https://github.com/emretheus)! - Custom AI provider improvements:
+
+  - Codex now supports custom providers — point it at any OpenAI-compatible (Responses API) endpoint in Settings, fetch its models, and pick which ones show up in the composer. The provider definition is injected per-thread (never writes `~/.codex/config.toml`).
+  - Pick which official Claude and Codex models appear in the composer's model picker; deselecting all of a provider hides its section.
+
+- [#19](https://github.com/emretheus/grex/pull/19) [`c52e738`](https://github.com/emretheus/grex/commit/c52e738386f183dfe22983e21ab5c92835d32f17) Thanks [@emretheus](https://github.com/emretheus)! - Promote Gemini (Gemini CLI) from experimental to a fully supported provider, and polish the workspace UI:
+
+  - Gemini turns now render in full — assistant text, reasoning, tool cards, and plans — with plan mode, mid-turn steer, slash commands, session-title generation, and resume across restarts. Gemini also appears in Settings → Providers with a sign-in flow.
+  - The "agent working" indicator is now an animated Grex "G" mark.
+  - The composer's permission toggle shows an explicit "Auto" / "Plan" text label.
+  - The workspaces sidebar now groups by repository by default.
+
+### Patch Changes
+
+- [#20](https://github.com/emretheus/grex/pull/20) [`c833913`](https://github.com/emretheus/grex/commit/c833913070d8b8f5ddfec4bf3a498d030a53d3b6) Thanks [@emretheus](https://github.com/emretheus)! - Improve Claude model handling:
+
+  - The default Claude model is pinned to Opus 4.8 (1M context) so it can't silently switch to a different model when the bundled Claude CLI updates; existing sessions and settings keep the same model.
+  - Terminal mode is now limited to official Claude models — custom (BYOK) Claude models run in GUI mode instead, since the terminal can't carry their custom provider settings.
+
+- [`76a3213`](https://github.com/emretheus/grex/commit/76a3213e7e66e7c69d3dafe74532326ac912dd78) Thanks [@emretheus](https://github.com/emretheus)! - The macOS, Windows, and mobile app icons now use the standard ~80% inset so the dock icon no longer appears oversized next to other apps.
+
+- [#19](https://github.com/emretheus/grex/pull/19) [`c52e738`](https://github.com/emretheus/grex/commit/c52e738386f183dfe22983e21ab5c92835d32f17) Thanks [@emretheus](https://github.com/emretheus)! - The app splash / reload screen now shows the static Grex logo with a gentle pulse instead of the tile-flip mark; in-app loaders keep the existing animation.
+
+- [#20](https://github.com/emretheus/grex/pull/20) [`c833913`](https://github.com/emretheus/grex/commit/c833913070d8b8f5ddfec4bf3a498d030a53d3b6) Thanks [@emretheus](https://github.com/emretheus)! - Fix Intel (x86_64) builds shipping an arm64 `grex-sidecar`, which made the app fail to launch its sidecar with "Failed to start sidecar binary" / "bad CPU type in executable" on Intel Macs. The sidecar is now cross-compiled to the release target triple, and the bundle arch check covers it so the mismatch can't ship again.
+
 ## 0.2.0
 
 ### Minor Changes

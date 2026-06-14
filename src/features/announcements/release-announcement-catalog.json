@@ -2,6 +2,24 @@
 	"_readme": "AUTO-GENERATED from .announcements during `bun run release:version`. Each item is one released version's in-app announcement. Do not edit released entries by hand.",
 	"items": [
 		{
+			"releaseVersion": "0.3.0",
+			"items": [
+				{
+					"text": "Gemini (Gemini CLI) is now a fully supported provider — rich tool cards, plans, and reasoning, plus plan mode, steering, and slash commands. Sign in from Settings → Providers.",
+					"action": {
+						"label": "Open Providers",
+						"value": {
+							"type": "openSettings",
+							"section": "providers"
+						}
+					}
+				},
+				{
+					"text": "Workspaces now group by repository by default, and the agent-working indicator is a new animated Grex “G”."
+				}
+			]
+		},
+		{
 			"releaseVersion": "0.2.0",
 			"items": [
 				{
