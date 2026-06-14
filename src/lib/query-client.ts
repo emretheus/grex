@@ -49,6 +49,7 @@ import {
 // Routed through the transport shim so query-cache persistence works in the
 // mobile browser companion too (not just the Tauri webview).
 import { invoke } from "./ipc";
+import { isTauriRuntime } from "./platform";
 import { parsePrUrl } from "./pr-url";
 // Lazy-cycle-safe: session-thread-cache imports `grexQueryKeys` from this
 // module, but both sides only dereference inside function bodies.
@@ -70,7 +71,9 @@ export const grexQueryKeys = {
 	archivedWorkspaces: ["archivedWorkspaces"] as const,
 	repositories: ["repositories"] as const,
 	agentModelSections: ["agentModelSections"] as const,
+	allAgentModelSections: ["allAgentModelSections"] as const,
 	opencodeCustomProviders: ["opencodeCustomProviders"] as const,
+	codexCustomProviders: ["codexCustomProviders"] as const,
 	agentLoginStatus: ["agentLoginStatus"] as const,
 	agentVersions: ["agentVersions"] as const,
 	providerCapabilities: ["providerCapabilities"] as const,
@@ -187,14 +190,26 @@ export function createGrexQueryClient() {
 		let unlistenFocus: (() => void) | undefined;
 		let unlistenBlur: (() => void) | undefined;
 
-		void import("@tauri-apps/api/event").then(({ listen }) => {
-			void listen("tauri://focus", () => handleFocus(true)).then((fn) => {
-				unlistenFocus = fn;
-			});
-			void listen("tauri://blur", () => handleFocus(false)).then((fn) => {
-				unlistenBlur = fn;
-			});
-		});
+		// Tauri's event API reads `window.__TAURI_INTERNALS__` and throws when
+		// it's absent (jsdom / SSR), so only attach inside a real webview.
+		// Also `.catch()` every step so a failed `listen()` can never surface
+		// as an unhandled promise rejection (which would fail the test run).
+		if (isTauriRuntime()) {
+			void import("@tauri-apps/api/event")
+				.then(({ listen }) => {
+					void listen("tauri://focus", () => handleFocus(true))
+						.then((fn) => {
+							unlistenFocus = fn;
+						})
+						.catch(() => {});
+					void listen("tauri://blur", () => handleFocus(false))
+						.then((fn) => {
+							unlistenBlur = fn;
+						})
+						.catch(() => {});
+				})
+				.catch(() => {});
+		}
 
 		return () => {
 			unlistenFocus?.();

@@ -633,6 +633,93 @@ describe("WorkspaceComposerContainer", () => {
 		});
 	});
 
+	it("hides the terminal toggle for custom (BYOK) Claude models", () => {
+		const queryClient = createGrexQueryClient();
+		// Same official Claude option plus a custom (BYOK) one carrying a
+		// providerKey — the terminal CLI can't carry its base URL / auth.
+		const sections = [
+			{
+				id: "claude",
+				label: "Claude",
+				options: [
+					...MODEL_SECTIONS[0].options,
+					{
+						id: "claude-custom|minimax|MiniMax-M2.7",
+						provider: "claude",
+						providerKey: "minimax",
+						label: "MiniMax M2.7",
+						cliModel: "MiniMax-M2.7",
+						effortLevels: ["low", "medium", "high"],
+					},
+				],
+			},
+			...MODEL_SECTIONS.slice(1),
+		];
+		queryClient.setQueryData(grexQueryKeys.agentModelSections, sections);
+
+		const settings = {
+			...DEFAULT_SETTINGS,
+			enableTerminalMode: true,
+			startSurfacePreferences: {
+				...DEFAULT_SETTINGS.startSurfacePreferences,
+				// Persisted "on" — must be masked when a custom model is selected.
+				terminalModeActive: true,
+			},
+		};
+
+		const sharedProps = {
+			displayedWorkspaceId: null,
+			displayedSessionId: null,
+			disabled: false,
+			forceAvailable: true as const,
+			focusScope: "start-composer" as const,
+			contextKeyOverride: "start:repo:repo-1",
+			sending: false,
+			sendError: null,
+			restoreDraft: null,
+			restoreImages: [],
+			restoreFiles: [],
+			restoreNonce: 0,
+			effortLevels: {},
+			permissionModes: {},
+			fastModes: {},
+			onSelectModel: vi.fn(),
+			onSelectEffort: vi.fn(),
+			onChangePermissionMode: vi.fn(),
+			onChangeFastMode: vi.fn(),
+			onSubmit: vi.fn(),
+		};
+
+		const renderWith = (modelId: string) =>
+			render(
+				<SettingsContext.Provider
+					value={{ settings, isLoaded: true, updateSettings: vi.fn() }}
+				>
+					<QueryClientProvider client={queryClient}>
+						<WorkspaceComposerContainer
+							{...sharedProps}
+							modelSelections={{ "start:repo:repo-1": modelId }}
+						/>
+					</QueryClientProvider>
+				</SettingsContext.Provider>,
+			);
+
+		// Control: an official Claude model keeps the terminal toggle.
+		const control = renderWith("opus-1m");
+		expect(composerMockState.lastOnChangeTerminalMode).not.toBeNull();
+		expect(composerMockState.lastTerminalMode).toBe(true);
+		// Unmount + reset so the next render is observed in isolation (the mock
+		// state is module-global and both trees would otherwise coexist).
+		control.unmount();
+		composerMockState.lastOnChangeTerminalMode = null;
+		composerMockState.lastTerminalMode = null;
+
+		// Custom model: toggle hidden and the persisted "on" is masked to GUI.
+		renderWith("claude-custom|minimax|MiniMax-M2.7");
+		expect(composerMockState.lastOnChangeTerminalMode).toBeNull();
+		expect(composerMockState.lastTerminalMode).toBe(false);
+	});
+
 	it("hides the terminal toggle on chat surfaces (no repo to spawn the PTY in)", () => {
 		const queryClient = createGrexQueryClient();
 		queryClient.setQueryData(grexQueryKeys.agentModelSections, MODEL_SECTIONS);

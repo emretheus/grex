@@ -1147,6 +1147,18 @@ export async function loadAgentModelSections(): Promise<AgentModelSection[]> {
 	}
 }
 
+/** Full unfiltered catalog (custom Codex models merged into the Codex
+ *  section), for the Settings "Models" multi-selects. */
+export async function loadAllAgentModelSections(): Promise<
+	AgentModelSection[]
+> {
+	try {
+		return await invoke<AgentModelSection[]>("list_all_agent_model_sections");
+	} catch (error) {
+		throw new Error(describeInvokeError(error, "Unable to load agent models."));
+	}
+}
+
 /** Static provider-capability table. Backed by the Rust source of truth
  *  in `agents::provider_capabilities`; callers cache the result for the
  *  lifetime of the app and look up rows by `provider`. */
@@ -1330,6 +1342,80 @@ export async function deleteOpencodeCustomProvider(id: string): Promise<void> {
 	} catch (error) {
 		throw new Error(
 			describeInvokeError(error, "Unable to delete opencode provider."),
+		);
+	}
+}
+
+// ---------------------------------------------------------------------------
+// Codex custom providers (OpenAI-compatible / Responses-API endpoints)
+// ---------------------------------------------------------------------------
+
+export type CodexCustomModel = {
+	/** Wire model name, sent verbatim to the endpoint. */
+	slug: string;
+	label: string;
+	/** Non-empty ⟺ the composer shows an effort switch. */
+	effortLevels?: string[];
+};
+
+export type CodexCustomProvider = {
+	/** Bare provider id (used as Codex `modelProvider`); part of model ids. */
+	id: string;
+	name: string;
+	baseUrl: string;
+	apiKey: string;
+	models: CodexCustomModel[];
+	/** Enabled model slugs (`null` = all). Drives the composer model picker. */
+	enabledModelIds: string[] | null;
+};
+
+export async function listCodexCustomProviders(): Promise<
+	CodexCustomProvider[]
+> {
+	try {
+		return await invoke<CodexCustomProvider[]>("list_codex_custom_providers");
+	} catch (error) {
+		throw new Error(
+			describeInvokeError(error, "Unable to read Codex custom providers."),
+		);
+	}
+}
+
+export async function upsertCodexCustomProvider(
+	provider: CodexCustomProvider,
+): Promise<void> {
+	try {
+		await invoke("upsert_codex_custom_provider", { provider });
+	} catch (error) {
+		throw new Error(
+			describeInvokeError(error, "Unable to save Codex custom provider."),
+		);
+	}
+}
+
+export async function deleteCodexCustomProvider(id: string): Promise<void> {
+	try {
+		await invoke("delete_codex_custom_provider", { id });
+	} catch (error) {
+		throw new Error(
+			describeInvokeError(error, "Unable to delete Codex custom provider."),
+		);
+	}
+}
+
+/** Fetch a custom Codex provider's models from its `/v1/models` endpoint. */
+export async function fetchCodexProviderModels(
+	baseUrl: string,
+	apiKey: string,
+): Promise<CodexCustomModel[]> {
+	try {
+		return await invoke<CodexCustomModel[]>("fetch_codex_provider_models", {
+			baseUrl,
+			apiKey,
+		});
+	} catch (error) {
+		throw new Error(
+			describeInvokeError(error, "Unable to fetch models from the endpoint."),
 		);
 	}
 }

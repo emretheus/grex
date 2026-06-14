@@ -12,7 +12,9 @@ import { getAgentLoginStatus, getAgentVersions } from "@/lib/api";
 import { grexQueryKeys } from "@/lib/query-client";
 import { SettingsGroup } from "../components/settings-row";
 import { AgentProxyPanel, ClaudeCustomProvidersPanel } from "./model-providers";
+import { CodexCustomProvidersPanel } from "./providers/codex-custom-providers";
 import { CursorCardBody } from "./providers/cursor-card-body";
+import { OfficialModelSelect } from "./providers/official-model-select";
 import { OpencodeCustomProvidersPanel } from "./providers/opencode-custom-providers";
 import {
 	OpencodeModels,
@@ -89,6 +91,12 @@ export function ProvidersPanel() {
 					collapsible
 				>
 					<ProviderConfigRow
+						label="Models"
+						description="Pick which official Claude models appear in the composer's picker."
+					>
+						<OfficialModelSelect provider="claude" />
+					</ProviderConfigRow>
+					<ProviderConfigRow
 						label="Custom Providers"
 						description="Enter API keys here to use third-party models. They run alongside Claude Code's official models."
 					>
@@ -103,7 +111,21 @@ export function ProvidersPanel() {
 					connecting={statusLoading}
 					loginProvider="codex"
 					onLoginExit={refetchStatus}
-				/>
+					collapsible
+				>
+					<ProviderConfigRow
+						label="Models"
+						description="Pick which official Codex models appear in the composer's picker."
+					>
+						<OfficialModelSelect provider="codex" />
+					</ProviderConfigRow>
+					<ProviderConfigRow
+						label="Custom Providers"
+						description="Point Codex at any OpenAI-compatible (Responses API) endpoint. Runs alongside the official models."
+					>
+						<CodexCustomProvidersPanel />
+					</ProviderConfigRow>
+				</ProviderRow>
 				<ProviderRow
 					icon={CursorIcon}
 					name="Cursor"

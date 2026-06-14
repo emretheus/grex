@@ -78,6 +78,13 @@ fn build_title_attempts() -> Vec<Value> {
         .into_iter()
         .next();
     let opencode_custom = first_opencode_custom_model();
+    // First configured custom Codex model (if any). Custom Codex models
+    // resolve to provider `codex` (the instance lives in the model id), so we
+    // detect them here rather than from the provider string — mirroring how
+    // `claude_custom` is tried before claude's own default.
+    let codex_custom = super::codex_custom_providers::configured_models()
+        .into_iter()
+        .next();
     let mut attempts: Vec<Value> = Vec::new();
     for provider in detect_title_providers() {
         // A provider's custom model (if the user configured one) is tried
@@ -100,6 +107,21 @@ fn build_title_attempts() -> Vec<Value> {
                     attempts.push(serde_json::json!({
                         "provider": "opencode",
                         "model": slug,
+                    }));
+                }
+            }
+            "codex" => {
+                if let Some(model) = &codex_custom {
+                    attempts.push(serde_json::json!({
+                        "provider": "codex",
+                        "model": model.cli_model,
+                        "codexProvider": {
+                            "id": model.instance_id,
+                            "baseUrl": model.base_url,
+                            "apiKey": model.api_key,
+                            "wireApi": "responses",
+                            "model": model.cli_model,
+                        },
                     }));
                 }
             }
@@ -1133,6 +1155,10 @@ pub fn fetch_agent_model_sections() -> Vec<super::catalog::AgentModelSection> {
     super::catalog::static_model_sections()
 }
 
+pub fn fetch_all_agent_model_sections() -> Vec<super::catalog::AgentModelSection> {
+    super::catalog::full_catalog_sections()
+}
+
 // ---------------------------------------------------------------------------
 // Cursor model list — proxied to the sidecar's `Cursor.models.list`
 // ---------------------------------------------------------------------------
@@ -1666,6 +1692,45 @@ mod tests {
         assert_eq!(chain, vec!["codex", "cursor"]);
         // No custom configured → no attempt carries an explicit model.
         assert!(attempts.iter().all(|a| a.get("model").is_none()));
+
+        std::env::remove_var("GREX_DATA_DIR");
+    }
+
+    #[test]
+    fn build_title_attempts_includes_custom_codex_provider() {
+        let dir = tempfile::tempdir().unwrap();
+        let _guard = crate::data_dir::TEST_ENV_LOCK.lock().unwrap();
+        std::env::set_var("GREX_DATA_DIR", dir.path());
+        setup_test_db(dir.path());
+
+        crate::settings::upsert_setting_value(
+            "app.codex_custom_providers",
+            r#"[{"id":"hundun","name":"Codex (Hundun)","baseUrl":"http://dollar.hundun.cn/v1","apiKey":"sk-secret","models":[{"slug":"gpt-5.5","label":"GPT-5.5"}],"enabledModelIds":null}]"#,
+        )
+        .unwrap();
+        crate::settings::upsert_setting_value("app.default_model_id", "codex:hundun|gpt-5.5")
+            .unwrap();
+
+        // Custom Codex attempt is tried first (carrying the injected provider),
+        // then the official-codex fallback.
+        let attempts = build_title_attempts();
+        assert_eq!(attempts.len(), 2);
+        let attempt = &attempts[0];
+        assert_eq!(attempt.get("provider").unwrap().as_str().unwrap(), "codex");
+        assert_eq!(attempt.get("model").unwrap().as_str().unwrap(), "gpt-5.5");
+        assert!(
+            attempts[1].get("codexProvider").is_none(),
+            "fallback attempt carries no custom provider"
+        );
+        let codex = attempt.get("codexProvider").unwrap();
+        assert_eq!(codex.get("id").unwrap().as_str().unwrap(), "hundun");
+        assert_eq!(
+            codex.get("baseUrl").unwrap().as_str().unwrap(),
+            "http://dollar.hundun.cn/v1"
+        );
+        assert_eq!(codex.get("apiKey").unwrap().as_str().unwrap(), "sk-secret");
+        assert_eq!(codex.get("wireApi").unwrap().as_str().unwrap(), "responses");
+        assert_eq!(codex.get("model").unwrap().as_str().unwrap(), "gpt-5.5");
 
         std::env::remove_var("GREX_DATA_DIR");
     }

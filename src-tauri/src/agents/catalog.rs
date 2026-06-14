@@ -37,12 +37,203 @@ pub struct AgentModelSection {
     pub options: Vec<AgentModelOption>,
 }
 
+/// The composer/CLI picker catalog: official catalog with the user's model
+/// selection applied, plus one section per custom Codex provider. Claude/Codex
+/// sections emptied by the selection filter are hidden.
 pub fn static_model_sections() -> Vec<AgentModelSection> {
-    model_sections_for_inputs(
+    let claude_enabled = load_enabled_model_ids("app.claude_enabled_model_ids");
+    let codex_enabled = load_enabled_model_ids("app.codex_enabled_model_ids");
+    let mut sections = apply_official_enabled_filter(
+        model_sections_for_inputs(
+            super::custom_providers::configured_models(),
+            load_cursor_prefs(),
+            load_opencode_prefs(),
+        ),
+        claude_enabled.as_deref(),
+        codex_enabled.as_deref(),
+    );
+    // Each custom Codex provider gets its own `codex:<id>` section (not merged
+    // into Codex). Each is gated by that provider's OWN `enabledModelIds`, not
+    // the official `codex_enabled` list — restricting official Codex models
+    // must not hide custom ones. Insert right after the official Codex section.
+    let custom = codex_custom_sections(super::codex_custom_providers::load_providers());
+    if !custom.is_empty() {
+        let at = sections
+            .iter()
+            .position(|section| section.id == "codex")
+            .or_else(|| sections.iter().position(|section| section.id == "claude"))
+            .map(|i| i + 1)
+            .unwrap_or(sections.len());
+        for (offset, section) in custom.into_iter().enumerate() {
+            sections.insert(at + offset, section);
+        }
+    }
+    // Hide official claude/codex sections the selection filter emptied so the
+    // composer never renders an empty group. Other providers keep their
+    // existing "unavailable" semantics (handled by their own builders).
+    sections.retain(|section| {
+        !(matches!(section.id.as_str(), "claude" | "codex") && section.options.is_empty())
+    });
+    sections
+}
+
+/// Full unfiltered catalog for the Settings "Models" multi-selects. Custom
+/// Codex providers are merged into the Codex section here (unlike the composer).
+pub fn full_catalog_sections() -> Vec<AgentModelSection> {
+    let mut sections = model_sections_for_inputs(
         super::custom_providers::configured_models(),
         load_cursor_prefs(),
         load_opencode_prefs(),
-    )
+    );
+    let codex_custom = codex_custom_catalog_options();
+    if !codex_custom.is_empty() {
+        if let Some(codex) = sections.iter_mut().find(|section| section.id == "codex") {
+            codex.options.extend(codex_custom);
+        }
+    }
+    sections
+}
+
+fn load_enabled_model_ids(key: &str) -> Option<Vec<String>> {
+    // null/absent → None (all enabled); `[]` → Some(empty) (none enabled).
+    crate::settings::load_setting_json::<Vec<String>>(key)
+        .ok()
+        .flatten()
+}
+
+/// Apply each official family's enabled-id filter to its own section's options.
+/// `claude`/`codex` track separate enabled lists; other sections pass through.
+fn apply_official_enabled_filter(
+    sections: Vec<AgentModelSection>,
+    claude_enabled: Option<&[String]>,
+    codex_enabled: Option<&[String]>,
+) -> Vec<AgentModelSection> {
+    sections
+        .into_iter()
+        .map(|mut section| {
+            match section.id.as_str() {
+                "claude" => section.options.retain(|opt| {
+                    super::codex_custom_providers::is_enabled(claude_enabled, &opt.id)
+                }),
+                "codex" => section.options.retain(|opt| {
+                    super::codex_custom_providers::is_enabled(codex_enabled, &opt.id)
+                }),
+                _ => {}
+            }
+            section
+        })
+        .collect()
+}
+
+/// One section per custom Codex provider, each filtered by that provider's
+/// own `enabledModelIds` (model slugs; `None` = all). Providers with no
+/// enabled models are omitted.
+fn codex_custom_sections(
+    providers: Vec<super::codex_custom_providers::CodexCustomProvider>,
+) -> Vec<AgentModelSection> {
+    let mut sections = Vec::new();
+    for provider in providers {
+        let instance_id = provider.id.trim();
+        if instance_id.is_empty() || provider.base_url.trim().is_empty() {
+            continue;
+        }
+        let provider_id = super::codex_custom_providers::provider_id(instance_id);
+        let label = if provider.name.trim().is_empty() {
+            format!("Codex · {instance_id}")
+        } else {
+            provider.name.trim().to_string()
+        };
+        let enabled = provider.enabled_model_ids.as_deref();
+        let mut options = Vec::new();
+        let mut seen = std::collections::HashSet::new();
+        for model in &provider.models {
+            let wire = model.slug.trim();
+            if wire.is_empty() || !seen.insert(wire.to_string()) {
+                continue;
+            }
+            if !super::codex_custom_providers::is_enabled(enabled, wire) {
+                continue;
+            }
+            let model_label = if model.label.trim().is_empty() {
+                wire
+            } else {
+                model.label.trim()
+            };
+            options.push(codex_custom_model(
+                instance_id,
+                &provider_id,
+                wire,
+                model_label,
+            ));
+        }
+        if options.is_empty() {
+            continue;
+        }
+        sections.push(AgentModelSection {
+            id: provider_id,
+            label,
+            status: AgentModelSectionStatus::Ready,
+            options,
+        });
+    }
+    sections
+}
+
+/// Flat unfiltered list of every custom Codex model, for the Settings picker.
+fn codex_custom_catalog_options() -> Vec<AgentModelOption> {
+    let mut out = Vec::new();
+    for provider in super::codex_custom_providers::load_providers() {
+        let instance_id = provider.id.trim();
+        if instance_id.is_empty() || provider.base_url.trim().is_empty() {
+            continue;
+        }
+        let provider_id = super::codex_custom_providers::provider_id(instance_id);
+        let mut seen = std::collections::HashSet::new();
+        for model in &provider.models {
+            let wire = model.slug.trim();
+            if wire.is_empty() || !seen.insert(wire.to_string()) {
+                continue;
+            }
+            let model_label = if model.label.trim().is_empty() {
+                wire
+            } else {
+                model.label.trim()
+            };
+            out.push(codex_custom_model(
+                instance_id,
+                &provider_id,
+                wire,
+                model_label,
+            ));
+        }
+    }
+    out
+}
+
+fn codex_custom_model(
+    instance_id: &str,
+    _provider_id: &str,
+    wire_model: &str,
+    label: &str,
+) -> AgentModelOption {
+    AgentModelOption {
+        id: super::codex_custom_providers::model_id(instance_id, wire_model),
+        // Plain `codex` (not `codex:<id>`) so every downstream provider /
+        // agentType check treats custom Codex models exactly like official
+        // Codex. The instance is recovered from the model id (`codex:<id>|…`)
+        // by `codex_custom_providers::resolve`, which reads settings.
+        provider: "codex".to_string(),
+        label: label.to_string(),
+        cli_model: wire_model.to_string(),
+        provider_key: None,
+        effort_levels: ["low", "medium", "high", "xhigh"]
+            .into_iter()
+            .map(str::to_string)
+            .collect(),
+        // serviceTier=fast is a ChatGPT-only feature; custom endpoints ignore/reject it.
+        supports_fast_mode: false,
+        supports_context_usage: true,
+    }
 }
 
 /// Inputs-driven helper used by tests; production goes through
@@ -75,7 +266,7 @@ fn official_claude_section() -> AgentModelSection {
         options: vec![
             // Fable 5 leads the list as the most capable pick, but it burns
             // limits ~2x faster than Opus — `useEnsureDefaultModel` therefore
-            // pins the app default to the `default` (Opus) entry below, NOT
+            // pins the app default to the Opus 4.8 entry below, NOT
             // to options[0]. No fast mode (Opus 4.6+ only).
             claude_model(
                 "claude-fable-5[1m]",
@@ -83,22 +274,21 @@ fn official_claude_section() -> AgentModelSection {
                 &["low", "medium", "high", "xhigh", "max"],
                 false,
             ),
-            // `default` resolves to the newest Opus the bundled claude-code
-            // knows about — 2.1.170 maps it to Opus 4.8 (1M context, adaptive
-            // thinking, default high effort, fast mode at 2x rate / 2.5x
-            // speed). Kept as `default` so it stays the auto-latest pick and
-            // remains the app's default selection (see
-            // `useEnsureDefaultModel`, which prefers id == "default"). MUST
-            // stay in sync with `sidecar/src/model-catalog.ts`.
+            // App default selection (see `useEnsureDefaultModel`, which pins
+            // this id). Pinned to the explicit `claude-opus-4-8[1m]` wire id —
+            // the `[1m]` suffix selects the 1M-context variant, matching the
+            // label. We do NOT use the CLI's `default` sentinel: it resolves to
+            // whatever the bundled claude-code decides (non-deterministic
+            // across CLI bumps), whereas a pinned id is stable. Bump when a
+            // newer Opus ships. MUST stay in sync with
+            // `sidecar/src/model-catalog.ts`.
             claude_model(
-                "default",
+                "claude-opus-4-8[1m]",
                 "Opus 4.8 1M",
                 &["low", "medium", "high", "xhigh", "max"],
                 true,
             ),
-            // Explicit 4.7 pin — this slot used to BE `default`; now that
-            // `default` advanced to 4.8 we surface 4.7 as its own selectable
-            // entry, above 4.6.
+            // Explicit 4.7 pin, above 4.6.
             claude_model(
                 "claude-opus-4-7[1m]",
                 "Opus 4.7 1M",
@@ -560,6 +750,18 @@ fn claude_effort_levels() -> Vec<String> {
         .collect()
 }
 
+/// Custom Codex provider config injected per-thread by the sidecar.
+#[derive(Debug, Clone)]
+pub struct CodexProviderConfig {
+    /// Bare provider id used as Codex `modelProvider`.
+    pub id: String,
+    pub base_url: String,
+    pub api_key: String,
+    pub wire_api: String,
+    /// Wire model name sent verbatim to the endpoint.
+    pub wire_model: String,
+}
+
 /// Resolved model info needed by the streaming path.
 #[derive(Debug, Clone)]
 pub struct ResolvedModel {
@@ -569,6 +771,19 @@ pub struct ResolvedModel {
     pub supports_effort: bool,
     pub claude_base_url: Option<String>,
     pub claude_auth_token: Option<String>,
+    pub codex_provider: Option<CodexProviderConfig>,
+}
+
+impl ResolvedModel {
+    /// Sidecar manager key. All Codex-family providers (`codex`, `codex:<id>`)
+    /// collapse to `"codex"` — same app-server pipeline.
+    pub fn sidecar_provider(&self) -> &str {
+        if self.provider.starts_with("codex") {
+            "codex"
+        } else {
+            &self.provider
+        }
+    }
 }
 
 /// Resolve a Grex model id to provider + cli_model. `provider_hint`
@@ -585,15 +800,42 @@ pub fn resolve_model(model_id: &str, provider_hint: Option<&str>) -> ResolvedMod
             supports_effort: true,
             claude_base_url: Some(model.base_url),
             claude_auth_token: Some(model.api_key),
+            codex_provider: None,
         };
     }
 
+    if let Some(model) = super::codex_custom_providers::resolve(model_id) {
+        return ResolvedModel {
+            id: model.id,
+            // Plain `codex` so session persistence / agentType checks match
+            // official Codex; the injected `codex_provider` carries the
+            // endpoint, and `model.cli_model` is the bare wire model.
+            provider: "codex".to_string(),
+            cli_model: model.cli_model.clone(),
+            supports_effort: true,
+            claude_base_url: None,
+            claude_auth_token: None,
+            codex_provider: Some(CodexProviderConfig {
+                id: model.instance_id,
+                base_url: model.base_url,
+                api_key: model.api_key,
+                wire_api: "responses".to_string(),
+                wire_model: model.cli_model,
+            }),
+        };
+    }
+
+    let codex_prefix = super::codex_custom_providers::PROVIDER_PREFIX;
     let provider = match provider_hint {
         Some("cursor") => "cursor",
         Some("codex") => "codex",
         Some("claude") => "claude",
         Some("opencode") => "opencode",
         Some("gemini") => "gemini",
+        // `codex:<id>` reaches here only when its settings were removed;
+        // route to codex so the `/` doesn't mis-infer to opencode.
+        Some(hint) if hint.starts_with(codex_prefix) => "codex",
+        _ if model_id.starts_with(codex_prefix) => "codex",
         _ if model_id.starts_with("cursor-") => "cursor",
         _ if model_id.starts_with("composer-") => "cursor",
         // `/` is unique to opencode slugs (claude uses `|`, codex/cursor have none).
@@ -620,12 +862,142 @@ pub fn resolve_model(model_id: &str, provider_hint: Option<&str>) -> ResolvedMod
         supports_effort: true,
         claude_base_url: None,
         claude_auth_token: None,
+        codex_provider: None,
     }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    fn codex_custom(
+        id: &str,
+        name: &str,
+        models: &[&str],
+    ) -> super::super::codex_custom_providers::CodexCustomProvider {
+        super::super::codex_custom_providers::CodexCustomProvider {
+            id: id.to_string(),
+            name: name.to_string(),
+            base_url: "http://example.com/v1".to_string(),
+            api_key: "sk-test".to_string(),
+            models: models
+                .iter()
+                .map(|m| super::super::codex_custom_providers::CodexCustomModel {
+                    slug: m.to_string(),
+                    label: String::new(),
+                    effort_levels: Vec::new(),
+                })
+                .collect(),
+            enabled_model_ids: None,
+        }
+    }
+
+    #[test]
+    fn codex_custom_sections_one_per_provider() {
+        let sections = codex_custom_sections(vec![codex_custom(
+            "hundun",
+            "Codex (Hundun)",
+            &["gpt-5.5", "gpt-5.4"],
+        )]);
+        assert_eq!(sections.len(), 1);
+        assert_eq!(sections[0].id, "codex:hundun");
+        assert_eq!(sections[0].label, "Codex (Hundun)");
+        assert_eq!(sections[0].status, AgentModelSectionStatus::Ready);
+        let opt = &sections[0].options[0];
+        assert_eq!(opt.id, "codex:hundun|gpt-5.5");
+        // Plain `codex` so downstream provider/agentType checks treat custom
+        // Codex like official Codex; the section id keeps the instance.
+        assert_eq!(opt.provider, "codex");
+        assert_eq!(opt.cli_model, "gpt-5.5");
+        assert!(!opt.supports_fast_mode);
+        assert!(opt.supports_context_usage);
+        assert_eq!(opt.effort_levels, vec!["low", "medium", "high", "xhigh"]);
+    }
+
+    #[test]
+    fn codex_custom_section_skips_provider_without_models() {
+        let sections = codex_custom_sections(vec![codex_custom("empty", "Empty", &[])]);
+        assert!(sections.is_empty());
+    }
+
+    #[test]
+    fn codex_custom_section_label_falls_back_to_id() {
+        let sections = codex_custom_sections(vec![codex_custom("hundun", "", &["gpt-5.5"])]);
+        assert_eq!(sections[0].label, "Codex · hundun");
+    }
+
+    #[test]
+    fn codex_custom_section_respects_enabled_subset() {
+        let mut provider = codex_custom("hundun", "Hundun", &["gpt-5.5", "gpt-5.4"]);
+        // Provider's own enabledModelIds (slugs) drives the picker section.
+        provider.enabled_model_ids = Some(vec!["gpt-5.4".to_string()]);
+        let sections = codex_custom_sections(vec![provider]);
+        assert_eq!(sections.len(), 1);
+        assert_eq!(
+            sections[0]
+                .options
+                .iter()
+                .map(|o| o.cli_model.as_str())
+                .collect::<Vec<_>>(),
+            vec!["gpt-5.4"]
+        );
+    }
+
+    #[test]
+    fn official_filter_keeps_enabled_subset() {
+        let base = model_sections_for_inputs(Vec::new(), None, None);
+        let filtered = apply_official_enabled_filter(base, None, Some(&["gpt-5.5".to_string()]));
+        let codex = filtered.iter().find(|s| s.id == "codex").unwrap();
+        assert_eq!(
+            codex
+                .options
+                .iter()
+                .map(|o| o.id.as_str())
+                .collect::<Vec<_>>(),
+            vec!["gpt-5.5"]
+        );
+        let claude = filtered.iter().find(|s| s.id == "claude").unwrap();
+        assert!(claude.options.len() > 1, "claude untouched when None");
+    }
+
+    #[test]
+    fn official_filter_empty_list_empties_options() {
+        let base = model_sections_for_inputs(Vec::new(), None, None);
+        let filtered = apply_official_enabled_filter(base, Some(&[]), None);
+        let claude = filtered.iter().find(|s| s.id == "claude").unwrap();
+        assert!(
+            claude.options.is_empty(),
+            "claude emptied when enabled = []"
+        );
+        let codex = filtered.iter().find(|s| s.id == "codex").unwrap();
+        assert!(!codex.options.is_empty(), "codex untouched (None = all)");
+    }
+
+    #[test]
+    fn sidecar_provider_collapses_codex_family() {
+        let mk = |provider: &str| ResolvedModel {
+            id: "x".into(),
+            provider: provider.into(),
+            cli_model: "x".into(),
+            supports_effort: true,
+            claude_base_url: None,
+            claude_auth_token: None,
+            codex_provider: None,
+        };
+        assert_eq!(mk("codex").sidecar_provider(), "codex");
+        assert_eq!(mk("codex:hundun").sidecar_provider(), "codex");
+        assert_eq!(mk("claude").sidecar_provider(), "claude");
+        assert_eq!(mk("opencode").sidecar_provider(), "opencode");
+        assert_eq!(mk("cursor").sidecar_provider(), "cursor");
+    }
+
+    #[test]
+    fn resolve_codex_custom_prefix_without_settings_routes_to_codex() {
+        let _env = crate::testkit::TestEnv::new("resolve-codex-custom-prefix-routes");
+        // No settings → resolve() misses → must route to codex, not opencode via `/`.
+        let m = resolve_model("codex:ppio|ppio/pa/gpt-5.5", Some("codex:ppio"));
+        assert_eq!(m.sidecar_provider(), "codex");
+    }
 
     #[test]
     fn static_model_sections_returns_hardcoded_catalog() {
@@ -643,7 +1015,7 @@ mod tests {
                 .collect::<Vec<_>>(),
             vec![
                 "claude-fable-5[1m]",
-                "default",
+                "claude-opus-4-8[1m]",
                 "claude-opus-4-7[1m]",
                 "claude-opus-4-6[1m]",
                 "sonnet",
@@ -717,7 +1089,7 @@ mod tests {
                 .collect::<Vec<_>>(),
             vec![
                 "claude-fable-5[1m]",
-                "default",
+                "claude-opus-4-8[1m]",
                 "claude-opus-4-7[1m]",
                 "claude-opus-4-6[1m]",
                 "sonnet",
@@ -740,10 +1112,11 @@ mod tests {
     #[test]
     fn resolve_claude_model() {
         let _env = crate::testkit::TestEnv::new("resolve-claude-model");
-        let m = resolve_model("default", None);
+        // The pinned Opus 4.8 1M id resolves to itself.
+        let m = resolve_model("claude-opus-4-8[1m]", None);
         assert_eq!(m.provider, "claude");
-        assert_eq!(m.cli_model, "default");
-        assert_eq!(m.id, "default");
+        assert_eq!(m.cli_model, "claude-opus-4-8[1m]");
+        assert_eq!(m.id, "claude-opus-4-8[1m]");
         assert!(m.supports_effort);
     }
 
@@ -990,7 +1363,7 @@ mod tests {
             &ids[..4],
             &[
                 "claude-fable-5[1m]",
-                "default",
+                "claude-opus-4-8[1m]",
                 "claude-opus-4-7[1m]",
                 "claude-opus-4-6[1m]"
             ],
@@ -998,7 +1371,7 @@ mod tests {
         );
 
         // Fable 5: most capable, leads the list, but is NOT the app default
-        // (too expensive) — `useEnsureDefaultModel` pins to id == "default".
+        // (too expensive) — `useEnsureDefaultModel` pins to the Opus 4.8 id.
         // No fast mode (Opus 4.6+ only); full effort tiers incl. xhigh.
         let fable = &claude.options[0];
         assert_eq!(fable.label, "Fable 5 1M");
@@ -1009,11 +1382,11 @@ mod tests {
             vec!["low", "medium", "high", "xhigh", "max"]
         );
 
-        // `default` → Opus 4.8: stays the app default selection, supports
-        // fast mode, and keeps the xhigh effort tier.
+        // Opus 4.8: the app default selection, supports fast mode, and keeps
+        // the xhigh effort tier. Pinned to its explicit `[1m]` wire id.
         let default = &claude.options[1];
         assert_eq!(default.label, "Opus 4.8 1M");
-        assert_eq!(default.cli_model, "default");
+        assert_eq!(default.cli_model, "claude-opus-4-8[1m]");
         assert!(default.supports_fast_mode, "Opus 4.8 supports fast mode");
         assert_eq!(
             default.effort_levels,
@@ -1039,10 +1412,12 @@ mod tests {
     #[test]
     fn claude_default_no_longer_collides_with_cursor_auto() {
         let _env = crate::testkit::TestEnv::new("claude-default-no-longer-collides-with-c");
-        // `default` belongs to Claude (Opus 4.8 1M). Cursor's Auto is
-        // `cursor-default`. They MUST resolve to different providers
-        // even when the picker / persistence flow doesn't pass a hint —
-        // this is the regression the namespace prefix exists to prevent.
+        // A hint-less bare `default` still infers to claude; cursor's Auto is
+        // the namespaced `cursor-default`. They MUST resolve to different
+        // providers even without a hint — the regression the namespace prefix
+        // exists to prevent. (Claude no longer ships a `default` model id; any
+        // legacy occurrence is normalized by the DB migration before it gets
+        // here, so resolve_model just passes it through.)
         let claude = resolve_model("default", None);
         assert_eq!(claude.provider, "claude");
         assert_eq!(claude.cli_model, "default");
