@@ -36,13 +36,6 @@
 	width: 18px;
 	height: 18px;
 }
-/* Both logo variants ship in the DOM; the <html> theme class picks one.
- * This avoids a React re-render swapping src at mount (which caused a dark
- * logo to flash for light-mode visitors before the useEffect settled). */
-html.light .brand-mark-dark,
-html.dark .brand-mark-light {
-	display: none;
-}
 .rail .version {
 	font-family: var(--font-mono);
 	color: var(--muted-foreground);
@@ -189,13 +182,16 @@ html.dark .brand-mark-light {
 	border-color: var(--foreground);
 }
 .changelog-chip .tag {
-	background: var(--muted);
-	color: var(--foreground);
+	background: color-mix(in oklch, var(--brand-blue) 18%, transparent);
+	color: var(--brand-blue);
 	padding: 2px 8px;
 	border-radius: 999px;
 	font-size: 10px;
 	font-weight: 500;
 	font-family: var(--font-mono);
+}
+html.dark .changelog-chip .tag {
+	color: var(--brand-blue-bright);
 }
 .changelog-chip .arrow {
 	color: var(--muted-foreground);
@@ -256,11 +252,12 @@ h1.hero .and {
 	transform: translateY(1px);
 }
 .btn.primary {
-	background: var(--primary);
-	color: var(--primary-foreground);
+	background: var(--brand-gradient);
+	color: oklch(0.99 0 0);
+	border-color: transparent;
 }
 .btn.primary:hover {
-	opacity: 0.88;
+	opacity: 0.92;
 }
 .btn.outline {
 	background: transparent;
@@ -438,32 +435,32 @@ h1.hero .and {
 			circle at 96% 50%,
 			oklch(1 0 0 / 100%) 0%,
 			oklch(1 0 0 / 95%) 4%,
-			oklch(0.97 0.03 240 / 80%) 9%,
-			oklch(0.88 0.08 245 / 50%) 16%,
+			oklch(0.97 0.04 262 / 80%) 9%,
+			oklch(0.86 0.16 262 / 50%) 16%,
 			transparent 30%
 		),
-		/* wide cool halo wrapping into the middle of the frame */
+		/* wide brand-blue halo wrapping into the frame */
 		radial-gradient(
 			ellipse 95% 130% at 110% 50%,
-			oklch(0.85 0.12 245 / 65%) 0%,
-			oklch(0.65 0.15 252 / 40%) 22%,
-			oklch(0.42 0.13 258 / 22%) 48%,
+			oklch(0.78 0.18 262 / 65%) 0%,
+			oklch(0.6 0.21 262 / 40%) 22%,
+			oklch(0.45 0.18 262 / 22%) 48%,
 			transparent 75%
 		),
 		/* deep cold wash reaching across most of the stage */
 		radial-gradient(
 			ellipse 150% 110% at 125% 45%,
-			oklch(0.45 0.1 250 / 30%) 0%,
-			oklch(0.3 0.08 255 / 15%) 40%,
+			oklch(0.45 0.12 258 / 30%) 0%,
+			oklch(0.3 0.09 262 / 15%) 40%,
 			transparent 75%
 		),
 		/* top + bottom vignette — pulls the eye into the beam */
 		linear-gradient(
 			to bottom,
-			oklch(0.08 0.01 260 / 55%) 0%,
+			oklch(0.08 0.01 262 / 55%) 0%,
 			transparent 22%,
 			transparent 78%,
-			oklch(0.08 0.01 260 / 55%) 100%
+			oklch(0.08 0.01 262 / 55%) 100%
 		);
 	mix-blend-mode: screen;
 	will-change: opacity, transform;
@@ -478,24 +475,24 @@ h1.hero .and {
 		linear-gradient(
 			105deg,
 			transparent 58%,
-			oklch(0.95 0.06 245 / 0%) 60%,
-			oklch(0.98 0.04 245 / 35%) 72%,
+			oklch(0.95 0.06 262 / 0%) 60%,
+			oklch(0.98 0.04 262 / 35%) 72%,
 			oklch(1 0 0 / 55%) 88%,
 			oklch(1 0 0 / 70%) 100%
 		),
 		linear-gradient(
 			95deg,
 			transparent 52%,
-			oklch(0.95 0.06 245 / 0%) 55%,
-			oklch(0.98 0.04 245 / 45%) 70%,
+			oklch(0.95 0.06 262 / 0%) 55%,
+			oklch(0.98 0.04 262 / 45%) 70%,
 			oklch(1 0 0 / 65%) 90%,
 			oklch(1 0 0 / 80%) 100%
 		),
 		linear-gradient(
 			82deg,
 			transparent 58%,
-			oklch(0.95 0.06 245 / 0%) 62%,
-			oklch(0.98 0.04 245 / 30%) 74%,
+			oklch(0.95 0.06 262 / 0%) 62%,
+			oklch(0.98 0.04 262 / 30%) 74%,
 			oklch(1 0 0 / 50%) 90%,
 			oklch(1 0 0 / 65%) 100%
 		);
@@ -510,27 +507,27 @@ html.light .light-burst {
 		radial-gradient(
 			circle at 96% 50%,
 			oklch(1 0 0 / 100%) 0%,
-			oklch(0.99 0.01 85 / 90%) 6%,
-			oklch(0.94 0.03 80 / 55%) 14%,
+			oklch(0.99 0.01 245 / 90%) 6%,
+			oklch(0.94 0.03 245 / 55%) 14%,
 			transparent 32%
 		),
 		radial-gradient(
 			ellipse 95% 130% at 110% 50%,
-			oklch(0.94 0.04 85 / 70%) 0%,
-			oklch(0.85 0.05 85 / 40%) 28%,
+			oklch(0.94 0.04 240 / 70%) 0%,
+			oklch(0.85 0.05 250 / 40%) 28%,
 			transparent 70%
 		),
 		radial-gradient(
 			ellipse 150% 110% at 125% 45%,
-			oklch(0.82 0.03 85 / 28%) 0%,
+			oklch(0.82 0.03 245 / 28%) 0%,
 			transparent 75%
 		),
 		linear-gradient(
 			to bottom,
-			oklch(0.8 0.02 85 / 15%) 0%,
+			oklch(0.8 0.02 245 / 15%) 0%,
 			transparent 22%,
 			transparent 78%,
-			oklch(0.8 0.02 85 / 15%) 100%
+			oklch(0.8 0.02 245 / 15%) 100%
 		);
 	mix-blend-mode: normal;
 }
@@ -544,6 +541,9 @@ html.light .light-burst {
 	z-index: 1;
 	opacity: calc(var(--fx-intensity) * 1.15);
 	mix-blend-mode: screen;
+	/* Baked smoke rasters are cool-blue; nudge toward brand blue (~262)
+	 * without re-baking. See scripts/bake-smoke.mjs for a full re-bake. */
+	filter: hue-rotate(8deg) saturate(1.05);
 	--cursor-x: 0.5;
 	--cursor-y: 0.5;
 	--swirl-strength: 1;
@@ -669,15 +669,15 @@ html.light .smoke {
 	width: 2px;
 	height: 2px;
 	border-radius: 50%;
-	background: oklch(0.98 0.01 245);
-	box-shadow: 0 0 4px 1px oklch(0.85 0.08 245 / 80%);
+	background: oklch(0.98 0.01 262);
+	box-shadow: 0 0 4px 1px oklch(0.85 0.1 262 / 80%);
 	animation: dustFloat var(--d, 20s) linear infinite;
 	animation-delay: var(--del, 0s);
 	opacity: 0;
 }
 html.light .dust i {
-	background: oklch(0.5 0.02 85);
-	box-shadow: 0 0 4px 1px oklch(0.7 0.04 85 / 60%);
+	background: oklch(0.5 0.04 245);
+	box-shadow: 0 0 4px 1px oklch(0.7 0.06 245 / 60%);
 }
 @keyframes dustFloat {
 	0% {
@@ -766,17 +766,16 @@ html.light .dust i {
 	--mx: -500px;
 	--my: -500px;
 	--magic-spot-size: 340px;
-	/* Monochrome spotlight & border glow — matches Grex's palette. */
-	--magic-spot-color: oklch(1 0 0 / 18%);
-	--magic-border-core: oklch(1 0 0 / 95%);
-	--magic-border-edge: oklch(1 0 0 / 25%);
+	/* Brand spotlight & border glow (used by the disabled hover highlight). */
+	--magic-spot-color: color-mix(in oklch, var(--brand-blue) 30%, transparent);
+	--magic-border-core: var(--brand-blue-bright);
+	--magic-border-edge: color-mix(in oklch, var(--brand-blue) 25%, transparent);
 }
 html.light .mock-stage {
-	/* Light mode: spotlight AND border are LIGHT — a white bloom that
-	 * lifts the surface, with a bright white edge where the light grazes. */
-	--magic-spot-color: oklch(1 0 0 / 55%);
-	--magic-border-core: oklch(1 0 0 / 95%);
-	--magic-border-edge: oklch(1 0 0 / 30%);
+	/* Light mode: brand-blue spotlight + grazing edge. */
+	--magic-spot-color: color-mix(in oklch, var(--brand-blue) 22%, transparent);
+	--magic-border-core: var(--brand-blue-bright);
+	--magic-border-edge: color-mix(in oklch, var(--brand-blue) 20%, transparent);
 }
 /* Magic Card hover highlight — spotlight fill + glowing gradient border.
  * DISABLED per design feedback: the bright hover spot fights the atmospheric

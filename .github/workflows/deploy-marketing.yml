@@ -1,0 +1,78 @@
+name: Deploy marketing site
+
+# Builds apps/marketing as a Next.js static export and deploys it to GitHub
+# Pages (custom domain grex.codes, served at the apex root). Replaces the old
+# Vercel/ISR setup. The GitHub data is fetched at build time, so a release
+# rebuild keeps the version / commit current without a runtime revalidation
+# server (see apps/marketing/lib/github.ts).
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "apps/marketing/**"
+      - ".github/workflows/deploy-marketing.yml"
+  release:
+    types: [published]
+  workflow_dispatch:
+
+# deploy-pages needs Pages write + OIDC id-token.
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Never run two deploys at once; let a newer push cancel an in-flight build.
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    # Marketing site only tracks the stable latest release. Skip prereleases
+    # (matches the retired refresh-marketing.yml). push / workflow_dispatch
+    # have no release payload, so they always pass.
+    if: github.event_name != 'release' || github.event.release.prerelease == false
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: "1.3.2"
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+
+      # Monorepo: install once at the root so the @grex/marketing workspace
+      # and its deps resolve. --frozen-lockfile guarantees CI matches bun.lock.
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Build static export
+        working-directory: apps/marketing
+        env:
+          # Lifts the anonymous 60 req/hr GitHub API cap to 5000. Falls back to
+          # bundled defaults if absent — the build never fails on API errors.
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: bun run build
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: apps/marketing/out
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

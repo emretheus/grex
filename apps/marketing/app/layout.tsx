@@ -5,14 +5,14 @@ import "./globals.css";
 export const metadata: Metadata = {
 	title: "Grex — One minimal desktop app for every AI coding agent",
 	description:
-		"Run Claude Code, Codex, Cursor, Gemini, Grok and more from a single local-first interface. Multi-provider GUI for coding agents with built-in chat, diff review, and terminals.",
+		"Run Claude Code, Codex, OpenCode, Cursor and Gemini from a single local-first interface. Multi-provider GUI for coding agents with built-in chat, diff review, and terminals.",
 	icons: {
-		icon: "/grex-logo-dark.svg",
+		icon: "/grex-logo.svg",
 	},
 };
 
 export const viewport: Viewport = {
-	themeColor: "#2a2a2a",
+	themeColor: "#0359FC",
 	colorScheme: "dark light",
 	// Mobile/tablet-only concerns — desktop browsers ignore these.
 	width: "device-width",

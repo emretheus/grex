@@ -213,20 +213,12 @@ export function MarketingShell({ data }: { data: RepoData }) {
 			{/* ============== TOP RAIL ============== */}
 			<div className="rail">
 				<a className="brand" href="/">
-					{/* Both logo variants render; CSS on <html class> picks the right
-					 * one. Keeps the first paint correct for system-light visitors
-					 * without a React-driven src swap flashing the dark logo. */}
+					{/* Single colored brand mark — works on both themes (brand blue +
+					 * teal on a transparent background), so no light/dark swap. */}
 					{/* eslint-disable-next-line @next/next/no-img-element */}
 					<img
-						className="brand-mark-dark"
-						src="/grex-logo-dark.svg"
-						alt=""
-						aria-hidden="true"
-					/>
-					{/* eslint-disable-next-line @next/next/no-img-element */}
-					<img
-						className="brand-mark-light"
-						src="/grex-logo-light.svg"
+						className="brand-mark"
+						src="/grex-logo.svg"
 						alt=""
 						aria-hidden="true"
 					/>
@@ -298,7 +290,7 @@ export function MarketingShell({ data }: { data: RepoData }) {
 				{/* LEFT — pitch */}
 				<div className="pitch">
 					<a className="changelog-chip" href={data.latestReleaseUrl}>
-						<span className="tag">{data.versionShort}</span>8 coding agents, one
+						<span className="tag">{data.versionShort}</span>5 coding agents, one
 						clean interface
 						<span className="arrow">→</span>
 					</a>
@@ -310,9 +302,9 @@ export function MarketingShell({ data }: { data: RepoData }) {
 					</h1>
 
 					<p className="sub">
-						Run Claude Code, Codex, Cursor, Gemini, Grok, Kilo Code, OpenCode
-						and Pi from a single, clean, local-first interface with built-in
-						chat, diff review, file explorer + editor, and terminals.
+						Run Claude Code, Codex, OpenCode, Cursor and Gemini from a single,
+						clean, local-first interface with built-in chat, diff review, file
+						explorer + editor, and terminals.
 					</p>
 
 					<div className="cta">
