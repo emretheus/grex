@@ -249,6 +249,35 @@ describe("settings", () => {
 		);
 	});
 
+	it("hydrates and saves official model selection (claude/codex enabled ids)", async () => {
+		invokeMock.mockResolvedValue({
+			// Absent claude key → null (all enabled); explicit codex subset.
+			"app.codex_enabled_model_ids": JSON.stringify(["gpt-5.5"]),
+		});
+
+		const settings = await loadSettings();
+		expect(settings.claudeEnabledModelIds).toBeNull();
+		expect(settings.codexEnabledModelIds).toEqual(["gpt-5.5"]);
+
+		invokeMock.mockResolvedValue(undefined);
+		await saveSettings({
+			claudeEnabledModelIds: ["claude-opus-4-8[1m]"],
+			codexEnabledModelIds: [],
+		});
+
+		expect(invokeMock).toHaveBeenLastCalledWith(
+			"update_app_settings",
+			expect.objectContaining({
+				settingsMap: expect.objectContaining({
+					"app.claude_enabled_model_ids": JSON.stringify([
+						"claude-opus-4-8[1m]",
+					]),
+					"app.codex_enabled_model_ids": "[]",
+				}),
+			}),
+		);
+	});
+
 	it("readRepoPreference returns record entry, falls back, and tolerates missing repoId", () => {
 		const record = { "repo-1": "local" as const };
 		expect(readRepoPreference(record, "repo-1", "worktree")).toBe("local");

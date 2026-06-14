@@ -109,6 +109,7 @@ fn base_input<'a>(session_id: Option<&'a str>) -> BuildSendMessageParamsInput<'a
         agent_proxy: None,
         claude_thinking_display: None,
         images: &[],
+        codex_provider: None,
     }
 }
 
@@ -162,6 +163,27 @@ fn includes_agent_proxy_for_any_provider() {
 
     let params = build(input);
     assert_yaml_snapshot!("params_with_agent_proxy", &params);
+}
+
+#[test]
+fn includes_codex_provider_block() {
+    let env = TestEnv::new();
+    seed_workspace_session(&env.connection(), "w-6", "s-6", None);
+
+    let codex = grex_lib::agents::CodexProviderConfig {
+        id: "hundun".to_string(),
+        base_url: "http://dollar.hundun.cn/v1".to_string(),
+        api_key: "sk-secret".to_string(),
+        wire_api: "responses".to_string(),
+        wire_model: "gpt-5.5".to_string(),
+    };
+    let mut input = base_input(Some("s-6"));
+    input.provider = "codex";
+    input.cli_model = "gpt-5.5";
+    input.codex_provider = Some(&codex);
+
+    let params = build(input);
+    assert_yaml_snapshot!("params_with_codex_provider", &params);
 }
 
 #[test]

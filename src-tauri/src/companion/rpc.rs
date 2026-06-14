@@ -69,10 +69,15 @@ async fn dispatch(
         "create_repo_run_action" => to_value(crate::commands::script_commands::create_repo_run_action(app.clone(), arg_string(&args, "repoId")?, arg_string(&args, "name")?, arg_string(&args, "command")?, arg_string(&args, "mode")?, arg_opt_string(&args, "stopCommand")).await?),
         "create_session" => to_value(crate::commands::session_commands::create_session(arg_string(&args, "workspaceId")?, arg_opt_json(&args, "actionKind")?, arg_opt_string(&args, "permissionMode"), arg_opt_string(&args, "model"), arg_opt_string(&args, "effortLevel"), arg_opt_bool(&args, "fastMode"), arg_opt_string(&args, "seedSessionId"), arg_opt_string(&args, "sessionKind"), arg_opt_string(&args, "agentType")).await?),
         "create_workspace_from_repo" => to_value(crate::commands::workspace_commands::create_workspace_from_repo(app.clone(), arg_string(&args, "repoId")?).await?),
+        "delete_codex_custom_provider" => {
+            crate::commands::provider_commands::delete_codex_custom_provider(arg_string(&args, "id")?).await?;
+            Ok(Value::Null)
+        }
         "delete_opencode_custom_provider" => {
             crate::commands::opencode_config_commands::delete_opencode_custom_provider(arg_string(&args, "id")?).await?;
             Ok(Value::Null)
         }
+        "fetch_codex_provider_models" => to_value(crate::commands::provider_commands::fetch_codex_provider_models(arg_string(&args, "baseUrl")?, arg_string(&args, "apiKey")?).await?),
         "delete_query_cache" => {
             crate::commands::system_commands::delete_query_cache(arg_string(&args, "key")?).await?;
             Ok(Value::Null)
@@ -131,6 +136,8 @@ async fn dispatch(
         }
         "list_active_streams" => to_value(crate::agents::list_active_streams(app.state::<crate::agents::ActiveStreams>()).await?),
         "list_agent_model_sections" => to_value(crate::agents::list_agent_model_sections().await?),
+        "list_all_agent_model_sections" => to_value(crate::agents::list_all_agent_model_sections().await?),
+        "list_codex_custom_providers" => to_value(crate::commands::provider_commands::list_codex_custom_providers().await?),
         "list_archived_workspaces" => to_value(crate::commands::workspace_commands::list_archived_workspaces().await?),
         "list_branches_for_local_picker" => to_value(crate::commands::workspace_commands::list_branches_for_local_picker(arg_string(&args, "repoId")?).await?),
         "list_branches_for_workspace_picker" => to_value(crate::commands::workspace_commands::list_branches_for_workspace_picker(arg_string(&args, "repoId")?).await?),
@@ -358,6 +365,10 @@ async fn dispatch(
         "update_repository_remote" => to_value(crate::commands::repository_commands::update_repository_remote(app.clone(), arg_string(&args, "repoId")?, arg_string(&args, "remote")?).await?),
         "update_session_settings" => {
             crate::commands::session_commands::update_session_settings(arg_string(&args, "sessionId")?, arg_opt_string(&args, "model"), arg_opt_string(&args, "effortLevel"), arg_opt_string(&args, "permissionMode"), arg_opt_bool(&args, "fastMode")).await?;
+            Ok(Value::Null)
+        }
+        "upsert_codex_custom_provider" => {
+            crate::commands::provider_commands::upsert_codex_custom_provider(arg_json(&args, "provider")?).await?;
             Ok(Value::Null)
         }
         "upsert_opencode_custom_provider" => {

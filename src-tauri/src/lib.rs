@@ -564,6 +564,7 @@ pub fn run() {
         })
         .invoke_handler(tauri::generate_handler![
             agents::list_agent_model_sections,
+            agents::list_all_agent_model_sections,
             agents::list_cursor_models,
             agents::list_opencode_models,
             agents::list_provider_capabilities,
@@ -593,6 +594,10 @@ pub fn run() {
             commands::opencode_config_commands::get_opencode_custom_providers,
             commands::opencode_config_commands::upsert_opencode_custom_provider,
             commands::opencode_config_commands::delete_opencode_custom_provider,
+            commands::provider_commands::list_codex_custom_providers,
+            commands::provider_commands::upsert_codex_custom_provider,
+            commands::provider_commands::delete_codex_custom_provider,
+            commands::provider_commands::fetch_codex_provider_models,
             commands::settings_commands::get_claude_rate_limits,
             commands::settings_commands::get_codex_rate_limits,
             commands::local_llm_commands::detect_local_llm_hardware,
@@ -932,12 +937,10 @@ fn install_macos_menu(app: &tauri::AppHandle) -> tauri::Result<()> {
         AboutMetadataBuilder, CheckMenuItemBuilder, MenuBuilder, MenuItemBuilder, SubmenuBuilder,
     };
 
-    let close_current_session_item = MenuItemBuilder::with_id(
-        GREX_CLOSE_CURRENT_SESSION_MENU_ID,
-        "Close Current Session",
-    )
-    .accelerator("Cmd+W")
-    .build(app)?;
+    let close_current_session_item =
+        MenuItemBuilder::with_id(GREX_CLOSE_CURRENT_SESSION_MENU_ID, "Close Current Session")
+            .accelerator("Cmd+W")
+            .build(app)?;
 
     // Lets the user float the window above other apps. Decoupled from mini
     // mode — purely a manual toggle, the check mark is the source of truth.

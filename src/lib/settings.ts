@@ -323,6 +323,12 @@ export type AppSettings = {
 	claudeCustomProviders: ClaudeCustomProviderSettings;
 	cursorProvider: CursorProviderSettings;
 	opencodeProvider: OpencodeProviderSettings;
+	/** Which official Claude models appear in the composer picker. `null` =
+	 *  all; `[]` = none (hides the Claude section). Filters by model id. */
+	claudeEnabledModelIds: string[] | null;
+	/** Which official Codex models appear in the composer picker. `null` =
+	 *  all; `[]` = none (hides the Codex section). Filters by model id. */
+	codexEnabledModelIds: string[] | null;
 	agentProxy: AgentProxySettings;
 	localLlm: LocalLlmSettings;
 	inboxSourceConfig: InboxSourceConfig;
@@ -435,6 +441,8 @@ export const DEFAULT_SETTINGS: AppSettings = {
 		cachedModels: null,
 		enabledModelIds: null,
 	},
+	claudeEnabledModelIds: null,
+	codexEnabledModelIds: null,
 	agentProxy: {
 		mode: "none",
 		customUrl: "",
@@ -600,6 +608,8 @@ const SETTINGS_KEY_MAP: Record<
 	claudeCustomProviders: "app.claude_custom_providers",
 	cursorProvider: "app.cursor_provider",
 	opencodeProvider: "app.opencode_provider",
+	claudeEnabledModelIds: "app.claude_enabled_model_ids",
+	codexEnabledModelIds: "app.codex_enabled_model_ids",
 	agentProxy: "app.agent_proxy",
 	localLlm: "app.local_llm",
 	inboxSourceConfig: "app.inbox_source_config",
@@ -1023,6 +1033,17 @@ function parseEnabledModelIds(value: unknown): string[] | null {
 	return ids;
 }
 
+/** Parse a top-level enabled-ids setting stored as a JSON string. Absent /
+ *  malformed / `null` → `null` (all enabled); `[]` → none. */
+function parseEnabledModelIdsSetting(raw: string | undefined): string[] | null {
+	if (raw === undefined || raw === "") return null;
+	try {
+		return parseEnabledModelIds(JSON.parse(raw) as unknown);
+	} catch {
+		return null;
+	}
+}
+
 function parseCachedModels(value: unknown): CursorCachedModel[] | null {
 	if (!Array.isArray(value)) return null;
 	const models: CursorCachedModel[] = [];
@@ -1327,6 +1348,12 @@ export async function loadSettings(): Promise<AppSettings> {
 			opencodeProvider: parseOpencodeProviderSettings(
 				raw[SETTINGS_KEY_MAP.opencodeProvider],
 			),
+			claudeEnabledModelIds: parseEnabledModelIdsSetting(
+				raw[SETTINGS_KEY_MAP.claudeEnabledModelIds],
+			),
+			codexEnabledModelIds: parseEnabledModelIdsSetting(
+				raw[SETTINGS_KEY_MAP.codexEnabledModelIds],
+			),
 			agentProxy: parseAgentProxySettings(raw[SETTINGS_KEY_MAP.agentProxy]),
 			localLlm: parseLocalLlmSettings(raw[SETTINGS_KEY_MAP.localLlm]),
 			inboxSourceConfig: parseInboxSourceConfig(
@@ -1375,6 +1402,8 @@ export async function saveSettings(patch: Partial<AppSettings>): Promise<void> {
 				key === "claudeCustomProviders" ||
 				key === "cursorProvider" ||
 				key === "opencodeProvider" ||
+				key === "claudeEnabledModelIds" ||
+				key === "codexEnabledModelIds" ||
 				key === "agentProxy" ||
 				key === "localLlm" ||
 				key === "inboxSourceConfig" ||
