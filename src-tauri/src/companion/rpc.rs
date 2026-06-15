@@ -443,6 +443,17 @@ async fn dispatch(
             Ok(Value::Null)
         }
 
+        // ============ data domains: Linear context source ============
+        "linear_connection_status" => to_value(crate::commands::linear_commands::linear_connection_status().await?),
+        "linear_connect" => to_value(crate::commands::linear_commands::linear_connect(app.clone(), arg_string(&args, "apiKey")?).await?),
+        "linear_disconnect" => {
+            crate::commands::linear_commands::linear_disconnect(app.clone()).await?;
+            Ok(Value::Null)
+        }
+        "linear_list_inbox_items" => to_value(crate::commands::linear_commands::linear_list_inbox_items(app.clone(), arg_opt_string(&args, "cursor"), arg_opt_int(&args, "limit")).await?),
+        "linear_search_issues" => to_value(crate::commands::linear_commands::linear_search_issues(app.clone(), arg_string(&args, "query")?, arg_opt_string(&args, "cursor"), arg_opt_int(&args, "limit")).await?),
+        "linear_get_issue" => to_value(crate::commands::linear_commands::linear_get_issue(app.clone(), arg_string(&args, "issueId")?).await?),
+
         // ============ desktop-only / destructive: no-op for a phone ============
         // Companion self-management: a paired browser does not administer the
         // companion server (enable/pair/sign-in happen on the desktop host).

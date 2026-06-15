@@ -1744,10 +1744,7 @@ fn load_repo_scripts_priority_2_repo_root_wins_when_worktree_missing() {
 
     // Repo root has grex.json, DB has its own overrides. Workspace is
     // still in Phase 1 — worktree directory does not exist yet.
-    harness.commit_repo_files(&[(
-        "grex.json",
-        r#"{"scripts":{"setup":"source-root-setup"}}"#,
-    )]);
+    harness.commit_repo_files(&[("grex.json", r#"{"scripts":{"setup":"source-root-setup"}}"#)]);
     Connection::open(harness.db_path())
         .unwrap()
         .execute(

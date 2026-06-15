@@ -10,8 +10,7 @@ struct TestDataDir {
 
 impl TestDataDir {
     fn new(name: &str) -> Self {
-        let root =
-            std::env::temp_dir().join(format!("grex-test-{name}-{}", uuid::Uuid::new_v4()));
+        let root = std::env::temp_dir().join(format!("grex-test-{name}-{}", uuid::Uuid::new_v4()));
         std::env::set_var("GREX_DATA_DIR", root.display().to_string());
         crate::data_dir::ensure_directory_structure().unwrap();
         // Match production startup order: schema first, pools second.
@@ -439,10 +438,7 @@ impl BranchSwitchTestHarness {
             None,
         )
         .unwrap();
-        run_in_repo(
-            &source_repo,
-            &["config", "user.email", "grex@example.com"],
-        );
+        run_in_repo(&source_repo, &["config", "user.email", "grex@example.com"]);
         run_in_repo(&source_repo, &["config", "user.name", "Grex"]);
         run_in_repo(&source_repo, &["config", "commit.gpgsign", "false"]);
 

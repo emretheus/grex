@@ -49,23 +49,10 @@ import type { ContextCard } from "@/lib/sources/types";
 import { cn } from "@/lib/utils";
 import { publishShellEvent } from "@/shell/event-bus";
 import { CreateBranchDialog } from "./create-branch-dialog";
+import { defaultBranchPrefix } from "./issue-branch-name";
 
 const COMPACT_TRAFFIC_LIGHT_SPACER_WIDTH = 60;
 const PREVIEW_TRAFFIC_LIGHT_SPACER_WIDTH = 52;
-
-function defaultBranchPrefix(repo: RepositoryCreateOption | null): string {
-	if (!repo) return "";
-	switch (repo.branchPrefixType ?? null) {
-		case "username":
-			return repo.forgeLogin ? `${repo.forgeLogin}/` : "";
-		case "custom":
-			return repo.branchPrefixCustom ?? "";
-		case "none":
-			return "";
-		default:
-			return repo.forgeLogin ? `${repo.forgeLogin}/` : "";
-	}
-}
 
 type WorkspaceStartPageProps = {
 	repositories: RepositoryCreateOption[];
@@ -86,6 +73,9 @@ type WorkspaceStartPageProps = {
 	onCreateAndCheckoutBranch?: (branch: string) => Promise<void>;
 	previewCard?: ContextCard | null;
 	previewAppendContextTarget?: ComposerInsertTarget;
+	/** Seed a new workspace from the previewed card (Linear issues). When
+	 *  provided, the detail view shows a "Start workspace" affordance. */
+	onStartWorkspaceFromCard?: (card: ContextCard) => void;
 	headerLeading?: React.ReactNode;
 	showWindowSafeTop?: boolean;
 	onClosePreview?: () => void;
@@ -112,6 +102,7 @@ export function WorkspaceStartPage({
 	onCreateAndCheckoutBranch,
 	previewCard = null,
 	previewAppendContextTarget,
+	onStartWorkspaceFromCard,
 	headerLeading,
 	showWindowSafeTop = false,
 	onClosePreview,
@@ -232,9 +223,11 @@ export function WorkspaceStartPage({
 										<span className="min-w-0 truncate">
 											{previewCard.title}
 										</span>
-										<span className="ml-2 shrink-0 font-normal text-muted-foreground">
-											#{sourceCardNumber(previewCard)}
-										</span>
+										{sourceCardReference(previewCard) ? (
+											<span className="ml-2 shrink-0 font-normal text-muted-foreground">
+												{sourceCardReference(previewCard)}
+											</span>
+										) : null}
 									</h2>
 								) : (
 									<div data-tauri-drag-region className="min-w-0 flex-1" />
@@ -256,6 +249,7 @@ export function WorkspaceStartPage({
 									<SourceDetailView
 										card={previewCard}
 										appendContextTarget={previewAppendContextTarget}
+										onStartWorkspace={onStartWorkspaceFromCard}
 									/>
 								) : null}
 							</div>
@@ -780,20 +774,26 @@ export function WorkspaceStartPage({
 	);
 }
 
-function sourceCardNumber(card: ContextCard): string {
+/** Short reference shown next to the preview title. Carries its own
+ *  prefix symbol per source (`#123`, `!45`, or a Linear `ENG-123`); empty
+ *  when the card has no numbered/identifier reference. */
+function sourceCardReference(card: ContextCard): string {
+	// GitLab MRs are conventionally `!N`; everything else numbered is `#N`.
+	if (card.meta.type === "gitlab_mr") return `!${card.meta.number}`;
 	if (
 		card.meta.type === "github_issue" ||
 		card.meta.type === "github_pr" ||
 		card.meta.type === "github_discussion" ||
-		card.meta.type === "gitlab_issue" ||
-		card.meta.type === "gitlab_mr"
+		card.meta.type === "gitlab_issue"
 	) {
-		return String(card.meta.number);
+		return `#${card.meta.number}`;
 	}
+	// Linear: the externalId IS the human identifier (`ENG-123`) — no `#`.
+	if (card.meta.type === "linear") return card.externalId;
 
-	// `#` is GitHub / GitLab issues; `!` is GitLab MRs.
+	// Fallback: derive from the externalId's `#`/`!` suffix if present.
 	const hashIdx = card.externalId.lastIndexOf("#");
 	const bangIdx = card.externalId.lastIndexOf("!");
 	const idx = Math.max(hashIdx, bangIdx);
-	return idx === -1 ? "" : card.externalId.slice(idx + 1);
+	return idx === -1 ? "" : card.externalId.slice(idx);
 }
