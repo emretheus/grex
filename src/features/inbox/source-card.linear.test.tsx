@@ -14,6 +14,7 @@ import { SourceCard } from "./source-card";
 
 const issue: LinearInboxItem = {
 	id: "uuid-1",
+	connectionId: "org-1",
 	identifier: "ENG-42",
 	title: "Fix the flaky login redirect",
 	url: "https://linear.app/acme/issue/ENG-42",
@@ -46,6 +47,25 @@ describe("linearItemToContextCard", () => {
 			team: { name: "Engineering", key: "ENG" },
 			project: { name: "Q1 Auth", color: "#5e6ad2" },
 		});
+	});
+
+	it("carries the connection id into the card meta for detail routing", () => {
+		const card = linearItemToContextCard(issue);
+		expect(card.meta).toMatchObject({ type: "linear", connectionId: "org-1" });
+	});
+
+	it("prefixes the subtitle with the workspace only when multiple connected", () => {
+		// Single workspace (default): subtitle stays just the team name.
+		expect(
+			linearItemToContextCard(issue, { workspaceName: "Acme" }).subtitle,
+		).toBe("Engineering");
+		// More than one workspace connected: org name prefixes the team.
+		expect(
+			linearItemToContextCard(issue, {
+				workspaceName: "Acme",
+				showWorkspace: true,
+			}).subtitle,
+		).toBe("Acme · Engineering");
 	});
 
 	it("maps workflow-state categories onto the shared tone palette", () => {

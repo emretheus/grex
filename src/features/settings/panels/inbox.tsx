@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import {
 	CircleDot,
 	GitPullRequest,
@@ -21,16 +21,14 @@ import {
 	SlackBrandIcon,
 } from "@/components/brand-icon";
 import { Button } from "@/components/ui/button";
-import { LinearConnectState } from "@/features/inbox/linear-connect-button";
 import { SlackConnectState } from "@/features/inbox/slack-connect-button";
-import { useLinearConnection } from "@/features/inbox/use-linear-connection";
 import { useSlackWorkspaces } from "@/features/inbox/use-slack-workspaces";
-import {
-	type ForgeProvider,
-	type InboxKind,
-	type InboxKindLabels,
-	linearDisconnect,
-	type RepositoryCreateOption,
+import { LinearSettingsPanel } from "@/features/settings/panels/linear-settings";
+import type {
+	ForgeProvider,
+	InboxKind,
+	InboxKindLabels,
+	RepositoryCreateOption,
 } from "@/lib/api";
 import { forgeLabelsFor } from "@/lib/forge-labels";
 import {
@@ -39,7 +37,6 @@ import {
 } from "@/lib/forge-repo-filter";
 import {
 	forgeLabelsQueryOptions,
-	grexQueryKeys,
 	inboxKindLabelsQueryOptions,
 } from "@/lib/query-client";
 import {
@@ -54,7 +51,6 @@ import {
 	type InboxSourceConfig,
 	useSettings,
 } from "@/lib/settings";
-import { useWorkspaceToast } from "@/lib/workspace-toast-context";
 
 /** Defensive default — `appSettings` may have been loaded from a session
  * persisted before this field existed (HMR or pre-migration users). */
@@ -676,70 +672,5 @@ function SlackSettingsPanel() {
 	);
 }
 
-/** Linear tab content inside Settings → Context.
- *
- *  Mirrors the inbox connect flow when disconnected (`<LinearConnectState>`)
- *  and acknowledges the connection — with an explicit Disconnect that wipes
- *  the stored API key — when one is saved. */
-function LinearSettingsPanel() {
-	const connectionQuery = useLinearConnection();
-	const connected = connectionQuery.data?.connected ?? false;
-	if (!connected) {
-		return <LinearConnectState className="min-h-[360px]" />;
-	}
-	return <LinearConnectedPanel connection={connectionQuery.data ?? null} />;
-}
-
-function LinearConnectedPanel({
-	connection,
-}: {
-	connection: {
-		workspaceName?: string | null;
-		userName?: string | null;
-	} | null;
-}) {
-	const pushToast = useWorkspaceToast();
-	const queryClient = useQueryClient();
-	const disconnectMutation = useMutation({
-		mutationFn: linearDisconnect,
-		onSuccess: () => {
-			// The `linearConnectionChanged` UI event also invalidates these,
-			// but a defensive nudge keeps the success path self-contained.
-			void queryClient.invalidateQueries({
-				queryKey: grexQueryKeys.linearConnection,
-			});
-			void queryClient.invalidateQueries({
-				predicate: (query) =>
-					query.queryKey[0] === "linearInbox" ||
-					query.queryKey[0] === "linearSearch",
-			});
-		},
-		onError: (error) => {
-			const message =
-				error instanceof Error ? error.message : "Couldn't disconnect Linear.";
-			pushToast(message, "Linear disconnect failed", "destructive");
-		},
-	});
-
-	const workspace = connection?.workspaceName?.trim();
-	const user = connection?.userName?.trim();
-	return (
-		<div className="flex min-h-[360px] w-full flex-col items-center justify-center gap-3 px-6 text-center">
-			<p className="text-small text-muted-foreground/65">
-				{workspace
-					? `Connected to ${workspace}${user ? ` as ${user}` : ""}. Open the Context sidebar to browse your assigned issues.`
-					: "Linear is connected. Open the Context sidebar to browse your assigned issues."}
-			</p>
-			<Button
-				type="button"
-				variant="outline"
-				size="sm"
-				className="cursor-interactive text-small"
-				onClick={() => disconnectMutation.mutate()}
-				disabled={disconnectMutation.isPending}
-			>
-				{disconnectMutation.isPending ? "Disconnecting…" : "Disconnect Linear"}
-			</Button>
-		</div>
-	);
-}
+// `LinearSettingsPanel` lives in `./linear-settings` — it owns the
+// per-workspace scope toggle + team/project filters + multi-connect flow.

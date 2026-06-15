@@ -48,6 +48,11 @@ export type ContextCard = {
 
 export type LinearIssueMeta = {
 	type: "linear";
+	/** Which connected workspace this issue came from — needed to route the
+	 *  detail fetch to the right API key. */
+	connectionId: string;
+	/** Org display name, shown as a badge when >1 workspace is connected. */
+	workspaceName?: string;
 	identifier: string;
 	priorityLabel: string;
 	team: { name: string; key: string };

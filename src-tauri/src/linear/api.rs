@@ -1,9 +1,11 @@
 //! Linear GraphQL client for the Contexts inbox.
 //!
-//! Read-only in Phase 1: we list the signed-in user's assigned issues and
-//! run free-text issue search. Auth is the stored personal API key, sent
-//! verbatim in the `Authorization` header (no `Bearer` prefix, no token
-//! refresh — personal keys don't expire until the user revokes them).
+//! Read-only: we list issues for the configured scope (assigned-to-me or
+//! all, optionally narrowed by team/project), run free-text issue search,
+//! and read teams/projects for the settings pickers. Auth is a per-workspace
+//! personal API key, passed in explicitly by the caller and sent verbatim in
+//! the `Authorization` header (no `Bearer` prefix, no token refresh —
+//! personal keys don't expire until the user revokes them).
 //!
 //! Stock `reqwest::blocking` is fine here — unlike Slack, Linear's API
 //! doesn't fingerprint the TLS ClientHello, so no browser-emulation fork
@@ -16,10 +18,9 @@ use anyhow::{anyhow, bail, Context, Result};
 use serde::Deserialize;
 use serde_json::{json, Value};
 
-use super::credentials;
 use super::types::{
-    priority_label, LinearInboxItem, LinearInboxPage, LinearIssueDetail, LinearLabelRef,
-    LinearProjectRef,
+    priority_label, LinearInboxItem, LinearIssueDetail, LinearLabelRef, LinearProject,
+    LinearProjectRef, LinearScope, LinearTeam,
 };
 
 const GRAPHQL_URL: &str = "https://api.linear.app/graphql";
@@ -50,16 +51,6 @@ fn http_client() -> Result<reqwest::blocking::Client> {
         .timeout(REQUEST_TIMEOUT)
         .build()
         .context("Failed to build HTTP client for Linear API")
-}
-
-/// The stored personal API key, or [`LinearAuthError`] when none is saved.
-fn stored_api_key() -> Result<String> {
-    credentials::load_api_key()?.ok_or_else(|| anyhow!(LinearAuthError))
-}
-
-/// Run a GraphQL operation with the stored API key.
-fn graphql(query: &str, variables: Value) -> Result<Value> {
-    graphql_with_key(&stored_api_key()?, query, variables)
 }
 
 /// Execute a GraphQL operation with an explicit API key, mapping auth
@@ -130,7 +121,30 @@ struct Viewer {
 
 #[derive(Debug, Deserialize)]
 struct Organization {
+    id: String,
     name: String,
+}
+
+/// Identity of the signed-in user + their organization.
+pub struct LinearViewer {
+    pub user_name: String,
+    pub org_name: String,
+    pub org_id: String,
+}
+
+#[derive(Debug, Deserialize)]
+struct TeamListNode {
+    id: String,
+    name: String,
+    key: String,
+}
+
+#[derive(Debug, Deserialize)]
+struct ProjectListNode {
+    id: String,
+    name: String,
+    #[serde(default)]
+    color: String,
 }
 
 #[derive(Debug, Deserialize)]
@@ -219,51 +233,147 @@ const ISSUE_FIELDS: &str = r#"
   assignee { name }
 "#;
 
-const VIEWER_QUERY: &str = "query Viewer { viewer { name organization { name } } }";
-
-/// Identity of the signed-in user + their organization. Drives the
-/// connection-status display. `(user_name, organization_name)`.
-pub fn viewer() -> Result<(String, String)> {
-    parse_viewer(graphql(VIEWER_QUERY, json!({}))?)
-}
+const VIEWER_QUERY: &str = "query Viewer { viewer { name organization { id name } } }";
 
 /// Validate a freshly-pasted API key by resolving its viewer. Used by the
-/// connect command so an invalid key never gets persisted.
-pub fn viewer_with_key(api_key: &str) -> Result<(String, String)> {
+/// connect command so an invalid key never gets persisted, and to capture
+/// the org id used to dedupe re-connects.
+pub fn viewer_with_key(api_key: &str) -> Result<LinearViewer> {
     parse_viewer(graphql_with_key(api_key, VIEWER_QUERY, json!({}))?)
 }
 
-fn parse_viewer(data: Value) -> Result<(String, String)> {
+fn parse_viewer(data: Value) -> Result<LinearViewer> {
     let viewer: ViewerData =
         serde_json::from_value(data).context("Couldn't parse Linear viewer response")?;
-    Ok((viewer.viewer.name, viewer.viewer.organization.name))
+    Ok(LinearViewer {
+        user_name: viewer.viewer.name,
+        org_name: viewer.viewer.organization.name,
+        org_id: viewer.viewer.organization.id,
+    })
 }
 
-/// List the signed-in user's assigned issues, most-recently-updated
-/// first. `cursor` is the opaque `endCursor` from the previous page.
-pub fn list_assigned_issues(cursor: Option<&str>, limit: u32) -> Result<LinearInboxPage> {
+/// Build the `IssueFilter` for a scoped issue feed. `Assigned` restricts to
+/// the signed-in user; team/project ids narrow further (empty = no narrow).
+fn issue_filter(scope: LinearScope, team_ids: &[String], project_ids: &[String]) -> Value {
+    let mut filter = serde_json::Map::new();
+    if scope == LinearScope::Assigned {
+        filter.insert("assignee".to_string(), json!({ "isMe": { "eq": true } }));
+    }
+    if !team_ids.is_empty() {
+        filter.insert("team".to_string(), json!({ "id": { "in": team_ids } }));
+    }
+    if !project_ids.is_empty() {
+        filter.insert(
+            "project".to_string(),
+            json!({ "id": { "in": project_ids } }),
+        );
+    }
+    Value::Object(filter)
+}
+
+/// List a workspace's issues for the inbox feed, most-recently-updated
+/// first. `scope` toggles assigned-to-me vs. all; `team_ids`/`project_ids`
+/// narrow the "all" view. Items are tagged with `connection_id` so the
+/// merged feed + detail fetch know which key produced them. `cursor` is the
+/// opaque `endCursor` from the previous page. Returns `(items, next_cursor)`.
+pub fn list_issues(
+    api_key: &str,
+    connection_id: &str,
+    scope: LinearScope,
+    team_ids: &[String],
+    project_ids: &[String],
+    cursor: Option<&str>,
+    limit: u32,
+) -> Result<(Vec<LinearInboxItem>, Option<String>)> {
     let query = format!(
-        r#"query AssignedIssues($first: Int!, $after: String) {{
-          viewer {{
-            assignedIssues(first: $first, after: $after, orderBy: updatedAt) {{
-              pageInfo {{ hasNextPage endCursor }}
-              nodes {{ {ISSUE_FIELDS} }}
-            }}
+        r#"query Issues($first: Int!, $after: String, $filter: IssueFilter) {{
+          issues(first: $first, after: $after, filter: $filter, orderBy: updatedAt) {{
+            pageInfo {{ hasNextPage endCursor }}
+            nodes {{ {ISSUE_FIELDS} }}
           }}
         }}"#
     );
-    let data = graphql(&query, json!({ "first": limit, "after": cursor }))?;
+    let data = graphql_with_key(
+        api_key,
+        &query,
+        json!({
+            "first": limit,
+            "after": cursor,
+            "filter": issue_filter(scope, team_ids, project_ids),
+        }),
+    )?;
     let connection = data
-        .get("viewer")
-        .and_then(|v| v.get("assignedIssues"))
+        .get("issues")
         .cloned()
-        .ok_or_else(|| anyhow!("Linear assignedIssues response was missing"))?;
-    connection_to_page(connection)
+        .ok_or_else(|| anyhow!("Linear issues response was missing"))?;
+    connection_to_items(connection, connection_id)
+}
+
+/// The teams the key can see, for the settings team picker.
+pub fn list_teams(api_key: &str) -> Result<Vec<LinearTeam>> {
+    let query = "query Teams { teams(first: 250) { nodes { id name key } } }";
+    let data = graphql_with_key(api_key, query, json!({}))?;
+    let nodes: Vec<TeamListNode> = data
+        .get("teams")
+        .and_then(|t| t.get("nodes"))
+        .cloned()
+        .map(serde_json::from_value)
+        .transpose()
+        .context("Couldn't parse Linear teams")?
+        .unwrap_or_default();
+    Ok(nodes
+        .into_iter()
+        .map(|n| LinearTeam {
+            id: n.id,
+            name: n.name,
+            key: n.key,
+        })
+        .collect())
+}
+
+/// The projects the key can see, optionally scoped to a single team, for
+/// the settings project picker.
+pub fn list_projects(api_key: &str, team_id: Option<&str>) -> Result<Vec<LinearProject>> {
+    let (query, variables) = match team_id {
+        Some(id) => (
+            r#"query TeamProjects($id: String!) {
+              team(id: $id) { projects(first: 250) { nodes { id name color } } }
+            }"#
+            .to_string(),
+            json!({ "id": id }),
+        ),
+        None => (
+            "query Projects { projects(first: 250) { nodes { id name color } } }".to_string(),
+            json!({}),
+        ),
+    };
+    let data = graphql_with_key(api_key, &query, variables)?;
+    let nodes_value = match team_id {
+        Some(_) => data
+            .get("team")
+            .and_then(|t| t.get("projects"))
+            .and_then(|p| p.get("nodes"))
+            .cloned(),
+        None => data.get("projects").and_then(|p| p.get("nodes")).cloned(),
+    };
+    let nodes: Vec<ProjectListNode> = nodes_value
+        .map(serde_json::from_value)
+        .transpose()
+        .context("Couldn't parse Linear projects")?
+        .unwrap_or_default();
+    Ok(nodes
+        .into_iter()
+        .map(|n| LinearProject {
+            id: n.id,
+            name: n.name,
+            color: n.color,
+        })
+        .collect())
 }
 
 /// Fetch one issue by id, including its markdown `description`. Powers
 /// the detail preview + the "Start workspace" prompt seed.
-pub fn get_issue(issue_id: &str) -> Result<LinearIssueDetail> {
+pub fn get_issue(api_key: &str, issue_id: &str) -> Result<LinearIssueDetail> {
     let query = format!(
         r#"query Issue($id: String!) {{
           issue(id: $id) {{
@@ -272,7 +382,7 @@ pub fn get_issue(issue_id: &str) -> Result<LinearIssueDetail> {
           }}
         }}"#
     );
-    let data = graphql(&query, json!({ "id": issue_id }))?;
+    let data = graphql_with_key(api_key, &query, json!({ "id": issue_id }))?;
     let node: IssueNode = data
         .get("issue")
         .cloned()
@@ -285,18 +395,18 @@ pub fn get_issue(issue_id: &str) -> Result<LinearIssueDetail> {
 }
 
 /// Free-text issue search via Linear's `searchIssues`. Empty queries
-/// short-circuit to an empty page (no point burning a request).
+/// short-circuit to an empty result (no point burning a request). Items are
+/// tagged with `connection_id`. Returns `(items, next_cursor)`.
 pub fn search_issues(
+    api_key: &str,
+    connection_id: &str,
     query_text: &str,
     cursor: Option<&str>,
     limit: u32,
-) -> Result<LinearInboxPage> {
+) -> Result<(Vec<LinearInboxItem>, Option<String>)> {
     let trimmed = query_text.trim();
     if trimmed.is_empty() {
-        return Ok(LinearInboxPage {
-            items: Vec::new(),
-            next_cursor: None,
-        });
+        return Ok((Vec::new(), None));
     }
     let query = format!(
         r#"query SearchIssues($first: Int!, $after: String, $term: String!) {{
@@ -306,7 +416,8 @@ pub fn search_issues(
           }}
         }}"#
     );
-    let data = graphql(
+    let data = graphql_with_key(
+        api_key,
         &query,
         json!({ "first": limit, "after": cursor, "term": trimmed }),
     )?;
@@ -314,12 +425,16 @@ pub fn search_issues(
         .get("searchIssues")
         .cloned()
         .ok_or_else(|| anyhow!("Linear searchIssues response was missing"))?;
-    connection_to_page(connection)
+    connection_to_items(connection, connection_id)
 }
 
-/// Turn a GraphQL issue connection (`{ pageInfo, nodes }`) into the
-/// frontend-facing inbox page.
-fn connection_to_page(connection: Value) -> Result<LinearInboxPage> {
+/// Turn a GraphQL issue connection (`{ pageInfo, nodes }`) into tagged
+/// inbox items + the next cursor. `connection_id` stamps each item so the
+/// merged feed and detail fetch can route back to the right key.
+fn connection_to_items(
+    connection: Value,
+    connection_id: &str,
+) -> Result<(Vec<LinearInboxItem>, Option<String>)> {
     let page_info: PageInfo = connection
         .get("pageInfo")
         .cloned()
@@ -338,13 +453,16 @@ fn connection_to_page(connection: Value) -> Result<LinearInboxPage> {
         .context("Couldn't parse Linear issue nodes")?
         .unwrap_or_default();
 
-    let items = nodes.into_iter().map(issue_to_item).collect();
+    let items = nodes
+        .into_iter()
+        .map(|node| issue_to_item(node, connection_id))
+        .collect();
     let next_cursor = if page_info.has_next_page {
         page_info.end_cursor
     } else {
         None
     };
-    Ok(LinearInboxPage { items, next_cursor })
+    Ok((items, next_cursor))
 }
 
 /// Shared scalar extraction for both the list item and the detail
@@ -401,10 +519,11 @@ fn issue_parts(node: &IssueNode) -> IssueParts {
     }
 }
 
-fn issue_to_item(node: IssueNode) -> LinearInboxItem {
+fn issue_to_item(node: IssueNode, connection_id: &str) -> LinearInboxItem {
     let parts = issue_parts(&node);
     LinearInboxItem {
         id: node.id,
+        connection_id: connection_id.to_string(),
         identifier: node.identifier,
         title: node.title,
         url: node.url,
@@ -487,7 +606,8 @@ mod tests {
             "assignee": { "name": "Ada" }
         }))
         .unwrap();
-        let item = issue_to_item(node);
+        let item = issue_to_item(node, "conn-1");
+        assert_eq!(item.connection_id, "conn-1");
         assert_eq!(item.identifier, "ENG-42");
         assert_eq!(item.priority, 1);
         assert_eq!(item.priority_label, "Urgent");
@@ -546,23 +666,42 @@ mod tests {
     }
 
     #[test]
-    fn connection_to_page_drops_cursor_when_no_next_page() {
+    fn connection_to_items_drops_cursor_when_no_next_page() {
         let connection = json!({
             "pageInfo": { "hasNextPage": false, "endCursor": "abc" },
             "nodes": []
         });
-        let page = connection_to_page(connection).unwrap();
-        assert!(page.next_cursor.is_none());
-        assert!(page.items.is_empty());
+        let (items, next_cursor) = connection_to_items(connection, "conn-1").unwrap();
+        assert!(next_cursor.is_none());
+        assert!(items.is_empty());
     }
 
     #[test]
-    fn connection_to_page_keeps_cursor_when_more_pages() {
+    fn connection_to_items_keeps_cursor_when_more_pages() {
         let connection = json!({
             "pageInfo": { "hasNextPage": true, "endCursor": "next-123" },
             "nodes": []
         });
-        let page = connection_to_page(connection).unwrap();
-        assert_eq!(page.next_cursor.as_deref(), Some("next-123"));
+        let (_items, next_cursor) = connection_to_items(connection, "conn-1").unwrap();
+        assert_eq!(next_cursor.as_deref(), Some("next-123"));
+    }
+
+    #[test]
+    fn issue_filter_assigned_includes_is_me() {
+        let filter = issue_filter(LinearScope::Assigned, &[], &[]);
+        assert_eq!(filter["assignee"]["isMe"]["eq"], json!(true));
+        assert!(filter.get("team").is_none());
+    }
+
+    #[test]
+    fn issue_filter_all_omits_assignee_and_adds_team_project() {
+        let filter = issue_filter(
+            LinearScope::All,
+            &["t1".to_string(), "t2".to_string()],
+            &["p1".to_string()],
+        );
+        assert!(filter.get("assignee").is_none());
+        assert_eq!(filter["team"]["id"]["in"], json!(["t1", "t2"]));
+        assert_eq!(filter["project"]["id"]["in"], json!(["p1"]));
     }
 }

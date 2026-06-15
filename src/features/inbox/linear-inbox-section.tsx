@@ -17,7 +17,7 @@ import {
 } from "./linear-connect-button";
 import { SourceCard } from "./source-card";
 import { useDebouncedValue } from "./use-debounced-value";
-import { useLinearConnection } from "./use-linear-connection";
+import { useLinearConnections } from "./use-linear-connection";
 import { useLinearInboxItems } from "./use-linear-inbox-items";
 
 /** Self-contained Linear subtree of the Contexts sidebar. Owns the
@@ -35,8 +35,15 @@ export function LinearInboxSection({
 	appendContextTarget?: ComposerInsertTarget;
 	horizontalPaddingClass: string;
 }) {
-	const connectionQuery = useLinearConnection();
-	const connected = connectionQuery.data?.connected ?? false;
+	const connectionsQuery = useLinearConnections();
+	const connections = connectionsQuery.data ?? [];
+	const connected = connections.length > 0;
+	/** connectionId → workspace display name, for the per-card badge shown
+	 *  only when more than one workspace is connected. */
+	const workspaceNames = new Map(
+		connections.map((c) => [c.id, c.workspaceName ?? ""]),
+	);
+	const showWorkspace = connections.length > 1;
 	const [searchInput, setSearchInput] = useState("");
 	const debouncedQuery = useDebouncedValue(searchInput, 250);
 	const trimmedQuery = debouncedQuery.trim();
@@ -70,7 +77,7 @@ export function LinearInboxSection({
 	}, [inbox.hasNextPage, inbox.fetchNextPage]);
 
 	const showConnectState =
-		!connectionQuery.isLoading && !connected && !isConnecting;
+		!connectionsQuery.isLoading && !connected && !isConnecting;
 
 	const actions = connected ? (
 		<InboxSearchField
@@ -89,7 +96,7 @@ export function LinearInboxSection({
 			<div className="flex w-full flex-col gap-2">
 				{showConnectState ? (
 					<LinearConnectState />
-				) : connectionQuery.isLoading || isConnecting ? (
+				) : connectionsQuery.isLoading || isConnecting ? (
 					<InboxLoadingState />
 				) : inbox.error && !inbox.hasResolved ? (
 					<InboxErrorState error={inbox.error} onRetry={inbox.refetch} />
@@ -99,7 +106,10 @@ export function LinearInboxSection({
 					<>
 						<div className="flex w-full flex-col gap-2">
 							{inbox.items.map((item) => {
-								const card = linearItemToContextCard(item);
+								const card = linearItemToContextCard(item, {
+									workspaceName: workspaceNames.get(item.connectionId),
+									showWorkspace,
+								});
 								return (
 									<SourceCard
 										key={card.id}
@@ -226,22 +236,36 @@ function stateTone(stateType: string): ContextCardStateTone {
 /** Map a Linear issue into the shared ContextCard shape SourceCard
  *  renders. `externalId` is the human identifier (`ENG-123`) so the card
  *  footer + append payload reference the issue the way Linear does. */
-export function linearItemToContextCard(item: LinearInboxItem): ContextCard {
+export function linearItemToContextCard(
+	item: LinearInboxItem,
+	opts?: { workspaceName?: string; showWorkspace?: boolean },
+): ContextCard {
+	const workspaceName = opts?.workspaceName?.trim() || undefined;
 	const meta: LinearIssueMeta = {
 		type: "linear",
+		connectionId: item.connectionId,
+		workspaceName,
 		identifier: item.identifier,
 		priorityLabel: item.priorityLabel,
 		team: { name: item.teamName, key: item.teamKey },
 		project: item.project ?? undefined,
 		labels: item.labels,
 	};
+	// When more than one workspace is connected, prefix the subtitle with the
+	// org so the merged feed stays legible across workspaces.
+	const subtitle =
+		opts?.showWorkspace && workspaceName
+			? item.teamName
+				? `${workspaceName} · ${item.teamName}`
+				: workspaceName
+			: item.teamName || undefined;
 	return {
 		id: item.id,
 		source: "linear",
 		externalId: item.identifier,
 		externalUrl: item.url,
 		title: item.title,
-		subtitle: item.teamName || undefined,
+		subtitle,
 		state: { label: item.stateName, tone: stateTone(item.stateType) },
 		lastActivityAt: item.lastActivityAt,
 		meta,

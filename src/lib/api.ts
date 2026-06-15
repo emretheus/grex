@@ -2388,12 +2388,21 @@ export async function slackListEmoji(
 // go through Linear's GraphQL API in `src-tauri/src/linear/api.rs`.
 // ---------------------------------------------------------------------------
 
-/** Linear connection state. `connected` is the single source of truth the
- *  UI branches on; the name fields drive the connected-state copy. */
+/** Which slice of a workspace's issues the feed pulls. */
+export type LinearScope = "assigned" | "all";
+
+/** One connected Linear workspace. The presence of ≥1 connection in the
+ *  list returned by `linearConnections` is the "connected" signal the UI
+ *  branches on; `scope` + filter ids drive the per-workspace controls. */
 export type LinearConnection = {
-	connected: boolean;
+	/** Connection id (also the keychain account; equals the org id for new
+	 *  connections, `"api-key"` for migrated legacy installs). */
+	id: string;
 	workspaceName?: string | null;
 	userName?: string | null;
+	scope: LinearScope;
+	teamIds: string[];
+	projectIds: string[];
 };
 
 export type LinearProjectRef = {
@@ -2406,9 +2415,25 @@ export type LinearLabelRef = {
 	color: string;
 };
 
+/** A Linear team, for the settings team picker. */
+export type LinearTeam = {
+	id: string;
+	name: string;
+	key: string;
+};
+
+/** A Linear project, for the settings project picker. */
+export type LinearProject = {
+	id: string;
+	name: string;
+	color: string;
+};
+
 /** One Linear issue projected into a context-card-shaped row. */
 export type LinearInboxItem = {
 	id: string;
+	/** Which connected workspace produced this issue. */
+	connectionId: string;
 	identifier: string;
 	title: string;
 	url: string;
@@ -2427,23 +2452,26 @@ export type LinearInboxItem = {
 
 export type LinearInboxPage = {
 	items: LinearInboxItem[];
-	nextCursor?: string | null;
+	/** connectionId → opaque cursor for that connection's NEXT page. Absent
+	 *  = exhausted; empty object = end of the merged feed. Passed back
+	 *  verbatim to fetch the next page. */
+	cursors: Record<string, string>;
 };
 
-/** Read the current Linear connection state (does NOT prompt for a key). */
-export async function linearConnectionStatus(): Promise<LinearConnection> {
+/** Read the connected Linear workspaces (does NOT prompt for a key). */
+export async function linearConnections(): Promise<LinearConnection[]> {
 	try {
-		return await invoke<LinearConnection>("linear_connection_status");
+		return await invoke<LinearConnection[]>("linear_connections");
 	} catch (error) {
 		throw new Error(
-			describeInvokeError(error, "Couldn't read Linear connection state."),
+			describeInvokeError(error, "Couldn't read Linear connections."),
 		);
 	}
 }
 
 /** Validate + store a personal API key (created at
  *  linear.app/settings/api). Rejects without persisting if the key is
- *  invalid. */
+ *  invalid. Reconnecting the same org refreshes it in place. */
 export async function linearConnect(apiKey: string): Promise<LinearConnection> {
 	try {
 		return await invoke<LinearConnection>("linear_connect", { apiKey });
@@ -2452,21 +2480,71 @@ export async function linearConnect(apiKey: string): Promise<LinearConnection> {
 	}
 }
 
-export async function linearDisconnect(): Promise<void> {
+/** Disconnect one workspace by connection id. */
+export async function linearDisconnect(connectionId: string): Promise<void> {
 	try {
-		await invoke<void>("linear_disconnect");
+		await invoke<void>("linear_disconnect", { connectionId });
 	} catch (error) {
 		throw new Error(describeInvokeError(error, "Couldn't disconnect Linear."));
 	}
 }
 
+/** Update a workspace's feed scope + team/project filters. */
+export async function linearUpdateScope(args: {
+	connectionId: string;
+	scope: LinearScope;
+	teamIds: string[];
+	projectIds: string[];
+}): Promise<LinearConnection> {
+	try {
+		return await invoke<LinearConnection>("linear_update_scope", {
+			connectionId: args.connectionId,
+			scope: args.scope,
+			teamIds: args.teamIds,
+			projectIds: args.projectIds,
+		});
+	} catch (error) {
+		throw new Error(
+			describeInvokeError(error, "Couldn't update Linear settings."),
+		);
+	}
+}
+
+/** Teams the workspace's key can see, for the settings team picker. */
+export async function linearListTeams(
+	connectionId: string,
+): Promise<LinearTeam[]> {
+	try {
+		return await invoke<LinearTeam[]>("linear_list_teams", { connectionId });
+	} catch (error) {
+		throw new Error(describeInvokeError(error, "Couldn't load Linear teams."));
+	}
+}
+
+/** Projects the workspace's key can see, optionally scoped to one team. */
+export async function linearListProjects(args: {
+	connectionId: string;
+	teamId?: string | null;
+}): Promise<LinearProject[]> {
+	try {
+		return await invoke<LinearProject[]>("linear_list_projects", {
+			connectionId: args.connectionId,
+			teamId: args.teamId ?? null,
+		});
+	} catch (error) {
+		throw new Error(
+			describeInvokeError(error, "Couldn't load Linear projects."),
+		);
+	}
+}
+
 export async function linearListInboxItems(args: {
-	cursor?: string | null;
+	cursors?: Record<string, string> | null;
 	limit?: number;
 }): Promise<LinearInboxPage> {
 	try {
 		return await invoke<LinearInboxPage>("linear_list_inbox_items", {
-			cursor: args.cursor ?? null,
+			cursors: args.cursors ?? null,
 			limit: args.limit ?? 30,
 		});
 	} catch (error) {
@@ -2476,13 +2554,13 @@ export async function linearListInboxItems(args: {
 
 export async function linearSearchIssues(args: {
 	query: string;
-	cursor?: string | null;
+	cursors?: Record<string, string> | null;
 	limit?: number;
 }): Promise<LinearInboxPage> {
 	try {
 		return await invoke<LinearInboxPage>("linear_search_issues", {
 			query: args.query,
-			cursor: args.cursor ?? null,
+			cursors: args.cursors ?? null,
 			limit: args.limit ?? 30,
 		});
 	} catch (error) {
@@ -2512,12 +2590,16 @@ export type LinearIssueDetail = {
 	lastActivityAt: number;
 };
 
-/** Fetch one Linear issue by id (the card's `id`), including its body. */
-export async function linearGetIssue(
-	issueId: string,
-): Promise<LinearIssueDetail> {
+/** Fetch one Linear issue, including its body, from a specific workspace. */
+export async function linearGetIssue(args: {
+	connectionId: string;
+	issueId: string;
+}): Promise<LinearIssueDetail> {
 	try {
-		return await invoke<LinearIssueDetail>("linear_get_issue", { issueId });
+		return await invoke<LinearIssueDetail>("linear_get_issue", {
+			connectionId: args.connectionId,
+			issueId: args.issueId,
+		});
 	} catch (error) {
 		throw new Error(describeInvokeError(error, "Couldn't load Linear issue."));
 	}
