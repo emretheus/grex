@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.4.0
+
+### Minor Changes
+
+- [#25](https://github.com/emretheus/grex/pull/25) [`9dc8b5f`](https://github.com/emretheus/grex/commit/9dc8b5f1c08f686d7d6f692d6f7621de193fc3ff) Thanks [@emretheus](https://github.com/emretheus)! - Add Linear as a Context source so you can pull issues into Grex:
+
+  - Connect Linear with a personal API key (Settings → Contexts → Linear), then browse and search your assigned issues in the context panel and append any of them to a prompt.
+  - Open an issue to preview its full description, priority, team, and labels inline.
+  - Start a new workspace straight from an issue — the branch is named after the issue and the composer is pre-seeded with its title and description.
+
 ## 0.3.1
 
 ### Patch Changes
