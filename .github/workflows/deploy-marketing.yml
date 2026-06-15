@@ -12,8 +12,15 @@ on:
     paths:
       - "apps/marketing/**"
       - ".github/workflows/deploy-marketing.yml"
-  release:
-    types: [published]
+  # A published release does NOT fire this workflow directly: publish.yml
+  # creates the GitHub release via the default GITHUB_TOKEN, and GitHub
+  # suppresses workflow runs triggered by GITHUB_TOKEN events (recursion
+  # guard). So we listen for the "Publish Release" workflow finishing instead
+  # — workflow_run is exempt from that suppression and fires reliably. This is
+  # what keeps the baked-in version / download links current on each release.
+  workflow_run:
+    workflows: ["Publish Release"]
+    types: [completed]
   workflow_dispatch:
 
 # deploy-pages needs Pages write + OIDC id-token.
@@ -29,10 +36,12 @@ concurrency:
 
 jobs:
   build:
-    # Marketing site only tracks the stable latest release. Skip prereleases
-    # (matches the retired refresh-marketing.yml). push / workflow_dispatch
-    # have no release payload, so they always pass.
-    if: github.event_name != 'release' || github.event.release.prerelease == false
+    # When triggered by a Publish Release completion, only deploy if it
+    # actually succeeded — don't push a half-built release to grex.codes.
+    # push / workflow_dispatch carry no workflow_run payload, so they pass.
+    # (publish.yml always sets prerelease: false, so every published release
+    # is the stable "latest" the marketing site tracks.)
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:

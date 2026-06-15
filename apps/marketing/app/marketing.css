@@ -745,8 +745,8 @@ html.light .dust i {
 	 * Multiply by the image aspect ratio to get the matching width cap. */
 	width: 100%;
 	/* dvh tracks the visible height on mobile; == vh on desktop. */
-	max-width: calc((100dvh - 72px) * 2600 / 1620);
-	aspect-ratio: 2600 / 1620;
+	max-width: calc((100dvh - 72px) * 2600 / 1625);
+	aspect-ratio: 2600 / 1625;
 	position: relative;
 	border-radius: 12px;
 	/* Clip anything that pokes past the 12px corners — the .shot border,
