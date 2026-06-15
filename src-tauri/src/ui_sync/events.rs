@@ -116,6 +116,11 @@ pub enum UiMutationEvent {
     SlackTokenInvalidated {
         team_id: String,
     },
+    /// Linear connection state changed (Connect / Disconnect / token
+    /// invalidated). Frontends invalidate the `linearConnection` query and
+    /// every `linearInbox` query so the inbox + settings panels re-render
+    /// the connect ↔ connected state.
+    LinearConnectionChanged,
     /// AI-triage config changed.
     TriageConfigChanged,
     /// Active tick status changed (begin / progress / end).

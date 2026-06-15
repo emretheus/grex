@@ -13,6 +13,7 @@ pub mod global_hotkey;
 pub mod image_store;
 mod import;
 pub mod lark;
+pub mod linear;
 pub mod local_llm;
 pub mod logging;
 pub mod maintenance;
@@ -793,6 +794,12 @@ pub fn run() {
             commands::updater_commands::check_for_app_update,
             commands::updater_commands::install_downloaded_app_update,
             commands::editor_commands::write_editor_file,
+            commands::linear_commands::linear_connection_status,
+            commands::linear_commands::linear_connect,
+            commands::linear_commands::linear_disconnect,
+            commands::linear_commands::linear_list_inbox_items,
+            commands::linear_commands::linear_search_issues,
+            commands::linear_commands::linear_get_issue,
             commands::slack_commands::slack_import_from_desktop,
             commands::slack_commands::slack_list_workspaces,
             commands::slack_commands::slack_disconnect_workspace,

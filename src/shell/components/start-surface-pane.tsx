@@ -4,12 +4,14 @@
 // workspace/session to bind to — zero selection subscription). Lifted verbatim
 // out of AppShell's `workspaceViewMode === "start"` branch; only the delivery
 // channel changed.
+import { useCallback } from "react";
 import {
 	type ComposerCreateContext,
 	WorkspaceConversationContainer,
 	type WorkspaceConversationContainerProps,
 } from "@/features/conversation";
 import { WorkspaceStartPage } from "@/features/workspace-start";
+import { buildIssueBranchName } from "@/features/workspace-start/issue-branch-name";
 import type { RepositoryCreateOption } from "@/lib/api";
 import type { ContextCard } from "@/lib/sources/types";
 import type { ContextPanelActions } from "@/shell/controllers/use-context-panel-controller";
@@ -89,6 +91,23 @@ export function StartSurfacePane({
 	headerLeading,
 	composerAtBottom,
 }: Props) {
+	// "Start workspace from issue": the detail view already seeded the start
+	// composer with the issue (via the shared composer-insert target); here
+	// we name the pending branch after the issue and dismiss the preview so
+	// the pre-filled composer takes over. Branch seeding is best-effort —
+	// chat mode (no repo) just gets the composer seed.
+	const handleStartWorkspaceFromCard = useCallback(
+		(card: ContextCard) => {
+			if (startRepository && startMode !== "chat") {
+				startSurfaceActions.stashPendingNewBranch(
+					buildIssueBranchName(card, startRepository),
+				);
+			}
+			contextPanelActions.closeStartContextPreview();
+		},
+		[startRepository, startMode, startSurfaceActions, contextPanelActions],
+	);
+
 	return (
 		<WorkspaceStartPage
 			repositories={repositories}
@@ -112,6 +131,7 @@ export function StartSurfacePane({
 			}}
 			previewCard={startPreviewCard}
 			previewAppendContextTarget={startComposerInsertTarget}
+			onStartWorkspaceFromCard={handleStartWorkspaceFromCard}
 			headerLeading={headerLeading}
 			showWindowSafeTop={sidebarCollapsed}
 			onClosePreview={contextPanelActions.closeStartContextPreview}

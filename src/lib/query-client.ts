@@ -163,6 +163,11 @@ export const grexQueryKeys = {
 	slackThread: (teamId: string, channelId: string, anchorTs: string) =>
 		["slackThread", teamId, channelId, anchorTs] as const,
 	slackEmojiMap: (teamId: string) => ["slackEmojiMap", teamId] as const,
+	linearConnection: ["linearConnection"] as const,
+	linearInbox: ["linearInbox"] as const,
+	linearSearch: (query: string) => ["linearSearch", query] as const,
+	linearIssueDetail: (issueId: string) =>
+		["linearIssueDetail", issueId] as const,
 	triageConfig: ["triage", "config"] as const,
 	triageActiveStatus: ["triage", "activeStatus"] as const,
 	pairedDevices: ["pairedDevices"] as const,
