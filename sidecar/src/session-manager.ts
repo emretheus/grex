@@ -8,7 +8,13 @@
 import type { AgentProxySettings } from "./agent-proxy.js";
 import type { SidecarEmitter } from "./emitter.js";
 
-export type Provider = "claude" | "codex" | "cursor" | "opencode" | "gemini";
+export type Provider =
+	| "claude"
+	| "codex"
+	| "cursor"
+	| "opencode"
+	| "gemini"
+	| "kimi";
 
 /** Custom Codex provider injected per thread; never touches `~/.codex/config.toml`. */
 export interface CodexProviderConfig {

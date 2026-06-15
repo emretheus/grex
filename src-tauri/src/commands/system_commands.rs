@@ -82,6 +82,7 @@ pub struct AgentLoginStatus {
     pub cursor: bool,
     pub opencode: bool,
     pub gemini: bool,
+    pub kimi: bool,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub codex_provider: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -96,6 +97,7 @@ pub struct AgentVersions {
     pub codex: Option<String>,
     pub opencode: Option<String>,
     pub gemini: Option<String>,
+    pub kimi: Option<String>,
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -498,6 +500,7 @@ fn grex_skills_status() -> anyhow::Result<GrexSkillsStatus> {
             // opencode readiness comes from the login-status path, not here.
             opencode: false,
             gemini: false,
+            kimi: false,
             codex_provider: None,
             codex_auth_method: None,
         },
@@ -640,6 +643,7 @@ pub async fn install_grex_skills() -> CmdResult<GrexSkillsStatus> {
             // opencode readiness comes from the login-status path, not here.
             opencode: false,
             gemini: false,
+            kimi: false,
             codex_provider: None,
             codex_auth_method: None,
         };
@@ -847,6 +851,7 @@ fn run_components_check_inner(force: bool) -> ComponentsUpdateCheck {
         cursor: cursor_login_ready(),
         opencode: false,
         gemini: false,
+        kimi: false,
         codex_provider: None,
         codex_auth_method: None,
     };
@@ -1206,6 +1211,7 @@ pub async fn get_agent_login_status() -> CmdResult<AgentLoginStatus> {
             cursor: cursor_login_ready(),
             opencode: opencode_login_ready(),
             gemini: gemini_login_ready(),
+            kimi: kimi_login_ready(),
             codex_provider: codex.provider,
             codex_auth_method: codex.auth_method.map(str::to_string),
         })
@@ -1221,6 +1227,7 @@ pub async fn get_agent_versions() -> CmdResult<AgentVersions> {
             codex: agent_cli_version("codex"),
             opencode: agent_cli_version("opencode"),
             gemini: agent_cli_version("gemini"),
+            kimi: agent_cli_version("kimi"),
         })
     })
     .await
@@ -1278,6 +1285,17 @@ fn gemini_login_ready() -> bool {
         .any(|name| gemini_dir.join(name).exists())
 }
 
+/// Kimi "ready" = a non-empty credentials store under the kimi-code home
+/// (`$KIMI_CODE_HOME`, else `~/.kimi-code`), which `kimi login` populates.
+fn kimi_login_ready() -> bool {
+    let Some(home) = crate::agents::kimi_config::kimi_code_home() else {
+        return false;
+    };
+    std::fs::read_dir(home.join("credentials"))
+        .map(|mut entries| entries.next().is_some())
+        .unwrap_or(false)
+}
+
 /// Cursor "ready" = non-empty `app.cursor_provider.apiKey`.
 fn cursor_login_ready() -> bool {
     let raw = match crate::models::settings::load_setting_value("app.cursor_provider") {
@@ -1311,35 +1329,82 @@ fn resolve_agent_binary(provider: &str) -> PathBuf {
         "claude" => bundled.claude_bin,
         "codex" => bundled.codex_bin,
         "opencode" => bundled.opencode_bin,
+        "kimi" => bundled.kimi_bin,
         _ => None,
     };
     bundled_path.unwrap_or_else(|| crate::platform::executable::resolve_for_spawn(provider))
 }
 
-// Read from the sidecar-computed settings row, NOT `auth.json` (which misses env/config/Zen providers).
+// "Ready" means the user explicitly SIGNED IN (`opencode auth login`), i.e. the
+// "Credentials" section of `opencode auth list` is non-empty. Ambient env-var
+// providers and Grex-configured custom providers (jsonc) still populate the
+// model list, but they are NOT a login — the Login entry must stay available
+// until the user signs in, so it can't be hidden behind a "Ready" badge.
 fn opencode_login_ready() -> bool {
-    let raw = match crate::models::settings::load_setting_value("app.opencode_provider") {
-        Ok(Some(value)) => value,
-        Ok(None) => return false,
-        Err(error) => {
-            tracing::debug!("Failed to read app.opencode_provider: {error}");
-            return false;
+    auth_list_has_credentials("opencode")
+}
+
+fn auth_list_has_credentials(provider: &str) -> bool {
+    let mut command = std::process::Command::new(resolve_agent_binary(provider));
+    crate::platform::process::configure_background_cli(&mut command);
+    match command.args(["auth", "list"]).output() {
+        Ok(output) if output.status.success() => {
+            parse_auth_list_credentials(&String::from_utf8_lossy(&output.stdout))
         }
-    };
-    let Ok(parsed) = serde_json::from_str::<serde_json::Value>(&raw) else {
-        return false;
-    };
-    let status_ready = parsed
-        .get("status")
-        .and_then(serde_json::Value::as_str)
-        .map(|status| status == "ready")
-        .unwrap_or(false);
-    let connected_nonempty = parsed
-        .get("connected")
-        .and_then(serde_json::Value::as_array)
-        .map(|arr| !arr.is_empty())
-        .unwrap_or(false);
-    status_ready || connected_nonempty
+        Ok(output) => {
+            tracing::trace!(
+                provider,
+                stderr = %String::from_utf8_lossy(&output.stderr).trim(),
+                "auth list returned non-zero"
+            );
+            false
+        }
+        Err(error) => {
+            tracing::debug!("{provider} auth list unavailable: {error}");
+            false
+        }
+    }
+}
+
+/// Parse the credential count from `opencode auth list`. Its "Credentials"
+/// section prints "<N> credentials"; the "Environment" section prints
+/// "environment variable(s)" (no "credential" token), so the count preceding a
+/// `credential*` token is exactly the logged-in (auth.json) total — env
+/// providers are excluded by construction. ANSI styling is stripped first.
+fn parse_auth_list_credentials(output: &str) -> bool {
+    let stripped = strip_ansi(output);
+    let tokens: Vec<&str> = stripped.split_whitespace().collect();
+    for (i, token) in tokens.iter().enumerate() {
+        if token.starts_with("credential") {
+            if let Some(count) = i
+                .checked_sub(1)
+                .and_then(|j| tokens.get(j))
+                .and_then(|prev| prev.parse::<u64>().ok())
+            {
+                return count > 0;
+            }
+        }
+    }
+    false
+}
+
+/// Drop ANSI CSI escape sequences (`ESC [ … m`) so token parsing isn't fooled
+/// by color codes wrapping the count.
+fn strip_ansi(input: &str) -> String {
+    let mut out = String::with_capacity(input.len());
+    let mut chars = input.chars();
+    while let Some(c) = chars.next() {
+        if c == '\u{1b}' {
+            for next in chars.by_ref() {
+                if next.is_ascii_alphabetic() {
+                    break;
+                }
+            }
+        } else {
+            out.push(c);
+        }
+    }
+    out
 }
 
 fn claude_login_ready() -> bool {
@@ -1456,6 +1521,8 @@ fn agent_login_command(provider: &str) -> anyhow::Result<String> {
         // gemini-cli has no `auth login` subcommand — bare `gemini` opens the
         // interactive TUI where the user picks "Login with Google".
         "gemini" => "",
+        // `kimi login` runs the device-code OAuth flow in the PTY.
+        "kimi" => "login",
         _ => anyhow::bail!("Unknown agent provider: {provider}"),
     };
     // Quote the resolved binary path so spaces in `Grex.app` survive
@@ -2190,6 +2257,23 @@ mod tests {
             classify_cli_install(&install_path, &bundled_cli),
             CliInstallState::Managed
         );
+    }
+
+    #[test]
+    fn parse_auth_list_credentials_counts_only_credentials_section() {
+        // 0 credentials + an env var present → signed OUT (env ≠ login).
+        assert!(!parse_auth_list_credentials(
+            "Credentials ~/.local/share/opencode/auth.json\n0 credentials\nEnvironment\nOpenAI OPENAI_API_KEY\n1 environment variable"
+        ));
+        // A real login → ready, regardless of env providers.
+        assert!(parse_auth_list_credentials(
+            "Credentials ~/x/auth.json\n2 credentials\nEnvironment\n0 environment variables"
+        ));
+        // ANSI-wrapped count still parses.
+        assert!(parse_auth_list_credentials(
+            "Credentials\n\u{1b}[1m1\u{1b}[0m credential\n"
+        ));
+        assert!(!parse_auth_list_credentials("garbage with no count"));
     }
 
     #[test]

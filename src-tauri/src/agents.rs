@@ -13,6 +13,7 @@ mod catalog;
 pub(crate) mod claude_project_files;
 pub(crate) mod codex_custom_providers;
 mod custom_providers;
+pub(crate) mod kimi_config;
 pub(crate) mod opencode_config;
 mod persistence;
 pub mod provider_capabilities;

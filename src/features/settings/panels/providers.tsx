@@ -1,9 +1,10 @@
 import { useIsMutating, useQuery } from "@tanstack/react-query";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import {
 	ClaudeColorIcon,
 	CursorIcon,
 	GeminiColorIcon,
+	KimiIcon,
 	OpenAIIcon,
 	OpenCodeIcon,
 } from "@/components/icons";
@@ -14,6 +15,7 @@ import { SettingsGroup } from "../components/settings-row";
 import { AgentProxyPanel, ClaudeCustomProvidersPanel } from "./model-providers";
 import { CodexCustomProvidersPanel } from "./providers/codex-custom-providers";
 import { CursorCardBody } from "./providers/cursor-card-body";
+import { KimiCustomProvidersPanel } from "./providers/kimi-custom-providers";
 import { OfficialModelSelect } from "./providers/official-model-select";
 import { OpencodeCustomProvidersPanel } from "./providers/opencode-custom-providers";
 import {
@@ -21,6 +23,7 @@ import {
 	type OpencodeModelsHandle,
 } from "./providers/opencode-models";
 import { ProviderConfigRow, ProviderRow } from "./providers/provider-row";
+import { useKimiModelSync } from "./providers/use-kimi-model-sync";
 
 // SettingsDialog renders outside AppShell's TooltipProvider, so wrap our own.
 export function ProvidersPanel() {
@@ -44,10 +47,18 @@ export function ProvidersPanel() {
 	const statusLoading = statusQuery.isLoading;
 	const opencodeSyncing =
 		useIsMutating({ mutationKey: ["opencodeModelSync"] }) > 0;
+	const kimiSyncing = useIsMutating({ mutationKey: ["kimiModelSync"] }) > 0;
 
 	const refetchStatus = () => {
 		void statusQuery.refetch();
 	};
+
+	// Refresh the Kimi model cache (`app.kimi_provider`) whenever Settings opens
+	// so the composer picker reflects `~/.kimi-code` config edits / a fresh login.
+	const { sync: syncKimi } = useKimiModelSync();
+	useEffect(() => {
+		void syncKimi();
+	}, [syncKimi]);
 
 	return (
 		<TooltipProvider>
@@ -145,6 +156,26 @@ export function ProvidersPanel() {
 					loginProvider="gemini"
 					onLoginExit={refetchStatus}
 				/>
+				<ProviderRow
+					icon={KimiIcon}
+					name="Kimi"
+					version={versions?.kimi}
+					ready={Boolean(status?.kimi)}
+					connecting={statusLoading || kimiSyncing}
+					loginProvider="kimi"
+					onLoginExit={() => {
+						refetchStatus();
+						void syncKimi();
+					}}
+					collapsible
+				>
+					<ProviderConfigRow
+						label="Custom Providers"
+						description="Add an OpenAI-compatible or Anthropic-shaped endpoint, saved to ~/.kimi-code/config.toml."
+					>
+						<KimiCustomProvidersPanel onChanged={() => void syncKimi()} />
+					</ProviderConfigRow>
+				</ProviderRow>
 				<AgentProxyPanel />
 			</SettingsGroup>
 		</TooltipProvider>

@@ -77,6 +77,10 @@ async fn dispatch(
             crate::commands::opencode_config_commands::delete_opencode_custom_provider(arg_string(&args, "id")?).await?;
             Ok(Value::Null)
         }
+        "delete_kimi_custom_provider" => {
+            crate::commands::kimi_config_commands::delete_kimi_custom_provider(arg_string(&args, "id")?).await?;
+            Ok(Value::Null)
+        }
         "fetch_codex_provider_models" => to_value(crate::commands::provider_commands::fetch_codex_provider_models(arg_string(&args, "baseUrl")?, arg_string(&args, "apiKey")?).await?),
         "delete_query_cache" => {
             crate::commands::system_commands::delete_query_cache(arg_string(&args, "key")?).await?;
@@ -115,6 +119,8 @@ async fn dispatch(
         "get_inbox_item_detail" => to_value(crate::commands::forge_commands::get_inbox_item_detail(arg_json(&args, "provider")?, arg_string(&args, "login")?, arg_opt_string(&args, "host"), arg_json(&args, "source")?, arg_string(&args, "externalId")?).await?),
         "get_live_context_usage" => to_value(crate::commands::session_commands::get_live_context_usage(app.state::<crate::sidecar::ManagedSidecar>(), arg_json(&args, "request")?).await?),
         "get_opencode_custom_providers" => to_value(crate::commands::opencode_config_commands::get_opencode_custom_providers().await?),
+        "get_kimi_provider_config" => to_value(crate::commands::kimi_config_commands::get_kimi_provider_config().await?),
+        "get_kimi_custom_providers" => to_value(crate::commands::kimi_config_commands::get_kimi_custom_providers().await?),
         "get_repo_current_branch" => to_value(crate::commands::workspace_commands::get_repo_current_branch(arg_string(&args, "repoId")?).await?),
         "get_session_codex_goal" => to_value(crate::commands::session_commands::get_session_codex_goal(arg_string(&args, "sessionId")?).await?),
         "get_session_context_usage" => to_value(crate::commands::session_commands::get_session_context_usage(arg_string(&args, "sessionId")?).await?),
@@ -373,6 +379,10 @@ async fn dispatch(
         }
         "upsert_opencode_custom_provider" => {
             crate::commands::opencode_config_commands::upsert_opencode_custom_provider(arg_json(&args, "provider")?, arg_bool(&args, "preset")?).await?;
+            Ok(Value::Null)
+        }
+        "upsert_kimi_custom_provider" => {
+            crate::commands::kimi_config_commands::upsert_kimi_custom_provider(arg_json(&args, "provider")?).await?;
             Ok(Value::Null)
         }
         "validate_archive_workspace" => to_value(crate::commands::workspace_commands::validate_archive_workspace(arg_string(&args, "workspaceId")?).await?),

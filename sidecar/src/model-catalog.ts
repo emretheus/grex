@@ -130,6 +130,20 @@ const MODEL_CATALOG: Record<Provider, readonly ProviderModelInfo[]> = {
 			cliModel: "gemini-2.5-flash",
 		},
 	],
+	// Kimi Code resolves models from the user's `~/.kimi-code` config; the
+	// universally-available default is the managed alias
+	// `kimi-code/kimi-for-coding` (`kimi login` keys models as
+	// `kimi-code/<id>`, and `session/set_model` only accepts those exact
+	// alias keys). The live set is account/config-specific (discoverable over
+	// ACP once authed), so this is just the stable seed. MUST stay in sync
+	// with Rust `kimi_section()`.
+	kimi: [
+		{
+			id: "kimi-for-coding",
+			label: "Kimi for Coding",
+			cliModel: "kimi-code/kimi-for-coding",
+		},
+	],
 	// Static fallback only — `CursorSessionManager.listModels` hits the live
 	// `Cursor.models.list` API for the full set with up-to-date capability
 	// metadata. This list is what shows when the API key isn't configured
