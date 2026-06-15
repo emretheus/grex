@@ -86,7 +86,14 @@ async function ghFetch<T>(path: string): Promise<T | null> {
 	if (token) headers.Authorization = `Bearer ${token}`;
 
 	try {
-		const res = await fetch(`${API}${path}`, { headers, cache: "no-store" });
+		// `force-cache` (not `no-store`): this runs during a Next.js static
+		// export (`output: export`), where a dynamic/`no-store` fetch throws
+		// ("couldn't be rendered statically") and is silently caught below —
+		// so the page always fell back to the hard-coded defaults and never
+		// reflected a real release. We WANT the value baked at build time; CI
+		// runners have no persisted data cache, so each release rebuild still
+		// fetches fresh.
+		const res = await fetch(`${API}${path}`, { headers, cache: "force-cache" });
 		if (!res.ok) return null;
 		return (await res.json()) as T;
 	} catch {

@@ -7,7 +7,7 @@ export const metadata: Metadata = {
 	description:
 		"Run Claude Code, Codex, OpenCode, Cursor and Gemini from a single local-first interface. Multi-provider GUI for coding agents with built-in chat, diff review, and terminals.",
 	icons: {
-		icon: "/grex-logo.svg",
+		icon: "/grex-logo.png",
 	},
 };
 
