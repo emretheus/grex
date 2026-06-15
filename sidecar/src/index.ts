@@ -709,16 +709,15 @@ for await (const line of rl) {
 					kimiManager.resolveUserInput(userInputId, resolution);
 				if (!claimed) {
 					// No live waiter — the parked promise was lost (sidecar
-					// restart, session ended, or duplicate submit).
+					// restart, session ended, or duplicate submit). Surface
+					// it instead of silently swallowing so the UI can
+					// inform the user that the answer didn't reach the agent.
 					logger.error(`[${id}] userInputResponse dropped`, {
 						userInputId,
 						action,
 					});
+					emitter.error(id, `No active waiter for userInputId=${userInputId}`);
 				}
-				// Always acknowledge so the awaiting Rust command knows whether
-				// the answer reached a live waiter; `claimed: false` lets the UI
-				// tell the user it didn't land instead of silently dropping it.
-				emitter.userInputResponseAck(id, userInputId, claimed);
 				break;
 			}
 			case "ping":
