@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.3.1
+
+### Patch Changes
+
+- [#23](https://github.com/emretheus/grex/pull/23) [`dc1203d`](https://github.com/emretheus/grex/commit/dc1203d65783084addc28a616d02565c7f5ac1a1) Thanks [@emretheus](https://github.com/emretheus)! - Replace the leftover legacy app icon and browser favicon with the current Grex hexagon mark, and rebuild the macOS icon set with the standard icon-grid padding so the Dock icon no longer renders oversized next to other apps.
+
 ## 0.3.0
 
 ### Minor Changes
