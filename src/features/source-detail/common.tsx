@@ -76,6 +76,10 @@ export function useInboxItemDetailQuery(
 export type SourceDetailProps = {
 	card: ContextCard;
 	appendContextTarget?: ComposerInsertTarget;
+	/** Start-surface only: seed a new workspace from this card (branch named
+	 *  from the issue, issue body as the first prompt). Absent elsewhere, so
+	 *  detail views gate the "Start workspace" affordance on its presence. */
+	onStartWorkspace?: (card: ContextCard) => void;
 };
 
 export function GitHubDetailPage({
@@ -144,18 +148,22 @@ export function GitHubDetailPage({
 	);
 }
 
-function SourceDetailActions({
+export function SourceDetailActions({
 	card,
 	appendContextTarget,
 	markdownBody,
 	copyDisabled,
 	refresh,
+	extraActions,
 }: {
 	card: ContextCard;
 	appendContextTarget?: ComposerInsertTarget;
 	markdownBody: string;
 	copyDisabled?: boolean;
 	refresh?: DetailRefreshControl;
+	/** Source-specific buttons rendered at the start of the toolbar (e.g.
+	 *  Linear's "Start workspace"). */
+	extraActions?: React.ReactNode;
 }) {
 	const [copied, setCopied] = useState(false);
 	const handleCopy = useCallback(() => {
@@ -168,6 +176,7 @@ function SourceDetailActions({
 
 	return (
 		<div className="flex shrink-0 items-center gap-1">
+			{extraActions}
 			{refresh ? <RefreshButton refresh={refresh} /> : null}
 			<Tooltip>
 				<TooltipTrigger asChild>
@@ -258,7 +267,7 @@ export function RefreshButton({ refresh }: { refresh: DetailRefreshControl }) {
 	);
 }
 
-function DetailLoadingState() {
+export function DetailLoadingState() {
 	return (
 		<div className="flex items-center justify-center">
 			<GrexLogoAnimated size={42} className="opacity-30" />
@@ -266,7 +275,7 @@ function DetailLoadingState() {
 	);
 }
 
-function DetailErrorState({ error }: { error: Error }) {
+export function DetailErrorState({ error }: { error: Error }) {
 	return (
 		<div className="text-center text-ui text-muted-foreground">
 			{error.message}
@@ -274,7 +283,7 @@ function DetailErrorState({ error }: { error: Error }) {
 	);
 }
 
-function MarkdownBody({ body }: { body: string }) {
+export function MarkdownBody({ body }: { body: string }) {
 	return (
 		<div className="conversation-markdown max-w-3xl break-words text-ui leading-6 text-foreground after:block after:h-24 after:content-['']">
 			<Suspense fallback={<MarkdownFallback body={body} />}>

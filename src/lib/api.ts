@@ -2380,6 +2380,149 @@ export async function slackListEmoji(
 	}
 }
 
+// ---------------------------------------------------------------------------
+// Linear context source (read-only, Phase 1).
+//
+// Wire shapes mirror `src-tauri/src/linear/types.rs` exactly. Auth is a
+// personal API key (`linearConnect` validates + stores a pasted key); reads
+// go through Linear's GraphQL API in `src-tauri/src/linear/api.rs`.
+// ---------------------------------------------------------------------------
+
+/** Linear connection state. `connected` is the single source of truth the
+ *  UI branches on; the name fields drive the connected-state copy. */
+export type LinearConnection = {
+	connected: boolean;
+	workspaceName?: string | null;
+	userName?: string | null;
+};
+
+export type LinearProjectRef = {
+	name: string;
+	color: string;
+};
+
+export type LinearLabelRef = {
+	name: string;
+	color: string;
+};
+
+/** One Linear issue projected into a context-card-shaped row. */
+export type LinearInboxItem = {
+	id: string;
+	identifier: string;
+	title: string;
+	url: string;
+	stateName: string;
+	/** `triage | backlog | unstarted | started | completed | canceled`. */
+	stateType: string;
+	priority: number;
+	priorityLabel: string;
+	teamName: string;
+	teamKey: string;
+	project?: LinearProjectRef | null;
+	labels: LinearLabelRef[];
+	lastActivityAt: number;
+	assigneeName?: string | null;
+};
+
+export type LinearInboxPage = {
+	items: LinearInboxItem[];
+	nextCursor?: string | null;
+};
+
+/** Read the current Linear connection state (does NOT prompt for a key). */
+export async function linearConnectionStatus(): Promise<LinearConnection> {
+	try {
+		return await invoke<LinearConnection>("linear_connection_status");
+	} catch (error) {
+		throw new Error(
+			describeInvokeError(error, "Couldn't read Linear connection state."),
+		);
+	}
+}
+
+/** Validate + store a personal API key (created at
+ *  linear.app/settings/api). Rejects without persisting if the key is
+ *  invalid. */
+export async function linearConnect(apiKey: string): Promise<LinearConnection> {
+	try {
+		return await invoke<LinearConnection>("linear_connect", { apiKey });
+	} catch (error) {
+		throw new Error(describeInvokeError(error, "Couldn't connect Linear."));
+	}
+}
+
+export async function linearDisconnect(): Promise<void> {
+	try {
+		await invoke<void>("linear_disconnect");
+	} catch (error) {
+		throw new Error(describeInvokeError(error, "Couldn't disconnect Linear."));
+	}
+}
+
+export async function linearListInboxItems(args: {
+	cursor?: string | null;
+	limit?: number;
+}): Promise<LinearInboxPage> {
+	try {
+		return await invoke<LinearInboxPage>("linear_list_inbox_items", {
+			cursor: args.cursor ?? null,
+			limit: args.limit ?? 30,
+		});
+	} catch (error) {
+		throw new Error(describeInvokeError(error, "Couldn't load Linear issues."));
+	}
+}
+
+export async function linearSearchIssues(args: {
+	query: string;
+	cursor?: string | null;
+	limit?: number;
+}): Promise<LinearInboxPage> {
+	try {
+		return await invoke<LinearInboxPage>("linear_search_issues", {
+			query: args.query,
+			cursor: args.cursor ?? null,
+			limit: args.limit ?? 30,
+		});
+	} catch (error) {
+		throw new Error(
+			describeInvokeError(error, "Couldn't search Linear issues."),
+		);
+	}
+}
+
+/** Full issue detail for the preview panel + "Start workspace" prompt.
+ *  Superset of `LinearInboxItem` adding the markdown `description`. */
+export type LinearIssueDetail = {
+	id: string;
+	identifier: string;
+	title: string;
+	description?: string | null;
+	url: string;
+	stateName: string;
+	stateType: string;
+	priority: number;
+	priorityLabel: string;
+	teamName: string;
+	teamKey: string;
+	project?: LinearProjectRef | null;
+	labels: LinearLabelRef[];
+	assigneeName?: string | null;
+	lastActivityAt: number;
+};
+
+/** Fetch one Linear issue by id (the card's `id`), including its body. */
+export async function linearGetIssue(
+	issueId: string,
+): Promise<LinearIssueDetail> {
+	try {
+		return await invoke<LinearIssueDetail>("linear_get_issue", { issueId });
+	} catch (error) {
+		throw new Error(describeInvokeError(error, "Couldn't load Linear issue."));
+	}
+}
+
 export type UiMutationEvent =
 	| { type: "workspaceListChanged" }
 	| { type: "workspaceChanged"; workspaceId: string }
@@ -2408,6 +2551,7 @@ export type UiMutationEvent =
 	| { type: "activeStreamsChanged" }
 	| { type: "slackWorkspacesChanged" }
 	| { type: "slackTokenInvalidated"; teamId: string }
+	| { type: "linearConnectionChanged" }
 	| { type: "triageConfigChanged" }
 	| { type: "triageActiveStatusChanged" }
 	| { type: "triageWorkspaceCreated"; workspaceId: string }

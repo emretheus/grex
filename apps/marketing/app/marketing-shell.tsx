@@ -213,12 +213,12 @@ export function MarketingShell({ data }: { data: RepoData }) {
 			{/* ============== TOP RAIL ============== */}
 			<div className="rail">
 				<a className="brand" href="/">
-					{/* Single colored brand mark — works on both themes (brand blue +
-					 * teal on a transparent background), so no light/dark swap. */}
+					{/* Official Grex hexagon mark — gradient logo on a transparent
+					 * background, so it reads on both themes with no light/dark swap. */}
 					{/* eslint-disable-next-line @next/next/no-img-element */}
 					<img
 						className="brand-mark"
-						src="/grex-logo.svg"
+						src="/grex-logo.png"
 						alt=""
 						aria-hidden="true"
 					/>

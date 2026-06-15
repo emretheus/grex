@@ -8,10 +8,7 @@ pub async fn fork_grex_upstream() -> CmdResult<github_rest::ForkResult> {
 }
 
 #[tauri::command]
-pub async fn create_grex_issue(
-    title: String,
-    body: String,
-) -> CmdResult<github_rest::IssueResult> {
+pub async fn create_grex_issue(title: String, body: String) -> CmdResult<github_rest::IssueResult> {
     run_blocking(move || github_rest::create_grex_issue(&title, &body)).await
 }
 

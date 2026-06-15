@@ -41,6 +41,7 @@ import {
 	InboxSearchField,
 } from "./actions";
 import { InboxSourceLayout } from "./layout";
+import { LinearInboxSection } from "./linear-inbox-section";
 import { SlackInboxSection } from "./slack-inbox-section";
 import { SourceCard } from "./source-card";
 import { SourceIcon } from "./source-icon";
@@ -118,17 +119,11 @@ function forgeUrlToInboxKind(query: string): InboxKind | null {
 	return null;
 }
 
-const COMING_SOON_COPY: Record<ExternalFilterId, string[]> = {
-	linear: [
-		"Pull in issues, specs, labels, and priorities.",
-		"Start workspaces directly from planned tasks.",
-		"Keep implementation context tied to product intent.",
-	],
-	slack: [
-		"Capture threads, decisions, and follow-up requests.",
-		"Convert discussions into actionable workspace prompts.",
-		"Preserve source context without copying long chat history.",
-	],
+/** Copy for the remaining "Coming Soon" external providers. Linear and
+ *  Slack graduated to real sections (`LinearInboxSection` /
+ *  `SlackInboxSection`) and are routed before this branch, so only Mobile
+ *  remains here. Partial so the map only carries providers still pending. */
+const COMING_SOON_COPY: Partial<Record<ExternalFilterId, string[]>> = {
 	mobile: [
 		"Send tasks, links, and screenshots from your phone.",
 		"Keep lightweight review and triage flows in sync.",
@@ -616,6 +611,13 @@ export const InboxSidebar = memo(function InboxSidebar({
 					appendContextTarget={appendContextTarget}
 					horizontalPaddingClass={horizontalPaddingClass}
 				/>
+			) : selectedSource === "linear" ? (
+				<LinearInboxSection
+					onOpenCard={onOpenCard}
+					selectedCardId={selectedCardId}
+					appendContextTarget={appendContextTarget}
+					horizontalPaddingClass={horizontalPaddingClass}
+				/>
 			) : (
 				<InboxSourceLayout
 					ref={scrollContainerRef}
@@ -638,11 +640,11 @@ export const InboxSidebar = memo(function InboxSidebar({
 									<div className="h-px flex-1 bg-border" />
 								</div>
 								<ul className="list-disc space-y-3 pl-4 text-left text-pretty text-mini leading-4 marker:text-muted-foreground/35">
-									{COMING_SOON_COPY[selectedSource as ExternalFilterId].map(
-										(line) => (
-											<li key={line}>{line}</li>
-										),
-									)}
+									{(
+										COMING_SOON_COPY[selectedSource as ExternalFilterId] ?? []
+									).map((line) => (
+										<li key={line}>{line}</li>
+									))}
 								</ul>
 							</div>
 						</div>

@@ -892,9 +892,7 @@ pub fn load_repo_scripts(repo_id: &str, workspace_id: Option<&str>) -> Result<Re
         load_repository_by_id(repo_id)
             .ok()
             .flatten()
-            .and_then(|repo| {
-                load_grex_json_scripts(&PathBuf::from(repo.root_path.trim()), repo_id)
-            })
+            .and_then(|repo| load_grex_json_scripts(&PathBuf::from(repo.root_path.trim()), repo_id))
     });
 
     // Priority 3: DB values — setup/archive from `repos`; run actions

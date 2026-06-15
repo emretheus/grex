@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
 	CircleDot,
 	GitPullRequest,
@@ -21,13 +21,16 @@ import {
 	SlackBrandIcon,
 } from "@/components/brand-icon";
 import { Button } from "@/components/ui/button";
+import { LinearConnectState } from "@/features/inbox/linear-connect-button";
 import { SlackConnectState } from "@/features/inbox/slack-connect-button";
+import { useLinearConnection } from "@/features/inbox/use-linear-connection";
 import { useSlackWorkspaces } from "@/features/inbox/use-slack-workspaces";
-import type {
-	ForgeProvider,
-	InboxKind,
-	InboxKindLabels,
-	RepositoryCreateOption,
+import {
+	type ForgeProvider,
+	type InboxKind,
+	type InboxKindLabels,
+	linearDisconnect,
+	type RepositoryCreateOption,
 } from "@/lib/api";
 import { forgeLabelsFor } from "@/lib/forge-labels";
 import {
@@ -36,6 +39,7 @@ import {
 } from "@/lib/forge-repo-filter";
 import {
 	forgeLabelsQueryOptions,
+	grexQueryKeys,
 	inboxKindLabelsQueryOptions,
 } from "@/lib/query-client";
 import {
@@ -50,6 +54,7 @@ import {
 	type InboxSourceConfig,
 	useSettings,
 } from "@/lib/settings";
+import { useWorkspaceToast } from "@/lib/workspace-toast-context";
 
 /** Defensive default — `appSettings` may have been loaded from a session
  * persisted before this field existed (HMR or pre-migration users). */
@@ -106,20 +111,16 @@ const PROVIDER_TABS: {
 ];
 
 /** Tabs that still don't have any settings UI of their own and fall back
- *  to the generic "Coming Soon" placeholder. Slack used to live here but
- *  graduated: it now reuses `<SlackConnectState>` (unconnected) or shows
- *  a connected acknowledgement, both rendered by `<SlackSettingsPanel>`. */
+ *  to the generic "Coming Soon" placeholder. Slack and Linear graduated:
+ *  Slack reuses `<SlackConnectState>` via `<SlackSettingsPanel>`, and
+ *  Linear takes a personal API key through `<LinearSettingsPanel>`. Only
+ *  Mobile remains here. */
 type ComingSoonProvider = Exclude<
 	ContextProviderTab,
-	"github" | "gitlab" | "slack"
+	"github" | "gitlab" | "slack" | "linear"
 >;
 
 const COMING_SOON_COPY: Record<ComingSoonProvider, string[]> = {
-	linear: [
-		"Pull in issues, specs, labels, and priorities.",
-		"Start workspaces directly from planned tasks.",
-		"Keep implementation context tied to product intent.",
-	],
 	mobile: [
 		"Send tasks, links, and screenshots from your phone.",
 		"Keep lightweight review and triage flows in sync.",
@@ -407,6 +408,8 @@ export function InboxSettingsPanel({
 			{!activeForgeProvider ? (
 				activeProvider === "slack" ? (
 					<SlackSettingsPanel />
+				) : activeProvider === "linear" ? (
+					<LinearSettingsPanel />
 				) : (
 					<ProviderComingSoon provider={activeProvider as ComingSoonProvider} />
 				)
@@ -669,6 +672,74 @@ function SlackSettingsPanel() {
 					? "Slack is connected. Open the Context sidebar to browse your feed."
 					: `${connectedCount} Slack workspaces connected. Open the Context sidebar to browse your feed.`}
 			</p>
+		</div>
+	);
+}
+
+/** Linear tab content inside Settings → Context.
+ *
+ *  Mirrors the inbox connect flow when disconnected (`<LinearConnectState>`)
+ *  and acknowledges the connection — with an explicit Disconnect that wipes
+ *  the stored API key — when one is saved. */
+function LinearSettingsPanel() {
+	const connectionQuery = useLinearConnection();
+	const connected = connectionQuery.data?.connected ?? false;
+	if (!connected) {
+		return <LinearConnectState className="min-h-[360px]" />;
+	}
+	return <LinearConnectedPanel connection={connectionQuery.data ?? null} />;
+}
+
+function LinearConnectedPanel({
+	connection,
+}: {
+	connection: {
+		workspaceName?: string | null;
+		userName?: string | null;
+	} | null;
+}) {
+	const pushToast = useWorkspaceToast();
+	const queryClient = useQueryClient();
+	const disconnectMutation = useMutation({
+		mutationFn: linearDisconnect,
+		onSuccess: () => {
+			// The `linearConnectionChanged` UI event also invalidates these,
+			// but a defensive nudge keeps the success path self-contained.
+			void queryClient.invalidateQueries({
+				queryKey: grexQueryKeys.linearConnection,
+			});
+			void queryClient.invalidateQueries({
+				predicate: (query) =>
+					query.queryKey[0] === "linearInbox" ||
+					query.queryKey[0] === "linearSearch",
+			});
+		},
+		onError: (error) => {
+			const message =
+				error instanceof Error ? error.message : "Couldn't disconnect Linear.";
+			pushToast(message, "Linear disconnect failed", "destructive");
+		},
+	});
+
+	const workspace = connection?.workspaceName?.trim();
+	const user = connection?.userName?.trim();
+	return (
+		<div className="flex min-h-[360px] w-full flex-col items-center justify-center gap-3 px-6 text-center">
+			<p className="text-small text-muted-foreground/65">
+				{workspace
+					? `Connected to ${workspace}${user ? ` as ${user}` : ""}. Open the Context sidebar to browse your assigned issues.`
+					: "Linear is connected. Open the Context sidebar to browse your assigned issues."}
+			</p>
+			<Button
+				type="button"
+				variant="outline"
+				size="sm"
+				className="cursor-interactive text-small"
+				onClick={() => disconnectMutation.mutate()}
+				disabled={disconnectMutation.isPending}
+			>
+				{disconnectMutation.isPending ? "Disconnecting…" : "Disconnect Linear"}
+			</Button>
 		</div>
 	);
 }

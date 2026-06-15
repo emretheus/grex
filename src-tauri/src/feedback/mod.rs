@@ -95,10 +95,8 @@ pub fn find_existing_grex_repo() -> Result<Option<ExistingGrexRepo>> {
         let remote_match = remote_url.as_deref().is_some_and(matches_grex_remote);
         // Short-circuit the package.json read — every repo would otherwise
         // pay a disk I/O even after the remote already matched.
-        let pkg_match = !remote_match
-            && root_path
-                .as_deref()
-                .is_some_and(matches_grex_package_json);
+        let pkg_match =
+            !remote_match && root_path.as_deref().is_some_and(matches_grex_package_json);
         if remote_match || pkg_match {
             return Ok(Some(ExistingGrexRepo {
                 repo_id: id,
@@ -115,9 +113,7 @@ mod tests {
 
     #[test]
     fn matches_upstream_https() {
-        assert!(matches_grex_remote(
-            "https://github.com/emretheus/grex.git"
-        ));
+        assert!(matches_grex_remote("https://github.com/emretheus/grex.git"));
         assert!(matches_grex_remote("https://github.com/emretheus/grex"));
     }
 
@@ -128,9 +124,7 @@ mod tests {
 
     #[test]
     fn matches_user_fork() {
-        assert!(matches_grex_remote(
-            "https://github.com/some-user/grex.git"
-        ));
+        assert!(matches_grex_remote("https://github.com/some-user/grex.git"));
     }
 
     #[test]
