@@ -219,9 +219,10 @@ html.light .hero-glow {
 	position: relative;
 	z-index: 1;
 	display: grid;
-	grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+	/* Shift the column ratio to give the product mock more breathing room (~56% width). */
+	grid-template-columns: 1.1fr 1.4fr;
 	align-items: center;
-	gap: clamp(32px, 5vw, 72px);
+	gap: clamp(32px, 5vw, 64px);
 }
 
 .pitch {
@@ -503,7 +504,9 @@ h1.hero-title .line2 {
 	box-shadow:
 		0 50px 100px -40px oklch(0 0 0 / 55%),
 		0 14px 40px -14px oklch(0 0 0 / 30%);
-	transform-style: preserve-3d;
+	/* Removed preserve-3d to fix co-planar z-fighting between dark/light layers
+	 * on some GPUs. 3D tilt still works as children are flattened but still
+	 * rotated. Switching to opacity-based crossfading for a cleaner transition. */
 	transition: transform 320ms var(--ease-out);
 	will-change: transform;
 }
@@ -538,14 +541,19 @@ html.light .mock-stage {
 }
 .shot.light-layer {
 	z-index: 2;
-	clip-path: inset(0 0 0 var(--reveal, 0%));
-	transition: clip-path 420ms var(--ease-out);
+	opacity: var(--reveal, 0);
+	transition: opacity 420ms var(--ease-out);
 }
+/* --reveal is driven by the <html> theme class rather than a React inline
+ * style. Because the pre-hydration bootstrap sets this class BEFORE the first
+ * style resolution, the first computed --reveal value is already correct and
+ * no opacity transition fires on load. The transition still fires on
+ * subsequent toggle clicks because then the class *does* change. */
 html.dark .mock-stage {
-	--reveal: 100%;
+	--reveal: 0;
 }
 html.light .mock-stage {
-	--reveal: 0%;
+	--reveal: 1;
 }
 
 /* ---------- Providers strip ---------- */

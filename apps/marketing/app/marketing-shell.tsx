@@ -46,7 +46,7 @@ export function MarketingShell({ data }: { data: RepoData }) {
 	// Apply theme changes. First run is skipped: the pre-hydration bootstrap in
 	// layout.tsx already set <html class>, and the mount-init above reconciles
 	// React state. Without this guard the initial "dark" SSR state would briefly
-	// revert the bootstrap's class — a visible flash + spurious clip transition.
+	// revert the bootstrap's class — a visible flash + spurious opacity transition.
 	const hasMountedRef = useRef(false);
 	useEffect(() => {
 		if (!hasMountedRef.current) {
