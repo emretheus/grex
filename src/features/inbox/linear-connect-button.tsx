@@ -116,9 +116,8 @@ export function useLinearConnectMutation(opts?: {
 		mutationKey: LINEAR_CONNECT_MUTATION_KEY,
 		mutationFn: (apiKey: string) => linearConnect(apiKey),
 		onSuccess: (connection) => {
-			queryClient.setQueryData(grexQueryKeys.linearConnection, connection);
 			void queryClient.invalidateQueries({
-				queryKey: grexQueryKeys.linearConnection,
+				queryKey: grexQueryKeys.linearConnections,
 			});
 			void queryClient.invalidateQueries({
 				predicate: (query) =>

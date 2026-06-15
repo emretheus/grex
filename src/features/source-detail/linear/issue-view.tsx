@@ -28,16 +28,19 @@ export function LinearIssueView({
 	appendContextTarget,
 	onStartWorkspace,
 }: SourceDetailProps) {
-	// The card id IS the Linear issue UUID (set in `linearItemToContextCard`).
+	const meta = card.meta.type === "linear" ? card.meta : null;
+	const connectionId = meta?.connectionId ?? "";
+	// The card id IS the Linear issue UUID (set in `linearItemToContextCard`);
+	// `connectionId` selects which workspace's key fetches it.
 	const detailQuery = useQuery({
-		queryKey: grexQueryKeys.linearIssueDetail(card.id),
-		queryFn: () => linearGetIssue(card.id),
+		queryKey: grexQueryKeys.linearIssueDetail(connectionId, card.id),
+		queryFn: () => linearGetIssue({ connectionId, issueId: card.id }),
+		enabled: connectionId.length > 0,
 		staleTime: 60_000,
 		refetchOnMount: "always",
 		refetchOnWindowFocus: "always",
 	});
 	const detail = detailQuery.data ?? null;
-	const meta = card.meta.type === "linear" ? card.meta : null;
 	const markdownBody =
 		detail?.description?.trim() || "No description provided.";
 

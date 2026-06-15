@@ -13,6 +13,7 @@ const card: ContextCard = {
 	lastActivityAt: 0,
 	meta: {
 		type: "linear",
+		connectionId: "org-1",
 		identifier: "ENG-42",
 		priorityLabel: "Urgent",
 		team: { name: "Engineering", key: "ENG" },

@@ -39,22 +39,28 @@ export function useLinearInboxItems(
 	const isSearching = trimmed.length > 0;
 	const enabled = connected;
 
-	const infiniteQuery = useInfiniteQuery<LinearInboxPage, Error>({
+	const infiniteQuery = useInfiniteQuery<
+		LinearInboxPage,
+		Error,
+		{ pages: LinearInboxPage[] },
+		readonly unknown[],
+		Record<string, string> | null
+	>({
 		queryKey: isSearching
 			? grexQueryKeys.linearSearch(trimmed)
 			: grexQueryKeys.linearInbox,
 		enabled,
-		initialPageParam: null as string | null,
+		initialPageParam: null,
 		queryFn: async ({ pageParam }) => {
-			const cursor = typeof pageParam === "string" ? pageParam : null;
+			const cursors = pageParam ?? null;
 			return isSearching
-				? linearSearchIssues({ query: trimmed, cursor, limit: PAGE_SIZE })
-				: linearListInboxItems({ cursor, limit: PAGE_SIZE });
+				? linearSearchIssues({ query: trimmed, cursors, limit: PAGE_SIZE })
+				: linearListInboxItems({ cursors, limit: PAGE_SIZE });
 		},
+		// A non-empty cursor map means at least one connection has more pages;
+		// pass it back verbatim so only those connections are re-fetched.
 		getNextPageParam: (lastPage) =>
-			lastPage.items.length > 0
-				? (lastPage.nextCursor ?? undefined)
-				: undefined,
+			Object.keys(lastPage.cursors).length > 0 ? lastPage.cursors : undefined,
 		staleTime: STALE_MS,
 	});
 

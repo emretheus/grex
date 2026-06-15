@@ -275,10 +275,10 @@ function handleUiMutation(
 			return;
 		case "linearConnectionChanged":
 			void queryClient.invalidateQueries({
-				queryKey: grexQueryKeys.linearConnection,
+				queryKey: grexQueryKeys.linearConnections,
 			});
-			// Connect/disconnect flips whether the feed has data — kill every
-			// `linearInbox` / `linearSearch` query in one sweep.
+			// Connect/disconnect/scope changes flip what the feed shows — kill
+			// every `linearInbox` / `linearSearch` query in one sweep.
 			void queryClient.invalidateQueries({
 				predicate: (query) =>
 					query.queryKey[0] === "linearInbox" ||

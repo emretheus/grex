@@ -14,8 +14,15 @@
 //! agent-side MCP.
 
 pub mod api;
+pub mod connection;
 pub mod credentials;
 pub mod types;
 
-/// `settings` KV key holding the JSON-encoded [`types::LinearConnectionMeta`].
+/// `settings` KV key holding the JSON-encoded array of
+/// [`types::LinearConnectionRecord`] — one per connected workspace.
+pub const CONNECTIONS_KEY: &str = "linear.connections";
+
+/// Legacy `settings` KV key holding a single JSON-encoded
+/// [`types::LinearConnectionMeta`] from pre-multi-workspace builds. Read
+/// only by [`connection`]'s lazy migration; never written anymore.
 pub const CONNECTION_META_KEY: &str = "linear.connection";

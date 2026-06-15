@@ -8,17 +8,22 @@
 //! Same keychain rationale as `slack::credentials`: we shell out to
 //! `/usr/bin/security` instead of the `keyring` crate, which silently
 //! no-ops from a tokio worker thread (the macOS Security framework wants a
-//! CFRunLoop the blocking pool doesn't provide). There's a single entry,
-//! keyed by the fixed [`ACCOUNT`] account name.
+//! CFRunLoop the blocking pool doesn't provide). Each connected workspace
+//! gets its own entry, keyed by the connection id (`account` argument) so
+//! more than one Linear org can be connected at a time. The legacy
+//! single-connection deployments used the fixed [`LEGACY_ACCOUNT`] name; that
+//! id is preserved on migration so the stored key stays reachable.
 
 use anyhow::{bail, Context, Result};
 use std::process::{Command, Stdio};
 
 const KEYCHAIN_SERVICE: &str = "io.grex.linear";
-/// Fixed account name — there is only ever one Linear API key.
-const ACCOUNT: &str = "api-key";
+/// Account name used before multi-workspace support, when there was only
+/// ever one Linear API key. Migration reuses this as the connection id so
+/// the existing keychain entry keeps resolving.
+pub const LEGACY_ACCOUNT: &str = "api-key";
 
-pub fn store_api_key(api_key: &str) -> Result<()> {
+pub fn store_api_key(account: &str, api_key: &str) -> Result<()> {
     let status = Command::new("/usr/bin/security")
         .args([
             "add-generic-password",
@@ -26,7 +31,7 @@ pub fn store_api_key(api_key: &str) -> Result<()> {
             "-s",
             KEYCHAIN_SERVICE,
             "-a",
-            ACCOUNT,
+            account,
             "-w",
             api_key,
         ])
@@ -45,7 +50,7 @@ pub fn store_api_key(api_key: &str) -> Result<()> {
     Ok(())
 }
 
-pub fn load_api_key() -> Result<Option<String>> {
+pub fn load_api_key(account: &str) -> Result<Option<String>> {
     let output = Command::new("/usr/bin/security")
         .args([
             "find-generic-password",
@@ -53,7 +58,7 @@ pub fn load_api_key() -> Result<Option<String>> {
             "-s",
             KEYCHAIN_SERVICE,
             "-a",
-            ACCOUNT,
+            account,
         ])
         .output()
         .context("Failed to spawn /usr/bin/security for the Linear API key")?;
@@ -79,14 +84,14 @@ pub fn load_api_key() -> Result<Option<String>> {
     Ok(Some(key))
 }
 
-pub fn clear_api_key() -> Result<()> {
+pub fn clear_api_key(account: &str) -> Result<()> {
     let output = Command::new("/usr/bin/security")
         .args([
             "delete-generic-password",
             "-s",
             KEYCHAIN_SERVICE,
             "-a",
-            ACCOUNT,
+            account,
         ])
         .output()
         .context("Failed to spawn /usr/bin/security for the Linear API key")?;

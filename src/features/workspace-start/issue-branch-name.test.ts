@@ -13,6 +13,7 @@ function linearCard(overrides?: Partial<ContextCard>): ContextCard {
 		lastActivityAt: 0,
 		meta: {
 			type: "linear",
+			connectionId: "org-1",
 			identifier: "ENG-123",
 			priorityLabel: "Urgent",
 			team: { name: "Engineering", key: "ENG" },
