@@ -213,6 +213,8 @@ export function useConversationStreaming({
 			setPendingUserInput: state.setPendingUserInput,
 			clearPendingUserInput: state.clearPendingUserInput,
 			setUserInputResponsePending: state.setUserInputResponsePending,
+			markUserInputResolved: state.markUserInputResolved,
+			clearUserInputResolved: state.clearUserInputResolved,
 			appendPendingPermission: state.appendPendingPermission,
 			removePendingPermission: state.removePendingPermission,
 			clearPendingPermissions: state.clearPendingPermissions,
@@ -575,6 +577,12 @@ export function useConversationStreaming({
 			const contextKey = composerContextKey;
 
 			storeActions.setPendingUserInput(contextKey, null);
+			// Tombstone the id BEFORE the await so the DB-truth rehydration
+			// path can't race in and re-surface this question during the
+			// window where the panel is gone but the persisted `status` is
+			// still `pending` (the SDK hasn't run the tool + persisted its
+			// result yet). Cleared again on the failure path below.
+			storeActions.markUserInputResolved(userInput.userInputId);
 			clearPendingPermissions(contextKey);
 			storeActions.setSendError(contextKey, null);
 			storeActions.setUserInputResponsePending(contextKey, true);
@@ -602,6 +610,9 @@ export function useConversationStreaming({
 						queryClient,
 					});
 				}
+				// Delivery failed — make the question answerable again (both
+				// the direct re-show and any future rehydration).
+				storeActions.clearUserInputResolved(userInput.userInputId);
 				storeActions.setPendingUserInput(contextKey, userInput);
 				storeActions.setUserInputResponsePending(contextKey, false);
 				storeActions.setSendError(contextKey, errorMsg);

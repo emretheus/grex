@@ -87,6 +87,25 @@ describe("useStreamingStore", () => {
 		expect(s.userInputResponsePendingByContext[KEY]).toBeUndefined();
 	});
 
+	it("tracks resolved userInputIds idempotently and clears them", () => {
+		const store = useStreamingStore.getState();
+		const before = useStreamingStore.getState().resolvedUserInputIds;
+
+		store.markUserInputResolved("tu-1");
+		const afterMark = useStreamingStore.getState().resolvedUserInputIds;
+		expect(afterMark.has("tu-1")).toBe(true);
+		expect(afterMark).not.toBe(before);
+
+		// idempotent — no new reference when already present
+		store.markUserInputResolved("tu-1");
+		expect(useStreamingStore.getState().resolvedUserInputIds).toBe(afterMark);
+
+		store.clearUserInputResolved("tu-1");
+		expect(useStreamingStore.getState().resolvedUserInputIds.has("tu-1")).toBe(
+			false,
+		);
+	});
+
 	it("appendPendingPermission accumulates", () => {
 		const store = useStreamingStore.getState();
 		store.appendPendingPermission(KEY, {

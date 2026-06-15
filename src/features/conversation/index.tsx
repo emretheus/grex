@@ -45,6 +45,7 @@ import {
 	buildSessionContextCandidates,
 	type SessionContextCandidate,
 } from "../panel/session-context";
+import { useRehydratePendingUserInput } from "./hooks/use-rehydrate-pending-user-input";
 import {
 	type ComposerSubmitPayload,
 	useConversationStreaming,
@@ -435,6 +436,21 @@ export const WorkspaceConversationContainer = memo(
 			() => hasUnresolvedPlanReview(threadQuery.data ?? []),
 			[threadQuery.data],
 		);
+
+		// Recover a stuck "Awaiting answer" question after a reload / re-attach:
+		// the live `pendingUserInput` slice is gone but the persisted thread
+		// still ends in a pending question. Rebuild the interactive panel from
+		// DB truth so the parked turn becomes answerable again.
+		useRehydratePendingUserInput({
+			contextKey: composerContextKey,
+			sessionId: displayedSessionId,
+			threadMessages: threadQuery.data,
+			provider: displayedSessionId
+				? (displayProviderBySessionId[displayedSessionId] ?? null)
+				: null,
+			modelId: displayedSelectedModelId,
+			workingDirectory: workspaceRootPath ?? null,
+		});
 
 		// True while the freshly-created workspace's first send is queued
 		// (we've shown the optimistic user bubble, but
