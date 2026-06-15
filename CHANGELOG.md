@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.5.1
+
+### Patch Changes
+
+- [#35](https://github.com/emretheus/grex/pull/35) [`469689a`](https://github.com/emretheus/grex/commit/469689a558d365b34377300aae13139ff8a8a64b) Thanks [@emretheus](https://github.com/emretheus)! - Linear context source now supports per-workspace feed scope and multiple connected workspaces.
+
+  - Each connected Linear workspace can show **Assigned to me** (default) or **All issues**, with optional team and project filters when showing all, configurable in Settings → Contexts → Linear.
+  - Connect more than one Linear workspace (org); the inbox feed merges issues across every connection and labels them by workspace when more than one is connected.
+
 ## 0.5.0
 
 ### Minor Changes
