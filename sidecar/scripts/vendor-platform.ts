@@ -283,6 +283,60 @@ export function glabArchivePlan(target: TargetInfo): ArchivePlan {
 	};
 }
 
+// Kimi Code CLI ships per-platform native binaries (Node SEA) as zip release
+// assets on GitHub — NOT npm sub-packages — so it's staged like gh/glab from a
+// release URL rather than from node_modules. Bumping: pull each platform's
+// SHA256 from the release's `*.zip.sha256` sidecar (or the GitHub asset
+// `digest`) and wipe sidecar/.bundle-cache. Keyed `version → platformSlug`.
+export const KIMI_VERSION = "0.14.3";
+export const KIMI_SHA256: Readonly<Record<string, Record<string, string>>> = {
+	"0.14.3": {
+		"darwin-arm64":
+			"58a947f2cc8d93f7f70c4bc8411a3a1d013c18a6fb6de2365d5a8113c4380514",
+		"darwin-x64":
+			"b17636e7e554146ae563011e91931f4f99766a74e9549a2bb2973e5ee1c96b6d",
+		"win32-arm64":
+			"0d9fe672b82f36878a1948b5decebb28d62ef7edf622f79cac50ec9ac3434cd3",
+		"win32-x64":
+			"d54aa0007039a03a3efb47abe6421401faf6818cf0593d81cec3fc4a3d554189",
+	},
+};
+
+/** Platform slug in Kimi's release asset names: `darwin-arm64`, `win32-x64`, … */
+export function kimiPlatformSlug(target: TargetInfo): string {
+	const os = target.os === "windows" ? "win32" : "darwin";
+	return `${os}-${target.arch}`;
+}
+
+export function kimiArchivePlan(
+	target: TargetInfo,
+	version: string,
+): ArchivePlan {
+	const shaTable = KIMI_SHA256[version];
+	if (!shaTable) {
+		throw new Error(
+			`[stage-vendor] no pinned SHA256 for kimi ${version} — add it to KIMI_SHA256 in vendor-platform.ts`,
+		);
+	}
+	const platform = kimiPlatformSlug(target);
+	const sha256 = shaTable[platform];
+	if (!sha256) {
+		throw new Error(
+			`[stage-vendor] no pinned SHA256 for kimi ${version} ${platform}`,
+		);
+	}
+	// GitHub release tag is the scoped npm tag `@moonshot-ai/kimi-code@<ver>`,
+	// url-encoded in the download path (`@`→`%40`).
+	const tag = `%40moonshot-ai/kimi-code%40${version}`;
+	const slug = `kimi-code-${platform}-${version}`;
+	return {
+		slug,
+		archiveName: `${slug}.zip`,
+		url: `https://github.com/MoonshotAI/kimi-code/releases/download/${tag}/kimi-code-${platform}.zip`,
+		sha256,
+	};
+}
+
 export function cloudflaredArchivePlan(target: TargetInfo): ArchivePlan {
 	const arch = target.cloudflaredArch;
 	// Windows: upstream publishes a bare `cloudflared-windows-<arch>.exe` (no

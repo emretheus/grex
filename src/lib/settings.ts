@@ -158,6 +158,20 @@ export type OpencodeProviderSettings = {
 	cacheVersion?: number;
 };
 
+// `(alias, label)` of Kimi models discovered from `~/.kimi-code` config, cached
+// so the composer picker can render Kimi without a live ACP round-trip. The
+// Rust `kimi_section()` reads `app.kimi_provider` for exactly these fields.
+export type KimiCachedModel = {
+	id: string;
+	label: string;
+};
+
+export type KimiProviderSettings = {
+	cachedModels: KimiCachedModel[] | null;
+	// `null` = first-sync default (show all cached); `[]` = user cleared.
+	enabledModelIds: string[] | null;
+};
+
 export type AgentProxySettings = {
 	mode: "none" | "system" | "custom";
 	customUrl: string;
@@ -323,6 +337,7 @@ export type AppSettings = {
 	claudeCustomProviders: ClaudeCustomProviderSettings;
 	cursorProvider: CursorProviderSettings;
 	opencodeProvider: OpencodeProviderSettings;
+	kimiProvider: KimiProviderSettings;
 	/** Which official Claude models appear in the composer picker. `null` =
 	 *  all; `[]` = none (hides the Claude section). Filters by model id. */
 	claudeEnabledModelIds: string[] | null;
@@ -438,6 +453,10 @@ export const DEFAULT_SETTINGS: AppSettings = {
 	opencodeProvider: {
 		status: "unavailable",
 		connected: [],
+		cachedModels: null,
+		enabledModelIds: null,
+	},
+	kimiProvider: {
 		cachedModels: null,
 		enabledModelIds: null,
 	},
@@ -608,6 +627,7 @@ const SETTINGS_KEY_MAP: Record<
 	claudeCustomProviders: "app.claude_custom_providers",
 	cursorProvider: "app.cursor_provider",
 	opencodeProvider: "app.opencode_provider",
+	kimiProvider: "app.kimi_provider",
 	claudeEnabledModelIds: "app.claude_enabled_model_ids",
 	codexEnabledModelIds: "app.codex_enabled_model_ids",
 	agentProxy: "app.agent_proxy",
@@ -1005,6 +1025,35 @@ function parseStringArray(value: unknown): string[] {
 	return value.filter((item): item is string => typeof item === "string");
 }
 
+function parseKimiProviderSettings(
+	raw: string | undefined,
+): KimiProviderSettings {
+	if (!raw) return DEFAULT_SETTINGS.kimiProvider;
+	try {
+		const parsed = JSON.parse(raw) as Record<string, unknown>;
+		const cachedModels = Array.isArray(parsed.cachedModels)
+			? parsed.cachedModels.flatMap((entry): KimiCachedModel[] => {
+					if (!entry || typeof entry !== "object" || Array.isArray(entry))
+						return [];
+					const obj = entry as Record<string, unknown>;
+					if (typeof obj.id !== "string") return [];
+					return [
+						{
+							id: obj.id,
+							label: typeof obj.label === "string" ? obj.label : obj.id,
+						},
+					];
+				})
+			: null;
+		return {
+			cachedModels,
+			enabledModelIds: parseEnabledModelIds(parsed.enabledModelIds),
+		};
+	} catch {
+		return DEFAULT_SETTINGS.kimiProvider;
+	}
+}
+
 function parseOpencodeCachedModels(
 	value: unknown,
 ): OpencodeCachedModel[] | null {
@@ -1347,6 +1396,9 @@ export async function loadSettings(): Promise<AppSettings> {
 			),
 			opencodeProvider: parseOpencodeProviderSettings(
 				raw[SETTINGS_KEY_MAP.opencodeProvider],
+			),
+			kimiProvider: parseKimiProviderSettings(
+				raw[SETTINGS_KEY_MAP.kimiProvider],
 			),
 			claudeEnabledModelIds: parseEnabledModelIdsSetting(
 				raw[SETTINGS_KEY_MAP.claudeEnabledModelIds],

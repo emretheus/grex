@@ -36,6 +36,7 @@ export function ModelIcon({
 		return <OpenAIColorIcon className={className} />;
 	if (model?.provider === "gemini")
 		return <GeminiColorIcon className={className} />;
+	if (model?.provider === "kimi") return <KimiIcon className={className} />;
 	if (model?.provider === "opencode") {
 		const providerId = model.cliModel.split("/")[0] ?? "";
 		if (providerId === "anthropic")

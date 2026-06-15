@@ -73,6 +73,7 @@ export const grexQueryKeys = {
 	agentModelSections: ["agentModelSections"] as const,
 	allAgentModelSections: ["allAgentModelSections"] as const,
 	opencodeCustomProviders: ["opencodeCustomProviders"] as const,
+	kimiCustomProviders: ["kimiCustomProviders"] as const,
 	codexCustomProviders: ["codexCustomProviders"] as const,
 	agentLoginStatus: ["agentLoginStatus"] as const,
 	agentVersions: ["agentVersions"] as const,

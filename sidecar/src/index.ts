@@ -18,6 +18,7 @@ import { CursorSessionManager } from "./cursor-session-manager.js";
 import { createSidecarEmitter } from "./emitter.js";
 import { GeminiAcpManager } from "./gemini-acp-manager.js";
 import { resolveHostResponse, setHostWriter } from "./host-bridge.js";
+import { KimiSessionManager } from "./kimi-session-manager.js";
 import { errorDetails, logger } from "./logger.js";
 import { OpencodeSessionManager } from "./opencode-session-manager.js";
 import {
@@ -48,12 +49,14 @@ const codexManager = new CodexAppServerManager();
 const cursorManager = new CursorSessionManager();
 const opencodeManager = new OpencodeSessionManager();
 const geminiManager = new GeminiAcpManager();
+const kimiManager = new KimiSessionManager();
 const managers: Record<Provider, SessionManager> = {
 	claude: claudeManager,
 	codex: codexManager,
 	cursor: cursorManager,
 	opencode: opencodeManager,
 	gemini: geminiManager,
+	kimi: kimiManager,
 };
 
 // `parentGone` flips to true only when stdin EOFs — that's the
@@ -263,7 +266,8 @@ function parseTitleAttempts(raw: unknown): TitleAttempt[] {
 				obj.provider === "codex" ||
 				obj.provider === "cursor" ||
 				obj.provider === "opencode" ||
-				obj.provider === "gemini"
+				obj.provider === "gemini" ||
+				obj.provider === "kimi"
 					? obj.provider
 					: null;
 			if (!provider) continue;
@@ -649,13 +653,16 @@ for await (const line of rl) {
 				const message =
 					typeof params.message === "string" ? params.message : undefined;
 				logger.debug(`[${id}] permissionResponse`, { permissionId, behavior });
-				// Route by id prefix: `codex-`, `opencode-`, else Claude.
+				// Route by id prefix: `codex-`, `opencode-`, `gemini-`,
+				// `kimi-`, else Claude.
 				if (permissionId.startsWith("codex-")) {
 					codexManager.resolvePermission(permissionId, behavior);
 				} else if (permissionId.startsWith("opencode-")) {
 					opencodeManager.resolvePermission(permissionId, behavior);
 				} else if (permissionId.startsWith("gemini-")) {
 					geminiManager.resolvePermission(permissionId, behavior);
+				} else if (permissionId.startsWith("kimi-")) {
+					kimiManager.resolvePermission(permissionId, behavior);
 				} else {
 					claudeManager.resolvePermission(
 						permissionId,
@@ -698,18 +705,20 @@ for await (const line of rl) {
 					claudeManager.resolveUserInput(userInputId, resolution) ||
 					codexManager.resolveUserInput(userInputId, resolution) ||
 					opencodeManager.resolveUserInput(userInputId, resolution) ||
-					geminiManager.resolveUserInput(userInputId, resolution);
+					geminiManager.resolveUserInput(userInputId, resolution) ||
+					kimiManager.resolveUserInput(userInputId, resolution);
 				if (!claimed) {
 					// No live waiter — the parked promise was lost (sidecar
-					// restart, session ended, or duplicate submit). Surface
-					// it instead of silently swallowing so the UI can
-					// inform the user that the answer didn't reach the agent.
+					// restart, session ended, or duplicate submit).
 					logger.error(`[${id}] userInputResponse dropped`, {
 						userInputId,
 						action,
 					});
-					emitter.error(id, `No active waiter for userInputId=${userInputId}`);
 				}
+				// Always acknowledge so the awaiting Rust command knows whether
+				// the answer reached a live waiter; `claimed: false` lets the UI
+				// tell the user it didn't land instead of silently dropping it.
+				emitter.userInputResponseAck(id, userInputId, claimed);
 				break;
 			}
 			case "ping":

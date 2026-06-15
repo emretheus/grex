@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import {
 	ClaudeColorIcon,
 	GeminiColorIcon,
+	KimiIcon,
 	OpenAIIcon,
 	OpenCodeIcon,
 } from "@/components/icons";
@@ -23,6 +24,7 @@ function providerIcon(provider: AgentLoginProvider) {
 	if (provider === "opencode")
 		return <OpenCodeIcon className={`${className} text-foreground`} />;
 	if (provider === "gemini") return <GeminiColorIcon className={className} />;
+	if (provider === "kimi") return <KimiIcon className={className} />;
 	return <OpenAIIcon className={`${className} text-foreground`} />;
 }
 

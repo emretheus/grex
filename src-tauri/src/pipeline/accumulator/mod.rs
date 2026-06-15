@@ -12,6 +12,7 @@
 mod codex;
 mod cursor;
 mod gemini;
+mod kimi;
 mod opencode;
 mod streaming;
 
@@ -164,6 +165,12 @@ pub struct StreamAccumulator {
     opencode_state: opencode::OpencodeRunState,
     /// Index into `collected[]` driving `build_opencode_partial`.
     opencode_partial_idx: Option<usize>,
+
+    // ── kimi (ACP) state ─────────────────────────────────────────────
+    /// Per-turn kimi part accumulation; see `kimi.rs`.
+    kimi_state: kimi::KimiRunState,
+    /// Index into `collected[]` driving `build_kimi_partial`.
+    kimi_partial_idx: Option<usize>,
 
     // ── Gemini state ─────────────────────────────────────────────────
     /// Per-turn Gemini (ACP) part accumulation; see `gemini.rs`.
@@ -359,6 +366,8 @@ impl StreamAccumulator {
             cursor_state: cursor::new_run_state(),
             opencode_state: opencode::new_run_state(),
             opencode_partial_idx: None,
+            kimi_state: kimi::new_run_state(),
+            kimi_partial_idx: None,
             gemini_state: gemini::new_run_state(),
             gemini_partial_idx: None,
             dropped_event_types: Vec::new(),
@@ -579,6 +588,19 @@ impl StreamAccumulator {
             | Some("opencode/message.removed")
             | Some("opencode/message.part.removed") => PushOutcome::NoOp,
 
+            // ── kimi (ACP) events (namespaced by the sidecar manager) ─
+            // session_id already lifted by push_event; nothing to render.
+            Some("kimi/session_init") => PushOutcome::NoOp,
+            Some("kimi/agent_message_chunk") => kimi::handle_message_chunk(self, value),
+            Some("kimi/agent_thought_chunk") => kimi::handle_thought_chunk(self, value),
+            // tool_call + tool_call_update both merge by tool_call_id.
+            Some("kimi/tool_call") | Some("kimi/tool_call_update") => {
+                kimi::handle_tool_call(self, value)
+            }
+            Some("kimi/plan") => kimi::handle_plan(self, value),
+            // The sidecar's `session/prompt` response → finalize the turn.
+            Some("kimi/turn_complete") => kimi::handle_turn_complete(self, value),
+
             // ── Gemini CLI (ACP) events (normalized by the sidecar) ───
             Some("gemini/session_init") => gemini::handle_session_init(self, value),
             Some("gemini/agent_message_chunk") => gemini::handle_message_delta(self, value),
@@ -712,6 +734,20 @@ impl StreamAccumulator {
         })
     }
 
+    /// Streaming partial = clone of the last kimi `collected[]` snapshot.
+    pub fn build_kimi_partial(&mut self) -> Option<IntermediateMessage> {
+        let idx = self.kimi_partial_idx.take()?;
+        let entry = self.collected.get(idx)?;
+        Some(IntermediateMessage {
+            id: entry.id.clone(),
+            role: entry.role,
+            raw_json: entry.raw_json.clone(),
+            parsed: entry.parsed.clone(),
+            created_at: entry.created_at.clone(),
+            is_streaming: true,
+        })
+    }
+
     /// Streaming partial = clone of the last gemini `collected[]` snapshot.
     pub fn build_gemini_partial(&mut self) -> Option<IntermediateMessage> {
         let idx = self.gemini_partial_idx.take()?;
@@ -733,6 +769,7 @@ impl StreamAccumulator {
             || !self.fallback_thinking.trim().is_empty()
             || self.codex_partial_idx.is_some()
             || self.opencode_partial_idx.is_some()
+            || self.kimi_partial_idx.is_some()
             || self.gemini_partial_idx.is_some()
     }
 
@@ -868,6 +905,12 @@ impl StreamAccumulator {
     /// Finalize the in-flight opencode message on abort. Idempotent.
     pub fn flush_opencode_in_progress(&mut self) {
         opencode::flush_in_progress(self);
+    }
+
+    /// Finalize the in-flight kimi message on abort or error termination
+    /// (in-flight tool parts settle to `failed`). Idempotent.
+    pub fn flush_kimi_in_progress(&mut self) {
+        kimi::flush_in_progress(self);
     }
 
     /// Finalize the in-flight Gemini message on abort. Idempotent.

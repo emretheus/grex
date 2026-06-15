@@ -164,7 +164,8 @@ export type AgentProvider =
 	| "codex"
 	| "cursor"
 	| "opencode"
-	| "gemini";
+	| "gemini"
+	| "kimi";
 
 export type LocalLlmStatus = {
 	enabled: boolean;
@@ -957,7 +958,8 @@ export type AgentLoginProvider =
 	| "codex"
 	| "cursor"
 	| "opencode"
-	| "gemini";
+	| "gemini"
+	| "kimi";
 
 export type AgentLoginStatusResult = {
 	claude: boolean;
@@ -965,6 +967,7 @@ export type AgentLoginStatusResult = {
 	cursor: boolean;
 	opencode: boolean;
 	gemini: boolean;
+	kimi: boolean;
 	codexProvider?: string | null;
 	codexAuthMethod?: "login" | "apiKey" | string | null;
 };
@@ -979,6 +982,7 @@ export type AgentVersionsResult = {
 	codex: string | null;
 	opencode: string | null;
 	gemini: string | null;
+	kimi: string | null;
 };
 
 export async function getAgentVersions(): Promise<AgentVersionsResult> {
@@ -1342,6 +1346,81 @@ export async function deleteOpencodeCustomProvider(id: string): Promise<void> {
 	} catch (error) {
 		throw new Error(
 			describeInvokeError(error, "Unable to delete opencode provider."),
+		);
+	}
+}
+
+// ---------------------------------------------------------------------------
+// Kimi Code custom providers (file-backed `~/.kimi-code/config.toml`)
+// ---------------------------------------------------------------------------
+
+export type KimiCustomModel = {
+	slug: string;
+	label: string;
+	effortLevels: string[];
+};
+
+export type KimiCustomProvider = {
+	id: string;
+	name: string;
+	baseUrl: string;
+	apiKey: string;
+	// Wire `type`: openai | openai_responses | anthropic | kimi. Null → openai.
+	apiStyle?: string | null;
+	models: KimiCustomModel[];
+};
+
+export type KimiProviderInfo = {
+	id: string;
+	label: string;
+	modelCount: number;
+};
+
+export type KimiModelInfo = {
+	id: string;
+	label: string;
+	providerId: string;
+};
+
+export type KimiProviderConfig = {
+	providers: KimiProviderInfo[];
+	models: KimiModelInfo[];
+};
+
+export async function getKimiProviderConfig(): Promise<KimiProviderConfig> {
+	try {
+		return await invoke<KimiProviderConfig>("get_kimi_provider_config");
+	} catch (error) {
+		throw new Error(describeInvokeError(error, "Unable to read kimi config."));
+	}
+}
+
+export async function getKimiCustomProviders(): Promise<KimiCustomProvider[]> {
+	try {
+		return await invoke<KimiCustomProvider[]>("get_kimi_custom_providers");
+	} catch (error) {
+		throw new Error(describeInvokeError(error, "Unable to read kimi config."));
+	}
+}
+
+export async function upsertKimiCustomProvider(
+	provider: KimiCustomProvider,
+): Promise<void> {
+	try {
+		await invoke("upsert_kimi_custom_provider", { provider });
+	} catch (error) {
+		throw new Error(
+			describeInvokeError(error, "Unable to save kimi provider."),
+		);
+	}
+}
+
+export async function deleteKimiCustomProvider(id: string): Promise<void> {
+	try {
+		await invoke("delete_kimi_custom_provider", { id });
+	} catch (error) {
+		throw new Error(
+			describeInvokeError(error, "Unable to delete kimi provider."),
 		);
 	}
 }

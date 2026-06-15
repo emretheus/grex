@@ -13,6 +13,7 @@ mod catalog;
 pub(crate) mod claude_project_files;
 pub(crate) mod codex_custom_providers;
 mod custom_providers;
+pub(crate) mod kimi_config;
 pub(crate) mod opencode_config;
 mod persistence;
 pub mod provider_capabilities;
@@ -596,6 +597,11 @@ pub struct UserInputResponseRequest {
     pub meta: Option<Value>,
 }
 
+/// How long to wait for the sidecar to acknowledge a user-input response.
+/// The waiter is resolved synchronously inside the sidecar's RPC handler, so
+/// the ack is near-instant; this only guards against a dead/hung sidecar.
+const USER_INPUT_RESPONSE_ACK_TIMEOUT: Duration = Duration::from_secs(15);
+
 #[tauri::command]
 pub async fn respond_to_user_input(
     sidecar: tauri::State<'_, crate::sidecar::ManagedSidecar>,
@@ -606,8 +612,9 @@ pub async fn respond_to_user_input(
         action = %request.action,
         "User-input response"
     );
+    let request_id = Uuid::new_v4().to_string();
     let req = crate::sidecar::SidecarRequest {
-        id: Uuid::new_v4().to_string(),
+        id: request_id.clone(),
         method: "userInputResponse".to_string(),
         params: serde_json::json!({
             "userInputId": request.user_input_id,
@@ -616,10 +623,63 @@ pub async fn respond_to_user_input(
             "meta": request.meta,
         }),
     };
-    sidecar
-        .send(&req)
-        .map_err(|e| anyhow::anyhow!("Failed to send user-input response: {e}"))?;
-    Ok(())
+
+    // Await the sidecar's delivery ack rather than firing and forgetting: a
+    // parked waiter can be gone (sidecar restart, ended turn, duplicate
+    // submit), and the caller needs to know so it can re-surface the
+    // question instead of leaving the user believing their answer landed.
+    let rx = sidecar.subscribe(&request_id);
+    if let Err(e) = sidecar.send(&req) {
+        sidecar.unsubscribe(&request_id);
+        return Err(anyhow::anyhow!("Failed to send user-input response: {e}").into());
+    }
+
+    let result = loop {
+        match rx.recv_timeout(USER_INPUT_RESPONSE_ACK_TIMEOUT) {
+            Ok(event) => match event.event_type() {
+                "userInputResponseAck" => {
+                    let claimed = event
+                        .raw
+                        .get("claimed")
+                        .and_then(Value::as_bool)
+                        .unwrap_or(false);
+                    if claimed {
+                        break Ok(());
+                    }
+                    break Err(anyhow::anyhow!(
+                        "The agent is no longer waiting for this answer — the turn \
+                         may have ended or the app was restarted. Send your reply \
+                         as a new message."
+                    ));
+                }
+                "error" => {
+                    let message = event
+                        .raw
+                        .get("message")
+                        .and_then(Value::as_str)
+                        .unwrap_or("Unknown error")
+                        .to_string();
+                    break Err(anyhow::anyhow!(
+                        "Failed to deliver user-input response: {message}"
+                    ));
+                }
+                _ => {}
+            },
+            Err(std::sync::mpsc::RecvTimeoutError::Timeout) => {
+                break Err(anyhow::anyhow!(
+                    "Timed out waiting for the agent to receive your answer."
+                ));
+            }
+            Err(std::sync::mpsc::RecvTimeoutError::Disconnected) => {
+                break Err(anyhow::anyhow!(
+                    "The agent process exited before receiving your answer."
+                ));
+            }
+        }
+    };
+
+    sidecar.unsubscribe(&request_id);
+    result.map_err(Into::into)
 }
 
 #[tauri::command]
