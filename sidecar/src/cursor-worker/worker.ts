@@ -44,6 +44,7 @@ const wireEmitter: SidecarEmitter = {
 	stopped: noop,
 	steered: noop,
 	pong: noop,
+	userInputResponseAck: noop,
 	heartbeat: noop,
 	slashCommandsListed: noop,
 	permissionRequest: noop,

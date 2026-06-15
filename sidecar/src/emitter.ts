@@ -49,6 +49,21 @@ export type SteeredEvent = {
 export type PongEvent = { readonly id: string; readonly type: "pong" };
 
 /**
+ * Delivery acknowledgement for a `userInputResponse` RPC. `claimed` is true
+ * when a live waiter (a parked `canUseTool` / elicitation / Codex closure)
+ * actually received the answer, false when none was found — e.g. the sidecar
+ * was restarted, the turn already ended, or the answer was submitted twice.
+ * The Rust command awaits this so the UI can tell the user when their answer
+ * didn't reach the agent instead of silently dropping it.
+ */
+export type UserInputResponseAckEvent = {
+	readonly id: string;
+	readonly type: "userInputResponseAck";
+	readonly userInputId: string;
+	readonly claimed: boolean;
+};
+
+/**
  * Liveness ping — emitted every ~15s while a stream is active. Used by the
  * Rust side to detect a hung/frozen sidecar vs. one that's legitimately
  * waiting on a long-running tool. Carries no payload; only presence matters.
@@ -209,6 +224,7 @@ export type SidecarControlEvent =
 	| StoppedEvent
 	| SteeredEvent
 	| PongEvent
+	| UserInputResponseAckEvent
 	| HeartbeatEvent
 	| TitleGeneratedEvent
 	| SlashCommandsListedEvent
@@ -241,6 +257,11 @@ export interface SidecarEmitter {
 		reason?: string,
 	): void;
 	pong(requestId: string): void;
+	userInputResponseAck(
+		requestId: string,
+		userInputId: string,
+		claimed: boolean,
+	): void;
 	heartbeat(requestId: string): void;
 	titleGenerated(
 		requestId: string,
@@ -357,6 +378,13 @@ export function createSidecarEmitter(
 				...(reason ? { reason } : {}),
 			}),
 		pong: (requestId) => write({ id: requestId, type: "pong" }),
+		userInputResponseAck: (requestId, userInputId, claimed) =>
+			write({
+				id: requestId,
+				type: "userInputResponseAck",
+				userInputId,
+				claimed,
+			}),
 		heartbeat: (requestId) => write({ id: requestId, type: "heartbeat" }),
 		titleGenerated: (requestId, title, branchName) =>
 			write({ id: requestId, type: "titleGenerated", title, branchName }),

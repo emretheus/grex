@@ -67,6 +67,15 @@ type StreamingState = {
 	pendingPermissionsByContext: Record<string, PendingPermission[]>;
 	pendingUserInputByContext: Record<string, PendingUserInput | null>;
 	userInputResponsePendingByContext: Record<string, boolean>;
+	/**
+	 * userInputIds the user has already acted on (submit / decline / cancel)
+	 * in THIS client session. The DB-truth rehydration path (see
+	 * `useRehydratePendingUserInput`) consults this so a question whose
+	 * answer is already in flight — but whose persisted `status` hasn't yet
+	 * flipped from `pending` to `answered` (the SDK still has to run the
+	 * tool + persist its result) — is not resurrected as a fresh panel.
+	 */
+	resolvedUserInputIds: ReadonlySet<string>;
 	interactionWorkspaceByContext: Record<string, string | null>;
 	planReviewByContext: Record<string, boolean>;
 	activeFastPreludes: Record<string, boolean>;
@@ -76,6 +85,11 @@ type StreamingActions = {
 	setPendingUserInput(contextKey: string, value: PendingUserInput | null): void;
 	clearPendingUserInput(contextKey: string): void;
 	setUserInputResponsePending(contextKey: string, value: boolean): void;
+	/** Record that the user acted on `userInputId` so rehydration skips it. */
+	markUserInputResolved(userInputId: string): void;
+	/** Forget a previously-resolved `userInputId` (e.g. the response RPC
+	 *  failed, so the panel should be answerable again). */
+	clearUserInputResolved(userInputId: string): void;
 	appendPendingPermission(
 		contextKey: string,
 		permission: PendingPermission,
@@ -110,6 +124,7 @@ const INITIAL_STATE: StreamingState = {
 	pendingPermissionsByContext: {},
 	pendingUserInputByContext: {},
 	userInputResponsePendingByContext: {},
+	resolvedUserInputIds: new Set<string>(),
 	interactionWorkspaceByContext: {},
 	planReviewByContext: {},
 	activeFastPreludes: {},
@@ -182,6 +197,27 @@ export const useStreamingStore = create<StreamingStore>((set) => ({
 					[contextKey]: value,
 				},
 			};
+		}),
+
+	// -------------------------------------------------------------------
+	// resolvedUserInputIds — questions the user already acted on
+	// -------------------------------------------------------------------
+	markUserInputResolved: (userInputId) =>
+		set((state) => {
+			if (!userInputId || state.resolvedUserInputIds.has(userInputId)) {
+				return state;
+			}
+			const next = new Set(state.resolvedUserInputIds);
+			next.add(userInputId);
+			return { resolvedUserInputIds: next };
+		}),
+
+	clearUserInputResolved: (userInputId) =>
+		set((state) => {
+			if (!state.resolvedUserInputIds.has(userInputId)) return state;
+			const next = new Set(state.resolvedUserInputIds);
+			next.delete(userInputId);
+			return { resolvedUserInputIds: next };
 		}),
 
 	// -------------------------------------------------------------------
