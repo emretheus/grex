@@ -1,5 +1,26 @@
 # Changelog
 
+## 0.5.0
+
+### Minor Changes
+
+- [#30](https://github.com/emretheus/grex/pull/30) [`0d24750`](https://github.com/emretheus/grex/commit/0d247506fa53b89856626fd28b2d8a532ea5bcd9) Thanks [@emretheus](https://github.com/emretheus)! - Add Kimi Code as a new agent provider.
+
+  - Run Kimi models over the Agent Client Protocol with streaming responses, tool calls, file diffs, plans, permission prompts, and slash commands
+  - Sign in with `kimi login` from Settings → Providers
+  - Manage Kimi's third-party model providers via `~/.kimi-code` config and choose which models appear in the composer's picker
+
+### Patch Changes
+
+- [#30](https://github.com/emretheus/grex/pull/30) [`0d24750`](https://github.com/emretheus/grex/commit/0d247506fa53b89856626fd28b2d8a532ea5bcd9) Thanks [@emretheus](https://github.com/emretheus)! - Fix Cursor responses briefly rendering their text twice while a turn is still streaming; the duplicate text now collapses to a single copy as it streams.
+
+- [#29](https://github.com/emretheus/grex/pull/29) [`f6967c5`](https://github.com/emretheus/grex/commit/f6967c5233b9111fe78057086883d2d2539bd930) Thanks [@emretheus](https://github.com/emretheus)! - Fix agent questions getting permanently stuck on "Awaiting answer" with no way to respond.
+
+  - Rebuild the interactive answer panel from the persisted thread after a window reload or re-attach, so a parked question stays answerable instead of leaving only a read-only "Awaiting answer" card.
+  - Surface an error and re-show the question when an answer can't reach the agent (e.g. the app was restarted and the turn is gone), instead of silently dropping it.
+
+- [#30](https://github.com/emretheus/grex/pull/30) [`0d24750`](https://github.com/emretheus/grex/commit/0d247506fa53b89856626fd28b2d8a532ea5bcd9) Thanks [@emretheus](https://github.com/emretheus)! - OpenCode now shows "Ready" only after an actual sign-in, so the Login action stays available when only environment variables or custom providers are configured.
+
 ## 0.4.0
 
 ### Minor Changes
