@@ -213,12 +213,7 @@ pub(super) fn persist_result_and_finalize(
               id, session_id, role, content, created_at, sent_at
             ) VALUES (?1, ?2, 'assistant', ?3, ?4, ?4)
             "#,
-        params![
-            result_message_id,
-            ctx.grex_session_id,
-            result_payload,
-            now
-        ],
+        params![result_message_id, ctx.grex_session_id, result_payload, now],
     )?;
 
     finalize_session_metadata_in_transaction(

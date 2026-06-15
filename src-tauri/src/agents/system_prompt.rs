@@ -402,9 +402,7 @@ mod tests {
         // And the `--help` pairing must use the same path so the
         // agent can copy-paste it directly.
         assert!(
-            prompt.contains(
-                "`/Users/me/grex-wt/feature-x/src-tauri/target/debug/grex-cli --help`"
-            ),
+            prompt.contains("`/Users/me/grex-wt/feature-x/src-tauri/target/debug/grex-cli --help`"),
             "dev `--help` invocation must use the same absolute path"
         );
     }

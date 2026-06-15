@@ -183,11 +183,7 @@ fn resolve_target_ref_uses_configured_target_branch() {
     let repo_root = test_dir.root.join("source-repo");
     fs::create_dir_all(&repo_root).unwrap();
     git_ops::run_git(["init", "-b", "main"], Some(&repo_root)).unwrap();
-    git_ops::run_git(
-        ["config", "user.email", "test@grex.test"],
-        Some(&repo_root),
-    )
-    .unwrap();
+    git_ops::run_git(["config", "user.email", "test@grex.test"], Some(&repo_root)).unwrap();
     git_ops::run_git(["config", "user.name", "Test"], Some(&repo_root)).unwrap();
     git_ops::run_git(["config", "commit.gpgsign", "false"], Some(&repo_root)).unwrap();
     fs::write(repo_root.join("f.txt"), "base\n").unwrap();
@@ -246,11 +242,7 @@ fn resolve_target_ref_uses_local_workspace_root_target() {
     let repo_root = test_dir.root.join("com.xiaomi.robovac");
     fs::create_dir_all(&repo_root).unwrap();
     git_ops::run_git(["init", "-b", "main"], Some(&repo_root)).unwrap();
-    git_ops::run_git(
-        ["config", "user.email", "test@grex.test"],
-        Some(&repo_root),
-    )
-    .unwrap();
+    git_ops::run_git(["config", "user.email", "test@grex.test"], Some(&repo_root)).unwrap();
     git_ops::run_git(["config", "user.name", "Test"], Some(&repo_root)).unwrap();
     git_ops::run_git(["config", "commit.gpgsign", "false"], Some(&repo_root)).unwrap();
     fs::write(repo_root.join("f.txt"), "base\n").unwrap();
@@ -292,11 +284,7 @@ fn resolve_target_ref_uses_workspace_id_when_local_roots_are_shared() {
     let repo_root = test_dir.root.join("com.xiaomi.robovac");
     fs::create_dir_all(&repo_root).unwrap();
     git_ops::run_git(["init", "-b", "main"], Some(&repo_root)).unwrap();
-    git_ops::run_git(
-        ["config", "user.email", "test@grex.test"],
-        Some(&repo_root),
-    )
-    .unwrap();
+    git_ops::run_git(["config", "user.email", "test@grex.test"], Some(&repo_root)).unwrap();
     git_ops::run_git(["config", "user.name", "Test"], Some(&repo_root)).unwrap();
     git_ops::run_git(["config", "commit.gpgsign", "false"], Some(&repo_root)).unwrap();
     fs::write(repo_root.join("f.txt"), "base\n").unwrap();

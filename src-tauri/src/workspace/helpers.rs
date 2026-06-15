@@ -1306,11 +1306,7 @@ mod tests {
         // that the resolved path changed and serve the new contents — this
         // is the failure mode that motivated mtime-aware invalidation.
         fs::create_dir_all(dir.path().join(".grex")).unwrap();
-        fs::write(
-            dir.path().join(".grex/icon.svg"),
-            b"<svg id=\"override\"/>",
-        )
-        .unwrap();
+        fs::write(dir.path().join(".grex/icon.svg"), b"<svg id=\"override\"/>").unwrap();
 
         let after_override = repo_icon_src_for_root_path(Some(&root_str))
             .expect("expected override icon to resolve");

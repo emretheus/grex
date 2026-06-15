@@ -248,10 +248,7 @@ mod tests {
     #[test]
     fn install_target_uses_unix_bin_path() {
         #[cfg(not(windows))]
-        assert_eq!(
-            install_target("grex"),
-            PathBuf::from("/usr/local/bin/grex")
-        );
+        assert_eq!(install_target("grex"), PathBuf::from("/usr/local/bin/grex"));
     }
 
     #[cfg(unix)]

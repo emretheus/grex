@@ -1942,7 +1942,9 @@ mod tests {
             // expansion between two delimiters so we can tell "unset"
             // (PORT[]COUNT[]) apart from "set to empty" (PORT[set]COUNT[set])
             // even after the wrapper echoes the literal source line back.
-            Some("printf 'PORT[%s]COUNT[%s]EOM\\n' \"${GREX_PORT+set}\" \"${GREX_PORT_COUNT+set}\""),
+            Some(
+                "printf 'PORT[%s]COUNT[%s]EOM\\n' \"${GREX_PORT+set}\" \"${GREX_PORT_COUNT+set}\"",
+            ),
             dir.to_str().unwrap(),
             &ctx,
             ch,
