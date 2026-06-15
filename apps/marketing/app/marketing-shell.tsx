@@ -3,16 +3,19 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { RepoData } from "@/lib/github";
 import { DownloadDropdown } from "./download-dropdown";
+import {
+	ContextSection,
+	CtaBand,
+	FeaturesSection,
+	ProvidersStrip,
+	SiteFooter,
+} from "./landing-sections";
 
 type Theme = "light" | "dark";
 
 const STORAGE_KEY = "grex-marketing-theme";
 // Keep the product preview tilt subtle so it reads as ambient polish.
 const MAX_TILT_DEG = 4;
-// Atmospheric FX — backlit dust mote count. 18 is the sweet spot from the
-// v2 prototype: enough to read as "air has particles in it" without turning
-// into confetti or stealing focus from the smoke plumes.
-const DUST_COUNT = 18;
 
 export function MarketingShell({ data }: { data: RepoData }) {
 	// SSR default mirrors <html class="dark"> in layout; a useEffect reconciles
@@ -40,12 +43,10 @@ export function MarketingShell({ data }: { data: RepoData }) {
 		setTheme(initial);
 	}, []);
 
-	// Apply theme changes. First run is skipped: the pre-hydration bootstrap
-	// in layout.tsx has already set <html class>, and the mount-theme-init
-	// useEffect above reconciles React state. Without this guard, the initial
-	// state ("dark" on SSR) would briefly revert the bootstrap's class before
-	// the init's setTheme re-renders us back — a visible flash, plus it would
-	// kick off the .shot.light-layer clip-path transition.
+	// Apply theme changes. First run is skipped: the pre-hydration bootstrap in
+	// layout.tsx already set <html class>, and the mount-init above reconciles
+	// React state. Without this guard the initial "dark" SSR state would briefly
+	// revert the bootstrap's class — a visible flash + spurious clip transition.
 	const hasMountedRef = useRef(false);
 	useEffect(() => {
 		if (!hasMountedRef.current) {
@@ -82,38 +83,10 @@ export function MarketingShell({ data }: { data: RepoData }) {
 		return () => document.removeEventListener("keydown", onKey);
 	}, []);
 
-	// 3D tilt + atmospheric smoke swirl — cursor-driven. Tilt and smoke swirl
-	// are gated on prefers-reduced-motion.
+	// Subtle cursor-driven 3D tilt on the product screenshot. Gated on
+	// prefers-reduced-motion. (The old smoke/dust atmosphere was removed.)
 	const wrapRef = useRef<HTMLDivElement | null>(null);
 	const stageRef = useRef<HTMLDivElement | null>(null);
-	const smokeRef = useRef<HTMLDivElement | null>(null);
-	const dustRef = useRef<HTMLDivElement | null>(null);
-
-	// Spawn backlit dust motes — 18 tiny particles scattered across the right
-	// half of the stage that drift toward upper-left. Randomized per mount so
-	// Math.random doesn't cause hydration issues (render nothing on SSR).
-	useEffect(() => {
-		const host = dustRef.current;
-		if (!host) return;
-		host.replaceChildren();
-		for (let i = 0; i < DUST_COUNT; i++) {
-			const d = document.createElement("i");
-			const startX = 55 + Math.random() * 45;
-			const startY = 10 + Math.random() * 80;
-			const tx = -60 - Math.random() * 120;
-			const ty = -30 + (Math.random() * 60 - 30);
-			const dur = 12 + Math.random() * 16;
-			const del = -Math.random() * dur;
-			d.style.left = `${startX}%`;
-			d.style.top = `${startY}%`;
-			d.style.setProperty("--tx", `${tx}px`);
-			d.style.setProperty("--ty", `${ty}px`);
-			d.style.setProperty("--d", `${dur}s`);
-			d.style.setProperty("--del", `${del}s`);
-			d.style.animationDelay = `${del}s`;
-			host.appendChild(d);
-		}
-	}, []);
 
 	useEffect(() => {
 		const wrap = wrapRef.current;
@@ -123,6 +96,7 @@ export function MarketingShell({ data }: { data: RepoData }) {
 		const prefersReduced = window.matchMedia(
 			"(prefers-reduced-motion: reduce)",
 		).matches;
+		if (prefersReduced) return;
 
 		let targetRX = 0;
 		let targetRY = 0;
@@ -149,32 +123,6 @@ export function MarketingShell({ data }: { data: RepoData }) {
 
 		const onMove = (e: PointerEvent) => {
 			const rect = stage.getBoundingClientRect();
-
-			// Smoke swirl — write 0..1 cursor position within the mock-wrap so
-			// each plume's --swirl-offset translates toward the cursor. Swirl
-			// strength peaks near the horizontal midline of the product frame.
-			const smoke = smokeRef.current;
-			if (smoke && !prefersReduced) {
-				const wrapRect = wrap.getBoundingClientRect();
-				const wx = Math.max(
-					0,
-					Math.min(1, (e.clientX - wrapRect.left) / wrapRect.width),
-				);
-				const wy = Math.max(
-					0,
-					Math.min(1, (e.clientY - wrapRect.top) / wrapRect.height),
-				);
-				smoke.style.setProperty("--cursor-x", wx.toFixed(3));
-				smoke.style.setProperty("--cursor-y", wy.toFixed(3));
-				const prox = 1 - Math.min(1, Math.hypot(wx - 0.5, wy - 0.5) * 1.6);
-				smoke.style.setProperty(
-					"--swirl-strength",
-					(0.4 + prox * 1.2).toFixed(3),
-				);
-			}
-
-			if (prefersReduced) return;
-
 			const cx = rect.left + rect.width / 2;
 			const cy = rect.top + rect.height / 2;
 			const dx = (e.clientX - cx) / (rect.width / 2);
@@ -184,16 +132,6 @@ export function MarketingShell({ data }: { data: RepoData }) {
 			schedule();
 		};
 		const onLeave = () => {
-			// Smoke swirl — ease plumes back to center.
-			const smoke = smokeRef.current;
-			if (smoke) {
-				smoke.style.setProperty("--cursor-x", "0.5");
-				smoke.style.setProperty("--cursor-y", "0.5");
-				smoke.style.setProperty("--swirl-strength", "0.4");
-			}
-
-			if (prefersReduced) return;
-
 			targetRX = 0;
 			targetRY = 0;
 			schedule();
@@ -210,11 +148,11 @@ export function MarketingShell({ data }: { data: RepoData }) {
 
 	return (
 		<div className="page">
-			{/* ============== TOP RAIL ============== */}
-			<div className="rail">
+			{/* ===================== TOP RAIL ===================== */}
+			<header className="rail">
 				<a className="brand" href="/">
-					{/* Official Grex hexagon mark — gradient logo on a transparent
-					 * background, so it reads on both themes with no light/dark swap. */}
+					{/* Official Grex hexagon mark — gradient logo on transparent bg,
+					 * reads on both themes with no light/dark swap. */}
 					{/* eslint-disable-next-line @next/next/no-img-element */}
 					<img
 						className="brand-mark"
@@ -225,11 +163,11 @@ export function MarketingShell({ data }: { data: RepoData }) {
 					Grex
 				</a>
 				<span className="version">{data.version}</span>
-				<div className="links">
-					<a href={`${data.repoUrl}#readme`}>Docs</a>
+				<nav className="links" aria-label="Primary">
+					<a href="#features">Features</a>
+					<a href="#providers">Agents</a>
 					<a href={data.releasesUrl}>Changelog</a>
-					<a href={`${data.repoUrl}/discussions`}>Discussions</a>
-				</div>
+				</nav>
 				<div className="spacer" />
 				<a
 					className="rail-github"
@@ -258,100 +196,84 @@ export function MarketingShell({ data }: { data: RepoData }) {
 						<MoonIcon />
 					</button>
 				</div>
-			</div>
+			</header>
 
-			{/* ============== STAGE ============== */}
-			<div className="stage">
-				{/* Atmospheric FX — spans BOTH columns so smoke drifts behind
-				 * the pitch text AND around the product screenshot. Sits under
-				 * .pitch (z:2) and .mock-wrap (z:3) via z-index stacking. */}
-				<div className="atmos" aria-hidden="true">
-					<div className="light-burst" />
-					<div className="smoke" ref={smokeRef}>
-						{/* Back plume — largest, slowest, coolest-toned */}
-						<div className="plume plume-back">
-							<div className="smoke-swirl" />
+			<main className="content">
+				{/* ===================== HERO ===================== */}
+				<section className="hero">
+					<div className="hero-glow" aria-hidden="true" />
+					<div className="hero-grid">
+						<div className="pitch">
+							<a className="changelog-chip" href={data.latestReleaseUrl}>
+								<span className="tag">{data.versionShort}</span>
+								Now supporting 7 coding agents
+								<span className="arrow">→</span>
+							</a>
+
+							<h1 className="hero-title">
+								Every AI coding agent.
+								<span className="line2"> One elegant desktop app.</span>
+							</h1>
+
+							<p className="sub">
+								Run Claude, Codex, Cursor, Gemini, Copilot, Kimi and OpenCode
+								from a single, clean, local-first interface — with built-in
+								chat, diff review, file explorer, editor, and terminals.
+							</p>
+
+							<div className="cta">
+								<DownloadDropdown data={data} />
+								<a className="btn outline" href={data.windowsSetupUrl}>
+									<WindowsIcon />
+									Download for Windows
+								</a>
+							</div>
+
+							<div className="meta">
+								<span>
+									<span className="ok">●</span> {data.branch} · {data.shortSha}
+								</span>
+								<span className="sep" />
+								<span>{data.license}</span>
+								<span className="sep" />
+								<span>macOS · Windows x64</span>
+							</div>
 						</div>
 
-						{/* Mid plume — brightest, medium turbulence */}
-						<div className="plume plume-mid">
-							<div className="smoke-swirl" />
-						</div>
-
-						{/* Front plume — tightest curls, highest frequency */}
-						<div className="plume plume-front">
-							<div className="smoke-swirl" />
-						</div>
-					</div>
-					{/* Backlit dust motes — populated in useEffect */}
-					<div className="dust" ref={dustRef} />
-				</div>
-
-				{/* LEFT — pitch */}
-				<div className="pitch">
-					<a className="changelog-chip" href={data.latestReleaseUrl}>
-						<span className="tag">{data.versionShort}</span>5 coding agents, one
-						clean interface
-						<span className="arrow">→</span>
-					</a>
-
-					<h1 className="hero">
-						<span className="line2">One minimal desktop app</span>
-						<span className="and" />
-						for every AI coding agent.
-					</h1>
-
-					<p className="sub">
-						Run Claude Code, Codex, OpenCode, Cursor and Gemini from a single,
-						clean, local-first interface with built-in chat, diff review, file
-						explorer + editor, and terminals.
-					</p>
-
-					<div className="cta">
-						<DownloadDropdown data={data} />
-						<a className="btn primary" href={data.windowsSetupUrl}>
-							<WindowsIcon />
-							Download for Windows
-						</a>
-					</div>
-
-					<div className="meta">
-						<span>
-							<span className="ok">●</span> {data.branch} · {data.shortSha}
-						</span>
-						<span className="sep" />
-						<span>{data.license}</span>
-						<span className="sep" />
-						<span>macOS · Windows x64</span>
-					</div>
-				</div>
-
-				{/* RIGHT — interactive product screenshot */}
-				<div className="mock-wrap" ref={wrapRef}>
-					<div
-						className="mock-stage"
-						aria-label="Grex product preview"
-						ref={stageRef}
-					>
-						<div className="shot dark-layer">
-							{/* eslint-disable-next-line @next/next/no-img-element */}
-							<img
-								src="/grex-screenshot-dark.png"
-								alt="Grex (dark)"
-								draggable={false}
-							/>
-						</div>
-						<div className="shot light-layer">
-							{/* eslint-disable-next-line @next/next/no-img-element */}
-							<img
-								src="/grex-screenshot-light.png"
-								alt="Grex (light)"
-								draggable={false}
-							/>
+						<div className="mock-wrap" ref={wrapRef}>
+							<div
+								className="mock-stage"
+								aria-label="Grex product preview"
+								ref={stageRef}
+							>
+								<div className="shot dark-layer">
+									{/* eslint-disable-next-line @next/next/no-img-element */}
+									<img
+										src="/grex-screenshot-dark.png"
+										alt="Grex (dark)"
+										draggable={false}
+									/>
+								</div>
+								<div className="shot light-layer">
+									{/* eslint-disable-next-line @next/next/no-img-element */}
+									<img
+										src="/grex-screenshot-light.png"
+										alt="Grex (light)"
+										draggable={false}
+									/>
+								</div>
+							</div>
 						</div>
 					</div>
-				</div>
-			</div>
+				</section>
+
+				<ProvidersStrip />
+				<FeaturesSection />
+				<ContextSection />
+				<CtaBand data={data} />
+			</main>
+
+			<SiteFooter data={data} />
 		</div>
 	);
 }
