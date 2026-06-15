@@ -4,8 +4,9 @@
  * Rendering strategy: called from the root Server Component at BUILD time
  * (the site is a Next.js static export — `output: export`). The fetched
  * release / version / commit are baked into the static HTML. The deploy
- * workflow rebuilds on `release: published`, so the values refresh on every
- * release without a runtime revalidation server.
+ * workflow rebuilds when the "Publish Release" workflow finishes
+ * (deploy-marketing.yml `workflow_run` trigger), so the values refresh on
+ * every release without a runtime revalidation server.
  *
  * Rate limits: anonymous GitHub API is 60 req/hr per IP. With ~3 calls per
  * build we're nowhere near the cap. Set `GITHUB_TOKEN` in the build env
@@ -22,8 +23,8 @@ const API = "https://api.github.com";
 // Fallbacks mirror what the design shipped with. Used when the GitHub API is
 // unreachable, rate-limited, or the repo has no releases yet.
 const FALLBACK = {
-	version: "v0.1.0",
-	versionShort: "v0.1",
+	version: "v0.4.0",
+	versionShort: "v0.4",
 	branch: "main",
 	shortSha: "0000000",
 	license: "Apache 2.0",
