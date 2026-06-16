@@ -166,6 +166,8 @@ function EditorSurfaceHarness({
 					onExit={vi.fn()}
 					explorerOpen={false}
 					onToggleExplorer={vi.fn()}
+					explorerWidth={260}
+					onExplorerWidthChange={vi.fn()}
 					onCloseLastFile={vi.fn()}
 				/>
 			</RouterContextProvider>

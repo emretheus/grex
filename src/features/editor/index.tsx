@@ -76,6 +76,9 @@ type WorkspaceEditorSurfaceProps = {
 	 *  so it persists across file opens (and the explorer landing). */
 	explorerOpen: boolean;
 	onToggleExplorer: () => void;
+	/** File-explorer sidebar width (persisted at the pane level). */
+	explorerWidth: number;
+	onExplorerWidthChange: (width: number) => void;
 	/** Called instead of `onExit` when the LAST open tab is closed — returns to
 	 *  the explorer landing rather than kicking back to chat. */
 	onCloseLastFile: () => void;
@@ -436,6 +439,8 @@ export function WorkspaceEditorSurface({
 	onExit,
 	explorerOpen,
 	onToggleExplorer,
+	explorerWidth,
+	onExplorerWidthChange,
 	onCloseLastFile,
 	onError,
 }: WorkspaceEditorSurfaceProps) {
@@ -563,8 +568,12 @@ export function WorkspaceEditorSurface({
 				id: "editor.close",
 				callback: () => closeTabById(getEditorTabId(latestSessionRef.current)),
 			},
+			{
+				id: "editor.toggleExplorer",
+				callback: onToggleExplorer,
+			},
 		],
-		[closeTabById, openFileSearch],
+		[closeTabById, openFileSearch, onToggleExplorer],
 	);
 
 	useAppShortcuts({
@@ -1277,8 +1286,11 @@ export function WorkspaceEditorSurface({
 				{explorerOpen && workspaceRootPath ? (
 					<FileExplorer
 						workspaceRootPath={workspaceRootPath}
+						workspaceId={workspaceId}
 						selectedRelPath={selectedExplorerPath}
 						onOpenFile={handleOpenFileFromExplorer}
+						width={explorerWidth}
+						onWidthChange={onExplorerWidthChange}
 					/>
 				) : null}
 				<div className="relative flex min-h-0 flex-1 bg-background">

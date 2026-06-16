@@ -2,6 +2,7 @@ import { FolderTree } from "lucide-react";
 import { TrafficLightSpacer } from "@/components/chrome/traffic-light-spacer";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { useRouterSelectedWorkspaceId } from "@/router/use-router-selection";
 import { FileExplorer } from "./file-explorer";
 
 const EDITOR_CHROME_BACKGROUND_CLASS = "bg-editor-chrome";
@@ -11,6 +12,8 @@ export type EditorExplorerLandingProps = {
 	/** Opens a file in the editor. Receives an ABSOLUTE path. */
 	onOpenFile: (path: string) => void;
 	onExit: () => void;
+	explorerWidth: number;
+	onExplorerWidthChange: (width: number) => void;
 };
 
 /** The "browse the codebase" landing shown when the editor is open but no file
@@ -22,7 +25,10 @@ export function EditorExplorerLanding({
 	workspaceRootPath,
 	onOpenFile,
 	onExit,
+	explorerWidth,
+	onExplorerWidthChange,
 }: EditorExplorerLandingProps) {
+	const workspaceId = useRouterSelectedWorkspaceId();
 	const root = workspaceRootPath?.replace(/\/+$/, "") ?? null;
 
 	const handleOpen = (relPath: string) => {
@@ -65,8 +71,11 @@ export function EditorExplorerLanding({
 				{root ? (
 					<FileExplorer
 						workspaceRootPath={root}
+						workspaceId={workspaceId}
 						selectedRelPath={null}
 						onOpenFile={handleOpen}
+						width={explorerWidth}
+						onWidthChange={onExplorerWidthChange}
 					/>
 				) : null}
 				<div className="flex min-h-0 flex-1 items-center justify-center bg-background px-6">
