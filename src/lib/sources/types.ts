@@ -2,6 +2,9 @@ export type ContextCardSource =
 	| "linear"
 	| "jira"
 	| "trello"
+	| "forgejo"
+	| "featurebase"
+	| "plain"
 	| "github_issue"
 	| "github_pr"
 	| "github_discussion"
@@ -83,6 +86,38 @@ export type TrelloCardMeta = {
 	labels: { name: string; color: string }[];
 };
 
+export type ForgejoIssueMeta = {
+	type: "forgejo";
+	/** Which connected instance produced this issue — routes the detail fetch. */
+	connectionId: string;
+	/** Instance host, shown as a badge when >1 instance is connected. */
+	hostName?: string;
+	/** Repository `owner/name`. */
+	repo: string;
+	number: number;
+	labels: { name: string; color: string }[];
+};
+
+export type FeaturebasePostMeta = {
+	type: "featurebase";
+	/** Which connected org produced this post — routes the detail fetch. */
+	connectionId: string;
+	/** Org feedback host, shown as a badge when >1 org is connected. */
+	orgName?: string;
+	board: string;
+	upvotes: number;
+};
+
+export type PlainThreadMeta = {
+	type: "plain";
+	/** Which connected workspace produced this thread — routes detail fetch. */
+	connectionId: string;
+	/** Workspace name, shown as a badge when >1 workspace is connected. */
+	workspaceName?: string;
+	customerName: string;
+	priority?: string;
+};
+
 export type GitHubIssueMeta = {
 	type: "github_issue";
 	repo: string;
@@ -133,6 +168,9 @@ export type ContextCardMeta =
 	| LinearIssueMeta
 	| JiraIssueMeta
 	| TrelloCardMeta
+	| ForgejoIssueMeta
+	| FeaturebasePostMeta
+	| PlainThreadMeta
 	| GitHubIssueMeta
 	| GitHubPRMeta
 	| GitHubDiscussionMeta

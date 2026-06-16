@@ -11,5 +11,8 @@ pub fn provider(kind: ProviderKind) -> &'static dyn IssueProvider {
         ProviderKind::Linear => &providers::linear::LinearProvider,
         ProviderKind::Jira => &providers::jira::JiraProvider,
         ProviderKind::Trello => &providers::trello::TrelloProvider,
+        ProviderKind::Forgejo => &providers::forgejo::ForgejoProvider,
+        ProviderKind::Featurebase => &providers::featurebase::FeaturebaseProvider,
+        ProviderKind::Plain => &providers::plain::PlainProvider,
     }
 }

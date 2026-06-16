@@ -1,5 +1,6 @@
 import {
 	type SimpleIcon,
+	siForgejo,
 	siGithub,
 	siGitlab,
 	siJira,
@@ -75,6 +76,11 @@ export function JiraBrandIcon(props: Omit<BrandIconProps, "icon">) {
 /** Trello brand glyph (Simple Icons). Uses `currentColor`. */
 export function TrelloBrandIcon(props: Omit<BrandIconProps, "icon">) {
 	return <BrandIcon icon={siTrello} {...props} />;
+}
+
+/** Forgejo brand glyph (Simple Icons). Uses `currentColor`. */
+export function ForgejoBrandIcon(props: Omit<BrandIconProps, "icon">) {
+	return <BrandIcon icon={siForgejo} {...props} />;
 }
 
 /** Lark / Feishu glyph (IconPark "new-lark"). Uses `currentColor`. */

@@ -74,6 +74,12 @@ function buildSubtitle(
 			if (boardName && listName) return `${boardName} · ${listName}`;
 			return boardName || listName || undefined;
 		}
+		case "forgejo":
+			return withPrefix(item.meta.repo, displayName, showWorkspace);
+		case "featurebase":
+			return withPrefix(item.meta.board, displayName, showWorkspace);
+		case "plain":
+			return withPrefix(item.meta.customerName, displayName, showWorkspace);
 	}
 }
 
@@ -110,6 +116,31 @@ function buildMeta(
 				boardName: item.meta.boardName,
 				listName: item.meta.listName,
 				labels: item.meta.labels,
+			};
+		case "forgejo":
+			return {
+				type: "forgejo",
+				connectionId: item.connectionId,
+				hostName: displayName,
+				repo: item.meta.repo,
+				number: item.meta.number,
+				labels: item.meta.labels,
+			};
+		case "featurebase":
+			return {
+				type: "featurebase",
+				connectionId: item.connectionId,
+				orgName: displayName,
+				board: item.meta.board,
+				upvotes: item.meta.upvotes,
+			};
+		case "plain":
+			return {
+				type: "plain",
+				connectionId: item.connectionId,
+				workspaceName: displayName,
+				customerName: item.meta.customerName,
+				priority: item.meta.priority ?? undefined,
 			};
 	}
 }

@@ -1,5 +1,12 @@
-import { CircleDot, GitPullRequest, MessagesSquare } from "lucide-react";
 import {
+	CircleDot,
+	GitPullRequest,
+	LifeBuoy,
+	Lightbulb,
+	MessagesSquare,
+} from "lucide-react";
+import {
+	ForgejoBrandIcon,
 	JiraBrandIcon,
 	LinearBrandIcon,
 	SlackBrandIcon,
@@ -23,6 +30,12 @@ export function SourceIcon({
 			return <JiraBrandIcon className={className} size={size} />;
 		case "trello":
 			return <TrelloBrandIcon className={className} size={size} />;
+		case "forgejo":
+			return <ForgejoBrandIcon className={className} size={size} />;
+		case "featurebase":
+			return <Lightbulb className={className} size={size} strokeWidth={2} />;
+		case "plain":
+			return <LifeBuoy className={className} size={size} strokeWidth={2} />;
 		case "github_issue":
 			return <CircleDot className={className} size={size} strokeWidth={2} />;
 		case "github_pr":

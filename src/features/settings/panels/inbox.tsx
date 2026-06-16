@@ -2,6 +2,8 @@ import { useQuery } from "@tanstack/react-query";
 import {
 	CircleDot,
 	GitPullRequest,
+	LifeBuoy,
+	Lightbulb,
 	MessagesSquare,
 	Pickaxe,
 	Plus,
@@ -15,6 +17,7 @@ import {
 	useState,
 } from "react";
 import {
+	ForgejoBrandIcon,
 	GithubBrandIcon,
 	GitlabBrandIcon,
 	JiraBrandIcon,
@@ -25,8 +28,11 @@ import {
 import { Button } from "@/components/ui/button";
 import { SlackConnectState } from "@/features/inbox/slack-connect-button";
 import { useSlackWorkspaces } from "@/features/inbox/use-slack-workspaces";
+import { FeaturebaseSettingsPanel } from "@/features/settings/panels/featurebase-settings";
+import { ForgejoSettingsPanel } from "@/features/settings/panels/forgejo-settings";
 import { JiraSettingsPanel } from "@/features/settings/panels/jira-settings";
 import { LinearSettingsPanel } from "@/features/settings/panels/linear-settings";
+import { PlainSettingsPanel } from "@/features/settings/panels/plain-settings";
 import { TrelloSettingsPanel } from "@/features/settings/panels/trello-settings";
 import type {
 	ForgeProvider,
@@ -105,6 +111,17 @@ const PROVIDER_TABS: {
 	{ id: "linear", label: "Linear", icon: <LinearBrandIcon size={13} /> },
 	{ id: "jira", label: "Jira", icon: <JiraBrandIcon size={13} /> },
 	{ id: "trello", label: "Trello", icon: <TrelloBrandIcon size={13} /> },
+	{ id: "forgejo", label: "Forgejo", icon: <ForgejoBrandIcon size={13} /> },
+	{
+		id: "featurebase",
+		label: "Featurebase",
+		icon: <Lightbulb className="size-3.5" strokeWidth={2} />,
+	},
+	{
+		id: "plain",
+		label: "Plain",
+		icon: <LifeBuoy className="size-3.5" strokeWidth={2} />,
+	},
 	{
 		id: "mobile",
 		label: "Mobile",
@@ -119,7 +136,15 @@ const PROVIDER_TABS: {
  *  Mobile remains here. */
 type ComingSoonProvider = Exclude<
 	ContextProviderTab,
-	"github" | "gitlab" | "slack" | "linear" | "jira" | "trello"
+	| "github"
+	| "gitlab"
+	| "slack"
+	| "linear"
+	| "jira"
+	| "trello"
+	| "forgejo"
+	| "featurebase"
+	| "plain"
 >;
 
 const COMING_SOON_COPY: Record<ComingSoonProvider, string[]> = {
@@ -416,6 +441,12 @@ export function InboxSettingsPanel({
 					<JiraSettingsPanel />
 				) : activeProvider === "trello" ? (
 					<TrelloSettingsPanel />
+				) : activeProvider === "forgejo" ? (
+					<ForgejoSettingsPanel />
+				) : activeProvider === "featurebase" ? (
+					<FeaturebaseSettingsPanel />
+				) : activeProvider === "plain" ? (
+					<PlainSettingsPanel />
 				) : (
 					<ProviderComingSoon provider={activeProvider as ComingSoonProvider} />
 				)

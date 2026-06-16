@@ -524,6 +524,40 @@ async fn dispatch(
         "trello_get_issue" => to_value(crate::commands::trello_commands::trello_get_issue(app.clone(), arg_string(&args, "connectionId")?, arg_string(&args, "issueId")?).await?),
         "trello_list_boards" => to_value(crate::commands::trello_commands::trello_list_boards(arg_string(&args, "connectionId")?).await?),
 
+        // ============ data domains: Forgejo context source ============
+        "forgejo_connections" => to_value(crate::commands::forgejo_commands::forgejo_connections().await?),
+        "forgejo_connect" => to_value(crate::commands::forgejo_commands::forgejo_connect(app.clone(), arg_string(&args, "host")?, arg_string(&args, "token")?).await?),
+        "forgejo_disconnect" => {
+            crate::commands::forgejo_commands::forgejo_disconnect(app.clone(), arg_string(&args, "connectionId")?).await?;
+            Ok(Value::Null)
+        }
+        "forgejo_update_scope" => to_value(crate::commands::forgejo_commands::forgejo_update_scope(app.clone(), arg_string(&args, "connectionId")?, arg_json(&args, "assignedOnly")?).await?),
+        "forgejo_list_inbox_items" => to_value(crate::commands::forgejo_commands::forgejo_list_inbox_items(app.clone(), arg_opt_json(&args, "cursors")?, arg_opt_int(&args, "limit")).await?),
+        "forgejo_search_issues" => to_value(crate::commands::forgejo_commands::forgejo_search_issues(app.clone(), arg_string(&args, "query")?, arg_opt_json(&args, "cursors")?, arg_opt_int(&args, "limit")).await?),
+        "forgejo_get_issue" => to_value(crate::commands::forgejo_commands::forgejo_get_issue(app.clone(), arg_string(&args, "connectionId")?, arg_string(&args, "issueId")?).await?),
+
+        // ============ data domains: Featurebase context source ============
+        "featurebase_connections" => to_value(crate::commands::featurebase_commands::featurebase_connections().await?),
+        "featurebase_connect" => to_value(crate::commands::featurebase_commands::featurebase_connect(app.clone(), arg_string(&args, "apiKey")?, arg_string(&args, "orgUrl")?).await?),
+        "featurebase_disconnect" => {
+            crate::commands::featurebase_commands::featurebase_disconnect(app.clone(), arg_string(&args, "connectionId")?).await?;
+            Ok(Value::Null)
+        }
+        "featurebase_list_inbox_items" => to_value(crate::commands::featurebase_commands::featurebase_list_inbox_items(app.clone(), arg_opt_json(&args, "cursors")?, arg_opt_int(&args, "limit")).await?),
+        "featurebase_search_issues" => to_value(crate::commands::featurebase_commands::featurebase_search_issues(app.clone(), arg_string(&args, "query")?, arg_opt_json(&args, "cursors")?, arg_opt_int(&args, "limit")).await?),
+        "featurebase_get_issue" => to_value(crate::commands::featurebase_commands::featurebase_get_issue(app.clone(), arg_string(&args, "connectionId")?, arg_string(&args, "issueId")?).await?),
+
+        // ============ data domains: Plain context source ============
+        "plain_connections" => to_value(crate::commands::plain_commands::plain_connections().await?),
+        "plain_connect" => to_value(crate::commands::plain_commands::plain_connect(app.clone(), arg_string(&args, "apiKey")?).await?),
+        "plain_disconnect" => {
+            crate::commands::plain_commands::plain_disconnect(app.clone(), arg_string(&args, "connectionId")?).await?;
+            Ok(Value::Null)
+        }
+        "plain_list_inbox_items" => to_value(crate::commands::plain_commands::plain_list_inbox_items(app.clone(), arg_opt_json(&args, "cursors")?, arg_opt_int(&args, "limit")).await?),
+        "plain_search_issues" => to_value(crate::commands::plain_commands::plain_search_issues(app.clone(), arg_string(&args, "query")?, arg_opt_json(&args, "cursors")?, arg_opt_int(&args, "limit")).await?),
+        "plain_get_issue" => to_value(crate::commands::plain_commands::plain_get_issue(app.clone(), arg_string(&args, "connectionId")?, arg_string(&args, "issueId")?).await?),
+
         // ============ desktop-only / destructive: no-op for a phone ============
         // Companion self-management: a paired browser does not administer the
         // companion server (enable/pair/sign-in happen on the desktop host).
