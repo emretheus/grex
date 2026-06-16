@@ -66,6 +66,7 @@ type Props = {
 	activeEditor: ActiveEditorTarget | null;
 	preferredEditor: DetectedEditor | null;
 	onOpenEditorFile: (path: string, options?: DiffOpenOptions) => void;
+	onBrowseFiles: () => void;
 	onCommitAction: (mode: WorkspaceCommitButtonMode) => Promise<void>;
 	onReviewAction: () => Promise<void>;
 	onQueuePendingPromptForSession: (request: PendingPromptForSession) => void;
@@ -101,6 +102,7 @@ export function ShellInspectorPane({
 	activeEditor,
 	preferredEditor,
 	onOpenEditorFile,
+	onBrowseFiles,
 	onCommitAction,
 	onReviewAction,
 	onQueuePendingPromptForSession,
@@ -243,6 +245,7 @@ export function ShellInspectorPane({
 							activeEditor={activeEditor}
 							preferredEditor={preferredEditor}
 							onOpenEditorFile={onOpenEditorFile}
+							onBrowseFiles={onBrowseFiles}
 							onCommitAction={onCommitAction}
 							onReviewAction={onReviewAction}
 							currentSessionId={displayedSessionId}

@@ -9,6 +9,7 @@ import {
 	CopyIcon,
 	ExternalLinkIcon,
 	FolderOpenIcon,
+	FolderTreeIcon,
 	LaptopIcon,
 	LinkIcon,
 	ListIcon,
@@ -130,6 +131,9 @@ type ChangesSectionProps = {
 	activeEditor?: ActiveEditorTarget | null;
 	preferredEditor?: DetectedEditor | null;
 	onOpenEditorFile: (path: string, options?: DiffOpenOptions) => void;
+	/** Opens the editor's file-explorer landing so the user can browse the
+	 *  whole codebase without needing a changed file to click first. */
+	onBrowseFiles?: () => void;
 	flashingPaths: Set<string>;
 	onCommitAction?: (mode: WorkspaceCommitButtonMode) => Promise<void>;
 	commitButtonMode?: WorkspaceCommitButtonMode;
@@ -155,6 +159,7 @@ function ChangesSectionImpl({
 	activeEditor,
 	preferredEditor = null,
 	onOpenEditorFile,
+	onBrowseFiles,
 	flashingPaths,
 	onCommitAction,
 	commitButtonMode = "create-pr",
@@ -432,8 +437,20 @@ function ChangesSectionImpl({
 				)}
 
 				{changesLoaded && !hasChanges && !branchSwitching && (
-					<div className="px-3 py-3 text-small leading-5 text-muted-foreground/70">
-						No changes on this branch yet.
+					<div className="flex flex-col items-start gap-2.5 px-3 py-3">
+						<span className="text-small leading-5 text-muted-foreground/70">
+							No changes on this branch yet.
+						</span>
+						{onBrowseFiles ? (
+							<button
+								type="button"
+								onClick={onBrowseFiles}
+								className="inline-flex cursor-interactive items-center gap-1.5 rounded-md border border-border/60 px-2.5 py-1 text-small text-muted-foreground transition-colors hover:bg-accent/60 hover:text-foreground"
+							>
+								<FolderTreeIcon className="size-3.5" strokeWidth={2} />
+								Browse files
+							</button>
+						) : null}
 					</div>
 				)}
 			</ScrollArea>

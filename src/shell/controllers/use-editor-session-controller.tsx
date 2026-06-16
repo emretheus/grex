@@ -20,6 +20,9 @@ import {
 export type EditorSessionActions = {
 	openFile(path: string, options?: DiffOpenOptions): void;
 	openFileReference(path: string, line?: number, column?: number): void;
+	/** Enter the editor with no file open — shows the file-explorer landing so
+	 *  the user can browse the codebase and pick a file to open. */
+	openExplorer(): void;
 	changeSession(session: EditorSessionState): void;
 	exit(): void;
 	reportError(description: string, title?: string): void;
@@ -282,6 +285,21 @@ export function useEditorSessionController(
 		],
 	);
 
+	// Enter editor view-mode without opening a file. Leaves the session as-is:
+	// when it's null the surface shows the explorer landing; when a file is
+	// already open it simply returns to that editor (whose explorer toggle is
+	// available there).
+	const openExplorer = useCallback(() => {
+		if (!workspaceRootPath) {
+			pushToastRef.current(
+				"Open a workspace with a resolved root path before browsing files.",
+				"Editor unavailable",
+			);
+			return;
+		}
+		enterEditorModeRef.current();
+	}, [workspaceRootPath]);
+
 	const changeSession = useCallback((session: EditorSessionState) => {
 		setEditorSession(session);
 	}, []);
@@ -304,6 +322,7 @@ export function useEditorSessionController(
 	const actions = useStableActions<EditorSessionActions>({
 		openFile,
 		openFileReference,
+		openExplorer,
 		changeSession,
 		exit,
 		reportError,

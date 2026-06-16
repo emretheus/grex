@@ -9,6 +9,7 @@ import type {
 	WorkspaceConversationContainerProps,
 } from "@/features/conversation";
 import { WorkspaceEditorSurface } from "@/features/editor";
+import { EditorExplorerLanding } from "@/features/editor/explorer-landing";
 import { getShortcut } from "@/features/shortcuts/registry";
 import type { WorkspaceStartPage } from "@/features/workspace-start";
 import type { ChangeRequestInfo, RepositoryCreateOption } from "@/lib/api";
@@ -160,6 +161,13 @@ export function WorkspacePaneSurface({
 						onChangeSession={handleEditorSessionChange}
 						onExit={editorSessionActions.exit}
 						onError={editorSessionActions.reportError}
+					/>
+				)}
+				{workspaceViewMode === "editor" && !editorSession && (
+					<EditorExplorerLanding
+						workspaceRootPath={workspaceRootPath}
+						onOpenFile={editorSessionActions.openFileReference}
+						onExit={editorSessionActions.exit}
 					/>
 				)}
 				<div
