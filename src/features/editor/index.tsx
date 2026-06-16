@@ -6,6 +6,8 @@ import {
 	Copy,
 	Eye,
 	FileCode,
+	MessageSquarePlus,
+	MoreHorizontal,
 	PanelLeft,
 	Plus,
 	Search,
@@ -24,11 +26,35 @@ import {
 import { TrafficLightSpacer } from "@/components/chrome/traffic-light-spacer";
 import { LazyStreamdown } from "@/components/streamdown-loader";
 import { Button } from "@/components/ui/button";
+import {
+	ContextMenu,
+	ContextMenuContent,
+	ContextMenuItem,
+	ContextMenuSeparator,
+	ContextMenuSub,
+	ContextMenuSubContent,
+	ContextMenuSubTrigger,
+	ContextMenuTrigger,
+} from "@/components/ui/context-menu";
+import {
+	DropdownMenu,
+	DropdownMenuCheckboxItem,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuSeparator,
+	DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { InlineShortcutDisplay } from "@/features/shortcuts/shortcut-display";
 import type { ShortcutMap } from "@/features/shortcuts/types";
 import type { ShortcutHandler } from "@/features/shortcuts/use-app-shortcuts";
 import { useAppShortcuts } from "@/features/shortcuts/use-app-shortcuts";
+import {
+	type DetectedEditor,
+	openFileInEditor,
+	revealPathInFinder,
+} from "@/lib/api";
+import { useComposerInsert } from "@/lib/composer-insert-context";
 import {
 	type EditorSessionState,
 	type EditorViewMode,
@@ -36,8 +62,14 @@ import {
 	type InspectorFileItem,
 	isMarkdownPath,
 } from "@/lib/editor-session";
+import {
+	type EditorViewPrefs,
+	getEditorViewPrefs,
+	setEditorViewPrefs,
+} from "@/lib/editor-view-prefs";
 import { isImageExtensionPath } from "@/lib/path-util";
 import {
+	detectedEditorsQueryOptions,
 	grexQueryKeys,
 	workspaceChangesQueryOptions,
 	workspaceFilesQueryOptions,
@@ -146,9 +178,12 @@ function upsertEditorTab(
 function EditorPathBreadcrumb({
 	segments,
 	fullPath,
+	onReveal,
 }: {
 	segments: string[];
 	fullPath: string;
+	/** Reveal the current file in the explorer (ensures the sidebar is open). */
+	onReveal?: () => void;
 }) {
 	const [copied, setCopied] = useState(false);
 	const handleCopyPath = () => {
@@ -181,7 +216,14 @@ function EditorPathBreadcrumb({
 								className="mr-1 size-4 shrink-0"
 							/>
 						)}
-						<span className="truncate text-muted-foreground">{segment}</span>
+						<button
+							type="button"
+							onClick={onReveal}
+							title="Reveal in explorer"
+							className="cursor-interactive truncate rounded text-muted-foreground transition-colors hover:text-foreground"
+						>
+							{segment}
+						</button>
 					</span>
 				);
 			})}
@@ -217,14 +259,33 @@ function EditorFileTabs({
 	activeTabId,
 	onSelectTab,
 	onCloseTab,
+	onCloseOthers,
+	onCloseAll,
 	onOpenSearch,
+	workspaceRootPath,
+	detectedEditors,
+	onAddToChat,
 }: {
 	tabs: EditorFileTab[];
 	activeTabId: string;
 	onSelectTab: (tab: EditorFileTab) => void;
 	onCloseTab: (tabId: string) => void;
+	onCloseOthers: (tabId: string) => void;
+	onCloseAll: () => void;
 	onOpenSearch: () => void;
+	workspaceRootPath?: string | null;
+	detectedEditors: DetectedEditor[];
+	onAddToChat: (absPath: string) => void;
 }) {
+	const tabRelPath = (absPath: string): string => {
+		if (!workspaceRootPath) return absPath;
+		const root = normalizePath(workspaceRootPath).replace(/\/+$/, "");
+		const abs = normalizePath(absPath);
+		return abs.startsWith(`${root}/`) ? abs.slice(root.length + 1) : absPath;
+	};
+	const copy = (text: string) => {
+		void navigator.clipboard?.writeText(text);
+	};
 	return (
 		<div
 			data-tauri-drag-region
@@ -245,50 +306,103 @@ function EditorFileTabs({
 					>
 						{tabs.map((tab) => {
 							const active = tab.id === activeTabId;
+							const path = tab.session.path;
 							return (
-								<TabsTrigger
-									key={tab.id}
-									value={tab.id}
-									className={cn(
-										"group/tab relative h-full w-auto min-w-[7rem] max-w-[14rem] shrink-0 flex-none justify-start gap-1.5 overflow-hidden rounded-none border-0 bg-transparent px-3 text-ui text-muted-foreground shadow-none data-active:bg-background data-active:text-foreground data-active:shadow-none aria-selected:bg-background aria-selected:text-foreground aria-selected:shadow-none dark:data-active:border-transparent dark:data-active:bg-background dark:aria-selected:border-transparent dark:aria-selected:bg-background",
-										active ? "font-medium" : undefined,
-									)}
-								>
-									<span className="tab-content-fade flex min-w-0 flex-1 items-center gap-1.5">
-										<img
-											src={getMaterialFileIcon(getBaseName(tab.session.path))}
-											alt=""
-											className="size-4 shrink-0"
-										/>
-										<span className="truncate">
-											{getBaseName(tab.session.path)}
-										</span>
-										{tab.session.dirty ? (
-											<span
-												aria-label="Modified"
-												className="size-1.5 shrink-0 rounded-full bg-muted-foreground/55"
-											/>
-										) : null}
-									</span>
-									<span className="pointer-events-none invisible absolute inset-y-0 right-0 flex items-center pr-1 group-hover/tab:pointer-events-auto group-hover/tab:visible">
-										<span
-											role="button"
-											aria-label={`Close ${getBaseName(tab.session.path)}`}
-											onPointerDown={(event) => {
-												event.preventDefault();
-												event.stopPropagation();
-											}}
-											onClick={(event) => {
-												event.preventDefault();
-												event.stopPropagation();
-												onCloseTab(tab.id);
-											}}
-											className="flex cursor-interactive items-center justify-center rounded-sm p-0.5 text-muted-foreground hover:bg-accent/60 hover:text-foreground"
+								<ContextMenu key={tab.id}>
+									<ContextMenuTrigger className="contents">
+										<TabsTrigger
+											value={tab.id}
+											className={cn(
+												"group/tab relative h-full w-auto min-w-[7rem] max-w-[14rem] shrink-0 flex-none justify-start gap-1.5 overflow-hidden rounded-none border-0 bg-transparent px-3 text-ui text-muted-foreground shadow-none data-active:bg-background data-active:text-foreground data-active:shadow-none aria-selected:bg-background aria-selected:text-foreground aria-selected:shadow-none dark:data-active:border-transparent dark:data-active:bg-background dark:aria-selected:border-transparent dark:aria-selected:bg-background",
+												active ? "font-medium" : undefined,
+											)}
 										>
-											<X className="size-3" strokeWidth={2} />
-										</span>
-									</span>
-								</TabsTrigger>
+											<span className="tab-content-fade flex min-w-0 flex-1 items-center gap-1.5">
+												<img
+													src={getMaterialFileIcon(
+														getBaseName(tab.session.path),
+													)}
+													alt=""
+													className="size-4 shrink-0"
+												/>
+												<span className="truncate">
+													{getBaseName(tab.session.path)}
+												</span>
+												{tab.session.dirty ? (
+													<span
+														aria-label="Modified"
+														className="size-1.5 shrink-0 rounded-full bg-muted-foreground/55"
+													/>
+												) : null}
+											</span>
+											<span className="pointer-events-none invisible absolute inset-y-0 right-0 flex items-center pr-1 group-hover/tab:pointer-events-auto group-hover/tab:visible">
+												<span
+													role="button"
+													aria-label={`Close ${getBaseName(tab.session.path)}`}
+													onPointerDown={(event) => {
+														event.preventDefault();
+														event.stopPropagation();
+													}}
+													onClick={(event) => {
+														event.preventDefault();
+														event.stopPropagation();
+														onCloseTab(tab.id);
+													}}
+													className="flex cursor-interactive items-center justify-center rounded-sm p-0.5 text-muted-foreground hover:bg-accent/60 hover:text-foreground"
+												>
+													<X className="size-3" strokeWidth={2} />
+												</span>
+											</span>
+										</TabsTrigger>
+									</ContextMenuTrigger>
+									<ContextMenuContent className="w-52">
+										<ContextMenuItem onSelect={() => onCloseTab(tab.id)}>
+											Close
+										</ContextMenuItem>
+										<ContextMenuItem
+											disabled={tabs.length < 2}
+											onSelect={() => onCloseOthers(tab.id)}
+										>
+											Close others
+										</ContextMenuItem>
+										<ContextMenuItem onSelect={onCloseAll}>
+											Close all
+										</ContextMenuItem>
+										<ContextMenuSeparator />
+										<ContextMenuItem onSelect={() => copy(path)}>
+											Copy path
+										</ContextMenuItem>
+										<ContextMenuItem onSelect={() => copy(tabRelPath(path))}>
+											Copy relative path
+										</ContextMenuItem>
+										<ContextMenuItem
+											onSelect={() => void revealPathInFinder(path)}
+										>
+											Reveal in Finder
+										</ContextMenuItem>
+										{detectedEditors.length > 0 ? (
+											<ContextMenuSub>
+												<ContextMenuSubTrigger>Open with</ContextMenuSubTrigger>
+												<ContextMenuSubContent>
+													{detectedEditors.map((editor) => (
+														<ContextMenuItem
+															key={editor.id}
+															onSelect={() =>
+																void openFileInEditor(path, editor.id)
+															}
+														>
+															{editor.name}
+														</ContextMenuItem>
+													))}
+												</ContextMenuSubContent>
+											</ContextMenuSub>
+										) : null}
+										<ContextMenuSeparator />
+										<ContextMenuItem onSelect={() => onAddToChat(path)}>
+											Add to chat
+										</ContextMenuItem>
+									</ContextMenuContent>
+								</ContextMenu>
 							);
 						})}
 					</TabsList>
@@ -1123,6 +1237,57 @@ export function WorkspaceEditorSurface({
 		return abs.startsWith(`${root}/`) ? abs.slice(root.length + 1) : null;
 	}, [workspaceRootPath, editorSession.path]);
 
+	// ---- Tab menu + header actions (reuse the explorer's machinery) ----
+	const insertIntoComposer = useComposerInsert();
+	const detectedEditors = useQuery(detectedEditorsQueryOptions()).data ?? [];
+	const toRelPath = useCallback(
+		(absPath: string): string => {
+			if (!workspaceRootPath) return absPath;
+			const root = normalizePath(workspaceRootPath).replace(/\/+$/, "");
+			const abs = normalizePath(absPath);
+			return abs.startsWith(`${root}/`) ? abs.slice(root.length + 1) : absPath;
+		},
+		[workspaceRootPath],
+	);
+	const addPathToChat = useCallback(
+		(absPath: string) => {
+			insertIntoComposer({
+				items: [{ kind: "file", path: toRelPath(absPath) }],
+				behavior: "append",
+			});
+		},
+		[insertIntoComposer, toRelPath],
+	);
+	const closeOtherTabs = useCallback(
+		(keepId: string) => {
+			const kept = fileTabs.find((tab) => tab.id === keepId);
+			if (!kept) return;
+			setFileTabs([kept]);
+			publishSessionChange(kept.session);
+		},
+		[fileTabs, publishSessionChange],
+	);
+
+	// ---- View menu: live Monaco prefs + go-to-line + diff layout ----
+	const [viewPrefs, setViewPrefs] =
+		useState<EditorViewPrefs>(getEditorViewPrefs);
+	const toggleViewPref = (key: keyof EditorViewPrefs) => {
+		setViewPrefs(setEditorViewPrefs({ [key]: !viewPrefs[key] }));
+	};
+	const [diffSideBySide, setDiffSideBySide] = useState(true);
+	const toggleDiffLayout = () => {
+		const next = !diffSideBySide;
+		setDiffSideBySide(next);
+		diffControllerRef.current?.editor.updateOptions({ renderSideBySide: next });
+	};
+	const triggerGotoLine = () => {
+		const target =
+			fileControllerRef.current?.editor ??
+			diffControllerRef.current?.editor.getModifiedEditor();
+		target?.focus();
+		void target?.getAction("editor.action.gotoLine")?.run();
+	};
+
 	const handleSave = async () => {
 		const latest = latestSessionRef.current;
 		if (latest.kind !== "file" || latest.modifiedText === undefined) {
@@ -1208,7 +1373,12 @@ export function WorkspaceEditorSurface({
 						activeTabId={activeTabId}
 						onSelectTab={(tab) => publishSessionChange(tab.session)}
 						onCloseTab={closeTabById}
+						onCloseOthers={closeOtherTabs}
+						onCloseAll={onCloseLastFile}
 						onOpenSearch={openFileSearch}
+						workspaceRootPath={workspaceRootPath}
+						detectedEditors={detectedEditors}
+						onAddToChat={addPathToChat}
 					/>
 				</div>
 
@@ -1259,6 +1429,72 @@ export function WorkspaceEditorSurface({
 					<Button
 						type="button"
 						variant="ghost"
+						size="icon-sm"
+						onClick={() => addPathToChat(editorSession.path)}
+						aria-label="Add this file to chat"
+						title="Add file to chat"
+						className="text-muted-foreground hover:text-foreground"
+					>
+						<MessageSquarePlus className="size-4" strokeWidth={1.8} />
+					</Button>
+					<DropdownMenu>
+						<DropdownMenuTrigger asChild>
+							<Button
+								type="button"
+								variant="ghost"
+								size="icon-sm"
+								aria-label="Editor view options"
+								title="View options"
+								className="text-muted-foreground hover:text-foreground"
+							>
+								<MoreHorizontal className="size-4" strokeWidth={1.8} />
+							</Button>
+						</DropdownMenuTrigger>
+						<DropdownMenuContent align="end" className="w-52">
+							<DropdownMenuItem onSelect={triggerGotoLine}>
+								Go to line…
+							</DropdownMenuItem>
+							<DropdownMenuSeparator />
+							<DropdownMenuCheckboxItem
+								checked={viewPrefs.wordWrap}
+								onCheckedChange={() => toggleViewPref("wordWrap")}
+							>
+								Word wrap
+							</DropdownMenuCheckboxItem>
+							<DropdownMenuCheckboxItem
+								checked={viewPrefs.minimap}
+								onCheckedChange={() => toggleViewPref("minimap")}
+							>
+								Minimap
+							</DropdownMenuCheckboxItem>
+							<DropdownMenuCheckboxItem
+								checked={viewPrefs.stickyScroll}
+								onCheckedChange={() => toggleViewPref("stickyScroll")}
+							>
+								Sticky scroll
+							</DropdownMenuCheckboxItem>
+							<DropdownMenuCheckboxItem
+								checked={viewPrefs.whitespace}
+								onCheckedChange={() => toggleViewPref("whitespace")}
+							>
+								Render whitespace
+							</DropdownMenuCheckboxItem>
+							{editorSession.kind === "diff" ? (
+								<>
+									<DropdownMenuSeparator />
+									<DropdownMenuCheckboxItem
+										checked={diffSideBySide}
+										onCheckedChange={toggleDiffLayout}
+									>
+										Side-by-side diff
+									</DropdownMenuCheckboxItem>
+								</>
+							) : null}
+						</DropdownMenuContent>
+					</DropdownMenu>
+					<Button
+						type="button"
+						variant="ghost"
 						size="sm"
 						onClick={onExit}
 						aria-label={closeLabel}
@@ -1278,6 +1514,9 @@ export function WorkspaceEditorSurface({
 					<EditorPathBreadcrumb
 						segments={breadcrumbSegments}
 						fullPath={editorSession.path}
+						onReveal={() => {
+							if (!explorerOpen) onToggleExplorer();
+						}}
 					/>
 				</div>
 			</div>

@@ -6,6 +6,11 @@ import htmlWorker from "monaco-editor/esm/vs/language/html/html.worker?worker";
 import jsonWorker from "monaco-editor/esm/vs/language/json/json.worker?worker";
 import tsWorker from "monaco-editor/esm/vs/language/typescript/ts.worker?worker";
 import { resolveCssColor } from "@/lib/css-color";
+import {
+	type EditorViewPrefs,
+	getEditorViewPrefs,
+	subscribeEditorViewPrefs,
+} from "./editor-view-prefs";
 
 type MonacoModule = typeof Monaco;
 type StandaloneEditor = Monaco.editor.IStandaloneCodeEditor;
@@ -143,6 +148,25 @@ function updateActiveEditorFonts() {
 	}
 }
 
+// Editor view preferences (word wrap / minimap / sticky scroll / whitespace)
+// live in their own Monaco-free module so the header menu can toggle them
+// without eager-loading this bundle. We read them when building an editor and
+// apply changes live via the subscription below.
+function viewPrefsToOptions(prefs: EditorViewPrefs) {
+	return {
+		wordWrap: (prefs.wordWrap ? "on" : "off") as "on" | "off",
+		minimap: { enabled: prefs.minimap },
+		stickyScroll: { enabled: prefs.stickyScroll },
+		renderWhitespace: (prefs.whitespace ? "all" : "none") as "all" | "none",
+	};
+}
+
+subscribeEditorViewPrefs((prefs) => {
+	const options = viewPrefsToOptions(prefs);
+	for (const editor of activeFileEditors) editor.updateOptions(options);
+	for (const editor of activeDiffEditors) editor.updateOptions(options);
+});
+
 export async function createFileEditor(options: {
 	container: HTMLElement;
 	path: string;
@@ -178,7 +202,6 @@ export async function createFileEditor(options: {
 		lightbulb: { enabled: monaco.editor.ShowLightbulbIconMode.Off },
 		lineHeight: 21,
 		links: false,
-		minimap: { enabled: false },
 		model,
 		occurrencesHighlight: "off",
 		padding: { top: 14, bottom: 24 },
@@ -193,7 +216,7 @@ export async function createFileEditor(options: {
 		suggestOnTriggerCharacters: false,
 		tabSize: 2,
 		theme: themeId(desiredTheme),
-		wordWrap: "on",
+		...viewPrefsToOptions(getEditorViewPrefs()),
 	});
 	activeFileEditors.add(editor);
 	const findWidgetTooltipPatch = suppressFindWidgetCloseTooltip(
@@ -315,7 +338,6 @@ export async function createDiffEditor(options: {
 		lightbulb: { enabled: monaco.editor.ShowLightbulbIconMode.Off },
 		lineHeight: 21,
 		links: false,
-		minimap: { enabled: false },
 		occurrencesHighlight: "off",
 		originalEditable: false,
 		padding: { top: 14, bottom: 24 },
@@ -331,6 +353,7 @@ export async function createDiffEditor(options: {
 		smoothScrolling: true,
 		suggestOnTriggerCharacters: false,
 		theme: themeId(desiredTheme),
+		...viewPrefsToOptions(getEditorViewPrefs()),
 	});
 	activeDiffEditors.add(editor);
 
