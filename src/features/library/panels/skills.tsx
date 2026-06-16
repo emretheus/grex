@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { createSkill, type SkillSummary } from "@/lib/api";
+import { installSkill, type SkillSummary } from "@/lib/api";
 import { grexQueryKeys, librarySkillsQueryOptions } from "@/lib/query-client";
 import { BrandIcon } from "../mcp-brand-icon";
 import {
@@ -50,10 +50,11 @@ export function LibrarySkillsPanel() {
 
 	const install = useMutation({
 		mutationFn: (entry: SkillCatalogEntry) =>
-			createSkill({
+			installSkill({
 				name: entry.key,
 				description: entry.description,
 				content: skillCatalogContent(entry),
+				sourceUrl: entry.sourceUrl ?? null,
 			}),
 		onSuccess: () =>
 			queryClient.invalidateQueries({ queryKey: grexQueryKeys.librarySkills }),

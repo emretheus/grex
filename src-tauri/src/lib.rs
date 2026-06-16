@@ -831,9 +831,11 @@ pub fn run() {
             commands::library_commands::library_mcp_delete,
             commands::library_commands::library_mcp_sync_preview,
             commands::library_commands::library_mcp_sync,
+            commands::library_commands::library_mcp_test,
             commands::library_commands::library_skills_list,
             commands::library_commands::library_skills_read,
             commands::library_commands::library_skills_create,
+            commands::library_commands::library_skills_install,
             commands::library_commands::library_skills_update,
             commands::library_commands::library_skills_delete
         ])

@@ -8,6 +8,7 @@
 use tauri::AppHandle;
 
 use crate::library::agent_mcp::{self, SyncPlan};
+use crate::library::mcp_test::{self, McpTestResult};
 use crate::library::skills::{self, SkillDetail, SkillSummary};
 use crate::models::library_mcp::{self, McpServer, McpServerInput};
 use crate::models::library_prompts::{self, PromptTemplate};
@@ -103,6 +104,13 @@ pub async fn library_mcp_sync() -> CmdResult<SyncPlan> {
     .await
 }
 
+/// Test-connect to a server config (unsaved): runs an MCP handshake and reports
+/// whether it connected and how many tools it exposes.
+#[tauri::command]
+pub async fn library_mcp_test(server: McpServerInput) -> CmdResult<McpTestResult> {
+    run_blocking(move || Ok(mcp_test::test_server(&server))).await
+}
+
 // ── Skills ──────────────────────────────────────────────────────────────────
 
 /// List installed Library skills.
@@ -136,6 +144,58 @@ pub async fn library_skills_create(
     .await?;
     ui_sync::publish(&app, UiMutationEvent::LibrarySkillsChanged);
     Ok(created)
+}
+
+/// Install a recommended skill. When `source_url` is set, fetch the real
+/// upstream `SKILL.md` (best-effort, ~12s) and fall back to `content` on any
+/// failure — so installing always succeeds, just with a generated starter when
+/// the network/source is unavailable.
+#[tauri::command]
+pub async fn library_skills_install(
+    app: AppHandle,
+    name: String,
+    description: String,
+    content: String,
+    source_url: Option<String>,
+) -> CmdResult<SkillSummary> {
+    let created = run_blocking(move || {
+        let resolved = source_url
+            .as_deref()
+            .and_then(fetch_remote_skill_md)
+            .unwrap_or(content);
+        skills::create_skill(
+            &skills::production_roots(),
+            &name,
+            &description,
+            Some(&resolved),
+        )
+    })
+    .await?;
+    ui_sync::publish(&app, UiMutationEvent::LibrarySkillsChanged);
+    Ok(created)
+}
+
+/// Best-effort fetch of a remote `SKILL.md`. Returns `None` on any error (the
+/// caller falls back to a generated starter). Only `https://` is honored.
+fn fetch_remote_skill_md(url: &str) -> Option<String> {
+    if !url.starts_with("https://") {
+        return None;
+    }
+    let client = reqwest::blocking::Client::builder()
+        .timeout(std::time::Duration::from_secs(12))
+        .user_agent("grex")
+        .build()
+        .ok()?;
+    let resp = client.get(url).send().ok()?;
+    if !resp.status().is_success() {
+        return None;
+    }
+    let text = resp.text().ok()?;
+    if text.trim().is_empty() {
+        None
+    } else {
+        Some(text)
+    }
 }
 
 /// Overwrite a skill's `SKILL.md`.

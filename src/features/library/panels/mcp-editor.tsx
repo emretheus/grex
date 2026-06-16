@@ -1,5 +1,11 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { ArrowLeft, Trash2 } from "lucide-react";
+import {
+	ArrowLeft,
+	CheckCircle2,
+	PlugZap,
+	Trash2,
+	XCircle,
+} from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -10,7 +16,9 @@ import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import {
 	deleteMcpServer,
 	type McpServer,
+	type McpServerInput,
 	type McpTransport,
+	testMcpServer,
 	upsertMcpServer,
 } from "@/lib/api";
 import { grexQueryKeys } from "@/lib/query-client";
@@ -88,25 +96,28 @@ export function McpEditor({
 			queryKey: grexQueryKeys.libraryMcpServers,
 		});
 
+	const buildInput = (): McpServerInput => ({
+		id: server?.id ?? null,
+		name: name.trim(),
+		transport,
+		command: transport === "stdio" ? command.trim() || null : null,
+		args: transport === "stdio" ? parseLines(argsText) : [],
+		url: transport === "http" ? url.trim() || null : null,
+		headers: transport === "http" ? parseKeyVals(headersText, ":") : {},
+		env: parseKeyVals(envText, "="),
+		providers,
+		enabled,
+	});
+
 	const save = useMutation({
-		mutationFn: () =>
-			upsertMcpServer({
-				id: server?.id ?? null,
-				name: name.trim(),
-				transport,
-				command: transport === "stdio" ? command.trim() || null : null,
-				args: transport === "stdio" ? parseLines(argsText) : [],
-				url: transport === "http" ? url.trim() || null : null,
-				headers: transport === "http" ? parseKeyVals(headersText, ":") : {},
-				env: parseKeyVals(envText, "="),
-				providers,
-				enabled,
-			}),
+		mutationFn: () => upsertMcpServer(buildInput()),
 		onSuccess: () => {
 			void invalidate();
 			onDone();
 		},
 	});
+
+	const test = useMutation({ mutationFn: () => testMcpServer(buildInput()) });
 
 	const remove = useMutation({
 		mutationFn: () => deleteMcpServer(server?.id ?? ""),
@@ -117,12 +128,10 @@ export function McpEditor({
 	});
 
 	const nameValid = /^[\w.-]+$/.test(name.trim());
-	const canSave =
-		nameValid &&
-		(transport === "stdio"
-			? command.trim().length > 0
-			: url.trim().length > 0) &&
-		!save.isPending;
+	const hasTarget =
+		transport === "stdio" ? command.trim().length > 0 : url.trim().length > 0;
+	const canSave = nameValid && hasTarget && !save.isPending;
+	const canTest = hasTarget && !test.isPending;
 
 	const toggleProvider = (id: string) =>
 		setProviders((prev) =>
@@ -156,11 +165,31 @@ export function McpEditor({
 							Delete
 						</Button>
 					) : null}
+					<Button
+						variant="outline"
+						size="sm"
+						disabled={!canTest}
+						onClick={() => test.mutate()}
+					>
+						<PlugZap className="size-4" />
+						{test.isPending ? "Testing…" : "Test"}
+					</Button>
 					<Button size="sm" disabled={!canSave} onClick={() => save.mutate()}>
 						Save
 					</Button>
 				</div>
 			</div>
+
+			{test.data || test.isError ? (
+				<TestResultBanner
+					ok={Boolean(test.data?.ok)}
+					serverName={test.data?.serverName ?? null}
+					toolCount={test.data?.toolCount ?? null}
+					message={
+						test.isError ? "Test failed to run." : (test.data?.error ?? null)
+					}
+				/>
+			) : null}
 
 			<div className="min-h-0 flex-1 space-y-4 overflow-y-auto px-8 py-5">
 				<Field label="Name">
@@ -301,6 +330,41 @@ function Field({
 		<div className="space-y-1.5">
 			<span className="text-small font-medium text-foreground">{label}</span>
 			{children}
+		</div>
+	);
+}
+
+/** Result of a "Test connection" run, shown under the editor header. */
+function TestResultBanner({
+	ok,
+	serverName,
+	toolCount,
+	message,
+}: {
+	ok: boolean;
+	serverName: string | null;
+	toolCount: number | null;
+	message: string | null;
+}) {
+	if (ok) {
+		const tools =
+			typeof toolCount === "number"
+				? ` · ${toolCount} tool${toolCount === 1 ? "" : "s"}`
+				: "";
+		return (
+			<div className="flex items-center gap-2 border-border/40 border-b bg-emerald-500/10 px-8 py-2 text-emerald-700 text-small dark:text-emerald-400">
+				<CheckCircle2 className="size-4 shrink-0" />
+				<span>
+					Connected{serverName ? ` to ${serverName}` : ""}
+					{tools}.
+				</span>
+			</div>
+		);
+	}
+	return (
+		<div className="flex items-center gap-2 border-border/40 border-b bg-destructive/10 px-8 py-2 text-destructive text-small">
+			<XCircle className="size-4 shrink-0" />
+			<span>{message ?? "Couldn't connect."}</span>
 		</div>
 	);
 }

@@ -1974,6 +1974,21 @@ export async function syncMcpServers(): Promise<McpSyncPlan> {
 	return await invoke<McpSyncPlan>("library_mcp_sync");
 }
 
+/** Result of an MCP "Test connection" (initialize + tools/list handshake). */
+export type McpTestResult = {
+	ok: boolean;
+	serverName?: string | null;
+	toolCount?: number | null;
+	error?: string | null;
+};
+
+/** Test-connect an (unsaved) MCP server config. */
+export async function testMcpServer(
+	server: McpServerInput,
+): Promise<McpTestResult> {
+	return await invoke<McpTestResult>("library_mcp_test", { server });
+}
+
 // ── Library: Skills ─────────────────────────────────────────────────────────
 // SKILL.md modules installed to ~/.agentskills/<name> and symlinked into each
 // agent's skills dir.
@@ -2012,6 +2027,24 @@ export async function createSkill(input: {
 		name: input.name,
 		description: input.description,
 		content: input.content ?? null,
+	});
+}
+
+/**
+ * Install a recommended skill. When `sourceUrl` is set, the real upstream
+ * SKILL.md is fetched server-side, falling back to `content` on any failure.
+ */
+export async function installSkill(input: {
+	name: string;
+	description: string;
+	content: string;
+	sourceUrl?: string | null;
+}): Promise<SkillSummary> {
+	return await invoke<SkillSummary>("library_skills_install", {
+		name: input.name,
+		description: input.description,
+		content: input.content,
+		sourceUrl: input.sourceUrl ?? null,
 	});
 }
 

@@ -6,4 +6,5 @@
 //! from a terminal rather than through Grex.
 
 pub mod agent_mcp;
+pub mod mcp_test;
 pub mod skills;
