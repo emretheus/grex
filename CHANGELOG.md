@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.6.0
+
+### Minor Changes
+
+- [#38](https://github.com/emretheus/grex/pull/38) [`87b5c65`](https://github.com/emretheus/grex/commit/87b5c65a85c5dadd46277943d0ba795c8c71e78b) Thanks [@emretheus](https://github.com/emretheus)! - Add a Library for managing reusable Prompts, Skills, and MCP servers across agents from one place.
+
+  - Prompts: save reusable instructions and insert them into any conversation with `/prompt`.
+  - MCP Servers: configure a server once — custom or from a recommended catalog — test its connection in place, and sync it to Claude Code and Codex's native configs with a preview of exactly what changes.
+  - Skills: see installed skills and browse a recommended catalog to install (fetches the real upstream `SKILL.md` and links it into your agents), or author your own.
+
 ## 0.5.1
 
 ### Patch Changes
