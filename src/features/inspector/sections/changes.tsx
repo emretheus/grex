@@ -355,6 +355,21 @@ function ChangesSectionImpl({
 				onContinueWorkspace={handleContinueWorkspace}
 			/>
 
+			{onBrowseFiles ? (
+				<button
+					type="button"
+					onClick={onBrowseFiles}
+					title="Browse all files in this workspace"
+					className="flex w-full shrink-0 cursor-interactive items-center gap-1.5 border-b border-border/40 bg-muted/10 px-3 py-1.5 text-left text-small text-muted-foreground transition-colors hover:bg-accent/50 hover:text-foreground"
+				>
+					<FolderTreeIcon
+						className="size-3.5 shrink-0 text-muted-foreground/80"
+						strokeWidth={2}
+					/>
+					<span>Browse files</span>
+				</button>
+			) : null}
+
 			<ScrollArea
 				aria-label="Changes panel body"
 				className="min-h-0 flex-1 bg-muted/20 font-sans text-ui leading-5"
@@ -437,20 +452,8 @@ function ChangesSectionImpl({
 				)}
 
 				{changesLoaded && !hasChanges && !branchSwitching && (
-					<div className="flex flex-col items-start gap-2.5 px-3 py-3">
-						<span className="text-small leading-5 text-muted-foreground/70">
-							No changes on this branch yet.
-						</span>
-						{onBrowseFiles ? (
-							<button
-								type="button"
-								onClick={onBrowseFiles}
-								className="inline-flex cursor-interactive items-center gap-1.5 rounded-md border border-border/60 px-2.5 py-1 text-small text-muted-foreground transition-colors hover:bg-accent/60 hover:text-foreground"
-							>
-								<FolderTreeIcon className="size-3.5" strokeWidth={2} />
-								Browse files
-							</button>
-						) : null}
+					<div className="px-3 py-3 text-small leading-5 text-muted-foreground/70">
+						No changes on this branch yet.
 					</div>
 				)}
 			</ScrollArea>
