@@ -2642,7 +2642,13 @@ export type LinearProject = {
 // provider.
 // ---------------------------------------------------------------------------
 
-export type IssueProviderKind = "linear" | "jira" | "trello";
+export type IssueProviderKind =
+	| "linear"
+	| "jira"
+	| "trello"
+	| "forgejo"
+	| "featurebase"
+	| "plain";
 
 export type IssueItemState = { label: string; tone: string };
 
@@ -2671,7 +2677,35 @@ export type TrelloItemMeta = {
 	labels: { name: string; color: string }[];
 };
 
-export type IssueItemMeta = LinearItemMeta | JiraItemMeta | TrelloItemMeta;
+export type ForgejoItemMeta = {
+	type: "forgejo";
+	hostName?: string | null;
+	repo: string;
+	number: number;
+	labels: { name: string; color: string }[];
+};
+
+export type FeaturebaseItemMeta = {
+	type: "featurebase";
+	orgName?: string | null;
+	board: string;
+	upvotes: number;
+};
+
+export type PlainItemMeta = {
+	type: "plain";
+	workspaceName?: string | null;
+	customerName: string;
+	priority?: string | null;
+};
+
+export type IssueItemMeta =
+	| LinearItemMeta
+	| JiraItemMeta
+	| TrelloItemMeta
+	| ForgejoItemMeta
+	| FeaturebaseItemMeta
+	| PlainItemMeta;
 
 /** One issue/task projected into a context-card-shaped row. */
 export type IssueInboxItem = {
@@ -3068,6 +3102,294 @@ export async function trelloGetIssue(args: {
 	}
 }
 
+// ---------------------------------------------------------------------------
+// Forgejo context source. Mirrors `src-tauri/src/commands/forgejo_commands.rs`.
+// ---------------------------------------------------------------------------
+
+export type ForgejoConnection = {
+	id: string;
+	hostName: string;
+	userName: string;
+	assignedOnly: boolean;
+};
+
+export async function forgejoConnections(): Promise<ForgejoConnection[]> {
+	try {
+		return await invoke<ForgejoConnection[]>("forgejo_connections");
+	} catch (error) {
+		throw new Error(
+			describeInvokeError(error, "Couldn't read Forgejo connections."),
+		);
+	}
+}
+
+export async function forgejoConnect(args: {
+	host: string;
+	token: string;
+}): Promise<ForgejoConnection> {
+	try {
+		return await invoke<ForgejoConnection>("forgejo_connect", {
+			host: args.host,
+			token: args.token,
+		});
+	} catch (error) {
+		throw new Error(describeInvokeError(error, "Couldn't connect Forgejo."));
+	}
+}
+
+export async function forgejoDisconnect(connectionId: string): Promise<void> {
+	try {
+		await invoke<void>("forgejo_disconnect", { connectionId });
+	} catch (error) {
+		throw new Error(describeInvokeError(error, "Couldn't disconnect Forgejo."));
+	}
+}
+
+export async function forgejoUpdateScope(args: {
+	connectionId: string;
+	assignedOnly: boolean;
+}): Promise<ForgejoConnection> {
+	try {
+		return await invoke<ForgejoConnection>("forgejo_update_scope", {
+			connectionId: args.connectionId,
+			assignedOnly: args.assignedOnly,
+		});
+	} catch (error) {
+		throw new Error(
+			describeInvokeError(error, "Couldn't update Forgejo settings."),
+		);
+	}
+}
+
+export async function forgejoListInboxItems(args: {
+	cursors?: Record<string, string> | null;
+	limit?: number;
+}): Promise<IssueInboxPage> {
+	try {
+		return await invoke<IssueInboxPage>("forgejo_list_inbox_items", {
+			cursors: args.cursors ?? null,
+			limit: args.limit ?? 30,
+		});
+	} catch (error) {
+		throw new Error(
+			describeInvokeError(error, "Couldn't load Forgejo issues."),
+		);
+	}
+}
+
+export async function forgejoSearchIssues(args: {
+	query: string;
+	cursors?: Record<string, string> | null;
+	limit?: number;
+}): Promise<IssueInboxPage> {
+	try {
+		return await invoke<IssueInboxPage>("forgejo_search_issues", {
+			query: args.query,
+			cursors: args.cursors ?? null,
+			limit: args.limit ?? 30,
+		});
+	} catch (error) {
+		throw new Error(
+			describeInvokeError(error, "Couldn't search Forgejo issues."),
+		);
+	}
+}
+
+export async function forgejoGetIssue(args: {
+	connectionId: string;
+	issueId: string;
+}): Promise<IssueDetail> {
+	try {
+		return await invoke<IssueDetail>("forgejo_get_issue", {
+			connectionId: args.connectionId,
+			issueId: args.issueId,
+		});
+	} catch (error) {
+		throw new Error(describeInvokeError(error, "Couldn't load Forgejo issue."));
+	}
+}
+
+// ---------------------------------------------------------------------------
+// Featurebase context source.
+// Mirrors `src-tauri/src/commands/featurebase_commands.rs`.
+// ---------------------------------------------------------------------------
+
+export type FeaturebaseConnection = {
+	id: string;
+	orgName: string;
+};
+
+export async function featurebaseConnections(): Promise<
+	FeaturebaseConnection[]
+> {
+	try {
+		return await invoke<FeaturebaseConnection[]>("featurebase_connections");
+	} catch (error) {
+		throw new Error(
+			describeInvokeError(error, "Couldn't read Featurebase connections."),
+		);
+	}
+}
+
+export async function featurebaseConnect(args: {
+	apiKey: string;
+	orgUrl: string;
+}): Promise<FeaturebaseConnection> {
+	try {
+		return await invoke<FeaturebaseConnection>("featurebase_connect", {
+			apiKey: args.apiKey,
+			orgUrl: args.orgUrl,
+		});
+	} catch (error) {
+		throw new Error(
+			describeInvokeError(error, "Couldn't connect Featurebase."),
+		);
+	}
+}
+
+export async function featurebaseDisconnect(
+	connectionId: string,
+): Promise<void> {
+	try {
+		await invoke<void>("featurebase_disconnect", { connectionId });
+	} catch (error) {
+		throw new Error(
+			describeInvokeError(error, "Couldn't disconnect Featurebase."),
+		);
+	}
+}
+
+export async function featurebaseListInboxItems(args: {
+	cursors?: Record<string, string> | null;
+	limit?: number;
+}): Promise<IssueInboxPage> {
+	try {
+		return await invoke<IssueInboxPage>("featurebase_list_inbox_items", {
+			cursors: args.cursors ?? null,
+			limit: args.limit ?? 30,
+		});
+	} catch (error) {
+		throw new Error(
+			describeInvokeError(error, "Couldn't load Featurebase posts."),
+		);
+	}
+}
+
+export async function featurebaseSearchIssues(args: {
+	query: string;
+	cursors?: Record<string, string> | null;
+	limit?: number;
+}): Promise<IssueInboxPage> {
+	try {
+		return await invoke<IssueInboxPage>("featurebase_search_issues", {
+			query: args.query,
+			cursors: args.cursors ?? null,
+			limit: args.limit ?? 30,
+		});
+	} catch (error) {
+		throw new Error(
+			describeInvokeError(error, "Couldn't search Featurebase posts."),
+		);
+	}
+}
+
+export async function featurebaseGetIssue(args: {
+	connectionId: string;
+	issueId: string;
+}): Promise<IssueDetail> {
+	try {
+		return await invoke<IssueDetail>("featurebase_get_issue", {
+			connectionId: args.connectionId,
+			issueId: args.issueId,
+		});
+	} catch (error) {
+		throw new Error(
+			describeInvokeError(error, "Couldn't load Featurebase post."),
+		);
+	}
+}
+
+// ---------------------------------------------------------------------------
+// Plain context source. Mirrors `src-tauri/src/commands/plain_commands.rs`.
+// ---------------------------------------------------------------------------
+
+export type PlainConnection = {
+	id: string;
+	workspaceName: string;
+};
+
+export async function plainConnections(): Promise<PlainConnection[]> {
+	try {
+		return await invoke<PlainConnection[]>("plain_connections");
+	} catch (error) {
+		throw new Error(
+			describeInvokeError(error, "Couldn't read Plain connections."),
+		);
+	}
+}
+
+export async function plainConnect(apiKey: string): Promise<PlainConnection> {
+	try {
+		return await invoke<PlainConnection>("plain_connect", { apiKey });
+	} catch (error) {
+		throw new Error(describeInvokeError(error, "Couldn't connect Plain."));
+	}
+}
+
+export async function plainDisconnect(connectionId: string): Promise<void> {
+	try {
+		await invoke<void>("plain_disconnect", { connectionId });
+	} catch (error) {
+		throw new Error(describeInvokeError(error, "Couldn't disconnect Plain."));
+	}
+}
+
+export async function plainListInboxItems(args: {
+	cursors?: Record<string, string> | null;
+	limit?: number;
+}): Promise<IssueInboxPage> {
+	try {
+		return await invoke<IssueInboxPage>("plain_list_inbox_items", {
+			cursors: args.cursors ?? null,
+			limit: args.limit ?? 30,
+		});
+	} catch (error) {
+		throw new Error(describeInvokeError(error, "Couldn't load Plain threads."));
+	}
+}
+
+export async function plainSearchIssues(args: {
+	query: string;
+	cursors?: Record<string, string> | null;
+	limit?: number;
+}): Promise<IssueInboxPage> {
+	try {
+		return await invoke<IssueInboxPage>("plain_search_issues", {
+			query: args.query,
+			cursors: args.cursors ?? null,
+			limit: args.limit ?? 30,
+		});
+	} catch (error) {
+		throw new Error(
+			describeInvokeError(error, "Couldn't search Plain threads."),
+		);
+	}
+}
+
+export async function plainGetIssue(args: {
+	connectionId: string;
+	issueId: string;
+}): Promise<IssueDetail> {
+	try {
+		return await invoke<IssueDetail>("plain_get_issue", {
+			connectionId: args.connectionId,
+			issueId: args.issueId,
+		});
+	} catch (error) {
+		throw new Error(describeInvokeError(error, "Couldn't load Plain thread."));
+	}
+}
+
 export type UiMutationEvent =
 	| { type: "workspaceListChanged" }
 	| { type: "workspaceChanged"; workspaceId: string }
@@ -3096,7 +3418,7 @@ export type UiMutationEvent =
 	| { type: "activeStreamsChanged" }
 	| { type: "slackWorkspacesChanged" }
 	| { type: "slackTokenInvalidated"; teamId: string }
-	| { type: "issueConnectionChanged"; provider: "linear" | "jira" | "trello" }
+	| { type: "issueConnectionChanged"; provider: IssueProviderKind }
 	| { type: "triageConfigChanged" }
 	| { type: "triageActiveStatusChanged" }
 	| { type: "triageWorkspaceCreated"; workspaceId: string }

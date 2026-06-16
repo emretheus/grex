@@ -189,6 +189,21 @@ export const grexQueryKeys = {
 		["trelloBoards", connectionId] as const,
 	trelloIssueDetail: (connectionId: string, issueId: string) =>
 		["trelloIssueDetail", connectionId, issueId] as const,
+	forgejoConnections: ["forgejoConnections"] as const,
+	forgejoInbox: ["forgejoInbox"] as const,
+	forgejoSearch: (query: string) => ["forgejoSearch", query] as const,
+	forgejoIssueDetail: (connectionId: string, issueId: string) =>
+		["forgejoIssueDetail", connectionId, issueId] as const,
+	featurebaseConnections: ["featurebaseConnections"] as const,
+	featurebaseInbox: ["featurebaseInbox"] as const,
+	featurebaseSearch: (query: string) => ["featurebaseSearch", query] as const,
+	featurebaseIssueDetail: (connectionId: string, issueId: string) =>
+		["featurebaseIssueDetail", connectionId, issueId] as const,
+	plainConnections: ["plainConnections"] as const,
+	plainInbox: ["plainInbox"] as const,
+	plainSearch: (query: string) => ["plainSearch", query] as const,
+	plainIssueDetail: (connectionId: string, issueId: string) =>
+		["plainIssueDetail", connectionId, issueId] as const,
 	triageConfig: ["triage", "config"] as const,
 	triageActiveStatus: ["triage", "activeStatus"] as const,
 	pairedDevices: ["pairedDevices"] as const,

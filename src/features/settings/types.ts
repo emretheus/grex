@@ -23,5 +23,8 @@ export type ContextProviderTab =
 	| "linear"
 	| "jira"
 	| "trello"
+	| "forgejo"
+	| "featurebase"
+	| "plain"
 	| "slack"
 	| "mobile";

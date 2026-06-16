@@ -60,13 +60,17 @@ pub struct InboxItem {
 }
 
 /// Provider-specific render payload. Internally tagged by `type` to mirror the
-/// frontend `ContextCardMeta` union (`"linear"` / `"jira"` / `"trello"`).
+/// frontend `ContextCardMeta` union (`"linear"` / `"jira"` / `"trello"` /
+/// `"forgejo"` / `"featurebase"` / `"plain"`).
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(tag = "type", rename_all = "snake_case")]
 pub enum ItemMeta {
     Linear(LinearMeta),
     Jira(JiraMeta),
     Trello(TrelloMeta),
+    Forgejo(ForgejoMeta),
+    Featurebase(FeaturebaseMeta),
+    Plain(PlainMeta),
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -96,6 +100,36 @@ pub struct TrelloMeta {
     pub board_name: String,
     pub list_name: String,
     pub labels: Vec<NamedColor>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ForgejoMeta {
+    /// Host display name (e.g. `codeberg.org`), shown when >1 host connected.
+    pub host_name: Option<String>,
+    /// Repository `owner/name`.
+    pub repo: String,
+    pub number: i64,
+    pub labels: Vec<NamedColor>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct FeaturebaseMeta {
+    /// Org display name (the feedback host), shown when >1 org connected.
+    pub org_name: Option<String>,
+    /// Board / category name the post lives in.
+    pub board: String,
+    pub upvotes: i64,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct PlainMeta {
+    /// Workspace display name, shown when >1 workspace connected.
+    pub workspace_name: Option<String>,
+    pub customer_name: String,
+    pub priority: Option<String>,
 }
 
 /// Full issue projection for the detail view: an [`InboxItem`] superset adding

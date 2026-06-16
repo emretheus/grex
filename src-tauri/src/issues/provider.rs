@@ -14,14 +14,18 @@ use serde::{Deserialize, Serialize};
 use super::types::{InboxItem, IssueDetail};
 
 /// Stable provider discriminator. Serializes snake_case (`"linear"`,
-/// `"jira"`, `"trello"`) to match the frontend `meta.type` family and to
-/// namespace persistence (keychain service + settings KV key).
+/// `"jira"`, `"trello"`, `"forgejo"`, `"featurebase"`, `"plain"`) to match the
+/// frontend `meta.type` family and to namespace persistence (keychain service
+/// + settings KV key).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum ProviderKind {
     Linear,
     Jira,
     Trello,
+    Forgejo,
+    Featurebase,
+    Plain,
 }
 
 impl ProviderKind {
@@ -30,6 +34,9 @@ impl ProviderKind {
             ProviderKind::Linear => "linear",
             ProviderKind::Jira => "jira",
             ProviderKind::Trello => "trello",
+            ProviderKind::Forgejo => "forgejo",
+            ProviderKind::Featurebase => "featurebase",
+            ProviderKind::Plain => "plain",
         }
     }
 
@@ -40,6 +47,9 @@ impl ProviderKind {
             ProviderKind::Linear => "io.grex.linear",
             ProviderKind::Jira => "io.grex.jira",
             ProviderKind::Trello => "io.grex.trello",
+            ProviderKind::Forgejo => "io.grex.forgejo",
+            ProviderKind::Featurebase => "io.grex.featurebase",
+            ProviderKind::Plain => "io.grex.plain",
         }
     }
 
@@ -50,6 +60,9 @@ impl ProviderKind {
             ProviderKind::Linear => "linear.connections",
             ProviderKind::Jira => "jira.connections",
             ProviderKind::Trello => "trello.connections",
+            ProviderKind::Forgejo => "forgejo.connections",
+            ProviderKind::Featurebase => "featurebase.connections",
+            ProviderKind::Plain => "plain.connections",
         }
     }
 }

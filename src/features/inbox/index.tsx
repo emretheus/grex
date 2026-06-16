@@ -40,9 +40,12 @@ import {
 	InboxActionMenuButton,
 	InboxSearchField,
 } from "./actions";
+import { FeaturebaseInboxSection } from "./featurebase-inbox-section";
+import { ForgejoInboxSection } from "./forgejo-inbox-section";
 import { JiraInboxSection } from "./jira-inbox-section";
 import { InboxSourceLayout } from "./layout";
 import { LinearInboxSection } from "./linear-inbox-section";
+import { PlainInboxSection } from "./plain-inbox-section";
 import { SlackInboxSection } from "./slack-inbox-section";
 import { SourceCard } from "./source-card";
 import { SourceIcon } from "./source-icon";
@@ -58,9 +61,18 @@ import {
  *  narrow `repository.forgeProvider` (which can also be "unknown"). */
 type ForgeFilterId = "github" | "gitlab";
 
-/** Non-forge providers. Linear / Jira / Trello / Slack have real sections;
- *  Mobile remains a "Coming Soon" placeholder. */
-type ExternalFilterId = "linear" | "jira" | "trello" | "slack" | "mobile";
+/** Non-forge providers. Linear / Jira / Trello / Forgejo / Featurebase /
+ *  Plain / Slack have real sections; Mobile remains a "Coming Soon"
+ *  placeholder. */
+type ExternalFilterId =
+	| "linear"
+	| "jira"
+	| "trello"
+	| "forgejo"
+	| "featurebase"
+	| "plain"
+	| "slack"
+	| "mobile";
 
 type SourceFilterId = ForgeFilterId | ExternalFilterId;
 
@@ -103,6 +115,9 @@ const EXTERNAL_FILTER_IDS: ExternalFilterId[] = [
 	"linear",
 	"jira",
 	"trello",
+	"forgejo",
+	"featurebase",
+	"plain",
 	"mobile",
 ];
 
@@ -570,9 +585,15 @@ export const InboxSidebar = memo(function InboxSidebar({
 										? "Jira"
 										: filterId === "trello"
 											? "Trello"
-											: filterId === "slack"
-												? "Slack"
-												: "Mobile";
+											: filterId === "forgejo"
+												? "Forgejo"
+												: filterId === "featurebase"
+													? "Featurebase"
+													: filterId === "plain"
+														? "Plain"
+														: filterId === "slack"
+															? "Slack"
+															: "Mobile";
 						return (
 							<button
 								key={filterId}
@@ -607,6 +628,21 @@ export const InboxSidebar = memo(function InboxSidebar({
 									) : filterId === "trello" ? (
 										<SourceIcon
 											source="trello"
+											size={providerTabsCompact ? 13 : 14}
+										/>
+									) : filterId === "forgejo" ? (
+										<SourceIcon
+											source="forgejo"
+											size={providerTabsCompact ? 13 : 14}
+										/>
+									) : filterId === "featurebase" ? (
+										<SourceIcon
+											source="featurebase"
+											size={providerTabsCompact ? 13 : 14}
+										/>
+									) : filterId === "plain" ? (
+										<SourceIcon
+											source="plain"
 											size={providerTabsCompact ? 13 : 14}
 										/>
 									) : filterId === "mobile" ? (
@@ -650,6 +686,27 @@ export const InboxSidebar = memo(function InboxSidebar({
 				/>
 			) : selectedSource === "trello" ? (
 				<TrelloInboxSection
+					onOpenCard={onOpenCard}
+					selectedCardId={selectedCardId}
+					appendContextTarget={appendContextTarget}
+					horizontalPaddingClass={horizontalPaddingClass}
+				/>
+			) : selectedSource === "forgejo" ? (
+				<ForgejoInboxSection
+					onOpenCard={onOpenCard}
+					selectedCardId={selectedCardId}
+					appendContextTarget={appendContextTarget}
+					horizontalPaddingClass={horizontalPaddingClass}
+				/>
+			) : selectedSource === "featurebase" ? (
+				<FeaturebaseInboxSection
+					onOpenCard={onOpenCard}
+					selectedCardId={selectedCardId}
+					appendContextTarget={appendContextTarget}
+					horizontalPaddingClass={horizontalPaddingClass}
+				/>
+			) : selectedSource === "plain" ? (
+				<PlainInboxSection
 					onOpenCard={onOpenCard}
 					selectedCardId={selectedCardId}
 					appendContextTarget={appendContextTarget}
