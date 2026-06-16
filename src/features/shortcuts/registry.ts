@@ -208,7 +208,7 @@ export const SHORTCUT_DEFINITIONS: ShortcutDefinition[] = [
 		id: "library.open",
 		title: "Open Library",
 		group: "System",
-		defaultHotkey: "Mod+Shift+L",
+		defaultHotkey: "Mod+Shift+B",
 		scopes: ["app"],
 		editable: true,
 	},

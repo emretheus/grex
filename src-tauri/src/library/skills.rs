@@ -208,7 +208,7 @@ pub fn delete_skill(roots: &SkillRoots, name: &str) -> Result<()> {
         // Only remove symlinks (never a user's real directory of the same name).
         if let Ok(meta) = std::fs::symlink_metadata(&link) {
             if meta.file_type().is_symlink() {
-                let _ = std::fs::remove_file(&link);
+                let _ = remove_symlink(&link);
             }
         }
     }
@@ -227,7 +227,7 @@ fn link_into_agents(roots: &SkillRoots, name: &str, skill_dir: &Path) -> Result<
         let link = dir.join(name);
         match std::fs::symlink_metadata(&link) {
             Ok(meta) if meta.file_type().is_symlink() => {
-                let _ = std::fs::remove_file(&link); // refresh a stale link
+                let _ = remove_symlink(&link); // refresh a stale link
             }
             Ok(_) => continue, // real file/dir already there — don't touch it
             Err(_) => {}
@@ -245,6 +245,20 @@ fn symlink_dir(src: &Path, dst: &Path) -> Result<()> {
 #[cfg(windows)]
 fn symlink_dir(src: &Path, dst: &Path) -> Result<()> {
     std::os::windows::fs::symlink_dir(src, dst).context("symlink skill")
+}
+
+/// Remove a symlink entry. We only ever create *directory* symlinks
+/// (`symlink_dir`), and on Windows a directory symlink must be removed with
+/// `remove_dir` — `remove_file` errors and leaves the link in place. On Unix
+/// `remove_file` removes a symlink of either kind.
+#[cfg(unix)]
+fn remove_symlink(link: &Path) -> std::io::Result<()> {
+    std::fs::remove_file(link)
+}
+
+#[cfg(windows)]
+fn remove_symlink(link: &Path) -> std::io::Result<()> {
+    std::fs::remove_dir(link).or_else(|_| std::fs::remove_file(link))
 }
 
 /// Generate a default `SKILL.md` with YAML frontmatter (matches the scanner's
