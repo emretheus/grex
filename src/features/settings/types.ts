@@ -21,5 +21,7 @@ export type ContextProviderTab =
 	| "github"
 	| "gitlab"
 	| "linear"
+	| "jira"
+	| "trello"
 	| "slack"
 	| "mobile";

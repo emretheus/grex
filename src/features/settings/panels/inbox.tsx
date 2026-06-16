@@ -17,13 +17,17 @@ import {
 import {
 	GithubBrandIcon,
 	GitlabBrandIcon,
+	JiraBrandIcon,
 	LinearBrandIcon,
 	SlackBrandIcon,
+	TrelloBrandIcon,
 } from "@/components/brand-icon";
 import { Button } from "@/components/ui/button";
 import { SlackConnectState } from "@/features/inbox/slack-connect-button";
 import { useSlackWorkspaces } from "@/features/inbox/use-slack-workspaces";
+import { JiraSettingsPanel } from "@/features/settings/panels/jira-settings";
 import { LinearSettingsPanel } from "@/features/settings/panels/linear-settings";
+import { TrelloSettingsPanel } from "@/features/settings/panels/trello-settings";
 import type {
 	ForgeProvider,
 	InboxKind,
@@ -99,6 +103,8 @@ const PROVIDER_TABS: {
 	// "Coming Soon" copy.
 	{ id: "slack", label: "Slack", icon: <SlackBrandIcon size={13} /> },
 	{ id: "linear", label: "Linear", icon: <LinearBrandIcon size={13} /> },
+	{ id: "jira", label: "Jira", icon: <JiraBrandIcon size={13} /> },
+	{ id: "trello", label: "Trello", icon: <TrelloBrandIcon size={13} /> },
 	{
 		id: "mobile",
 		label: "Mobile",
@@ -113,7 +119,7 @@ const PROVIDER_TABS: {
  *  Mobile remains here. */
 type ComingSoonProvider = Exclude<
 	ContextProviderTab,
-	"github" | "gitlab" | "slack" | "linear"
+	"github" | "gitlab" | "slack" | "linear" | "jira" | "trello"
 >;
 
 const COMING_SOON_COPY: Record<ComingSoonProvider, string[]> = {
@@ -406,6 +412,10 @@ export function InboxSettingsPanel({
 					<SlackSettingsPanel />
 				) : activeProvider === "linear" ? (
 					<LinearSettingsPanel />
+				) : activeProvider === "jira" ? (
+					<JiraSettingsPanel />
+				) : activeProvider === "trello" ? (
+					<TrelloSettingsPanel />
 				) : (
 					<ProviderComingSoon provider={activeProvider as ComingSoonProvider} />
 				)
@@ -598,7 +608,7 @@ function ProviderTabs({
 	onChange: (value: ContextProviderTab) => void;
 }) {
 	return (
-		<div className="grid grid-cols-5 gap-1 rounded-lg border border-border/60 bg-muted/30 p-1">
+		<div className="grid grid-cols-7 gap-1 rounded-lg border border-border/60 bg-muted/30 p-1">
 			{PROVIDER_TABS.map((tab) => (
 				<button
 					key={tab.id}

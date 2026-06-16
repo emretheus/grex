@@ -40,11 +40,13 @@ import {
 	InboxActionMenuButton,
 	InboxSearchField,
 } from "./actions";
+import { JiraInboxSection } from "./jira-inbox-section";
 import { InboxSourceLayout } from "./layout";
 import { LinearInboxSection } from "./linear-inbox-section";
 import { SlackInboxSection } from "./slack-inbox-section";
 import { SourceCard } from "./source-card";
 import { SourceIcon } from "./source-icon";
+import { TrelloInboxSection } from "./trello-inbox-section";
 import { useDebouncedValue } from "./use-debounced-value";
 import {
 	type InboxItemWithDetailRef,
@@ -56,8 +58,9 @@ import {
  *  narrow `repository.forgeProvider` (which can also be "unknown"). */
 type ForgeFilterId = "github" | "gitlab";
 
-/** All non-forge providers stay as "Coming Soon" placeholders. */
-type ExternalFilterId = "linear" | "slack" | "mobile";
+/** Non-forge providers. Linear / Jira / Trello / Slack have real sections;
+ *  Mobile remains a "Coming Soon" placeholder. */
+type ExternalFilterId = "linear" | "jira" | "trello" | "slack" | "mobile";
 
 type SourceFilterId = ForgeFilterId | ExternalFilterId;
 
@@ -95,7 +98,13 @@ type ForgeStateFilter = {
 	label: string;
 };
 
-const EXTERNAL_FILTER_IDS: ExternalFilterId[] = ["slack", "linear", "mobile"];
+const EXTERNAL_FILTER_IDS: ExternalFilterId[] = [
+	"slack",
+	"linear",
+	"jira",
+	"trello",
+	"mobile",
+];
 
 /** If the user pastes a GitHub or GitLab issue/PR/MR URL into the
  *  search box, snap the sub-tab to the matching kind so the result
@@ -557,9 +566,13 @@ export const InboxSidebar = memo(function InboxSidebar({
 								? forgeLabelsFor(filterId).providerName
 								: filterId === "linear"
 									? "Linear"
-									: filterId === "slack"
-										? "Slack"
-										: "Mobile";
+									: filterId === "jira"
+										? "Jira"
+										: filterId === "trello"
+											? "Trello"
+											: filterId === "slack"
+												? "Slack"
+												: "Mobile";
 						return (
 							<button
 								key={filterId}
@@ -584,6 +597,16 @@ export const InboxSidebar = memo(function InboxSidebar({
 									) : filterId === "slack" ? (
 										<SourceIcon
 											source="slack_thread"
+											size={providerTabsCompact ? 13 : 14}
+										/>
+									) : filterId === "jira" ? (
+										<SourceIcon
+											source="jira"
+											size={providerTabsCompact ? 13 : 14}
+										/>
+									) : filterId === "trello" ? (
+										<SourceIcon
+											source="trello"
 											size={providerTabsCompact ? 13 : 14}
 										/>
 									) : filterId === "mobile" ? (
@@ -613,6 +636,20 @@ export const InboxSidebar = memo(function InboxSidebar({
 				/>
 			) : selectedSource === "linear" ? (
 				<LinearInboxSection
+					onOpenCard={onOpenCard}
+					selectedCardId={selectedCardId}
+					appendContextTarget={appendContextTarget}
+					horizontalPaddingClass={horizontalPaddingClass}
+				/>
+			) : selectedSource === "jira" ? (
+				<JiraInboxSection
+					onOpenCard={onOpenCard}
+					selectedCardId={selectedCardId}
+					appendContextTarget={appendContextTarget}
+					horizontalPaddingClass={horizontalPaddingClass}
+				/>
+			) : selectedSource === "trello" ? (
+				<TrelloInboxSection
 					onOpenCard={onOpenCard}
 					selectedCardId={selectedCardId}
 					appendContextTarget={appendContextTarget}

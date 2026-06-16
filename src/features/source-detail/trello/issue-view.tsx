@@ -7,11 +7,11 @@ import {
 	TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { SourceIcon } from "@/features/inbox/source-icon";
-import { type IssueDetail, linearGetIssue } from "@/lib/api";
+import { type IssueDetail, trelloGetIssue } from "@/lib/api";
 import type { ComposerInsertTarget } from "@/lib/composer-insert";
 import { useComposerInsert } from "@/lib/composer-insert-context";
 import { grexQueryKeys } from "@/lib/query-client";
-import type { ContextCard, LinearIssueMeta } from "@/lib/sources/types";
+import type { ContextCard, TrelloCardMeta } from "@/lib/sources/types";
 import {
 	DetailErrorState,
 	DetailLoadingState,
@@ -23,18 +23,18 @@ import {
 	toRefreshControl,
 } from "../common";
 
-export function LinearIssueView({
+export function TrelloCardView({
 	card,
 	appendContextTarget,
 	onStartWorkspace,
 }: SourceDetailProps) {
-	const meta = card.meta.type === "linear" ? card.meta : null;
+	const meta = card.meta.type === "trello" ? card.meta : null;
 	const connectionId = meta?.connectionId ?? "";
-	// The card id IS the Linear issue UUID (set in `linearItemToContextCard`);
-	// `connectionId` selects which workspace's key fetches it.
+	// The card id IS the Trello card id (set in `trelloItemToContextCard`);
+	// `connectionId` selects which account's credentials fetch it.
 	const detailQuery = useQuery({
-		queryKey: grexQueryKeys.linearIssueDetail(connectionId, card.id),
-		queryFn: () => linearGetIssue({ connectionId, issueId: card.id }),
+		queryKey: grexQueryKeys.trelloIssueDetail(connectionId, card.id),
+		queryFn: () => trelloGetIssue({ connectionId, issueId: card.id }),
 		enabled: connectionId.length > 0,
 		staleTime: 60_000,
 		refetchOnMount: "always",
@@ -47,10 +47,10 @@ export function LinearIssueView({
 	const insertIntoComposer = useComposerInsert();
 	const handleStartWorkspace = () => {
 		if (!onStartWorkspace) return;
-		// Seed the start composer with the full issue (title + url + body)
+		// Seed the start composer with the full card (title + url + body)
 		// before the controller stashes the branch + closes the preview.
 		insertIntoComposer(
-			buildLinearStartInsert(card, detail, appendContextTarget),
+			buildTrelloStartInsert(card, detail, appendContextTarget),
 		);
 		onStartWorkspace(card);
 	};
@@ -64,20 +64,15 @@ export function LinearIssueView({
 						<span className="font-medium text-foreground/80">
 							{card.externalId}
 						</span>
-						{meta?.team?.name ? (
+						{meta?.boardName ? (
 							<span className="font-normal text-muted-foreground/70">
-								{meta.team.name}
+								{meta.boardName}
 							</span>
 						) : null}
 						<span className="inline-flex items-center gap-1 font-normal text-muted-foreground/70">
-							<SourceIcon source="linear" size={13} className="shrink-0" />
-							issue
+							<SourceIcon source="trello" size={13} className="shrink-0" />
+							card
 						</span>
-						{meta && meta.priorityLabel !== "No priority" ? (
-							<span className="font-normal text-muted-foreground/70">
-								{meta.priorityLabel}
-							</span>
-						) : null}
 						<span className="inline-flex items-center gap-1 font-normal text-muted-foreground/70">
 							<Clock3 className="size-[13px]" strokeWidth={1.8} />
 							Updated {formatRelativeTime(card.lastActivityAt)}
@@ -144,7 +139,7 @@ function StartWorkspaceButton({ onClick }: { onClick: () => void }) {
 					type="button"
 					variant="ghost"
 					size="icon-xs"
-					aria-label="Start workspace from issue"
+					aria-label="Start workspace from card"
 					onClick={onClick}
 					className="size-7 cursor-interactive rounded-md text-muted-foreground hover:bg-foreground/10 hover:text-foreground"
 				>
@@ -156,24 +151,22 @@ function StartWorkspaceButton({ onClick }: { onClick: () => void }) {
 	);
 }
 
-/** Build the composer insert that seeds a new workspace from a Linear
- *  issue: a custom tag whose submit text carries the issue header
- *  (identifier, title, URL, team, priority, labels) plus the markdown
- *  body, so the agent's first turn has the whole task in context. */
-export function buildLinearStartInsert(
+/** Build the composer insert that seeds a new workspace from a Trello
+ *  card: a custom tag whose submit text carries the card header
+ *  (title, URL, board, list, labels) plus the markdown body, so the
+ *  agent's first turn has the whole task in context. */
+export function buildTrelloStartInsert(
 	card: ContextCard,
 	detail: IssueDetail | null,
 	target?: ComposerInsertTarget,
 ) {
 	const meta =
-		card.meta.type === "linear" ? (card.meta as LinearIssueMeta) : null;
+		card.meta.type === "trello" ? (card.meta as TrelloCardMeta) : null;
 	const headerLines = [
-		`Linear issue ${card.externalId}: ${card.title}`,
+		`Trello card: ${card.title}`,
 		`URL: ${card.externalUrl}`,
-		meta?.team?.name ? `Team: ${meta.team.name}` : null,
-		meta && meta.priorityLabel !== "No priority"
-			? `Priority: ${meta.priorityLabel}`
-			: null,
+		meta?.boardName ? `Board: ${meta.boardName}` : null,
+		meta?.listName ? `List: ${meta.listName}` : null,
 		meta && meta.labels.length > 0
 			? `Labels: ${meta.labels.map((l) => l.name).join(", ")}`
 			: null,
@@ -192,7 +185,7 @@ export function buildLinearStartInsert(
 				kind: "custom-tag" as const,
 				label,
 				submitText,
-				key: `linear-start:${card.id}`,
+				key: `trello-start:${card.id}`,
 				preview: { kind: "text" as const, title: label, text: submitText },
 				source: card.source,
 				stateTone: card.state?.tone,

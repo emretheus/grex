@@ -273,18 +273,21 @@ function handleUiMutation(
 				queryKey: grexQueryKeys.slackWorkspaces,
 			});
 			return;
-		case "linearConnectionChanged":
-			void queryClient.invalidateQueries({
-				queryKey: grexQueryKeys.linearConnections,
-			});
-			// Connect/disconnect/scope changes flip what the feed shows — kill
-			// every `linearInbox` / `linearSearch` query in one sweep.
+		case "issueConnectionChanged": {
+			// Connect/disconnect/scope changes flip what the feed shows — bust
+			// the affected provider's connection list + every inbox/search query.
+			const { provider } = event;
+			const connectionsKey = `${provider}Connections`;
+			const inboxKey = `${provider}Inbox`;
+			const searchKey = `${provider}Search`;
 			void queryClient.invalidateQueries({
 				predicate: (query) =>
-					query.queryKey[0] === "linearInbox" ||
-					query.queryKey[0] === "linearSearch",
+					query.queryKey[0] === connectionsKey ||
+					query.queryKey[0] === inboxKey ||
+					query.queryKey[0] === searchKey,
 			});
 			return;
+		}
 		case "triageConfigChanged":
 			void queryClient.invalidateQueries({
 				queryKey: grexQueryKeys.triageConfig,

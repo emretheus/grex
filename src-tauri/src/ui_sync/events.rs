@@ -116,11 +116,13 @@ pub enum UiMutationEvent {
     SlackTokenInvalidated {
         team_id: String,
     },
-    /// Linear connection state changed (Connect / Disconnect / token
-    /// invalidated). Frontends invalidate the `linearConnection` query and
-    /// every `linearInbox` query so the inbox + settings panels re-render
-    /// the connect ↔ connected state.
-    LinearConnectionChanged,
+    /// An issue-provider (Linear / Jira / Trello) connection set changed
+    /// (Connect / Disconnect / credentials invalidated). Frontends invalidate
+    /// that provider's connection + inbox queries so the inbox + settings
+    /// panels re-render the connect ↔ connected state.
+    IssueConnectionChanged {
+        provider: crate::issues::provider::ProviderKind,
+    },
     /// AI-triage config changed.
     TriageConfigChanged,
     /// Active tick status changed (begin / progress / end).

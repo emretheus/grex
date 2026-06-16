@@ -175,6 +175,20 @@ export const grexQueryKeys = {
 		["linearProjects", connectionId, teamId ?? ""] as const,
 	linearIssueDetail: (connectionId: string, issueId: string) =>
 		["linearIssueDetail", connectionId, issueId] as const,
+	jiraConnections: ["jiraConnections"] as const,
+	jiraInbox: ["jiraInbox"] as const,
+	jiraSearch: (query: string) => ["jiraSearch", query] as const,
+	jiraProjects: (connectionId: string) =>
+		["jiraProjects", connectionId] as const,
+	jiraIssueDetail: (connectionId: string, issueId: string) =>
+		["jiraIssueDetail", connectionId, issueId] as const,
+	trelloConnections: ["trelloConnections"] as const,
+	trelloInbox: ["trelloInbox"] as const,
+	trelloSearch: (query: string) => ["trelloSearch", query] as const,
+	trelloBoards: (connectionId: string) =>
+		["trelloBoards", connectionId] as const,
+	trelloIssueDetail: (connectionId: string, issueId: string) =>
+		["trelloIssueDetail", connectionId, issueId] as const,
 	triageConfig: ["triage", "config"] as const,
 	triageActiveStatus: ["triage", "activeStatus"] as const,
 	pairedDevices: ["pairedDevices"] as const,

@@ -2632,34 +2632,73 @@ export type LinearProject = {
 	color: string;
 };
 
-/** One Linear issue projected into a context-card-shaped row. */
-export type LinearInboxItem = {
-	id: string;
-	/** Which connected workspace produced this issue. */
-	connectionId: string;
+// ---------------------------------------------------------------------------
+// Provider-agnostic issue feed (Linear / Jira / Trello).
+//
+// Mirrors `src-tauri/src/issues/types.rs`. The merged feed returns
+// `InboxItem`s whose `meta` is discriminated by `type` — the same shape the
+// frontend `ContextCardMeta` union mirrors. One mapper
+// (`issueItemToContextCard`) turns these into `ContextCard`s for every
+// provider.
+// ---------------------------------------------------------------------------
+
+export type IssueProviderKind = "linear" | "jira" | "trello";
+
+export type IssueItemState = { label: string; tone: string };
+
+export type LinearItemMeta = {
+	type: "linear";
 	identifier: string;
-	title: string;
-	url: string;
-	stateName: string;
-	/** `triage | backlog | unstarted | started | completed | canceled`. */
-	stateType: string;
-	priority: number;
 	priorityLabel: string;
-	teamName: string;
-	teamKey: string;
+	team: { name: string; key: string };
 	project?: LinearProjectRef | null;
 	labels: LinearLabelRef[];
-	lastActivityAt: number;
-	assigneeName?: string | null;
 };
 
-export type LinearInboxPage = {
-	items: LinearInboxItem[];
+export type JiraItemMeta = {
+	type: "jira";
+	siteName?: string | null;
+	issueType: string;
+	priority?: string | null;
+	projectName: string;
+	labels: string[];
+};
+
+export type TrelloItemMeta = {
+	type: "trello";
+	boardName: string;
+	listName: string;
+	labels: { name: string; color: string }[];
+};
+
+export type IssueItemMeta = LinearItemMeta | JiraItemMeta | TrelloItemMeta;
+
+/** One issue/task projected into a context-card-shaped row. */
+export type IssueInboxItem = {
+	id: string;
+	/** Which connected account produced this item. */
+	connectionId: string;
+	provider: IssueProviderKind;
+	title: string;
+	/** Human identifier: Linear `ENG-123`, Jira `PROJ-45`, Trello short link. */
+	externalId: string;
+	url: string;
+	state: IssueItemState;
+	lastActivityAt: number;
+	assigneeName?: string | null;
+	meta: IssueItemMeta;
+};
+
+export type IssueInboxPage = {
+	items: IssueInboxItem[];
 	/** connectionId → opaque cursor for that connection's NEXT page. Absent
 	 *  = exhausted; empty object = end of the merged feed. Passed back
 	 *  verbatim to fetch the next page. */
 	cursors: Record<string, string>;
 };
+
+/** Full issue detail for the preview panel: `IssueInboxItem` + markdown body. */
+export type IssueDetail = IssueInboxItem & { description?: string | null };
 
 /** Read the connected Linear workspaces (does NOT prompt for a key). */
 export async function linearConnections(): Promise<LinearConnection[]> {
@@ -2744,9 +2783,9 @@ export async function linearListProjects(args: {
 export async function linearListInboxItems(args: {
 	cursors?: Record<string, string> | null;
 	limit?: number;
-}): Promise<LinearInboxPage> {
+}): Promise<IssueInboxPage> {
 	try {
-		return await invoke<LinearInboxPage>("linear_list_inbox_items", {
+		return await invoke<IssueInboxPage>("linear_list_inbox_items", {
 			cursors: args.cursors ?? null,
 			limit: args.limit ?? 30,
 		});
@@ -2759,9 +2798,9 @@ export async function linearSearchIssues(args: {
 	query: string;
 	cursors?: Record<string, string> | null;
 	limit?: number;
-}): Promise<LinearInboxPage> {
+}): Promise<IssueInboxPage> {
 	try {
-		return await invoke<LinearInboxPage>("linear_search_issues", {
+		return await invoke<IssueInboxPage>("linear_search_issues", {
 			query: args.query,
 			cursors: args.cursors ?? null,
 			limit: args.limit ?? 30,
@@ -2773,38 +2812,259 @@ export async function linearSearchIssues(args: {
 	}
 }
 
-/** Full issue detail for the preview panel + "Start workspace" prompt.
- *  Superset of `LinearInboxItem` adding the markdown `description`. */
-export type LinearIssueDetail = {
-	id: string;
-	identifier: string;
-	title: string;
-	description?: string | null;
-	url: string;
-	stateName: string;
-	stateType: string;
-	priority: number;
-	priorityLabel: string;
-	teamName: string;
-	teamKey: string;
-	project?: LinearProjectRef | null;
-	labels: LinearLabelRef[];
-	assigneeName?: string | null;
-	lastActivityAt: number;
-};
-
 /** Fetch one Linear issue, including its body, from a specific workspace. */
 export async function linearGetIssue(args: {
 	connectionId: string;
 	issueId: string;
-}): Promise<LinearIssueDetail> {
+}): Promise<IssueDetail> {
 	try {
-		return await invoke<LinearIssueDetail>("linear_get_issue", {
+		return await invoke<IssueDetail>("linear_get_issue", {
 			connectionId: args.connectionId,
 			issueId: args.issueId,
 		});
 	} catch (error) {
 		throw new Error(describeInvokeError(error, "Couldn't load Linear issue."));
+	}
+}
+
+// ---------------------------------------------------------------------------
+// Jira context source. Mirrors `src-tauri/src/commands/jira_commands.rs`.
+// Auth = site URL + email + Atlassian API token.
+// ---------------------------------------------------------------------------
+
+export type JiraConnection = {
+	id: string;
+	siteName: string;
+	userName: string;
+	assignedOnly: boolean;
+	projectKeys: string[];
+};
+
+export type JiraProject = { id: string; key: string; name: string };
+
+export async function jiraConnections(): Promise<JiraConnection[]> {
+	try {
+		return await invoke<JiraConnection[]>("jira_connections");
+	} catch (error) {
+		throw new Error(
+			describeInvokeError(error, "Couldn't read Jira connections."),
+		);
+	}
+}
+
+export async function jiraConnect(args: {
+	site: string;
+	email: string;
+	token: string;
+}): Promise<JiraConnection> {
+	try {
+		return await invoke<JiraConnection>("jira_connect", {
+			site: args.site,
+			email: args.email,
+			token: args.token,
+		});
+	} catch (error) {
+		throw new Error(describeInvokeError(error, "Couldn't connect Jira."));
+	}
+}
+
+export async function jiraDisconnect(connectionId: string): Promise<void> {
+	try {
+		await invoke<void>("jira_disconnect", { connectionId });
+	} catch (error) {
+		throw new Error(describeInvokeError(error, "Couldn't disconnect Jira."));
+	}
+}
+
+export async function jiraUpdateScope(args: {
+	connectionId: string;
+	assignedOnly: boolean;
+	projectKeys: string[];
+}): Promise<JiraConnection> {
+	try {
+		return await invoke<JiraConnection>("jira_update_scope", {
+			connectionId: args.connectionId,
+			assignedOnly: args.assignedOnly,
+			projectKeys: args.projectKeys,
+		});
+	} catch (error) {
+		throw new Error(
+			describeInvokeError(error, "Couldn't update Jira settings."),
+		);
+	}
+}
+
+export async function jiraListProjects(
+	connectionId: string,
+): Promise<JiraProject[]> {
+	try {
+		return await invoke<JiraProject[]>("jira_list_projects", { connectionId });
+	} catch (error) {
+		throw new Error(describeInvokeError(error, "Couldn't load Jira projects."));
+	}
+}
+
+export async function jiraListInboxItems(args: {
+	cursors?: Record<string, string> | null;
+	limit?: number;
+}): Promise<IssueInboxPage> {
+	try {
+		return await invoke<IssueInboxPage>("jira_list_inbox_items", {
+			cursors: args.cursors ?? null,
+			limit: args.limit ?? 30,
+		});
+	} catch (error) {
+		throw new Error(describeInvokeError(error, "Couldn't load Jira issues."));
+	}
+}
+
+export async function jiraSearchIssues(args: {
+	query: string;
+	cursors?: Record<string, string> | null;
+	limit?: number;
+}): Promise<IssueInboxPage> {
+	try {
+		return await invoke<IssueInboxPage>("jira_search_issues", {
+			query: args.query,
+			cursors: args.cursors ?? null,
+			limit: args.limit ?? 30,
+		});
+	} catch (error) {
+		throw new Error(describeInvokeError(error, "Couldn't search Jira issues."));
+	}
+}
+
+export async function jiraGetIssue(args: {
+	connectionId: string;
+	issueId: string;
+}): Promise<IssueDetail> {
+	try {
+		return await invoke<IssueDetail>("jira_get_issue", {
+			connectionId: args.connectionId,
+			issueId: args.issueId,
+		});
+	} catch (error) {
+		throw new Error(describeInvokeError(error, "Couldn't load Jira issue."));
+	}
+}
+
+// ---------------------------------------------------------------------------
+// Trello context source. Mirrors `src-tauri/src/commands/trello_commands.rs`.
+// Auth = API key + token.
+// ---------------------------------------------------------------------------
+
+export type TrelloConnection = {
+	id: string;
+	memberName: string;
+	assignedOnly: boolean;
+	boardIds: string[];
+};
+
+export type TrelloBoard = { id: string; name: string };
+
+export async function trelloConnections(): Promise<TrelloConnection[]> {
+	try {
+		return await invoke<TrelloConnection[]>("trello_connections");
+	} catch (error) {
+		throw new Error(
+			describeInvokeError(error, "Couldn't read Trello connections."),
+		);
+	}
+}
+
+export async function trelloConnect(args: {
+	apiKey: string;
+	token: string;
+}): Promise<TrelloConnection> {
+	try {
+		return await invoke<TrelloConnection>("trello_connect", {
+			apiKey: args.apiKey,
+			token: args.token,
+		});
+	} catch (error) {
+		throw new Error(describeInvokeError(error, "Couldn't connect Trello."));
+	}
+}
+
+export async function trelloDisconnect(connectionId: string): Promise<void> {
+	try {
+		await invoke<void>("trello_disconnect", { connectionId });
+	} catch (error) {
+		throw new Error(describeInvokeError(error, "Couldn't disconnect Trello."));
+	}
+}
+
+export async function trelloUpdateScope(args: {
+	connectionId: string;
+	assignedOnly: boolean;
+	boardIds: string[];
+}): Promise<TrelloConnection> {
+	try {
+		return await invoke<TrelloConnection>("trello_update_scope", {
+			connectionId: args.connectionId,
+			assignedOnly: args.assignedOnly,
+			boardIds: args.boardIds,
+		});
+	} catch (error) {
+		throw new Error(
+			describeInvokeError(error, "Couldn't update Trello settings."),
+		);
+	}
+}
+
+export async function trelloListBoards(
+	connectionId: string,
+): Promise<TrelloBoard[]> {
+	try {
+		return await invoke<TrelloBoard[]>("trello_list_boards", { connectionId });
+	} catch (error) {
+		throw new Error(describeInvokeError(error, "Couldn't load Trello boards."));
+	}
+}
+
+export async function trelloListInboxItems(args: {
+	cursors?: Record<string, string> | null;
+	limit?: number;
+}): Promise<IssueInboxPage> {
+	try {
+		return await invoke<IssueInboxPage>("trello_list_inbox_items", {
+			cursors: args.cursors ?? null,
+			limit: args.limit ?? 30,
+		});
+	} catch (error) {
+		throw new Error(describeInvokeError(error, "Couldn't load Trello cards."));
+	}
+}
+
+export async function trelloSearchIssues(args: {
+	query: string;
+	cursors?: Record<string, string> | null;
+	limit?: number;
+}): Promise<IssueInboxPage> {
+	try {
+		return await invoke<IssueInboxPage>("trello_search_issues", {
+			query: args.query,
+			cursors: args.cursors ?? null,
+			limit: args.limit ?? 30,
+		});
+	} catch (error) {
+		throw new Error(
+			describeInvokeError(error, "Couldn't search Trello cards."),
+		);
+	}
+}
+
+export async function trelloGetIssue(args: {
+	connectionId: string;
+	issueId: string;
+}): Promise<IssueDetail> {
+	try {
+		return await invoke<IssueDetail>("trello_get_issue", {
+			connectionId: args.connectionId,
+			issueId: args.issueId,
+		});
+	} catch (error) {
+		throw new Error(describeInvokeError(error, "Couldn't load Trello card."));
 	}
 }
 
@@ -2836,7 +3096,7 @@ export type UiMutationEvent =
 	| { type: "activeStreamsChanged" }
 	| { type: "slackWorkspacesChanged" }
 	| { type: "slackTokenInvalidated"; teamId: string }
-	| { type: "linearConnectionChanged" }
+	| { type: "issueConnectionChanged"; provider: "linear" | "jira" | "trello" }
 	| { type: "triageConfigChanged" }
 	| { type: "triageActiveStatusChanged" }
 	| { type: "triageWorkspaceCreated"; workspaceId: string }

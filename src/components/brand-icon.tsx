@@ -1,4 +1,11 @@
-import { type SimpleIcon, siGithub, siGitlab, siLinear } from "simple-icons";
+import {
+	type SimpleIcon,
+	siGithub,
+	siGitlab,
+	siJira,
+	siLinear,
+	siTrello,
+} from "simple-icons";
 import { cn } from "@/lib/utils";
 
 type BrandIconProps = {
@@ -58,6 +65,16 @@ export function GitlabBrandIcon(props: Omit<BrandIconProps, "icon">) {
 /** Linear brand glyph (Simple Icons). Uses `currentColor`. */
 export function LinearBrandIcon(props: Omit<BrandIconProps, "icon">) {
 	return <BrandIcon icon={siLinear} {...props} />;
+}
+
+/** Jira brand glyph (Simple Icons). Uses `currentColor`. */
+export function JiraBrandIcon(props: Omit<BrandIconProps, "icon">) {
+	return <BrandIcon icon={siJira} {...props} />;
+}
+
+/** Trello brand glyph (Simple Icons). Uses `currentColor`. */
+export function TrelloBrandIcon(props: Omit<BrandIconProps, "icon">) {
+	return <BrandIcon icon={siTrello} {...props} />;
 }
 
 /** Lark / Feishu glyph (IconPark "new-lark"). Uses `currentColor`. */
