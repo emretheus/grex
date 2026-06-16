@@ -140,6 +140,7 @@ When a snapshot drifts: look at the diff first. Only accept after confirming the
 - **Linting**: Biome (tab indent). `lint-staged` enforces on pre-commit.
 - **Testing**: Vitest + jsdom (frontend), `bun test` (sidecar), cargo test + insta (Rust). Tests co-located with source.
 - **Changesets**: A `.changeset/*.md` body uses the smallest shape that fits — a single prose sentence (default for simple patch-level changes) or a prose summary line followed by `- ` sub-items (only when ≥2 distinct user-visible changes are worth enumerating). Never start the body with `- `. See the `grex-release` skill for full format and rationale.
+  - **Version-bump policy (pre-1.0): default every changeset to `patch`** — including most features and fixes — so the version climbs slowly (`0.8.1`, `0.8.2`, …) instead of jumping a minor each release. Use `minor` **only** for a deliberate milestone release (a maintainer's explicit call), and never `major` (pre-1.0 it would jump straight to `1.0.0`). Remember a release applies the **highest** bump among all queued changesets, so a single `minor` pulls the entire release up to the next minor — when in doubt, choose `patch`.
 - **Data dir**: `~/grex/` (release) or `~/grex-dev/` (debug). Override: `GREX_DATA_DIR`.
 - **macOS chrome**: Overlay title bar, traffic lights at (16, 24). Drag via `data-tauri-drag-region`.
 - **Serde**: `#[serde(rename_all = "camelCase")]` -- JSON fields match TypeScript directly.
