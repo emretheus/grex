@@ -20,6 +20,13 @@ import {
 export type EditorSessionActions = {
 	openFile(path: string, options?: DiffOpenOptions): void;
 	openFileReference(path: string, line?: number, column?: number): void;
+	/** Enter the editor with no file open — shows the file-explorer landing so
+	 *  the user can browse the codebase and pick a file to open. */
+	openExplorer(): void;
+	/** Close the current file but STAY in the editor, returning to the explorer
+	 *  landing (used when closing the last open tab — closing a file shouldn't
+	 *  kick the user all the way back to chat). */
+	returnToExplorer(): void;
 	changeSession(session: EditorSessionState): void;
 	exit(): void;
 	reportError(description: string, title?: string): void;
@@ -282,6 +289,36 @@ export function useEditorSessionController(
 		],
 	);
 
+	// Enter editor view-mode without opening a file. Leaves the session as-is:
+	// when it's null the surface shows the explorer landing; when a file is
+	// already open it simply returns to that editor (whose explorer toggle is
+	// available there).
+	const openExplorer = useCallback(() => {
+		if (!workspaceRootPath) {
+			pushToastRef.current(
+				"Open a workspace with a resolved root path before browsing files.",
+				"Editor unavailable",
+			);
+			return;
+		}
+		enterEditorModeRef.current();
+	}, [workspaceRootPath]);
+
+	// Closing the last open file returns to the explorer landing (still in
+	// editor view-mode) rather than exiting to chat. Confirms discard first if
+	// the file has unsaved changes.
+	const returnToExplorer = useCallback(() => {
+		const clear = () => setEditorSession(null);
+		const confirmed = confirmDiscardEditorChanges("close this file");
+		if (confirmed === true) {
+			clear();
+			return;
+		}
+		void confirmed.then((ok) => {
+			if (ok) clear();
+		});
+	}, [confirmDiscardEditorChanges]);
+
 	const changeSession = useCallback((session: EditorSessionState) => {
 		setEditorSession(session);
 	}, []);
@@ -304,6 +341,8 @@ export function useEditorSessionController(
 	const actions = useStableActions<EditorSessionActions>({
 		openFile,
 		openFileReference,
+		openExplorer,
+		returnToExplorer,
 		changeSession,
 		exit,
 		reportError,

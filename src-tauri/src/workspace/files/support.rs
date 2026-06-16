@@ -167,7 +167,7 @@ pub(super) fn collect_workspace_files_for_mention(
     Ok(())
 }
 
-fn should_skip_workspace_dir_for_mention(path: &Path) -> bool {
+pub(super) fn should_skip_workspace_dir_for_mention(path: &Path) -> bool {
     let Some(name) = path.file_name().and_then(|value| value.to_str()) else {
         return true;
     };

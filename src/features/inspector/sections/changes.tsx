@@ -9,6 +9,7 @@ import {
 	CopyIcon,
 	ExternalLinkIcon,
 	FolderOpenIcon,
+	FolderTreeIcon,
 	LaptopIcon,
 	LinkIcon,
 	ListIcon,
@@ -130,6 +131,9 @@ type ChangesSectionProps = {
 	activeEditor?: ActiveEditorTarget | null;
 	preferredEditor?: DetectedEditor | null;
 	onOpenEditorFile: (path: string, options?: DiffOpenOptions) => void;
+	/** Opens the editor's file-explorer landing so the user can browse the
+	 *  whole codebase without needing a changed file to click first. */
+	onBrowseFiles?: () => void;
 	flashingPaths: Set<string>;
 	onCommitAction?: (mode: WorkspaceCommitButtonMode) => Promise<void>;
 	commitButtonMode?: WorkspaceCommitButtonMode;
@@ -155,6 +159,7 @@ function ChangesSectionImpl({
 	activeEditor,
 	preferredEditor = null,
 	onOpenEditorFile,
+	onBrowseFiles,
 	flashingPaths,
 	onCommitAction,
 	commitButtonMode = "create-pr",
@@ -349,6 +354,21 @@ function ChangesSectionImpl({
 				onCommit={handleCommitButtonClick}
 				onContinueWorkspace={handleContinueWorkspace}
 			/>
+
+			{onBrowseFiles ? (
+				<button
+					type="button"
+					onClick={onBrowseFiles}
+					title="Browse all files in this workspace"
+					className="flex w-full shrink-0 cursor-interactive items-center gap-1.5 border-b border-border/40 bg-muted/10 px-3 py-1.5 text-left text-small text-muted-foreground transition-colors hover:bg-accent/50 hover:text-foreground"
+				>
+					<FolderTreeIcon
+						className="size-3.5 shrink-0 text-muted-foreground/80"
+						strokeWidth={2}
+					/>
+					<span>Browse files</span>
+				</button>
+			) : null}
 
 			<ScrollArea
 				aria-label="Changes panel body"

@@ -385,6 +385,14 @@ export const SHORTCUT_DEFINITIONS: ShortcutDefinition[] = [
 		editable: true,
 	},
 	{
+		id: "editor.toggleExplorer",
+		title: "Toggle file explorer",
+		group: "Editor",
+		defaultHotkey: "Mod+Shift+E",
+		scopes: ["editor"],
+		editable: true,
+	},
+	{
 		id: "terminal.new",
 		title: "New terminal",
 		group: "Terminal",

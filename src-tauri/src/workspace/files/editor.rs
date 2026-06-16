@@ -9,9 +9,11 @@ use super::{
     support::{
         atomic_write_file, collect_editor_files, collect_workspace_files_for_mention,
         editor_file_sort_key, metadata_mtime_ms, resolve_allowed_path,
+        should_skip_workspace_dir_for_mention,
     },
     types::{
-        EditorFileListItem, EditorFileReadResponse, EditorFileStatResponse, EditorFileWriteResponse,
+        DirEntry, EditorFileListItem, EditorFileReadResponse, EditorFileStatResponse,
+        EditorFileWriteResponse,
     },
 };
 use crate::{
@@ -186,6 +188,107 @@ pub fn list_workspace_files(workspace_root_path: &str) -> Result<Vec<EditorFileL
     });
 
     Ok(build_list_items(&workspace_root, discovered_files))
+}
+
+/// Max entries returned for a single directory level — guards against a
+/// pathological folder (e.g. a generated cache someone didn't `.gitignore`)
+/// flooding the explorer. The frontend loads one level at a time, so normal
+/// repos never hit this.
+const MAX_DIR_ENTRIES: usize = 2000;
+
+/// List a single directory level for the lazy file-explorer tree. `rel_path`
+/// is workspace-root-relative (empty string = the workspace root). Folders are
+/// returned before files, each alphabetically (case-insensitive). The same
+/// noise dirs the @-mention picker hides (`.git`, `node_modules`, `target`, …)
+/// are skipped, as are junk files and symlinks (the latter to avoid cycles).
+pub fn list_directory(workspace_root_path: &str, rel_path: &str) -> Result<Vec<DirEntry>> {
+    let Some(workspace_root) = resolve_workspace_root_optional(workspace_root_path)? else {
+        return Ok(Vec::new());
+    };
+
+    let rel = rel_path.trim_matches('/');
+    let target = if rel.is_empty() {
+        workspace_root.clone()
+    } else {
+        workspace_root.join(rel)
+    };
+    // Path-traversal guard: the resolved (canonicalized) target must stay
+    // inside a known workspace root, and specifically inside THIS root.
+    let target = resolve_allowed_path(&target, true)?;
+    if !target.starts_with(&workspace_root) {
+        bail!(
+            "Directory is outside the workspace root: {}",
+            target.display()
+        );
+    }
+
+    let read_dir = match fs::read_dir(&target) {
+        Ok(iter) => iter,
+        // Folder vanished between expand and read (git checkout, rm -rf) — an
+        // empty level is friendlier than a red toast.
+        Err(error) if error.kind() == std::io::ErrorKind::NotFound => return Ok(Vec::new()),
+        Err(error) => {
+            return Err(error)
+                .with_context(|| format!("Failed to read directory {}", target.display()))
+        }
+    };
+
+    let mut dirs: Vec<DirEntry> = Vec::new();
+    let mut files: Vec<DirEntry> = Vec::new();
+    for entry in read_dir {
+        let entry = match entry {
+            Ok(entry) => entry,
+            Err(_) => continue,
+        };
+        let entry_path = entry.path();
+        let Ok(file_type) = entry.file_type() else {
+            continue;
+        };
+        // Skip symlinks outright — both to avoid descend cycles and because
+        // their target may live outside the allowed roots.
+        if file_type.is_symlink() {
+            continue;
+        }
+        let Some(name) = entry_path
+            .file_name()
+            .and_then(|value| value.to_str())
+            .map(str::to_string)
+        else {
+            continue;
+        };
+        let rel_child = if rel.is_empty() {
+            name.clone()
+        } else {
+            format!("{rel}/{name}")
+        };
+
+        if file_type.is_dir() {
+            if should_skip_workspace_dir_for_mention(&entry_path) {
+                continue;
+            }
+            dirs.push(DirEntry {
+                name,
+                path: rel_child,
+                is_dir: true,
+            });
+        } else if file_type.is_file() {
+            if matches!(name.as_str(), ".DS_Store" | "Thumbs.db" | "desktop.ini") {
+                continue;
+            }
+            files.push(DirEntry {
+                name,
+                path: rel_child,
+                is_dir: false,
+            });
+        }
+    }
+
+    let sort_key = |entry: &DirEntry| entry.name.to_lowercase();
+    dirs.sort_by_key(sort_key);
+    files.sort_by_key(sort_key);
+    dirs.extend(files);
+    dirs.truncate(MAX_DIR_ENTRIES);
+    Ok(dirs)
 }
 
 /// Best-effort variant for read-only listers. Returns `None` if the

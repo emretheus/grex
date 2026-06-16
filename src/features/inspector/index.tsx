@@ -95,6 +95,7 @@ type WorkspaceInspectorSidebarProps = {
 	activeEditor?: ActiveEditorTarget | null;
 	preferredEditor?: DetectedEditor | null;
 	onOpenEditorFile(path: string, options?: DiffOpenOptions): void;
+	onBrowseFiles?: () => void;
 	onOpenMockReview?: (path: string) => void;
 	onCommitAction?: (mode: WorkspaceCommitButtonMode) => Promise<void>;
 	onReviewAction?: () => Promise<void>;
@@ -138,6 +139,7 @@ export function WorkspaceInspectorSidebar({
 	activeEditor,
 	preferredEditor = null,
 	onOpenEditorFile,
+	onBrowseFiles,
 	onCommitAction,
 	onReviewAction,
 	currentSessionId,
@@ -542,6 +544,7 @@ export function WorkspaceInspectorSidebar({
 				activeEditor={activeEditor}
 				preferredEditor={preferredEditor}
 				onOpenEditorFile={onOpenEditorFile}
+				onBrowseFiles={onBrowseFiles}
 				flashingPaths={flashingPaths}
 				onCommitAction={onCommitAction}
 				commitButtonMode={commitButtonMode}

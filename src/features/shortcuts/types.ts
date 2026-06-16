@@ -44,6 +44,7 @@ export type ShortcutId =
 	| "editor.edit"
 	| "editor.new"
 	| "editor.close"
+	| "editor.toggleExplorer"
 	| "terminal.new"
 	| "terminal.close"
 	| "terminal.next"

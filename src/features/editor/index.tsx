@@ -6,6 +6,9 @@ import {
 	Copy,
 	Eye,
 	FileCode,
+	MessageSquarePlus,
+	MoreHorizontal,
+	PanelLeft,
 	Plus,
 	Search,
 	X,
@@ -23,11 +26,35 @@ import {
 import { TrafficLightSpacer } from "@/components/chrome/traffic-light-spacer";
 import { LazyStreamdown } from "@/components/streamdown-loader";
 import { Button } from "@/components/ui/button";
+import {
+	ContextMenu,
+	ContextMenuContent,
+	ContextMenuItem,
+	ContextMenuSeparator,
+	ContextMenuSub,
+	ContextMenuSubContent,
+	ContextMenuSubTrigger,
+	ContextMenuTrigger,
+} from "@/components/ui/context-menu";
+import {
+	DropdownMenu,
+	DropdownMenuCheckboxItem,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuSeparator,
+	DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { InlineShortcutDisplay } from "@/features/shortcuts/shortcut-display";
 import type { ShortcutMap } from "@/features/shortcuts/types";
 import type { ShortcutHandler } from "@/features/shortcuts/use-app-shortcuts";
 import { useAppShortcuts } from "@/features/shortcuts/use-app-shortcuts";
+import {
+	type DetectedEditor,
+	openFileInEditor,
+	revealPathInFinder,
+} from "@/lib/api";
+import { useComposerInsert } from "@/lib/composer-insert-context";
 import {
 	type EditorSessionState,
 	type EditorViewMode,
@@ -35,8 +62,14 @@ import {
 	type InspectorFileItem,
 	isMarkdownPath,
 } from "@/lib/editor-session";
+import {
+	type EditorViewPrefs,
+	getEditorViewPrefs,
+	setEditorViewPrefs,
+} from "@/lib/editor-view-prefs";
 import { isImageExtensionPath } from "@/lib/path-util";
 import {
+	detectedEditorsQueryOptions,
 	grexQueryKeys,
 	workspaceChangesQueryOptions,
 	workspaceFilesQueryOptions,
@@ -45,6 +78,7 @@ import { cn } from "@/lib/utils";
 import { describeUnknownError } from "@/lib/workspace-helpers";
 import { useRouterSelectedWorkspaceId } from "@/router/use-router-selection";
 
+import { FileExplorer } from "./file-explorer";
 import { EditorImagePreview } from "./image-preview";
 
 // Refined segmented-tab look: no tray, soft glassy pill on the active state.
@@ -70,6 +104,16 @@ type WorkspaceEditorSurfaceProps = {
 	workspaceRootPath?: string | null;
 	onChangeSession: (session: EditorSessionState) => void;
 	onExit: () => void;
+	/** Whether the file-explorer sidebar is shown. Controlled at the pane level
+	 *  so it persists across file opens (and the explorer landing). */
+	explorerOpen: boolean;
+	onToggleExplorer: () => void;
+	/** File-explorer sidebar width (persisted at the pane level). */
+	explorerWidth: number;
+	onExplorerWidthChange: (width: number) => void;
+	/** Called instead of `onExit` when the LAST open tab is closed — returns to
+	 *  the explorer landing rather than kicking back to chat. */
+	onCloseLastFile: () => void;
 	onError?: (description: string, title?: string) => void;
 };
 
@@ -134,9 +178,12 @@ function upsertEditorTab(
 function EditorPathBreadcrumb({
 	segments,
 	fullPath,
+	onReveal,
 }: {
 	segments: string[];
 	fullPath: string;
+	/** Reveal the current file in the explorer (ensures the sidebar is open). */
+	onReveal?: () => void;
 }) {
 	const [copied, setCopied] = useState(false);
 	const handleCopyPath = () => {
@@ -169,7 +216,14 @@ function EditorPathBreadcrumb({
 								className="mr-1 size-4 shrink-0"
 							/>
 						)}
-						<span className="truncate text-muted-foreground">{segment}</span>
+						<button
+							type="button"
+							onClick={onReveal}
+							title="Reveal in explorer"
+							className="cursor-interactive truncate rounded text-muted-foreground transition-colors hover:text-foreground"
+						>
+							{segment}
+						</button>
 					</span>
 				);
 			})}
@@ -205,14 +259,33 @@ function EditorFileTabs({
 	activeTabId,
 	onSelectTab,
 	onCloseTab,
+	onCloseOthers,
+	onCloseAll,
 	onOpenSearch,
+	workspaceRootPath,
+	detectedEditors,
+	onAddToChat,
 }: {
 	tabs: EditorFileTab[];
 	activeTabId: string;
 	onSelectTab: (tab: EditorFileTab) => void;
 	onCloseTab: (tabId: string) => void;
+	onCloseOthers: (tabId: string) => void;
+	onCloseAll: () => void;
 	onOpenSearch: () => void;
+	workspaceRootPath?: string | null;
+	detectedEditors: DetectedEditor[];
+	onAddToChat: (absPath: string) => void;
 }) {
+	const tabRelPath = (absPath: string): string => {
+		if (!workspaceRootPath) return absPath;
+		const root = normalizePath(workspaceRootPath).replace(/\/+$/, "");
+		const abs = normalizePath(absPath);
+		return abs.startsWith(`${root}/`) ? abs.slice(root.length + 1) : absPath;
+	};
+	const copy = (text: string) => {
+		void navigator.clipboard?.writeText(text);
+	};
 	return (
 		<div
 			data-tauri-drag-region
@@ -233,50 +306,103 @@ function EditorFileTabs({
 					>
 						{tabs.map((tab) => {
 							const active = tab.id === activeTabId;
+							const path = tab.session.path;
 							return (
-								<TabsTrigger
-									key={tab.id}
-									value={tab.id}
-									className={cn(
-										"group/tab relative h-full w-auto min-w-[7rem] max-w-[14rem] shrink-0 flex-none justify-start gap-1.5 overflow-hidden rounded-none border-0 bg-transparent px-3 text-ui text-muted-foreground shadow-none data-active:bg-background data-active:text-foreground data-active:shadow-none aria-selected:bg-background aria-selected:text-foreground aria-selected:shadow-none dark:data-active:border-transparent dark:data-active:bg-background dark:aria-selected:border-transparent dark:aria-selected:bg-background",
-										active ? "font-medium" : undefined,
-									)}
-								>
-									<span className="tab-content-fade flex min-w-0 flex-1 items-center gap-1.5">
-										<img
-											src={getMaterialFileIcon(getBaseName(tab.session.path))}
-											alt=""
-											className="size-4 shrink-0"
-										/>
-										<span className="truncate">
-											{getBaseName(tab.session.path)}
-										</span>
-										{tab.session.dirty ? (
-											<span
-												aria-label="Modified"
-												className="size-1.5 shrink-0 rounded-full bg-muted-foreground/55"
-											/>
-										) : null}
-									</span>
-									<span className="pointer-events-none invisible absolute inset-y-0 right-0 flex items-center pr-1 group-hover/tab:pointer-events-auto group-hover/tab:visible">
-										<span
-											role="button"
-											aria-label={`Close ${getBaseName(tab.session.path)}`}
-											onPointerDown={(event) => {
-												event.preventDefault();
-												event.stopPropagation();
-											}}
-											onClick={(event) => {
-												event.preventDefault();
-												event.stopPropagation();
-												onCloseTab(tab.id);
-											}}
-											className="flex cursor-interactive items-center justify-center rounded-sm p-0.5 text-muted-foreground hover:bg-accent/60 hover:text-foreground"
+								<ContextMenu key={tab.id}>
+									<ContextMenuTrigger className="contents">
+										<TabsTrigger
+											value={tab.id}
+											className={cn(
+												"group/tab relative h-full w-auto min-w-[7rem] max-w-[14rem] shrink-0 flex-none justify-start gap-1.5 overflow-hidden rounded-none border-0 bg-transparent px-3 text-ui text-muted-foreground shadow-none data-active:bg-background data-active:text-foreground data-active:shadow-none aria-selected:bg-background aria-selected:text-foreground aria-selected:shadow-none dark:data-active:border-transparent dark:data-active:bg-background dark:aria-selected:border-transparent dark:aria-selected:bg-background",
+												active ? "font-medium" : undefined,
+											)}
 										>
-											<X className="size-3" strokeWidth={2} />
-										</span>
-									</span>
-								</TabsTrigger>
+											<span className="tab-content-fade flex min-w-0 flex-1 items-center gap-1.5">
+												<img
+													src={getMaterialFileIcon(
+														getBaseName(tab.session.path),
+													)}
+													alt=""
+													className="size-4 shrink-0"
+												/>
+												<span className="truncate">
+													{getBaseName(tab.session.path)}
+												</span>
+												{tab.session.dirty ? (
+													<span
+														aria-label="Modified"
+														className="size-1.5 shrink-0 rounded-full bg-muted-foreground/55"
+													/>
+												) : null}
+											</span>
+											<span className="pointer-events-none invisible absolute inset-y-0 right-0 flex items-center pr-1 group-hover/tab:pointer-events-auto group-hover/tab:visible">
+												<span
+													role="button"
+													aria-label={`Close ${getBaseName(tab.session.path)}`}
+													onPointerDown={(event) => {
+														event.preventDefault();
+														event.stopPropagation();
+													}}
+													onClick={(event) => {
+														event.preventDefault();
+														event.stopPropagation();
+														onCloseTab(tab.id);
+													}}
+													className="flex cursor-interactive items-center justify-center rounded-sm p-0.5 text-muted-foreground hover:bg-accent/60 hover:text-foreground"
+												>
+													<X className="size-3" strokeWidth={2} />
+												</span>
+											</span>
+										</TabsTrigger>
+									</ContextMenuTrigger>
+									<ContextMenuContent className="w-52">
+										<ContextMenuItem onSelect={() => onCloseTab(tab.id)}>
+											Close
+										</ContextMenuItem>
+										<ContextMenuItem
+											disabled={tabs.length < 2}
+											onSelect={() => onCloseOthers(tab.id)}
+										>
+											Close others
+										</ContextMenuItem>
+										<ContextMenuItem onSelect={onCloseAll}>
+											Close all
+										</ContextMenuItem>
+										<ContextMenuSeparator />
+										<ContextMenuItem onSelect={() => copy(path)}>
+											Copy path
+										</ContextMenuItem>
+										<ContextMenuItem onSelect={() => copy(tabRelPath(path))}>
+											Copy relative path
+										</ContextMenuItem>
+										<ContextMenuItem
+											onSelect={() => void revealPathInFinder(path)}
+										>
+											Reveal in Finder
+										</ContextMenuItem>
+										{detectedEditors.length > 0 ? (
+											<ContextMenuSub>
+												<ContextMenuSubTrigger>Open with</ContextMenuSubTrigger>
+												<ContextMenuSubContent>
+													{detectedEditors.map((editor) => (
+														<ContextMenuItem
+															key={editor.id}
+															onSelect={() =>
+																void openFileInEditor(path, editor.id)
+															}
+														>
+															{editor.name}
+														</ContextMenuItem>
+													))}
+												</ContextMenuSubContent>
+											</ContextMenuSub>
+										) : null}
+										<ContextMenuSeparator />
+										<ContextMenuItem onSelect={() => onAddToChat(path)}>
+											Add to chat
+										</ContextMenuItem>
+									</ContextMenuContent>
+								</ContextMenu>
 							);
 						})}
 					</TabsList>
@@ -425,6 +551,11 @@ export function WorkspaceEditorSurface({
 	workspaceRootPath,
 	onChangeSession,
 	onExit,
+	explorerOpen,
+	onToggleExplorer,
+	explorerWidth,
+	onExplorerWidthChange,
+	onCloseLastFile,
 	onError,
 }: WorkspaceEditorSurfaceProps) {
 	const queryClient = useQueryClient();
@@ -525,7 +656,9 @@ export function WorkspaceEditorSurface({
 			const index = fileTabs.findIndex((tab) => tab.id === tabId);
 			if (index === -1) return;
 			if (fileTabs.length === 1) {
-				onExit();
+				// Closing the last file returns to the explorer landing (still in
+				// editor mode), not all the way out to chat.
+				onCloseLastFile();
 				return;
 			}
 
@@ -536,7 +669,7 @@ export function WorkspaceEditorSurface({
 				if (nextTab) onChangeSession(nextTab.session);
 			}
 		},
-		[activeTabId, fileTabs, onChangeSession, onExit],
+		[activeTabId, fileTabs, onChangeSession, onCloseLastFile],
 	);
 
 	const editorShortcutHandlers = useMemo<ShortcutHandler[]>(
@@ -549,8 +682,12 @@ export function WorkspaceEditorSurface({
 				id: "editor.close",
 				callback: () => closeTabById(getEditorTabId(latestSessionRef.current)),
 			},
+			{
+				id: "editor.toggleExplorer",
+				callback: onToggleExplorer,
+			},
 		],
-		[closeTabById, openFileSearch],
+		[closeTabById, openFileSearch, onToggleExplorer],
 	);
 
 	useAppShortcuts({
@@ -1017,7 +1154,7 @@ export function WorkspaceEditorSurface({
 		});
 	};
 
-	const handleOpenSearchFile = async (file: InspectorFileItem) => {
+	const handleOpenSearchFile = async (file: { absolutePath: string }) => {
 		try {
 			const existingTab = fileTabs.find(
 				(tab) =>
@@ -1082,6 +1219,75 @@ export function WorkspaceEditorSurface({
 		}
 	};
 
+	// The file explorer hands back workspace-relative paths; join with the
+	// workspace root and reuse the exact open flow the search picker uses
+	// (already-open → switch tab, git-changed → diff, otherwise read + open).
+	const handleOpenFileFromExplorer = (relPath: string) => {
+		if (!workspaceRootPath) return;
+		const root = workspaceRootPath.replace(/\/+$/, "");
+		void handleOpenSearchFile({ absolutePath: `${root}/${relPath}` });
+	};
+
+	// Workspace-relative path of the open file, to highlight it in the tree.
+	// Best-effort: a canonicalization mismatch just means no highlight.
+	const selectedExplorerPath = useMemo(() => {
+		if (!workspaceRootPath) return null;
+		const root = normalizePath(workspaceRootPath).replace(/\/+$/, "");
+		const abs = normalizePath(editorSession.path);
+		return abs.startsWith(`${root}/`) ? abs.slice(root.length + 1) : null;
+	}, [workspaceRootPath, editorSession.path]);
+
+	// ---- Tab menu + header actions (reuse the explorer's machinery) ----
+	const insertIntoComposer = useComposerInsert();
+	const detectedEditors = useQuery(detectedEditorsQueryOptions()).data ?? [];
+	const toRelPath = useCallback(
+		(absPath: string): string => {
+			if (!workspaceRootPath) return absPath;
+			const root = normalizePath(workspaceRootPath).replace(/\/+$/, "");
+			const abs = normalizePath(absPath);
+			return abs.startsWith(`${root}/`) ? abs.slice(root.length + 1) : absPath;
+		},
+		[workspaceRootPath],
+	);
+	const addPathToChat = useCallback(
+		(absPath: string) => {
+			insertIntoComposer({
+				items: [{ kind: "file", path: toRelPath(absPath) }],
+				behavior: "append",
+			});
+		},
+		[insertIntoComposer, toRelPath],
+	);
+	const closeOtherTabs = useCallback(
+		(keepId: string) => {
+			const kept = fileTabs.find((tab) => tab.id === keepId);
+			if (!kept) return;
+			setFileTabs([kept]);
+			publishSessionChange(kept.session);
+		},
+		[fileTabs, publishSessionChange],
+	);
+
+	// ---- View menu: live Monaco prefs + go-to-line + diff layout ----
+	const [viewPrefs, setViewPrefs] =
+		useState<EditorViewPrefs>(getEditorViewPrefs);
+	const toggleViewPref = (key: keyof EditorViewPrefs) => {
+		setViewPrefs(setEditorViewPrefs({ [key]: !viewPrefs[key] }));
+	};
+	const [diffSideBySide, setDiffSideBySide] = useState(true);
+	const toggleDiffLayout = () => {
+		const next = !diffSideBySide;
+		setDiffSideBySide(next);
+		diffControllerRef.current?.editor.updateOptions({ renderSideBySide: next });
+	};
+	const triggerGotoLine = () => {
+		const target =
+			fileControllerRef.current?.editor ??
+			diffControllerRef.current?.editor.getModifiedEditor();
+		target?.focus();
+		void target?.getAction("editor.action.gotoLine")?.run();
+	};
+
 	const handleSave = async () => {
 		const latest = latestSessionRef.current;
 		if (latest.kind !== "file" || latest.modifiedText === undefined) {
@@ -1144,6 +1350,20 @@ export function WorkspaceEditorSurface({
 				{/* Traffic-light inset. macOS: left; Windows / Linux: right. */}
 				<TrafficLightSpacer side="left" width={86} />
 
+				<button
+					type="button"
+					aria-label="Toggle file explorer"
+					aria-pressed={explorerOpen}
+					title="File explorer"
+					onClick={onToggleExplorer}
+					className={cn(
+						"mr-1 inline-flex size-6 shrink-0 cursor-interactive items-center justify-center rounded text-muted-foreground transition-colors hover:bg-accent/60 hover:text-foreground",
+						explorerOpen && "bg-accent text-foreground",
+					)}
+				>
+					<PanelLeft className="size-3.5" strokeWidth={2} />
+				</button>
+
 				<div
 					data-tauri-drag-region
 					className="flex min-w-0 flex-1 items-center"
@@ -1153,7 +1373,12 @@ export function WorkspaceEditorSurface({
 						activeTabId={activeTabId}
 						onSelectTab={(tab) => publishSessionChange(tab.session)}
 						onCloseTab={closeTabById}
+						onCloseOthers={closeOtherTabs}
+						onCloseAll={onCloseLastFile}
 						onOpenSearch={openFileSearch}
+						workspaceRootPath={workspaceRootPath}
+						detectedEditors={detectedEditors}
+						onAddToChat={addPathToChat}
 					/>
 				</div>
 
@@ -1204,6 +1429,72 @@ export function WorkspaceEditorSurface({
 					<Button
 						type="button"
 						variant="ghost"
+						size="icon-sm"
+						onClick={() => addPathToChat(editorSession.path)}
+						aria-label="Add this file to chat"
+						title="Add file to chat"
+						className="text-muted-foreground hover:text-foreground"
+					>
+						<MessageSquarePlus className="size-4" strokeWidth={1.8} />
+					</Button>
+					<DropdownMenu>
+						<DropdownMenuTrigger asChild>
+							<Button
+								type="button"
+								variant="ghost"
+								size="icon-sm"
+								aria-label="Editor view options"
+								title="View options"
+								className="text-muted-foreground hover:text-foreground"
+							>
+								<MoreHorizontal className="size-4" strokeWidth={1.8} />
+							</Button>
+						</DropdownMenuTrigger>
+						<DropdownMenuContent align="end" className="w-52">
+							<DropdownMenuItem onSelect={triggerGotoLine}>
+								Go to line…
+							</DropdownMenuItem>
+							<DropdownMenuSeparator />
+							<DropdownMenuCheckboxItem
+								checked={viewPrefs.wordWrap}
+								onCheckedChange={() => toggleViewPref("wordWrap")}
+							>
+								Word wrap
+							</DropdownMenuCheckboxItem>
+							<DropdownMenuCheckboxItem
+								checked={viewPrefs.minimap}
+								onCheckedChange={() => toggleViewPref("minimap")}
+							>
+								Minimap
+							</DropdownMenuCheckboxItem>
+							<DropdownMenuCheckboxItem
+								checked={viewPrefs.stickyScroll}
+								onCheckedChange={() => toggleViewPref("stickyScroll")}
+							>
+								Sticky scroll
+							</DropdownMenuCheckboxItem>
+							<DropdownMenuCheckboxItem
+								checked={viewPrefs.whitespace}
+								onCheckedChange={() => toggleViewPref("whitespace")}
+							>
+								Render whitespace
+							</DropdownMenuCheckboxItem>
+							{editorSession.kind === "diff" ? (
+								<>
+									<DropdownMenuSeparator />
+									<DropdownMenuCheckboxItem
+										checked={diffSideBySide}
+										onCheckedChange={toggleDiffLayout}
+									>
+										Side-by-side diff
+									</DropdownMenuCheckboxItem>
+								</>
+							) : null}
+						</DropdownMenuContent>
+					</DropdownMenu>
+					<Button
+						type="button"
+						variant="ghost"
 						size="sm"
 						onClick={onExit}
 						aria-label={closeLabel}
@@ -1223,71 +1514,88 @@ export function WorkspaceEditorSurface({
 					<EditorPathBreadcrumb
 						segments={breadcrumbSegments}
 						fullPath={editorSession.path}
+						onReveal={() => {
+							if (!explorerOpen) onToggleExplorer();
+						}}
 					/>
 				</div>
 			</div>
 
-			<div className="relative flex min-h-0 flex-1 bg-background">
-				{searchOpen && (
-					<FileSearchOverlay
-						files={filteredWorkspaceFiles}
-						query={searchQuery}
-						selectedIndex={selectedSearchIndex}
-						loading={workspaceFilesQuery.isLoading}
-						error={
-							workspaceFilesQuery.isError
-								? describeUnknownError(
-										workspaceFilesQuery.error,
-										"Unable to list workspace files.",
-									)
-								: null
-						}
-						onQueryChange={setSearchQuery}
-						onSelectedIndexChange={setSelectedSearchIndex}
-						onOpen={handleOpenSearchFile}
-						onClose={() => setSearchOpen(false)}
+			<div className="flex min-h-0 flex-1">
+				{explorerOpen && workspaceRootPath ? (
+					<FileExplorer
+						workspaceRootPath={workspaceRootPath}
+						workspaceId={workspaceId}
+						selectedRelPath={selectedExplorerPath}
+						onOpenFile={handleOpenFileFromExplorer}
+						width={explorerWidth}
+						onWidthChange={onExplorerWidthChange}
 					/>
-				)}
-				{/* Monaco host stays mounted in preview mode so model + dirty state survive toggling. */}
-				<div
-					ref={editorHostRef}
-					aria-label="Editor canvas"
-					className="h-full min-h-0 flex-1"
-					aria-hidden={showPreview || isImage}
-					style={showPreview || isImage ? { visibility: "hidden" } : undefined}
-				/>
-
-				{isImage && <EditorImagePreview session={editorSession} />}
-
-				{showPreview && (
+				) : null}
+				<div className="relative flex min-h-0 flex-1 bg-background">
+					{searchOpen && (
+						<FileSearchOverlay
+							files={filteredWorkspaceFiles}
+							query={searchQuery}
+							selectedIndex={selectedSearchIndex}
+							loading={workspaceFilesQuery.isLoading}
+							error={
+								workspaceFilesQuery.isError
+									? describeUnknownError(
+											workspaceFilesQuery.error,
+											"Unable to list workspace files.",
+										)
+									: null
+							}
+							onQueryChange={setSearchQuery}
+							onSelectedIndexChange={setSelectedSearchIndex}
+							onOpen={handleOpenSearchFile}
+							onClose={() => setSearchOpen(false)}
+						/>
+					)}
+					{/* Monaco host stays mounted in preview mode so model + dirty state survive toggling. */}
 					<div
-						aria-label="Markdown preview"
-						className="absolute inset-0 overflow-y-auto bg-background"
-					>
-						<div className="conversation-markdown mx-auto max-w-3xl break-words px-8 py-6 text-ui leading-6 text-foreground">
-							<Suspense
-								fallback={
-									<pre className="whitespace-pre-wrap break-words font-mono text-muted-foreground">
-										{previewContent}
-									</pre>
-								}
-							>
-								<LazyStreamdown
-									className="conversation-streamdown"
-									mode="static"
-								>
-									{previewContent}
-								</LazyStreamdown>
-							</Suspense>
-						</div>
-					</div>
-				)}
+						ref={editorHostRef}
+						aria-label="Editor canvas"
+						className="h-full min-h-0 flex-1"
+						aria-hidden={showPreview || isImage}
+						style={
+							showPreview || isImage ? { visibility: "hidden" } : undefined
+						}
+					/>
 
-				{surfaceStatus.kind === "error" && (
-					<div className="absolute inset-0 flex items-center justify-center bg-background">
-						<SurfaceMessage message={surfaceStatus.message} />
-					</div>
-				)}
+					{isImage && <EditorImagePreview session={editorSession} />}
+
+					{showPreview && (
+						<div
+							aria-label="Markdown preview"
+							className="absolute inset-0 overflow-y-auto bg-background"
+						>
+							<div className="conversation-markdown mx-auto max-w-3xl break-words px-8 py-6 text-ui leading-6 text-foreground">
+								<Suspense
+									fallback={
+										<pre className="whitespace-pre-wrap break-words font-mono text-muted-foreground">
+											{previewContent}
+										</pre>
+									}
+								>
+									<LazyStreamdown
+										className="conversation-streamdown"
+										mode="static"
+									>
+										{previewContent}
+									</LazyStreamdown>
+								</Suspense>
+							</div>
+						</div>
+					)}
+
+					{surfaceStatus.kind === "error" && (
+						<div className="absolute inset-0 flex items-center justify-center bg-background">
+							<SurfaceMessage message={surfaceStatus.message} />
+						</div>
+					)}
+				</div>
 			</div>
 		</section>
 	);

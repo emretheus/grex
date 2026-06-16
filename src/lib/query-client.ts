@@ -23,6 +23,7 @@ import {
 	getWorkspaceAccountProfile,
 	getWorkspaceForge,
 	listActiveStreams,
+	listDirectory,
 	listForgeAccounts,
 	listForgeLabels,
 	listInboxKindLabels,
@@ -110,6 +111,8 @@ export const grexQueryKeys = {
 		["workspaceChanges", workspaceRootPath, workspaceId ?? ""] as const,
 	workspaceFiles: (workspaceRootPath: string) =>
 		["workspaceFiles", workspaceRootPath] as const,
+	directoryListing: (workspaceRootPath: string, relPath: string) =>
+		["directoryListing", workspaceRootPath, relPath] as const,
 	workspaceChangeRequest: (workspaceId: string) =>
 		["workspaceChangeRequest", workspaceId] as const,
 	workspaceForge: (workspaceId: string) =>
@@ -1106,6 +1109,20 @@ export function workspaceFilesQueryOptions(workspaceRootPath: string) {
 		queryKey: grexQueryKeys.workspaceFiles(workspaceRootPath),
 		queryFn: () => listWorkspaceFiles(workspaceRootPath),
 		staleTime: 60_000,
+		gcTime: DEFAULT_GC_TIME,
+		retry: 0,
+	});
+}
+
+/** One directory level for the file-explorer tree (lazy, per-folder). */
+export function directoryListingQueryOptions(
+	workspaceRootPath: string,
+	relPath: string,
+) {
+	return queryOptions({
+		queryKey: grexQueryKeys.directoryListing(workspaceRootPath, relPath),
+		queryFn: () => listDirectory(workspaceRootPath, relPath),
+		staleTime: 30_000,
 		gcTime: DEFAULT_GC_TIME,
 		retry: 0,
 	});

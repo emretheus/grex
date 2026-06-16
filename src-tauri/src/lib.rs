@@ -748,6 +748,7 @@ pub fn run() {
             commands::workspace_commands::unpin_workspace,
             commands::editor_commands::list_editor_files,
             commands::editor_commands::list_workspace_files,
+            commands::editor_commands::list_directory,
             commands::editor_commands::list_workspace_changes,
             commands::editor_commands::discard_workspace_file,
             commands::editor_commands::stage_workspace_file,

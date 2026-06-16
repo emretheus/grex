@@ -4,11 +4,13 @@
 // branch and renders either <StartSurfacePane> (start) or
 // <ShellWorkspaceConversation> (chat) below the editor. Selection-track reads
 // stay inside ShellWorkspaceConversation; only the delivery channel moved.
+import { useState } from "react";
 import type {
 	ComposerCreateContext,
 	WorkspaceConversationContainerProps,
 } from "@/features/conversation";
 import { WorkspaceEditorSurface } from "@/features/editor";
+import { EditorExplorerLanding } from "@/features/editor/explorer-landing";
 import { getShortcut } from "@/features/shortcuts/registry";
 import type { WorkspaceStartPage } from "@/features/workspace-start";
 import type { ChangeRequestInfo, RepositoryCreateOption } from "@/lib/api";
@@ -130,6 +132,25 @@ export function WorkspacePaneSurface({
 	headerLeadingNode,
 	headerActionsNode,
 }: Props) {
+	// Explorer sidebar visibility + width, owned here so they persist across
+	// file opens and the explorer landing (rather than resetting each time the
+	// editor surface mounts). Defaults open — the tree is the browse entry point.
+	const [explorerOpen, setExplorerOpen] = useState(() =>
+		readStoredBool("grex.explorer.open", true),
+	);
+	const [explorerWidth, setExplorerWidth] = useState(() =>
+		readStoredNumber("grex.explorer.width", 260),
+	);
+	const toggleExplorer = () =>
+		setExplorerOpen((prev) => {
+			const next = !prev;
+			writeStored("grex.explorer.open", String(next));
+			return next;
+		});
+	const changeExplorerWidth = (next: number) => {
+		setExplorerWidth(next);
+		writeStored("grex.explorer.width", String(Math.round(next)));
+	};
 	return (
 		<section
 			aria-label="Workspace panel"
@@ -159,7 +180,21 @@ export function WorkspacePaneSurface({
 						workspaceRootPath={workspaceRootPath}
 						onChangeSession={handleEditorSessionChange}
 						onExit={editorSessionActions.exit}
+						explorerOpen={explorerOpen}
+						onToggleExplorer={toggleExplorer}
+						explorerWidth={explorerWidth}
+						onExplorerWidthChange={changeExplorerWidth}
+						onCloseLastFile={editorSessionActions.returnToExplorer}
 						onError={editorSessionActions.reportError}
+					/>
+				)}
+				{workspaceViewMode === "editor" && !editorSession && (
+					<EditorExplorerLanding
+						workspaceRootPath={workspaceRootPath}
+						onOpenFile={editorSessionActions.openFileReference}
+						onExit={editorSessionActions.exit}
+						explorerWidth={explorerWidth}
+						onExplorerWidthChange={changeExplorerWidth}
 					/>
 				)}
 				<div
@@ -257,4 +292,31 @@ export function WorkspacePaneSurface({
 			</div>
 		</section>
 	);
+}
+
+function readStoredBool(key: string, fallback: boolean): boolean {
+	try {
+		const raw = localStorage.getItem(key);
+		return raw === null ? fallback : raw === "true";
+	} catch {
+		return fallback;
+	}
+}
+
+function readStoredNumber(key: string, fallback: number): number {
+	try {
+		const raw = localStorage.getItem(key);
+		const parsed = raw === null ? Number.NaN : Number(raw);
+		return Number.isFinite(parsed) ? parsed : fallback;
+	} catch {
+		return fallback;
+	}
+}
+
+function writeStored(key: string, value: string) {
+	try {
+		localStorage.setItem(key, value);
+	} catch {
+		// Best-effort persistence.
+	}
 }
