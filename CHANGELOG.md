@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.8.0
+
+### Minor Changes
+
+- [#42](https://github.com/emretheus/grex/pull/42) [`1d52589`](https://github.com/emretheus/grex/commit/1d5258968b86499890e5a0e637820b6c32372dcd) Thanks [@emretheus](https://github.com/emretheus)! - Add Forgejo, Featurebase, and Plain as Contexts sources alongside Linear, Jira, and Trello.
+
+  - Connect Forgejo (or any Gitea-compatible instance) with an instance URL and access token to browse, search, and open issues, scope the feed to issues assigned to you or every accessible repo, and append them to the composer.
+  - Connect Featurebase with an API key and your public feedback URL to browse, search, and open feedback posts with their board and upvote counts.
+  - Connect Plain with an API key to browse, search, and open open support threads with their customer and priority.
+
 ## 0.7.0
 
 ### Minor Changes
