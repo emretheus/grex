@@ -3,6 +3,7 @@ import { RouterProvider } from "@tanstack/react-router";
 import { type ComponentType, useCallback, useMemo, useState } from "react";
 import { QuitConfirmDialog } from "@/components/quit-confirm-dialog";
 import { SplashScreen } from "@/components/splash-screen";
+import { LibraryDialog } from "@/features/library";
 import { AppOnboarding } from "@/features/onboarding";
 import type { SettingsSection } from "@/features/settings";
 import { SettingsDialog } from "@/features/settings";
@@ -116,6 +117,7 @@ export function AppProviders({
 						});
 					}}
 				/>
+				<LibraryDialog />
 			</PersistQueryClientProvider>
 		</SettingsContext.Provider>
 	);

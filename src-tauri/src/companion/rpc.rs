@@ -140,6 +140,37 @@ async fn dispatch(
             crate::commands::forge_commands::invalidate_forge_caches(arg_json(&args, "provider")?, arg_opt_string(&args, "host")).await?;
             Ok(Value::Null)
         }
+        "library_mcp_delete" => {
+            crate::commands::library_commands::library_mcp_delete(app.clone(), arg_string(&args, "id")?).await?;
+            Ok(Value::Null)
+        }
+        "library_mcp_list" => to_value(crate::commands::library_commands::library_mcp_list().await?),
+        "library_mcp_sync" => to_value(crate::commands::library_commands::library_mcp_sync().await?),
+        "library_mcp_sync_preview" => to_value(crate::commands::library_commands::library_mcp_sync_preview().await?),
+        "library_mcp_test" => to_value(crate::commands::library_commands::library_mcp_test(arg_json(&args, "server")?).await?),
+        "library_mcp_upsert" => to_value(crate::commands::library_commands::library_mcp_upsert(app.clone(), arg_json(&args, "server")?).await?),
+        "library_prompts_delete" => {
+            crate::commands::library_commands::library_prompts_delete(app.clone(), arg_string(&args, "id")?).await?;
+            Ok(Value::Null)
+        }
+        "library_prompts_list" => to_value(crate::commands::library_commands::library_prompts_list().await?),
+        "library_prompts_reorder" => {
+            crate::commands::library_commands::library_prompts_reorder(app.clone(), arg_json(&args, "orderedIds")?).await?;
+            Ok(Value::Null)
+        }
+        "library_prompts_upsert" => to_value(crate::commands::library_commands::library_prompts_upsert(app.clone(), arg_opt_string(&args, "id"), arg_string(&args, "title")?, arg_string(&args, "prompt")?).await?),
+        "library_skills_create" => to_value(crate::commands::library_commands::library_skills_create(app.clone(), arg_string(&args, "name")?, arg_string(&args, "description")?, arg_opt_string(&args, "content")).await?),
+        "library_skills_delete" => {
+            crate::commands::library_commands::library_skills_delete(app.clone(), arg_string(&args, "name")?).await?;
+            Ok(Value::Null)
+        }
+        "library_skills_install" => to_value(crate::commands::library_commands::library_skills_install(app.clone(), arg_string(&args, "name")?, arg_string(&args, "description")?, arg_string(&args, "content")?, arg_opt_string(&args, "sourceUrl")).await?),
+        "library_skills_list" => to_value(crate::commands::library_commands::library_skills_list().await?),
+        "library_skills_read" => to_value(crate::commands::library_commands::library_skills_read(arg_string(&args, "name")?).await?),
+        "library_skills_update" => {
+            crate::commands::library_commands::library_skills_update(app.clone(), arg_string(&args, "name")?, arg_string(&args, "content")?).await?;
+            Ok(Value::Null)
+        }
         "list_active_streams" => to_value(crate::agents::list_active_streams(app.state::<crate::agents::ActiveStreams>()).await?),
         "list_agent_model_sections" => to_value(crate::agents::list_agent_model_sections().await?),
         "list_all_agent_model_sections" => to_value(crate::agents::list_all_agent_model_sections().await?),

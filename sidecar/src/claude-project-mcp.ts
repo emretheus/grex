@@ -61,15 +61,23 @@ export function loadProjectMcpServers(
 	}
 
 	if (!isObject(parsed)) return undefined;
+
+	// User-scope (top-level) `mcpServers` apply everywhere the `claude` CLI
+	// runs. Grex's Library writes here on "Sync to agents", so merging them in
+	// makes Library MCP servers reach Grex-driven sessions too — not just
+	// terminal launches. Project scope wins on name conflicts.
+	const globalServers = isObject(parsed.mcpServers) ? parsed.mcpServers : {};
+
 	const projects = parsed.projects;
-	if (!isObject(projects)) return undefined;
-	const project = projects[sourceRepoPath];
-	if (!isObject(project)) return undefined;
-	const mcpServers = project.mcpServers;
-	if (!isObject(mcpServers) || Object.keys(mcpServers).length === 0) {
+	const project = isObject(projects) ? projects[sourceRepoPath] : undefined;
+	const projectServers =
+		isObject(project) && isObject(project.mcpServers) ? project.mcpServers : {};
+
+	const merged = { ...globalServers, ...projectServers };
+	if (Object.keys(merged).length === 0) {
 		return undefined;
 	}
 	// Trust the SDK to validate per-server shape — we only guarantee it's
 	// a non-empty object keyed by server name.
-	return mcpServers as ProjectMcpServers;
+	return merged as ProjectMcpServers;
 }

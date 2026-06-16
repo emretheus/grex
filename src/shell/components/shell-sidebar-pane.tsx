@@ -9,6 +9,7 @@ import {
 	TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { FeedbackButton } from "@/features/feedback";
+import { LibraryButton } from "@/features/library";
 import { WorkspacesSidebarContainer } from "@/features/navigation/container";
 import { SettingsButton } from "@/features/settings";
 import { getShortcut } from "@/features/shortcuts/registry";
@@ -217,6 +218,9 @@ export function ShellSidebarPane({
 							<SettingsButton
 								onClick={onOpenSettings}
 								shortcut={getShortcut(appSettings.shortcuts, "settings.open")}
+							/>
+							<LibraryButton
+								shortcut={getShortcut(appSettings.shortcuts, "library.open")}
 							/>
 							<FeedbackButton onClick={onOpenFeedback} />
 						</div>

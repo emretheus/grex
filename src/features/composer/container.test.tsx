@@ -1195,6 +1195,7 @@ describe("WorkspaceComposerContainer", () => {
 			await waitFor(() => {
 				expect(composerMockState.lastSlashCommands.map((c) => c.name)).toEqual([
 					"add-dir",
+					"prompt",
 					"goal",
 					"workflows",
 					"compact",
@@ -1219,17 +1220,18 @@ describe("WorkspaceComposerContainer", () => {
 			await waitFor(() => {
 				expect(composerMockState.lastSlashCommands.map((c) => c.name)).toEqual([
 					"add-dir",
+					"prompt",
 					"compact",
 					"goal",
 				]);
 			});
-			expect(composerMockState.lastSlashCommands[1]).toEqual({
+			expect(composerMockState.lastSlashCommands[2]).toEqual({
 				name: "compact",
 				description: "Compact this Codex thread's context",
 				source: "builtin",
 				providers: ["codex"],
 			});
-			expect(composerMockState.lastSlashCommands[2]).toEqual({
+			expect(composerMockState.lastSlashCommands[3]).toEqual({
 				name: "goal",
 				description:
 					"Set a persistent goal Codex pursues turn-after-turn until done or paused",
@@ -1250,10 +1252,11 @@ describe("WorkspaceComposerContainer", () => {
 			await waitFor(() => {
 				expect(composerMockState.lastSlashCommands.map((c) => c.name)).toEqual([
 					"add-dir",
+					"prompt",
 					"compact",
 				]);
 			});
-			expect(composerMockState.lastSlashCommands[1]).toEqual({
+			expect(composerMockState.lastSlashCommands[2]).toEqual({
 				name: "compact",
 				description: "Compact this conversation's context",
 				source: "builtin",
@@ -1283,12 +1286,13 @@ describe("WorkspaceComposerContainer", () => {
 			await waitFor(() => {
 				expect(composerMockState.lastSlashCommands.map((c) => c.name)).toEqual([
 					"add-dir",
+					"prompt",
 					"goal",
 					"workflows",
 					"clear",
 				]);
 			});
-			expect(composerMockState.lastSlashCommands[1]).toEqual({
+			expect(composerMockState.lastSlashCommands[2]).toEqual({
 				name: "goal",
 				description: "Set a completion condition for Claude to work toward",
 				argumentHint: "<condition>",

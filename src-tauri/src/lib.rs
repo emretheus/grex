@@ -13,6 +13,7 @@ pub mod global_hotkey;
 pub mod image_store;
 mod import;
 pub mod lark;
+pub mod library;
 pub mod linear;
 pub mod local_llm;
 pub mod logging;
@@ -823,7 +824,23 @@ pub fn run() {
             commands::companion_commands::companion_revoke_device,
             commands::companion_commands::companion_sign_in_cloudflare,
             commands::companion_commands::companion_allocate_stable_url,
-            commands::companion_commands::companion_destroy_stable_url
+            commands::companion_commands::companion_destroy_stable_url,
+            commands::library_commands::library_prompts_list,
+            commands::library_commands::library_prompts_upsert,
+            commands::library_commands::library_prompts_delete,
+            commands::library_commands::library_prompts_reorder,
+            commands::library_commands::library_mcp_list,
+            commands::library_commands::library_mcp_upsert,
+            commands::library_commands::library_mcp_delete,
+            commands::library_commands::library_mcp_sync_preview,
+            commands::library_commands::library_mcp_sync,
+            commands::library_commands::library_mcp_test,
+            commands::library_commands::library_skills_list,
+            commands::library_commands::library_skills_read,
+            commands::library_commands::library_skills_create,
+            commands::library_commands::library_skills_install,
+            commands::library_commands::library_skills_update,
+            commands::library_commands::library_skills_delete
         ])
         .build(tauri::generate_context!())
         .expect("error while building tauri application");

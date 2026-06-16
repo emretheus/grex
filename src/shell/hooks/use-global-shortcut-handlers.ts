@@ -100,6 +100,10 @@ export function useGlobalShortcutHandlers({
 				callback: handleOpenSettings,
 			},
 			{
+				id: "library.open" as const,
+				callback: () => publishShellEvent({ type: "open-library" }),
+			},
+			{
 				id: "workspace.copyPath" as const,
 				callback: handleCopyWorkspacePath,
 				enabled: Boolean(workspaceRootPath),
