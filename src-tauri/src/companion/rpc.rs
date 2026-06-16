@@ -198,6 +198,7 @@ async fn dispatch(
         "list_workspace_candidate_directories" => to_value(crate::commands::workspace_commands::list_workspace_candidate_directories(arg_opt_string(&args, "excludeWorkspaceId")).await?),
         "list_workspace_changes" => to_value(crate::commands::editor_commands::list_workspace_changes(arg_string(&args, "workspaceRootPath")?, arg_opt_string(&args, "workspaceId")).await?),
         "list_workspace_files" => to_value(crate::commands::editor_commands::list_workspace_files(arg_string(&args, "workspaceRootPath")?).await?),
+        "list_directory" => to_value(crate::commands::editor_commands::list_directory(arg_string(&args, "workspaceRootPath")?, arg_string(&args, "relPath")?).await?),
         "list_workspace_groups" => to_value(crate::commands::workspace_commands::list_workspace_groups().await?),
         "list_workspace_linked_directories" => to_value(crate::commands::workspace_commands::list_workspace_linked_directories(arg_string(&args, "workspaceId")?).await?),
         "list_workspace_sessions" => to_value(crate::commands::session_commands::list_workspace_sessions(arg_string(&args, "workspaceId")?).await?),

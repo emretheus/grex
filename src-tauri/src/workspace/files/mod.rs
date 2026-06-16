@@ -8,11 +8,12 @@ pub use changes::{
     stage_workspace_file, unstage_workspace_file,
 };
 pub use editor::{
-    list_editor_files, list_workspace_files, read_editor_file, read_file_at_ref, stat_editor_file,
-    write_editor_file,
+    list_directory, list_editor_files, list_workspace_files, read_editor_file, read_file_at_ref,
+    stat_editor_file, write_editor_file,
 };
 pub use types::{
-    EditorFileListItem, EditorFileReadResponse, EditorFileStatResponse, EditorFileWriteResponse,
+    DirEntry, EditorFileListItem, EditorFileReadResponse, EditorFileStatResponse,
+    EditorFileWriteResponse,
 };
 
 #[cfg(test)]

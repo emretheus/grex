@@ -4005,6 +4005,34 @@ export async function listWorkspaceFiles(
 	}
 }
 
+/** One entry of a single directory level, for the lazy file-explorer tree.
+ *  `path` is workspace-root-relative with forward slashes (`src/lib`). */
+export type DirEntry = {
+	name: string;
+	path: string;
+	isDir: boolean;
+};
+
+/**
+ * List a single directory level for the file-explorer tree. `relPath` is
+ * workspace-root-relative (empty string = the workspace root). Folders come
+ * before files, each alphabetical; noise dirs (`.git`, `node_modules`, …),
+ * junk files, and symlinks are filtered out by the backend.
+ */
+export async function listDirectory(
+	workspaceRootPath: string,
+	relPath: string,
+): Promise<DirEntry[]> {
+	try {
+		return await invoke<DirEntry[]>("list_directory", {
+			workspaceRootPath,
+			relPath,
+		});
+	} catch (error) {
+		throw new Error(describeInvokeError(error, "Unable to list directory."));
+	}
+}
+
 export async function listWorkspaceChanges(
 	workspaceRootPath: string,
 	workspaceId?: string | null,

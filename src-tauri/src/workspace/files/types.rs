@@ -58,3 +58,13 @@ pub struct EditorFileListItem {
 fn is_false(value: &bool) -> bool {
     !*value
 }
+
+/// One entry in a single directory level, for the lazy file-explorer tree.
+/// `path` is workspace-root-relative with forward slashes (`src/lib`).
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct DirEntry {
+    pub name: String,
+    pub path: String,
+    pub is_dir: bool,
+}

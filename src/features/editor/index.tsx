@@ -6,6 +6,7 @@ import {
 	Copy,
 	Eye,
 	FileCode,
+	PanelLeft,
 	Plus,
 	Search,
 	X,
@@ -45,6 +46,7 @@ import { cn } from "@/lib/utils";
 import { describeUnknownError } from "@/lib/workspace-helpers";
 import { useRouterSelectedWorkspaceId } from "@/router/use-router-selection";
 
+import { FileExplorer } from "./file-explorer";
 import { EditorImagePreview } from "./image-preview";
 
 // Refined segmented-tab look: no tray, soft glassy pill on the active state.
@@ -448,6 +450,7 @@ export function WorkspaceEditorSurface({
 	const [searchOpen, setSearchOpen] = useState(false);
 	const [searchQuery, setSearchQuery] = useState("");
 	const [selectedSearchIndex, setSelectedSearchIndex] = useState(0);
+	const [explorerOpen, setExplorerOpen] = useState(false);
 	const [surfaceStatus, setSurfaceStatus] = useState<SurfaceStatus>({
 		kind: "ready",
 	});
@@ -1017,7 +1020,7 @@ export function WorkspaceEditorSurface({
 		});
 	};
 
-	const handleOpenSearchFile = async (file: InspectorFileItem) => {
+	const handleOpenSearchFile = async (file: { absolutePath: string }) => {
 		try {
 			const existingTab = fileTabs.find(
 				(tab) =>
@@ -1082,6 +1085,24 @@ export function WorkspaceEditorSurface({
 		}
 	};
 
+	// The file explorer hands back workspace-relative paths; join with the
+	// workspace root and reuse the exact open flow the search picker uses
+	// (already-open → switch tab, git-changed → diff, otherwise read + open).
+	const handleOpenFileFromExplorer = (relPath: string) => {
+		if (!workspaceRootPath) return;
+		const root = workspaceRootPath.replace(/\/+$/, "");
+		void handleOpenSearchFile({ absolutePath: `${root}/${relPath}` });
+	};
+
+	// Workspace-relative path of the open file, to highlight it in the tree.
+	// Best-effort: a canonicalization mismatch just means no highlight.
+	const selectedExplorerPath = useMemo(() => {
+		if (!workspaceRootPath) return null;
+		const root = normalizePath(workspaceRootPath).replace(/\/+$/, "");
+		const abs = normalizePath(editorSession.path);
+		return abs.startsWith(`${root}/`) ? abs.slice(root.length + 1) : null;
+	}, [workspaceRootPath, editorSession.path]);
+
 	const handleSave = async () => {
 		const latest = latestSessionRef.current;
 		if (latest.kind !== "file" || latest.modifiedText === undefined) {
@@ -1143,6 +1164,20 @@ export function WorkspaceEditorSurface({
 			>
 				{/* Traffic-light inset. macOS: left; Windows / Linux: right. */}
 				<TrafficLightSpacer side="left" width={86} />
+
+				<button
+					type="button"
+					aria-label="Toggle file explorer"
+					aria-pressed={explorerOpen}
+					title="File explorer"
+					onClick={() => setExplorerOpen((prev) => !prev)}
+					className={cn(
+						"mr-1 inline-flex size-6 shrink-0 cursor-interactive items-center justify-center rounded text-muted-foreground transition-colors hover:bg-accent/60 hover:text-foreground",
+						explorerOpen && "bg-accent text-foreground",
+					)}
+				>
+					<PanelLeft className="size-3.5" strokeWidth={2} />
+				</button>
 
 				<div
 					data-tauri-drag-region
@@ -1227,67 +1262,78 @@ export function WorkspaceEditorSurface({
 				</div>
 			</div>
 
-			<div className="relative flex min-h-0 flex-1 bg-background">
-				{searchOpen && (
-					<FileSearchOverlay
-						files={filteredWorkspaceFiles}
-						query={searchQuery}
-						selectedIndex={selectedSearchIndex}
-						loading={workspaceFilesQuery.isLoading}
-						error={
-							workspaceFilesQuery.isError
-								? describeUnknownError(
-										workspaceFilesQuery.error,
-										"Unable to list workspace files.",
-									)
-								: null
-						}
-						onQueryChange={setSearchQuery}
-						onSelectedIndexChange={setSelectedSearchIndex}
-						onOpen={handleOpenSearchFile}
-						onClose={() => setSearchOpen(false)}
+			<div className="flex min-h-0 flex-1">
+				{explorerOpen && workspaceRootPath ? (
+					<FileExplorer
+						workspaceRootPath={workspaceRootPath}
+						selectedRelPath={selectedExplorerPath}
+						onOpenFile={handleOpenFileFromExplorer}
 					/>
-				)}
-				{/* Monaco host stays mounted in preview mode so model + dirty state survive toggling. */}
-				<div
-					ref={editorHostRef}
-					aria-label="Editor canvas"
-					className="h-full min-h-0 flex-1"
-					aria-hidden={showPreview || isImage}
-					style={showPreview || isImage ? { visibility: "hidden" } : undefined}
-				/>
-
-				{isImage && <EditorImagePreview session={editorSession} />}
-
-				{showPreview && (
+				) : null}
+				<div className="relative flex min-h-0 flex-1 bg-background">
+					{searchOpen && (
+						<FileSearchOverlay
+							files={filteredWorkspaceFiles}
+							query={searchQuery}
+							selectedIndex={selectedSearchIndex}
+							loading={workspaceFilesQuery.isLoading}
+							error={
+								workspaceFilesQuery.isError
+									? describeUnknownError(
+											workspaceFilesQuery.error,
+											"Unable to list workspace files.",
+										)
+									: null
+							}
+							onQueryChange={setSearchQuery}
+							onSelectedIndexChange={setSelectedSearchIndex}
+							onOpen={handleOpenSearchFile}
+							onClose={() => setSearchOpen(false)}
+						/>
+					)}
+					{/* Monaco host stays mounted in preview mode so model + dirty state survive toggling. */}
 					<div
-						aria-label="Markdown preview"
-						className="absolute inset-0 overflow-y-auto bg-background"
-					>
-						<div className="conversation-markdown mx-auto max-w-3xl break-words px-8 py-6 text-ui leading-6 text-foreground">
-							<Suspense
-								fallback={
-									<pre className="whitespace-pre-wrap break-words font-mono text-muted-foreground">
-										{previewContent}
-									</pre>
-								}
-							>
-								<LazyStreamdown
-									className="conversation-streamdown"
-									mode="static"
-								>
-									{previewContent}
-								</LazyStreamdown>
-							</Suspense>
-						</div>
-					</div>
-				)}
+						ref={editorHostRef}
+						aria-label="Editor canvas"
+						className="h-full min-h-0 flex-1"
+						aria-hidden={showPreview || isImage}
+						style={
+							showPreview || isImage ? { visibility: "hidden" } : undefined
+						}
+					/>
 
-				{surfaceStatus.kind === "error" && (
-					<div className="absolute inset-0 flex items-center justify-center bg-background">
-						<SurfaceMessage message={surfaceStatus.message} />
-					</div>
-				)}
+					{isImage && <EditorImagePreview session={editorSession} />}
+
+					{showPreview && (
+						<div
+							aria-label="Markdown preview"
+							className="absolute inset-0 overflow-y-auto bg-background"
+						>
+							<div className="conversation-markdown mx-auto max-w-3xl break-words px-8 py-6 text-ui leading-6 text-foreground">
+								<Suspense
+									fallback={
+										<pre className="whitespace-pre-wrap break-words font-mono text-muted-foreground">
+											{previewContent}
+										</pre>
+									}
+								>
+									<LazyStreamdown
+										className="conversation-streamdown"
+										mode="static"
+									>
+										{previewContent}
+									</LazyStreamdown>
+								</Suspense>
+							</div>
+						</div>
+					)}
+
+					{surfaceStatus.kind === "error" && (
+						<div className="absolute inset-0 flex items-center justify-center bg-background">
+							<SurfaceMessage message={surfaceStatus.message} />
+						</div>
+					)}
+				</div>
 			</div>
 		</section>
 	);

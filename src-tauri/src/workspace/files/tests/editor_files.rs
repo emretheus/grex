@@ -8,8 +8,8 @@ use crate::data_dir::TEST_ENV_LOCK as TEST_LOCK;
 use crate::error::{extract_code, ErrorCode};
 
 use super::{
-    canonicalize_missing_path, list_editor_files, list_workspace_files, read_editor_file,
-    stat_editor_file, support::EditorFilesHarness, write_editor_file,
+    canonicalize_missing_path, list_directory, list_editor_files, list_workspace_files,
+    read_editor_file, stat_editor_file, support::EditorFilesHarness, write_editor_file,
 };
 
 #[test]
@@ -277,4 +277,54 @@ fn list_workspace_files_returns_all_files_without_24_cap_and_skips_excluded_dirs
         .expect("expected nested widget in result");
     assert!(Path::new(&nested_match.absolute_path).is_file());
     assert_eq!(nested_match.name, "widget_00.tsx");
+}
+
+#[test]
+fn list_directory_returns_one_level_folders_first_and_skips_noise() {
+    let _lock = TEST_LOCK.lock().unwrap_or_else(|error| error.into_inner());
+    let harness = EditorFilesHarness::new();
+
+    // Root layout: two dirs (src, .git, node_modules) + two files.
+    let src_dir = harness.workspace_dir.join("src");
+    fs::create_dir_all(src_dir.join("components")).unwrap();
+    fs::write(src_dir.join("main.ts"), "export const x = 1;\n").unwrap();
+    fs::create_dir_all(harness.workspace_dir.join("node_modules").join("react")).unwrap();
+    fs::create_dir_all(harness.workspace_dir.join(".git")).unwrap();
+    fs::write(harness.workspace_dir.join("README.md"), "# hi\n").unwrap();
+    fs::write(harness.workspace_dir.join("package.json"), "{}\n").unwrap();
+    fs::write(harness.workspace_dir.join(".DS_Store"), b"junk").unwrap();
+
+    let root = list_directory(harness.workspace_dir.to_str().unwrap(), "").unwrap();
+    let names: Vec<&str> = root.iter().map(|e| e.name.as_str()).collect();
+    // Folders first (src), then files alphabetically; node_modules/.git/.DS_Store hidden.
+    assert_eq!(names, vec!["src", "package.json", "README.md"]);
+    assert!(root[0].is_dir);
+    assert_eq!(root[0].path, "src");
+    assert!(!root[1].is_dir);
+
+    // Descend one level via the relative path.
+    let level = list_directory(harness.workspace_dir.to_str().unwrap(), "src").unwrap();
+    let names: Vec<&str> = level.iter().map(|e| e.name.as_str()).collect();
+    assert_eq!(names, vec!["components", "main.ts"]);
+    assert_eq!(level[0].path, "src/components");
+    assert_eq!(level[1].path, "src/main.ts");
+}
+
+#[test]
+fn list_directory_rejects_paths_outside_the_workspace_root() {
+    let _lock = TEST_LOCK.lock().unwrap_or_else(|error| error.into_inner());
+    let harness = EditorFilesHarness::new();
+    fs::create_dir_all(harness.workspace_dir.join("src")).unwrap();
+
+    // `..` traversal must never resolve to a directory outside the workspace
+    // root: it errors out (either "outside the workspace root" or a failed
+    // canonicalize) rather than returning entries from an escaped path.
+    let result = list_directory(
+        harness.workspace_dir.to_str().unwrap(),
+        "../../../../../../etc",
+    );
+    assert!(
+        result.is_err(),
+        "expected `..` traversal to be rejected, got {result:?}"
+    );
 }
