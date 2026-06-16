@@ -1,18 +1,18 @@
 import { useIsMutating } from "@tanstack/react-query";
-import { linearListInboxItems, linearSearchIssues } from "@/lib/api";
+import { trelloListInboxItems, trelloSearchIssues } from "@/lib/api";
 import type { ComposerInsertTarget } from "@/lib/composer-insert";
 import { grexQueryKeys } from "@/lib/query-client";
 import type { ContextCard } from "@/lib/sources/types";
 import { IssueInboxSection } from "./issue-inbox-section";
 import {
-	LINEAR_CONNECT_MUTATION_KEY,
-	LinearConnectState,
-} from "./linear-connect-button";
-import { useLinearConnections } from "./use-linear-connection";
+	TRELLO_CONNECT_MUTATION_KEY,
+	TrelloConnectState,
+} from "./trello-connect-button";
+import { useTrelloConnections } from "./use-trello-connection";
 
-/** Linear subtree of the Contexts sidebar — a thin wrapper that wires the
- *  Linear connections + list/search fns into the shared `IssueInboxSection`. */
-export function LinearInboxSection({
+/** Trello subtree of the Contexts sidebar — a thin wrapper that wires the
+ *  Trello connections + list/search fns into the shared `IssueInboxSection`. */
+export function TrelloInboxSection({
 	onOpenCard,
 	selectedCardId,
 	appendContextTarget,
@@ -23,29 +23,29 @@ export function LinearInboxSection({
 	appendContextTarget?: ComposerInsertTarget;
 	horizontalPaddingClass: string;
 }) {
-	const connectionsQuery = useLinearConnections();
+	const connectionsQuery = useTrelloConnections();
 	const connections = connectionsQuery.data ?? [];
 	const displayNames = new Map(
-		connections.map((c) => [c.id, c.workspaceName ?? ""]),
+		connections.map((c) => [c.id, c.memberName ?? ""]),
 	);
 	const isConnecting =
-		useIsMutating({ mutationKey: LINEAR_CONNECT_MUTATION_KEY }) > 0;
+		useIsMutating({ mutationKey: TRELLO_CONNECT_MUTATION_KEY }) > 0;
 
 	return (
 		<IssueInboxSection
-			providerLabel="Linear"
+			providerLabel="Trello"
 			connected={connections.length > 0}
 			isLoadingConnections={connectionsQuery.isLoading}
 			isConnecting={isConnecting}
-			connectState={<LinearConnectState />}
+			connectState={<TrelloConnectState />}
 			displayNames={displayNames}
 			showWorkspace={connections.length > 1}
-			inboxKey={grexQueryKeys.linearInbox}
-			searchKey={grexQueryKeys.linearSearch}
-			listFn={linearListInboxItems}
-			searchFn={linearSearchIssues}
-			emptyTitle="No assigned issues"
-			emptySubtitle="Issues assigned to you in Linear will appear here."
+			inboxKey={grexQueryKeys.trelloInbox}
+			searchKey={grexQueryKeys.trelloSearch}
+			listFn={trelloListInboxItems}
+			searchFn={trelloSearchIssues}
+			emptyTitle="No cards"
+			emptySubtitle="Cards you're a member of in Trello will appear here."
 			onOpenCard={onOpenCard}
 			selectedCardId={selectedCardId}
 			appendContextTarget={appendContextTarget}

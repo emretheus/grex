@@ -1,18 +1,18 @@
 import { useIsMutating } from "@tanstack/react-query";
-import { linearListInboxItems, linearSearchIssues } from "@/lib/api";
+import { jiraListInboxItems, jiraSearchIssues } from "@/lib/api";
 import type { ComposerInsertTarget } from "@/lib/composer-insert";
 import { grexQueryKeys } from "@/lib/query-client";
 import type { ContextCard } from "@/lib/sources/types";
 import { IssueInboxSection } from "./issue-inbox-section";
 import {
-	LINEAR_CONNECT_MUTATION_KEY,
-	LinearConnectState,
-} from "./linear-connect-button";
-import { useLinearConnections } from "./use-linear-connection";
+	JIRA_CONNECT_MUTATION_KEY,
+	JiraConnectState,
+} from "./jira-connect-button";
+import { useJiraConnections } from "./use-jira-connection";
 
-/** Linear subtree of the Contexts sidebar — a thin wrapper that wires the
- *  Linear connections + list/search fns into the shared `IssueInboxSection`. */
-export function LinearInboxSection({
+/** Jira subtree of the Contexts sidebar — a thin wrapper that wires the
+ *  Jira connections + list/search fns into the shared `IssueInboxSection`. */
+export function JiraInboxSection({
 	onOpenCard,
 	selectedCardId,
 	appendContextTarget,
@@ -23,29 +23,29 @@ export function LinearInboxSection({
 	appendContextTarget?: ComposerInsertTarget;
 	horizontalPaddingClass: string;
 }) {
-	const connectionsQuery = useLinearConnections();
+	const connectionsQuery = useJiraConnections();
 	const connections = connectionsQuery.data ?? [];
 	const displayNames = new Map(
-		connections.map((c) => [c.id, c.workspaceName ?? ""]),
+		connections.map((c) => [c.id, c.siteName ?? ""]),
 	);
 	const isConnecting =
-		useIsMutating({ mutationKey: LINEAR_CONNECT_MUTATION_KEY }) > 0;
+		useIsMutating({ mutationKey: JIRA_CONNECT_MUTATION_KEY }) > 0;
 
 	return (
 		<IssueInboxSection
-			providerLabel="Linear"
+			providerLabel="Jira"
 			connected={connections.length > 0}
 			isLoadingConnections={connectionsQuery.isLoading}
 			isConnecting={isConnecting}
-			connectState={<LinearConnectState />}
+			connectState={<JiraConnectState />}
 			displayNames={displayNames}
 			showWorkspace={connections.length > 1}
-			inboxKey={grexQueryKeys.linearInbox}
-			searchKey={grexQueryKeys.linearSearch}
-			listFn={linearListInboxItems}
-			searchFn={linearSearchIssues}
+			inboxKey={grexQueryKeys.jiraInbox}
+			searchKey={grexQueryKeys.jiraSearch}
+			listFn={jiraListInboxItems}
+			searchFn={jiraSearchIssues}
 			emptyTitle="No assigned issues"
-			emptySubtitle="Issues assigned to you in Linear will appear here."
+			emptySubtitle="Issues assigned to you in Jira will appear here."
 			onOpenCard={onOpenCard}
 			selectedCardId={selectedCardId}
 			appendContextTarget={appendContextTarget}

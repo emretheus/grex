@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import type { LinearIssueDetail } from "@/lib/api";
+import type { IssueDetail } from "@/lib/api";
 import type { ContextCard } from "@/lib/sources/types";
 import { buildLinearStartInsert } from "./issue-view";
 
@@ -24,20 +24,23 @@ const card: ContextCard = {
 	},
 };
 
-const detail: LinearIssueDetail = {
+const detail: IssueDetail = {
 	id: "uuid-1",
-	identifier: "ENG-42",
+	connectionId: "org-1",
+	provider: "linear",
+	externalId: "ENG-42",
 	title: "Fix the thing",
 	description: "Steps to reproduce:\n1. Do X\n2. See crash",
 	url: card.externalUrl,
-	stateName: "In Progress",
-	stateType: "started",
-	priority: 1,
-	priorityLabel: "Urgent",
-	teamName: "Engineering",
-	teamKey: "ENG",
-	labels: [],
+	state: { label: "In Progress", tone: "open" },
 	lastActivityAt: 0,
+	meta: {
+		type: "linear",
+		identifier: "ENG-42",
+		priorityLabel: "Urgent",
+		team: { name: "Engineering", key: "ENG" },
+		labels: [],
+	},
 };
 
 describe("buildLinearStartInsert", () => {

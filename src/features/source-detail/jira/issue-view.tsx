@@ -7,11 +7,11 @@ import {
 	TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { SourceIcon } from "@/features/inbox/source-icon";
-import { type IssueDetail, linearGetIssue } from "@/lib/api";
+import { type IssueDetail, jiraGetIssue } from "@/lib/api";
 import type { ComposerInsertTarget } from "@/lib/composer-insert";
 import { useComposerInsert } from "@/lib/composer-insert-context";
 import { grexQueryKeys } from "@/lib/query-client";
-import type { ContextCard, LinearIssueMeta } from "@/lib/sources/types";
+import type { ContextCard, JiraIssueMeta } from "@/lib/sources/types";
 import {
 	DetailErrorState,
 	DetailLoadingState,
@@ -23,18 +23,18 @@ import {
 	toRefreshControl,
 } from "../common";
 
-export function LinearIssueView({
+export function JiraIssueView({
 	card,
 	appendContextTarget,
 	onStartWorkspace,
 }: SourceDetailProps) {
-	const meta = card.meta.type === "linear" ? card.meta : null;
+	const meta = card.meta.type === "jira" ? card.meta : null;
 	const connectionId = meta?.connectionId ?? "";
-	// The card id IS the Linear issue UUID (set in `linearItemToContextCard`);
-	// `connectionId` selects which workspace's key fetches it.
+	// The card id IS the Jira issue id (set in `jiraItemToContextCard`);
+	// `connectionId` selects which site's token fetches it.
 	const detailQuery = useQuery({
-		queryKey: grexQueryKeys.linearIssueDetail(connectionId, card.id),
-		queryFn: () => linearGetIssue({ connectionId, issueId: card.id }),
+		queryKey: grexQueryKeys.jiraIssueDetail(connectionId, card.id),
+		queryFn: () => jiraGetIssue({ connectionId, issueId: card.id }),
 		enabled: connectionId.length > 0,
 		staleTime: 60_000,
 		refetchOnMount: "always",
@@ -49,9 +49,7 @@ export function LinearIssueView({
 		if (!onStartWorkspace) return;
 		// Seed the start composer with the full issue (title + url + body)
 		// before the controller stashes the branch + closes the preview.
-		insertIntoComposer(
-			buildLinearStartInsert(card, detail, appendContextTarget),
-		);
+		insertIntoComposer(buildJiraStartInsert(card, detail, appendContextTarget));
 		onStartWorkspace(card);
 	};
 
@@ -64,18 +62,18 @@ export function LinearIssueView({
 						<span className="font-medium text-foreground/80">
 							{card.externalId}
 						</span>
-						{meta?.team?.name ? (
+						{meta?.projectName ? (
 							<span className="font-normal text-muted-foreground/70">
-								{meta.team.name}
+								{meta.projectName}
 							</span>
 						) : null}
 						<span className="inline-flex items-center gap-1 font-normal text-muted-foreground/70">
-							<SourceIcon source="linear" size={13} className="shrink-0" />
-							issue
+							<SourceIcon source="jira" size={13} className="shrink-0" />
+							{meta?.issueType ?? "issue"}
 						</span>
-						{meta && meta.priorityLabel !== "No priority" ? (
+						{meta?.priority ? (
 							<span className="font-normal text-muted-foreground/70">
-								{meta.priorityLabel}
+								{meta.priority}
 							</span>
 						) : null}
 						<span className="inline-flex items-center gap-1 font-normal text-muted-foreground/70">
@@ -100,15 +98,10 @@ export function LinearIssueView({
 					<div className="mt-2 flex flex-wrap items-center gap-1.5">
 						{meta.labels.map((label) => (
 							<span
-								key={label.name}
+								key={label}
 								className="inline-flex items-center gap-1 rounded-full border border-border/60 px-2 py-0.5 text-mini text-muted-foreground"
 							>
-								<span
-									aria-hidden="true"
-									className="size-2 rounded-full"
-									style={{ backgroundColor: label.color }}
-								/>
-								{label.name}
+								{label}
 							</span>
 						))}
 					</div>
@@ -156,27 +149,23 @@ function StartWorkspaceButton({ onClick }: { onClick: () => void }) {
 	);
 }
 
-/** Build the composer insert that seeds a new workspace from a Linear
- *  issue: a custom tag whose submit text carries the issue header
- *  (identifier, title, URL, team, priority, labels) plus the markdown
- *  body, so the agent's first turn has the whole task in context. */
-export function buildLinearStartInsert(
+/** Build the composer insert that seeds a new workspace from a Jira issue:
+ *  a custom tag whose submit text carries the issue header (identifier,
+ *  title, URL, project, type, priority, labels) plus the markdown body, so
+ *  the agent's first turn has the whole task in context. */
+export function buildJiraStartInsert(
 	card: ContextCard,
 	detail: IssueDetail | null,
 	target?: ComposerInsertTarget,
 ) {
-	const meta =
-		card.meta.type === "linear" ? (card.meta as LinearIssueMeta) : null;
+	const meta = card.meta.type === "jira" ? (card.meta as JiraIssueMeta) : null;
 	const headerLines = [
-		`Linear issue ${card.externalId}: ${card.title}`,
+		`Jira issue ${card.externalId}: ${card.title}`,
 		`URL: ${card.externalUrl}`,
-		meta?.team?.name ? `Team: ${meta.team.name}` : null,
-		meta && meta.priorityLabel !== "No priority"
-			? `Priority: ${meta.priorityLabel}`
-			: null,
-		meta && meta.labels.length > 0
-			? `Labels: ${meta.labels.map((l) => l.name).join(", ")}`
-			: null,
+		meta?.projectName ? `Project: ${meta.projectName}` : null,
+		meta?.issueType ? `Type: ${meta.issueType}` : null,
+		meta?.priority ? `Priority: ${meta.priority}` : null,
+		meta && meta.labels.length > 0 ? `Labels: ${meta.labels.join(", ")}` : null,
 	].filter((line): line is string => Boolean(line));
 	const body = detail?.description?.trim();
 	const submitText = body
@@ -192,7 +181,7 @@ export function buildLinearStartInsert(
 				kind: "custom-tag" as const,
 				label,
 				submitText,
-				key: `linear-start:${card.id}`,
+				key: `jira-start:${card.id}`,
 				preview: { kind: "text" as const, title: label, text: submitText },
 				source: card.source,
 				stateTone: card.state?.tone,

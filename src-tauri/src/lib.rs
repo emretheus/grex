@@ -12,6 +12,7 @@ pub mod git;
 pub mod global_hotkey;
 pub mod image_store;
 mod import;
+pub mod issues;
 pub mod lark;
 pub mod library;
 pub mod linear;
@@ -808,6 +809,22 @@ pub fn run() {
             commands::linear_commands::linear_get_issue,
             commands::linear_commands::linear_list_teams,
             commands::linear_commands::linear_list_projects,
+            commands::jira_commands::jira_connections,
+            commands::jira_commands::jira_connect,
+            commands::jira_commands::jira_disconnect,
+            commands::jira_commands::jira_update_scope,
+            commands::jira_commands::jira_list_inbox_items,
+            commands::jira_commands::jira_search_issues,
+            commands::jira_commands::jira_get_issue,
+            commands::jira_commands::jira_list_projects,
+            commands::trello_commands::trello_connections,
+            commands::trello_commands::trello_connect,
+            commands::trello_commands::trello_disconnect,
+            commands::trello_commands::trello_update_scope,
+            commands::trello_commands::trello_list_inbox_items,
+            commands::trello_commands::trello_search_issues,
+            commands::trello_commands::trello_get_issue,
+            commands::trello_commands::trello_list_boards,
             commands::slack_commands::slack_import_from_desktop,
             commands::slack_commands::slack_list_workspaces,
             commands::slack_commands::slack_disconnect_workspace,

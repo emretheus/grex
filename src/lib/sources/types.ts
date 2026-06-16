@@ -1,5 +1,7 @@
 export type ContextCardSource =
 	| "linear"
+	| "jira"
+	| "trello"
 	| "github_issue"
 	| "github_pr"
 	| "github_discussion"
@@ -60,6 +62,27 @@ export type LinearIssueMeta = {
 	labels: { name: string; color: string }[];
 };
 
+export type JiraIssueMeta = {
+	type: "jira";
+	/** Which connected site produced this issue — routes the detail fetch. */
+	connectionId: string;
+	/** Site host, shown as a badge when >1 site is connected. */
+	siteName?: string;
+	issueType: string;
+	priority?: string;
+	projectName: string;
+	labels: string[];
+};
+
+export type TrelloCardMeta = {
+	type: "trello";
+	/** Which connected Trello account produced this card. */
+	connectionId: string;
+	boardName: string;
+	listName: string;
+	labels: { name: string; color: string }[];
+};
+
 export type GitHubIssueMeta = {
 	type: "github_issue";
 	repo: string;
@@ -108,6 +131,8 @@ export type SlackThreadMeta = {
 
 export type ContextCardMeta =
 	| LinearIssueMeta
+	| JiraIssueMeta
+	| TrelloCardMeta
 	| GitHubIssueMeta
 	| GitHubPRMeta
 	| GitHubDiscussionMeta

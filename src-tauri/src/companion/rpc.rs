@@ -498,6 +498,32 @@ async fn dispatch(
         "linear_list_teams" => to_value(crate::commands::linear_commands::linear_list_teams(app.clone(), arg_string(&args, "connectionId")?).await?),
         "linear_list_projects" => to_value(crate::commands::linear_commands::linear_list_projects(app.clone(), arg_string(&args, "connectionId")?, arg_opt_string(&args, "teamId")).await?),
 
+        // ============ data domains: Jira context source ============
+        "jira_connections" => to_value(crate::commands::jira_commands::jira_connections().await?),
+        "jira_connect" => to_value(crate::commands::jira_commands::jira_connect(app.clone(), arg_string(&args, "site")?, arg_string(&args, "email")?, arg_string(&args, "token")?).await?),
+        "jira_disconnect" => {
+            crate::commands::jira_commands::jira_disconnect(app.clone(), arg_string(&args, "connectionId")?).await?;
+            Ok(Value::Null)
+        }
+        "jira_update_scope" => to_value(crate::commands::jira_commands::jira_update_scope(app.clone(), arg_string(&args, "connectionId")?, arg_json(&args, "assignedOnly")?, arg_json(&args, "projectKeys")?).await?),
+        "jira_list_inbox_items" => to_value(crate::commands::jira_commands::jira_list_inbox_items(app.clone(), arg_opt_json(&args, "cursors")?, arg_opt_int(&args, "limit")).await?),
+        "jira_search_issues" => to_value(crate::commands::jira_commands::jira_search_issues(app.clone(), arg_string(&args, "query")?, arg_opt_json(&args, "cursors")?, arg_opt_int(&args, "limit")).await?),
+        "jira_get_issue" => to_value(crate::commands::jira_commands::jira_get_issue(app.clone(), arg_string(&args, "connectionId")?, arg_string(&args, "issueId")?).await?),
+        "jira_list_projects" => to_value(crate::commands::jira_commands::jira_list_projects(arg_string(&args, "connectionId")?).await?),
+
+        // ============ data domains: Trello context source ============
+        "trello_connections" => to_value(crate::commands::trello_commands::trello_connections().await?),
+        "trello_connect" => to_value(crate::commands::trello_commands::trello_connect(app.clone(), arg_string(&args, "apiKey")?, arg_string(&args, "token")?).await?),
+        "trello_disconnect" => {
+            crate::commands::trello_commands::trello_disconnect(app.clone(), arg_string(&args, "connectionId")?).await?;
+            Ok(Value::Null)
+        }
+        "trello_update_scope" => to_value(crate::commands::trello_commands::trello_update_scope(app.clone(), arg_string(&args, "connectionId")?, arg_json(&args, "assignedOnly")?, arg_json(&args, "boardIds")?).await?),
+        "trello_list_inbox_items" => to_value(crate::commands::trello_commands::trello_list_inbox_items(app.clone(), arg_opt_json(&args, "cursors")?, arg_opt_int(&args, "limit")).await?),
+        "trello_search_issues" => to_value(crate::commands::trello_commands::trello_search_issues(app.clone(), arg_string(&args, "query")?, arg_opt_json(&args, "cursors")?, arg_opt_int(&args, "limit")).await?),
+        "trello_get_issue" => to_value(crate::commands::trello_commands::trello_get_issue(app.clone(), arg_string(&args, "connectionId")?, arg_string(&args, "issueId")?).await?),
+        "trello_list_boards" => to_value(crate::commands::trello_commands::trello_list_boards(arg_string(&args, "connectionId")?).await?),
+
         // ============ desktop-only / destructive: no-op for a phone ============
         // Companion self-management: a paired browser does not administer the
         // companion server (enable/pair/sign-in happen on the desktop host).

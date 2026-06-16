@@ -1,5 +1,10 @@
 import { CircleDot, GitPullRequest, MessagesSquare } from "lucide-react";
-import { LinearBrandIcon, SlackBrandIcon } from "@/components/brand-icon";
+import {
+	JiraBrandIcon,
+	LinearBrandIcon,
+	SlackBrandIcon,
+	TrelloBrandIcon,
+} from "@/components/brand-icon";
 import type { ContextCardSource } from "@/lib/sources/types";
 
 export function SourceIcon({
@@ -14,6 +19,10 @@ export function SourceIcon({
 	switch (source) {
 		case "linear":
 			return <LinearBrandIcon className={className} size={size} />;
+		case "jira":
+			return <JiraBrandIcon className={className} size={size} />;
+		case "trello":
+			return <TrelloBrandIcon className={className} size={size} />;
 		case "github_issue":
 			return <CircleDot className={className} size={size} strokeWidth={2} />;
 		case "github_pr":
