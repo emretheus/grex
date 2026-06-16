@@ -164,6 +164,9 @@ function EditorSurfaceHarness({
 					}}
 					onError={onError}
 					onExit={vi.fn()}
+					explorerOpen={false}
+					onToggleExplorer={vi.fn()}
+					onCloseLastFile={vi.fn()}
 				/>
 			</RouterContextProvider>
 		</QueryClientProvider>

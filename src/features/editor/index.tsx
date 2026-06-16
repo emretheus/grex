@@ -72,6 +72,13 @@ type WorkspaceEditorSurfaceProps = {
 	workspaceRootPath?: string | null;
 	onChangeSession: (session: EditorSessionState) => void;
 	onExit: () => void;
+	/** Whether the file-explorer sidebar is shown. Controlled at the pane level
+	 *  so it persists across file opens (and the explorer landing). */
+	explorerOpen: boolean;
+	onToggleExplorer: () => void;
+	/** Called instead of `onExit` when the LAST open tab is closed — returns to
+	 *  the explorer landing rather than kicking back to chat. */
+	onCloseLastFile: () => void;
 	onError?: (description: string, title?: string) => void;
 };
 
@@ -427,6 +434,9 @@ export function WorkspaceEditorSurface({
 	workspaceRootPath,
 	onChangeSession,
 	onExit,
+	explorerOpen,
+	onToggleExplorer,
+	onCloseLastFile,
 	onError,
 }: WorkspaceEditorSurfaceProps) {
 	const queryClient = useQueryClient();
@@ -450,7 +460,6 @@ export function WorkspaceEditorSurface({
 	const [searchOpen, setSearchOpen] = useState(false);
 	const [searchQuery, setSearchQuery] = useState("");
 	const [selectedSearchIndex, setSelectedSearchIndex] = useState(0);
-	const [explorerOpen, setExplorerOpen] = useState(false);
 	const [surfaceStatus, setSurfaceStatus] = useState<SurfaceStatus>({
 		kind: "ready",
 	});
@@ -528,7 +537,9 @@ export function WorkspaceEditorSurface({
 			const index = fileTabs.findIndex((tab) => tab.id === tabId);
 			if (index === -1) return;
 			if (fileTabs.length === 1) {
-				onExit();
+				// Closing the last file returns to the explorer landing (still in
+				// editor mode), not all the way out to chat.
+				onCloseLastFile();
 				return;
 			}
 
@@ -539,7 +550,7 @@ export function WorkspaceEditorSurface({
 				if (nextTab) onChangeSession(nextTab.session);
 			}
 		},
-		[activeTabId, fileTabs, onChangeSession, onExit],
+		[activeTabId, fileTabs, onChangeSession, onCloseLastFile],
 	);
 
 	const editorShortcutHandlers = useMemo<ShortcutHandler[]>(
@@ -1170,7 +1181,7 @@ export function WorkspaceEditorSurface({
 					aria-label="Toggle file explorer"
 					aria-pressed={explorerOpen}
 					title="File explorer"
-					onClick={() => setExplorerOpen((prev) => !prev)}
+					onClick={onToggleExplorer}
 					className={cn(
 						"mr-1 inline-flex size-6 shrink-0 cursor-interactive items-center justify-center rounded text-muted-foreground transition-colors hover:bg-accent/60 hover:text-foreground",
 						explorerOpen && "bg-accent text-foreground",

@@ -23,6 +23,10 @@ export type EditorSessionActions = {
 	/** Enter the editor with no file open — shows the file-explorer landing so
 	 *  the user can browse the codebase and pick a file to open. */
 	openExplorer(): void;
+	/** Close the current file but STAY in the editor, returning to the explorer
+	 *  landing (used when closing the last open tab — closing a file shouldn't
+	 *  kick the user all the way back to chat). */
+	returnToExplorer(): void;
 	changeSession(session: EditorSessionState): void;
 	exit(): void;
 	reportError(description: string, title?: string): void;
@@ -300,6 +304,21 @@ export function useEditorSessionController(
 		enterEditorModeRef.current();
 	}, [workspaceRootPath]);
 
+	// Closing the last open file returns to the explorer landing (still in
+	// editor view-mode) rather than exiting to chat. Confirms discard first if
+	// the file has unsaved changes.
+	const returnToExplorer = useCallback(() => {
+		const clear = () => setEditorSession(null);
+		const confirmed = confirmDiscardEditorChanges("close this file");
+		if (confirmed === true) {
+			clear();
+			return;
+		}
+		void confirmed.then((ok) => {
+			if (ok) clear();
+		});
+	}, [confirmDiscardEditorChanges]);
+
 	const changeSession = useCallback((session: EditorSessionState) => {
 		setEditorSession(session);
 	}, []);
@@ -323,6 +342,7 @@ export function useEditorSessionController(
 		openFile,
 		openFileReference,
 		openExplorer,
+		returnToExplorer,
 		changeSession,
 		exit,
 		reportError,

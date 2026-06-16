@@ -4,6 +4,7 @@
 // branch and renders either <StartSurfacePane> (start) or
 // <ShellWorkspaceConversation> (chat) below the editor. Selection-track reads
 // stay inside ShellWorkspaceConversation; only the delivery channel moved.
+import { useState } from "react";
 import type {
 	ComposerCreateContext,
 	WorkspaceConversationContainerProps,
@@ -131,6 +132,10 @@ export function WorkspacePaneSurface({
 	headerLeadingNode,
 	headerActionsNode,
 }: Props) {
+	// Explorer sidebar visibility, owned here so it persists across file opens
+	// and the explorer landing (rather than resetting each time the editor
+	// surface mounts). Defaults open — the tree is the entry point to browsing.
+	const [explorerOpen, setExplorerOpen] = useState(true);
 	return (
 		<section
 			aria-label="Workspace panel"
@@ -160,6 +165,9 @@ export function WorkspacePaneSurface({
 						workspaceRootPath={workspaceRootPath}
 						onChangeSession={handleEditorSessionChange}
 						onExit={editorSessionActions.exit}
+						explorerOpen={explorerOpen}
+						onToggleExplorer={() => setExplorerOpen((prev) => !prev)}
+						onCloseLastFile={editorSessionActions.returnToExplorer}
 						onError={editorSessionActions.reportError}
 					/>
 				)}
