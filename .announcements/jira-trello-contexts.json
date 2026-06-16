@@ -1,0 +1,11 @@
+{
+	"items": [
+		{
+			"text": "Add Context now supports Jira and Trello alongside Linear — connect your account to browse, search, and pull issues or cards straight into the composer.",
+			"action": {
+				"label": "Open Context",
+				"value": { "type": "setRightSidebarMode", "mode": "context" }
+			}
+		}
+	]
+}
