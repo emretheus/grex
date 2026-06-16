@@ -306,6 +306,21 @@ function handleUiMutation(
 				queryKey: grexQueryKeys.pairedDevices,
 			});
 			return;
+		case "libraryPromptsChanged":
+			void queryClient.invalidateQueries({
+				queryKey: grexQueryKeys.libraryPrompts,
+			});
+			return;
+		case "libraryMcpServersChanged":
+			void queryClient.invalidateQueries({
+				queryKey: grexQueryKeys.libraryMcpServers,
+			});
+			return;
+		case "librarySkillsChanged":
+			void queryClient.invalidateQueries({
+				queryKey: grexQueryKeys.librarySkills,
+			});
+			return;
 		case "terminalSessionIdle":
 			// Terminal turn finished (agent Stop hook). Re-dispatch as the
 			// window event the read-state controller already listens on, so

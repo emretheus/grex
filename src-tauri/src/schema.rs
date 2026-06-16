@@ -889,6 +889,39 @@ fn run_migrations(connection: &Connection) -> Result<()> {
         .execute_batch(SESSION_PLAN_STATE_DDL)
         .context("Failed to create session_plan_state table")?;
 
+    seed_library_prompts(connection)?;
+
+    Ok(())
+}
+
+/// Seed the Library with a default "Review prompt" on first run, mirroring
+/// emdash. Tracked by a one-shot settings flag so deleting the default never
+/// resurrects it on the next launch. Idempotent.
+fn seed_library_prompts(connection: &Connection) -> Result<()> {
+    if !has_table(connection, "prompt_templates") || !has_table(connection, "settings") {
+        return Ok(());
+    }
+    let already_seeded: i64 = connection
+        .query_row(
+            "SELECT COUNT(*) FROM settings WHERE key = 'library_prompts_seed_version'",
+            [],
+            |row| row.get(0),
+        )
+        .unwrap_or(0);
+    if already_seeded > 0 {
+        return Ok(());
+    }
+
+    const DEFAULT_REVIEW_PROMPT: &str = "Review the current changes for correctness, clarity, and edge cases. Call out bugs, risky assumptions, and anything that needs a test. Keep feedback specific and actionable.";
+    connection.execute(
+        "INSERT OR IGNORE INTO prompt_templates (id, title, prompt, sort_index) \
+         VALUES ('review-prompt', 'Review prompt', ?1, 0)",
+        [DEFAULT_REVIEW_PROMPT],
+    )?;
+    connection.execute(
+        "INSERT OR REPLACE INTO settings (key, value) VALUES ('library_prompts_seed_version', '1')",
+        [],
+    )?;
     Ok(())
 }
 
@@ -1238,6 +1271,40 @@ CREATE TABLE IF NOT EXISTS paired_devices (
     created_at TEXT NOT NULL,
     last_seen_at TEXT,
     revoked_at TEXT
+);
+
+-- Library: reusable Prompts. Purely Grex-internal (never written to any agent
+-- config); inserted into the composer as plain text. Shape mirrors emdash's
+-- prompt library plus a `sort_index` for stable display ordering.
+CREATE TABLE IF NOT EXISTS prompt_templates (
+    id TEXT PRIMARY KEY,
+    title TEXT NOT NULL,
+    prompt TEXT NOT NULL,
+    sort_index INTEGER NOT NULL DEFAULT 0,
+    created_at TEXT NOT NULL DEFAULT (datetime('now')),
+    updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+CREATE INDEX IF NOT EXISTS idx_prompt_templates_order
+    ON prompt_templates(sort_index, created_at);
+
+-- Library: MCP servers. Grex's canonical store (source of truth); an explicit
+-- "Sync to agents" action write-throughs each server to the selected agents'
+-- native config files (Claude ~/.claude.json, Codex ~/.codex/config.toml).
+-- JSON columns: args (array), headers/env (objects), providers (array of
+-- agent ids the server is synced to).
+CREATE TABLE IF NOT EXISTS mcp_servers (
+    id TEXT PRIMARY KEY,
+    name TEXT NOT NULL UNIQUE,
+    transport TEXT NOT NULL DEFAULT 'stdio',
+    command TEXT,
+    args TEXT NOT NULL DEFAULT '[]',
+    url TEXT,
+    headers TEXT NOT NULL DEFAULT '{}',
+    env TEXT NOT NULL DEFAULT '{}',
+    providers TEXT NOT NULL DEFAULT '[]',
+    enabled INTEGER NOT NULL DEFAULT 1,
+    created_at TEXT NOT NULL DEFAULT (datetime('now')),
+    updated_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
 
 -- Indexes

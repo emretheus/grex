@@ -205,6 +205,14 @@ export const SHORTCUT_DEFINITIONS: ShortcutDefinition[] = [
 		editable: true,
 	},
 	{
+		id: "library.open",
+		title: "Open Library",
+		group: "System",
+		defaultHotkey: "Mod+Shift+L",
+		scopes: ["app"],
+		editable: true,
+	},
+	{
 		id: "global.hotkey",
 		title: "Global hotkey",
 		description: "Show/hide Grex from anywhere.",

@@ -6,6 +6,7 @@
 // `addEventListener("grex:foo")` callsites in features/* keep working
 // during the gradual migration.
 import { useEffect, useRef } from "react";
+import type { LibrarySection } from "@/features/library/types";
 import type {
 	ContextProviderTab,
 	SettingsSection,
@@ -21,6 +22,7 @@ export type ShellEvent =
 			inboxProvider?: ContextProviderTab;
 	  }
 	| { type: "reload-settings" }
+	| { type: "open-library"; section?: LibrarySection }
 	| { type: "open-model-picker" }
 	// `mode` is a one-shot override: when set, the start surface forces the
 	// composer into that mode for this open without touching the user's

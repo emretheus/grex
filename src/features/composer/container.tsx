@@ -97,6 +97,12 @@ const ADD_DIR_COMMAND: SlashCommandEntry = {
 	source: "client-action",
 };
 
+const PROMPT_COMMAND: SlashCommandEntry = {
+	name: "prompt",
+	description: "Insert a saved prompt from your Library",
+	source: "client-action",
+};
+
 const CODEX_COMPACT_COMMAND: SlashCommandEntry = {
 	name: "compact",
 	description: "Compact this Codex thread's context",
@@ -137,6 +143,7 @@ const CLAUDE_WORKFLOWS_COMMAND: SlashCommandEntry = {
 
 const BUILTIN_CLIENT_COMMANDS: readonly SlashCommandEntry[] = [
 	ADD_DIR_COMMAND,
+	PROMPT_COMMAND,
 	CODEX_COMPACT_COMMAND,
 	OPENCODE_COMPACT_COMMAND,
 	CODEX_GOAL_COMMAND,

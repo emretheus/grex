@@ -26,7 +26,10 @@ import {
 	listForgeAccounts,
 	listForgeLabels,
 	listInboxKindLabels,
+	listLibraryPrompts,
+	listMcpServers,
 	listRepositories,
+	listSkills,
 	listSlashCommands,
 	listWorkspaceCandidateDirectories,
 	listWorkspaceChanges,
@@ -172,6 +175,9 @@ export const grexQueryKeys = {
 	triageConfig: ["triage", "config"] as const,
 	triageActiveStatus: ["triage", "activeStatus"] as const,
 	pairedDevices: ["pairedDevices"] as const,
+	libraryPrompts: ["libraryPrompts"] as const,
+	libraryMcpServers: ["libraryMcpServers"] as const,
+	librarySkills: ["librarySkills"] as const,
 };
 
 /** Persistence is opt-in per `queryOptions` via `meta: { persist: true }`.
@@ -362,6 +368,44 @@ export function repositoriesQueryOptions() {
 	return queryOptions({
 		queryKey: grexQueryKeys.repositories,
 		queryFn: listRepositories,
+		initialData: [],
+		initialDataUpdatedAt: 0,
+		staleTime: 0,
+		meta: PERSIST_META,
+	});
+}
+
+/** Library prompts. Invalidated by the ui-sync bridge on
+ *  `libraryPromptsChanged`. Persisted so the picker is populated instantly
+ *  on next launch. */
+export function libraryPromptsQueryOptions() {
+	return queryOptions({
+		queryKey: grexQueryKeys.libraryPrompts,
+		queryFn: listLibraryPrompts,
+		initialData: [],
+		initialDataUpdatedAt: 0,
+		staleTime: 0,
+		meta: PERSIST_META,
+	});
+}
+
+/** Library MCP servers. Invalidated on `libraryMcpServersChanged`. */
+export function libraryMcpServersQueryOptions() {
+	return queryOptions({
+		queryKey: grexQueryKeys.libraryMcpServers,
+		queryFn: listMcpServers,
+		initialData: [],
+		initialDataUpdatedAt: 0,
+		staleTime: 0,
+		meta: PERSIST_META,
+	});
+}
+
+/** Library skills. Invalidated on `librarySkillsChanged`. */
+export function librarySkillsQueryOptions() {
+	return queryOptions({
+		queryKey: grexQueryKeys.librarySkills,
+		queryFn: listSkills,
 		initialData: [],
 		initialDataUpdatedAt: 0,
 		staleTime: 0,

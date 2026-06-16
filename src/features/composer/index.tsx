@@ -69,6 +69,7 @@ import {
 import { CustomTagBadgeNode } from "./editor/custom-tag-badge-node";
 import { FileBadgeNode } from "./editor/file-badge-node";
 import { ImageBadgeNode } from "./editor/image-badge-node";
+import { insertPromptText } from "./editor/insert-prompt-text";
 import { AutoResizePlugin } from "./editor/plugins/auto-resize-plugin";
 import { CompositionGuardPlugin } from "./editor/plugins/composition-guard-plugin";
 import { DraftPersistencePlugin } from "./editor/plugins/draft-persistence-plugin";
@@ -83,6 +84,7 @@ import { ShimmerKeywordPlugin } from "./editor/plugins/shimmer-keyword-plugin";
 import { SlashCommandPlugin } from "./editor/plugins/slash-command-plugin";
 import { SubmitPlugin } from "./editor/plugins/submit-plugin";
 import { TerminalDirectivePlugin } from "./editor/plugins/terminal-directive-plugin";
+import { PromptPickerDialog } from "./editor/prompt-picker-dialog";
 import { ShimmerKeywordNode } from "./editor/shimmer-keyword-node";
 import { TerminalDirectiveNode } from "./editor/terminal-directive-node";
 import { $extractComposerContent } from "./editor/utils";
@@ -372,6 +374,7 @@ export const WorkspaceComposer = memo(function WorkspaceComposer({
 	const [hasContent, setHasContent] = useState(false);
 	const [isInputFocused, setIsInputFocused] = useState(false);
 	const [modelPickerOpen, setModelPickerOpen] = useState(false);
+	const [promptPickerOpen, setPromptPickerOpen] = useState(false);
 	const [terminalDirectiveState, setTerminalDirectiveState] = useState({
 		active: false,
 		emptyAfter: false,
@@ -941,8 +944,28 @@ export const WorkspaceComposer = memo(function WorkspaceComposer({
 										}
 										onOpenWorkflows?.();
 									}
+									// `/prompt` opens the Library prompt picker. Drop the
+									// typed token first; the picked prompt is appended on
+									// selection (see PromptPickerDialog below).
+									if (name === "prompt") {
+										if (nodeToReplace) {
+											editorRef.current?.update(() => {
+												nodeToReplace.remove();
+											});
+										}
+										setPromptPickerOpen(true);
+									}
 								}}
 								popupAnchorRef={composerRootRef}
+							/>
+							<PromptPickerDialog
+								open={promptPickerOpen}
+								onOpenChange={setPromptPickerOpen}
+								onSelect={(prompt) => {
+									if (editorRef.current) {
+										insertPromptText(editorRef.current, prompt.prompt);
+									}
+								}}
 							/>
 							<AddDirTypeaheadPlugin
 								candidates={addDirCandidates}

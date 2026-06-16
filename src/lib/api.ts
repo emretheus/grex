@@ -1858,6 +1858,176 @@ export async function prewarmSlashCommandsForRepo(
 	}
 }
 
+// ── Library: Prompts ────────────────────────────────────────────────────────
+// Reusable instructions managed in the Library and inserted into the composer.
+// Purely Grex-internal — these never touch any agent's native config.
+
+export type PromptTemplate = {
+	id: string;
+	title: string;
+	prompt: string;
+	sortIndex: number;
+	createdAt: string;
+	updatedAt: string;
+};
+
+/** List all Library prompts in display order. */
+export async function listLibraryPrompts(): Promise<PromptTemplate[]> {
+	return await invoke<PromptTemplate[]>("library_prompts_list");
+}
+
+/** Create (omit `id`) or update a Library prompt. Returns the stored row. */
+export async function upsertLibraryPrompt(input: {
+	id?: string | null;
+	title: string;
+	prompt: string;
+}): Promise<PromptTemplate> {
+	return await invoke<PromptTemplate>("library_prompts_upsert", {
+		id: input.id ?? null,
+		title: input.title,
+		prompt: input.prompt,
+	});
+}
+
+/** Delete a Library prompt by id. */
+export async function deleteLibraryPrompt(id: string): Promise<void> {
+	await invoke<void>("library_prompts_delete", { id });
+}
+
+/** Persist a new display order from the full list of prompt ids. */
+export async function reorderLibraryPrompts(
+	orderedIds: string[],
+): Promise<void> {
+	await invoke<void>("library_prompts_reorder", { orderedIds });
+}
+
+// ── Library: MCP servers ────────────────────────────────────────────────────
+// Stored canonically in Grex; an explicit "Sync to agents" writes them into
+// each selected agent's native config file.
+
+export type McpTransport = "stdio" | "http";
+
+export type McpServer = {
+	id: string;
+	name: string;
+	transport: McpTransport;
+	command?: string | null;
+	args: string[];
+	url?: string | null;
+	headers: Record<string, string>;
+	env: Record<string, string>;
+	/** Agent ids this server is synced to, e.g. `["claude", "codex"]`. */
+	providers: string[];
+	enabled: boolean;
+	createdAt: string;
+	updatedAt: string;
+};
+
+export type McpServerInput = {
+	id?: string | null;
+	name: string;
+	transport: McpTransport;
+	command?: string | null;
+	args: string[];
+	url?: string | null;
+	headers: Record<string, string>;
+	env: Record<string, string>;
+	providers: string[];
+	enabled: boolean;
+};
+
+/** What a sync will do to one agent's native config file. */
+export type McpAgentSyncChange = {
+	agent: string;
+	configPath: string;
+	written: string[];
+	removed: string[];
+	unsupported: string[];
+};
+
+export type McpSyncPlan = { changes: McpAgentSyncChange[] };
+
+/** List all Library MCP servers. */
+export async function listMcpServers(): Promise<McpServer[]> {
+	return await invoke<McpServer[]>("library_mcp_list");
+}
+
+/** Create (omit `id`) or update an MCP server. Does not write native config. */
+export async function upsertMcpServer(
+	server: McpServerInput,
+): Promise<McpServer> {
+	return await invoke<McpServer>("library_mcp_upsert", { server });
+}
+
+/** Delete an MCP server (and remove any synced copy from agent configs). */
+export async function deleteMcpServer(id: string): Promise<void> {
+	await invoke<void>("library_mcp_delete", { id });
+}
+
+/** Preview what "Sync to agents" would change, writing nothing. */
+export async function previewMcpSync(): Promise<McpSyncPlan> {
+	return await invoke<McpSyncPlan>("library_mcp_sync_preview");
+}
+
+/** Write every Library MCP server into the selected agents' native configs. */
+export async function syncMcpServers(): Promise<McpSyncPlan> {
+	return await invoke<McpSyncPlan>("library_mcp_sync");
+}
+
+// ── Library: Skills ─────────────────────────────────────────────────────────
+// SKILL.md modules installed to ~/.agentskills/<name> and symlinked into each
+// agent's skills dir.
+
+export type SkillSummary = {
+	name: string;
+	description: string;
+	/** True when Grex owns the skill (in ~/.agentskills) and can edit/delete it. */
+	managed: boolean;
+};
+export type SkillDetail = {
+	name: string;
+	description: string;
+	/** Full SKILL.md content. */
+	content: string;
+	managed: boolean;
+};
+
+/** List installed Library skills. */
+export async function listSkills(): Promise<SkillSummary[]> {
+	return await invoke<SkillSummary[]>("library_skills_list");
+}
+
+/** Read a single skill's SKILL.md. */
+export async function readSkill(name: string): Promise<SkillDetail | null> {
+	return await invoke<SkillDetail | null>("library_skills_read", { name });
+}
+
+/** Create a skill and link it into every agent's skills dir. */
+export async function createSkill(input: {
+	name: string;
+	description: string;
+	content?: string | null;
+}): Promise<SkillSummary> {
+	return await invoke<SkillSummary>("library_skills_create", {
+		name: input.name,
+		description: input.description,
+		content: input.content ?? null,
+	});
+}
+
+/** Overwrite a skill's SKILL.md. */
+export async function updateSkill(
+	name: string,
+	content: string,
+): Promise<void> {
+	await invoke<void>("library_skills_update", { name, content });
+}
+
+/** Delete a skill and unlink it from every agent's skills dir. */
+export async function deleteSkill(name: string): Promise<void> {
+	await invoke<void>("library_skills_delete", { name });
+}
+
 export async function loadWorkspaceDetail(
 	workspaceId: string,
 ): Promise<WorkspaceDetail | null> {
@@ -2557,6 +2727,9 @@ export type UiMutationEvent =
 	| { type: "triageWorkspaceCreated"; workspaceId: string }
 	| { type: "fastModeUnavailable"; sessionId: string; reason: string }
 	| { type: "pairedDevicesChanged" }
+	| { type: "libraryPromptsChanged" }
+	| { type: "libraryMcpServersChanged" }
+	| { type: "librarySkillsChanged" }
 	| { type: "terminalSessionIdle"; sessionId: string; workspaceId: string }
 	| {
 			type: "terminalPromptCaptured";

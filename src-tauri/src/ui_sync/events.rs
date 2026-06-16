@@ -138,6 +138,15 @@ pub enum UiMutationEvent {
     /// The mobile-companion paired-device list changed (paired or revoked).
     /// Frontends invalidate the `pairedDevices` query.
     PairedDevicesChanged,
+    /// The Library's reusable Prompts changed (create / update / delete /
+    /// reorder). Frontends invalidate the `libraryPrompts` query.
+    LibraryPromptsChanged,
+    /// The Library's MCP servers changed (create / update / delete).
+    /// Frontends invalidate the `libraryMcpServers` query.
+    LibraryMcpServersChanged,
+    /// The Library's Skills changed (create / update / delete). Frontends
+    /// invalidate the `librarySkills` query.
+    LibrarySkillsChanged,
     /// "Open in Grex" from the quick panel. Only the MAIN window acts on
     /// this (navigates to the workspace/session); the quick panel ignores it.
     WorkspaceRevealRequested {
