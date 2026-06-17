@@ -13,6 +13,7 @@ import {
 	type ColorTheme,
 	resolveTheme,
 	type ThemeMode,
+	type UsageStatsDisplayMode,
 } from "@/lib/settings";
 import { cn } from "@/lib/utils";
 import { FontPicker } from "../components/font-picker";
@@ -347,6 +348,39 @@ export function AppearancePanel({
 						updateSettings({ usePointerCursors: checked })
 					}
 				/>
+			</SettingsRow>
+
+			{/* ── Usage Stats Display ────────────────────────────────────── */}
+			<SettingsRow
+				title="Usage stats display"
+				description="Show remaining (left) or consumed (used) percentage"
+			>
+				<ToggleGroup
+					type="single"
+					value={settings.usageStatsDisplayMode}
+					className="gap-1.5"
+					onValueChange={(value: string) => {
+						if (value)
+							updateSettings({
+								usageStatsDisplayMode: value as UsageStatsDisplayMode,
+							});
+					}}
+				>
+					{(
+						[
+							{ value: "left", label: "Leftover" },
+							{ value: "used", label: "Used" },
+						] as const
+					).map(({ value, label }) => (
+						<ToggleGroupItem
+							key={value}
+							value={value}
+							className="h-7 rounded-lg px-2.5 text-mini font-medium text-muted-foreground data-[state=on]:bg-accent data-[state=on]:text-foreground"
+						>
+							{label}
+						</ToggleGroupItem>
+					))}
+				</ToggleGroup>
 			</SettingsRow>
 		</SettingsGroup>
 	);

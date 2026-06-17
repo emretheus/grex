@@ -1,3 +1,4 @@
+import type { UsageStatsDisplayMode } from "@/lib/settings";
 import { cn } from "@/lib/utils";
 import {
 	formatResetsAt,
@@ -90,11 +91,18 @@ export function Divider() {
 	return <div className="h-px w-full bg-border/60" />;
 }
 
-/** One rate-limit row: label + "X% left" + thin bar + reset time.
+/** One rate-limit row: label + "X% left/used" + thin bar + reset time.
  *  Tier color tracks `usedPercent` (≥60 amber, ≥80 destructive) so the
  *  bar that visually represents *remaining* still warns when little is
- *  left — i.e. when usage is high. */
-export function LimitRow({ window }: { window: RateLimitWindowDisplay }) {
+ *  left — i.e. when usage is high.
+ *  Display mode controls whether to show remaining (left) or consumed (used) percentage. */
+export function LimitRow({
+	window,
+	displayMode = "left",
+}: {
+	window: RateLimitWindowDisplay;
+	displayMode?: UsageStatsDisplayMode;
+}) {
 	const muted = window.expired;
 	const tier = ringTier(window.usedPercent);
 	const barColor =
@@ -103,18 +111,21 @@ export function LimitRow({ window }: { window: RateLimitWindowDisplay }) {
 			: tier === "warning"
 				? "bg-amber-500"
 				: "bg-foreground/70";
+	const displayPercent =
+		displayMode === "used" ? window.usedPercent : window.leftPercent;
+	const displayLabel = displayMode === "used" ? "used" : "left";
 	return (
 		<div className={cn("flex flex-col gap-1", muted && "opacity-60")}>
 			<div className="flex items-center justify-between text-small">
 				<span className="text-foreground">{window.label ?? "Limit"}</span>
 				<span className="font-medium tabular-nums text-foreground">
-					{Math.round(window.leftPercent)}% left
+					{Math.round(displayPercent)}% {displayLabel}
 				</span>
 			</div>
 			<div className="h-1 w-full overflow-hidden rounded-full bg-muted">
 				<div
 					className={cn("h-full transition-[width]", barColor)}
-					style={{ width: `${window.leftPercent}%` }}
+					style={{ width: `${displayPercent}%` }}
 				/>
 			</div>
 			{window.resetsAt !== null ? (
