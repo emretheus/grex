@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.9.1
+
+### Patch Changes
+
+- [#47](https://github.com/emretheus/grex/pull/47) [`0b90441`](https://github.com/emretheus/grex/commit/0b9044131ea97f5e11a24627a7910f883870f7d4) Thanks [@emretheus](https://github.com/emretheus)! - Add scheduled automations — recurring prompts that run on their own.
+
+  - Schedule a prompt to run hourly, daily, weekly, or on a custom interval, either into an existing chat or as a fresh session in a workspace. Manage them from the new Automations surface (clock icon at the bottom of the sidebar) or the `grex automation` CLI.
+  - Automation-initiated turns stream like a normal send but never steal the active session or focus, and render a "Sent via automation" badge in the chat.
+
 ## 0.9.0
 
 ### Minor Changes
