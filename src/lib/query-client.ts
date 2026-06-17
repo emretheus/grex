@@ -4,6 +4,7 @@ import type { ThreadMessageLike } from "./api";
 import {
 	type ActionKind,
 	type AgentProvider,
+	type Automation,
 	type ChangeRequestInfo,
 	DEFAULT_PROVIDER_CAPABILITIES,
 	DEFAULT_WORKSPACE_GROUPS,
@@ -23,6 +24,7 @@ import {
 	getWorkspaceAccountProfile,
 	getWorkspaceForge,
 	listActiveStreams,
+	listAutomations,
 	listDirectory,
 	listForgeAccounts,
 	listForgeLabels,
@@ -210,6 +212,7 @@ export const grexQueryKeys = {
 	triageConfig: ["triage", "config"] as const,
 	triageActiveStatus: ["triage", "activeStatus"] as const,
 	pairedDevices: ["pairedDevices"] as const,
+	automations: ["automations"] as const,
 	libraryPrompts: ["libraryPrompts"] as const,
 	libraryMcpServers: ["libraryMcpServers"] as const,
 	librarySkills: ["librarySkills"] as const,
@@ -385,6 +388,14 @@ export function workspaceGroupsQueryOptions() {
 		initialDataUpdatedAt: 0,
 		staleTime: 0,
 		meta: PERSIST_META,
+	});
+}
+
+export function automationsQueryOptions() {
+	return queryOptions<Automation[]>({
+		queryKey: grexQueryKeys.automations,
+		queryFn: listAutomations,
+		staleTime: 0,
 	});
 }
 

@@ -135,6 +135,49 @@ grex workspace new --repo grex
 grex workspace new --parent grex/earth
 ```
 
+### Automation Commands
+
+Scheduled automations run a fixed prompt on a recurring interval — either appended into an existing chat session, or as a fresh session created in a workspace per run. The app's scheduler (a 30s poll loop) fires due automations; with the app closed, an overdue automation runs once on next launch.
+
+#### grex automation list / show
+
+```bash
+grex automation list
+grex automation show <automation-id>
+```
+
+#### grex automation create
+
+Create an automation bound to either a chat session (`--chat`) or a workspace (`--workspace`), with exactly one interval flag.
+
+Syntax:
+```bash
+grex automation create --title <title> --prompt <prompt> \
+    (--chat <session-id> | --workspace <workspace-ref>) \
+    (--hourly | --daily HH:MM | --weekly DAY:HH:MM | --every Nm|Nh)
+```
+
+- **`--chat <session-id>`** — Each run appends a turn to this existing chat.
+- **`--workspace <workspace-ref>`** — Each run creates a fresh session in this workspace.
+- Interval (pick one): `--hourly`, `--daily 09:00`, `--weekly mon:09:30`, `--every 15m` (or `2h`). Daily/weekly times are local wall-clock.
+
+Examples:
+```bash
+grex automation create --title "Order monitor" --prompt "check order status" \
+    --chat 7f3e9b2a-1234-5678-90ab-cdef12345678 --hourly
+grex automation create --title "Daily digest" --prompt "summarize inbox" \
+    --workspace grex/earth --daily 09:00
+```
+
+#### grex automation pause / resume / delete / run
+
+```bash
+grex automation pause <automation-id>
+grex automation resume <automation-id>   # next run recomputed from now
+grex automation delete <automation-id>   # chats it wrote into are untouched
+grex automation run <automation-id>      # fire on the next scheduler tick (≤30s)
+```
+
 ### Register with Claude Code
 
 macOS:
