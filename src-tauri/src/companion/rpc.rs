@@ -66,6 +66,7 @@ async fn dispatch(
             crate::commands::workspace_commands::create_and_checkout_branch(arg_string(&args, "repoId")?, arg_string(&args, "branch")?).await?;
             Ok(Value::Null)
         }
+        "create_automation" => to_value(crate::commands::automation_commands::create_automation(app.clone(), arg_json(&args, "request")?).await?),
         "create_repo_run_action" => to_value(crate::commands::script_commands::create_repo_run_action(app.clone(), arg_string(&args, "repoId")?, arg_string(&args, "name")?, arg_string(&args, "command")?, arg_string(&args, "mode")?, arg_opt_string(&args, "stopCommand")).await?),
         "create_session" => to_value(crate::commands::session_commands::create_session(arg_string(&args, "workspaceId")?, arg_opt_json(&args, "actionKind")?, arg_opt_string(&args, "permissionMode"), arg_opt_string(&args, "model"), arg_opt_string(&args, "effortLevel"), arg_opt_bool(&args, "fastMode"), arg_opt_string(&args, "seedSessionId"), arg_opt_string(&args, "sessionKind"), arg_opt_string(&args, "agentType")).await?),
         "create_workspace_from_repo" => to_value(crate::commands::workspace_commands::create_workspace_from_repo(app.clone(), arg_string(&args, "repoId")?).await?),
@@ -82,6 +83,10 @@ async fn dispatch(
             Ok(Value::Null)
         }
         "fetch_codex_provider_models" => to_value(crate::commands::provider_commands::fetch_codex_provider_models(arg_string(&args, "baseUrl")?, arg_string(&args, "apiKey")?).await?),
+        "delete_automation" => {
+            crate::commands::automation_commands::delete_automation(app.clone(), arg_string(&args, "automationId")?).await?;
+            Ok(Value::Null)
+        }
         "delete_query_cache" => {
             crate::commands::system_commands::delete_query_cache(arg_string(&args, "key")?).await?;
             Ok(Value::Null)
@@ -95,7 +100,7 @@ async fn dispatch(
             Ok(Value::Null)
         }
         "delete_session" => {
-            crate::commands::session_commands::delete_session(arg_string(&args, "sessionId")?).await?;
+            crate::commands::session_commands::delete_session(app.clone(), arg_string(&args, "sessionId")?).await?;
             Ok(Value::Null)
         }
         "detect_installed_editors" => to_value(crate::commands::editors::detect_installed_editors().await?),
@@ -176,6 +181,7 @@ async fn dispatch(
         "list_all_agent_model_sections" => to_value(crate::agents::list_all_agent_model_sections().await?),
         "list_codex_custom_providers" => to_value(crate::commands::provider_commands::list_codex_custom_providers().await?),
         "list_archived_workspaces" => to_value(crate::commands::workspace_commands::list_archived_workspaces().await?),
+        "list_automations" => to_value(crate::commands::automation_commands::list_automations().await?),
         "list_branches_for_local_picker" => to_value(crate::commands::workspace_commands::list_branches_for_local_picker(arg_string(&args, "repoId")?).await?),
         "list_branches_for_workspace_picker" => to_value(crate::commands::workspace_commands::list_branches_for_workspace_picker(arg_string(&args, "repoId")?).await?),
         "list_cursor_models" => to_value(crate::agents::list_cursor_models(app.state::<crate::sidecar::ManagedSidecar>(), arg_opt_string(&args, "apiKey")).await?),
@@ -280,6 +286,7 @@ async fn dispatch(
         }
         "restore_workspace" => to_value(crate::commands::workspace_commands::restore_workspace(app.clone(), arg_string(&args, "workspaceId")?, arg_opt_string(&args, "targetBranchOverride")).await?),
         "retry_repo_forge_binding" => to_value(crate::commands::repository_commands::retry_repo_forge_binding(app.clone(), arg_string(&args, "repoId")?).await?),
+        "run_automation_now" => to_value(crate::commands::automation_commands::run_automation_now(app.clone(), arg_string(&args, "automationId")?).await?),
         "save_auto_close_action_kinds" => {
             crate::commands::settings_commands::save_auto_close_action_kinds(arg_json(&args, "kinds")?).await?;
             Ok(Value::Null)
@@ -293,6 +300,7 @@ async fn dispatch(
             crate::commands::system_commands::save_text_file_as(arg_string(&args, "path")?, arg_string(&args, "contents")?).await?;
             Ok(Value::Null)
         }
+        "set_automation_status" => to_value(crate::commands::automation_commands::set_automation_status(app.clone(), arg_string(&args, "automationId")?, arg_string(&args, "status")?).await?),
         "set_session_context_usage" => {
             crate::commands::session_commands::set_session_context_usage(app.clone(), arg_string(&args, "sessionId")?, arg_string(&args, "meta")?).await?;
             Ok(Value::Null)
@@ -370,6 +378,7 @@ async fn dispatch(
             crate::commands::settings_commands::update_app_settings(app.state::<crate::sidecar::ManagedSidecar>(), arg_json(&args, "settingsMap")?).await?;
             Ok(Value::Null)
         }
+        "update_automation" => to_value(crate::commands::automation_commands::update_automation(app.clone(), arg_json(&args, "request")?).await?),
         "update_intended_target_branch" => to_value(crate::commands::workspace_commands::update_intended_target_branch(app.clone(), arg_string(&args, "workspaceId")?, arg_string(&args, "targetBranch")?).await?),
         "update_repo_auto_run_setup" => {
             crate::commands::repository_commands::update_repo_auto_run_setup(arg_string(&args, "repoId")?, arg_bool(&args, "enabled")?).await?;

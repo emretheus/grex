@@ -309,6 +309,11 @@ function handleUiMutation(
 				queryKey: grexQueryKeys.pairedDevices,
 			});
 			return;
+		case "automationsChanged":
+			void queryClient.invalidateQueries({
+				queryKey: grexQueryKeys.automations,
+			});
+			return;
 		case "libraryPromptsChanged":
 			void queryClient.invalidateQueries({
 				queryKey: grexQueryKeys.libraryPrompts,

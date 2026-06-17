@@ -1273,6 +1273,29 @@ CREATE TABLE IF NOT EXISTS paired_devices (
     revoked_at TEXT
 );
 
+-- Scheduled automations: periodically inject a fixed prompt into a session
+-- and run a normal agent turn. SQLite is the single source of truth for the
+-- schedule — the in-process scheduler is a stateless poll loop over
+-- `next_run_at`, so restarts/sleep just mean a late tick sees overdue rows.
+-- Timestamps use the db::current_timestamp() RFC3339-UTC-millis format,
+-- which compares chronologically as plain strings.
+CREATE TABLE IF NOT EXISTS automations (
+    id TEXT PRIMARY KEY,
+    title TEXT NOT NULL,
+    prompt TEXT NOT NULL,
+    runs_in TEXT NOT NULL CHECK (runs_in IN ('chat', 'workspace')),
+    session_id TEXT,
+    workspace_id TEXT,
+    schedule TEXT NOT NULL,
+    status TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'paused')),
+    next_run_at TEXT NOT NULL,
+    last_run_at TEXT,
+    -- DEFAULTs match db::current_timestamp() (RFC3339 UTC millis) so a row that
+    -- ever relied on them still string-orders with app-written timestamps.
+    created_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')),
+    updated_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))
+);
+
 -- Library: reusable Prompts. Purely Grex-internal (never written to any agent
 -- config); inserted into the composer as plain text. Shape mirrors emdash's
 -- prompt library plus a `sort_index` for stable display ordering.
@@ -1314,6 +1337,7 @@ CREATE INDEX IF NOT EXISTS idx_workspaces_repository_id ON workspaces(repository
 CREATE INDEX IF NOT EXISTS idx_runtime_processes_ended_at ON runtime_processes(ended_at);
 CREATE INDEX IF NOT EXISTS idx_triage_candidate_open ON triage_candidate(source_time DESC) WHERE decision IS NULL;
 CREATE INDEX IF NOT EXISTS idx_triage_candidate_source ON triage_candidate(source, source_time DESC);
+CREATE INDEX IF NOT EXISTS idx_automations_due ON automations(status, next_run_at);
 -- idx_workspaces_kind + idx_workspaces_triage_source are created in
 -- `run_migrations` (after the ALTERs on upgraded DBs).
 

@@ -1350,6 +1350,15 @@ pub fn delete_repository_cascade(repo_id: &str) -> Result<()> {
         "DELETE FROM session_plan_state WHERE session_id IN (SELECT s.id FROM sessions s JOIN workspaces w ON s.workspace_id = w.id WHERE w.repository_id = ?1)",
         [repo_id],
     ).context("Failed to delete session plan state for repository")?;
+    // Cascade automations (both workspace-mode rows and chat-mode rows bound
+    // to a session under this repo) BEFORE deleting the sessions the subquery
+    // reads. No FK exists because `foreign_keys` is OFF app-wide.
+    tx.execute(
+        "DELETE FROM automations \
+         WHERE workspace_id IN (SELECT id FROM workspaces WHERE repository_id = ?1) \
+            OR session_id IN (SELECT s.id FROM sessions s JOIN workspaces w ON s.workspace_id = w.id WHERE w.repository_id = ?1)",
+        [repo_id],
+    ).context("Failed to delete automations for repository")?;
     tx.execute(
         "DELETE FROM sessions WHERE workspace_id IN (SELECT id FROM workspaces WHERE repository_id = ?1)",
         [repo_id],

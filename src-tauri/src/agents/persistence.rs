@@ -10,13 +10,15 @@ use super::ExchangeContext;
 /// Persist the user's prompt as the first message of the exchange.
 /// Wraps as `{"type":"user_prompt","text":"...","files":[...],"images":[...],
 /// "pastedTexts":[{"start":n,"end":n}]}`. Empty arrays are omitted from the
-/// JSON.
+/// JSON; `source` (e.g. `"automation"`) is only written when present so
+/// pre-existing rows keep their exact shape.
 pub(super) fn persist_user_message(
     conn: &Connection,
     ctx: &ExchangeContext,
     prompt: &str,
     files: &[String],
     images: &[String],
+    source: Option<&str>,
     pasted_texts: &[PastedTextRange],
 ) -> Result<()> {
     let now = current_timestamp_string()?;
@@ -25,6 +27,9 @@ pub(super) fn persist_user_message(
         "type": "user_prompt",
         "text": prompt,
     });
+    if let Some(source) = source {
+        payload["source"] = serde_json::Value::String(source.to_string());
+    }
     if !files.is_empty() {
         payload["files"] = serde_json::Value::Array(
             files
@@ -285,17 +290,22 @@ fn finalize_session_metadata_in_transaction(
         ],
     )?;
 
-    transaction.execute(
-        r#"
+    // Background (automation) turns must not rearrange the user's UI: the
+    // result should surface as *unread*, and the workspace's active session
+    // should stay wherever the user left it.
+    if !ctx.is_background {
+        transaction.execute(
+            r#"
             UPDATE workspaces
             SET
               active_session_id = ?2
             WHERE id = (SELECT workspace_id FROM sessions WHERE id = ?1)
             "#,
-        params![ctx.grex_session_id, ctx.grex_session_id],
-    )?;
+            params![ctx.grex_session_id, ctx.grex_session_id],
+        )?;
 
-    mark_session_read_in_transaction(transaction, &ctx.grex_session_id)?;
+        mark_session_read_in_transaction(transaction, &ctx.grex_session_id)?;
+    }
     Ok(())
 }
 
@@ -313,6 +323,7 @@ mod tests {
             model_id: "gpt-5.4".to_string(),
             model_provider: "codex".to_string(),
             user_message_id: "user-1".to_string(),
+            is_background: false,
         }
     }
 
@@ -376,7 +387,7 @@ mod tests {
         let conn = Connection::open_in_memory().unwrap();
         make_messages_table(&conn);
         let ctx = test_exchange_context();
-        persist_user_message(&conn, &ctx, "fix bug X", &[], &[], &[]).unwrap();
+        persist_user_message(&conn, &ctx, "fix bug X", &[], &[], None, &[]).unwrap();
 
         let (role, content, id): (String, String, String) = conn
             .query_row(
@@ -403,7 +414,7 @@ mod tests {
         make_messages_table(&conn);
         let ctx = test_exchange_context();
         let pasted = vec![PastedTextRange { start: 4, end: 16 }];
-        persist_user_message(&conn, &ctx, "see <big paste> ok", &[], &[], &pasted).unwrap();
+        persist_user_message(&conn, &ctx, "see <big paste> ok", &[], &[], None, &pasted).unwrap();
 
         let content: String = conn
             .query_row(
@@ -422,7 +433,7 @@ mod tests {
         make_messages_table(&conn);
         let ctx = test_exchange_context();
         let files = vec!["a.rs".to_string(), "b.rs".to_string()];
-        persist_user_message(&conn, &ctx, "refactor", &files, &[], &[]).unwrap();
+        persist_user_message(&conn, &ctx, "refactor", &files, &[], None, &[]).unwrap();
 
         let content: String = conn
             .query_row(
@@ -447,7 +458,7 @@ mod tests {
         let images = vec![
             "/Users/me/Library/Application Support/CleanShot/CleanShot 2026-04-29 at 08.24.35@2x.jpg".to_string(),
         ];
-        persist_user_message(&conn, &ctx, "look at this", &[], &images, &[]).unwrap();
+        persist_user_message(&conn, &ctx, "look at this", &[], &images, None, &[]).unwrap();
 
         let content: String = conn
             .query_row(

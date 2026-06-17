@@ -1,3 +1,4 @@
+pub mod automations;
 pub mod db;
 pub mod library_mcp;
 pub mod library_prompts;

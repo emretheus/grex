@@ -114,6 +114,7 @@ impl OwnedSessionOverrides {
             seed_session_id: None,
             session_kind: None,
             agent_type: None,
+            ..Default::default()
         }
     }
 }
