@@ -1,0 +1,170 @@
+{
+	"region": {
+		"main": "Grex-Einrichtung",
+		"dragRegion": "Ziehbereich der Grex-Einrichtung"
+	},
+	"intro": {
+		"logoAlt": "Grex",
+		"heading": "Hallo, Grex!",
+		"tagline": "Die KI schreibt den Code. In Grex orchestrierst, prüfst und lieferst du ihn aus.",
+		"explore": "Entdecken",
+		"previewLabel": "Grex-Vorschau"
+	},
+	"agents": {
+		"sectionLabel": "Agent-Anmeldung",
+		"heading": "Melde dich bei deinen Agenten an",
+		"description": "Grex nutzt deine lokalen Anmeldesitzungen von Claude Code und Codex. Du kannst dich jetzt anmelden oder fortfahren und dich später anmelden.",
+		"back": "Zurück",
+		"next": "Weiter",
+		"cursorKeyError": "Schlüssel konnte nicht validiert werden: {{error}}"
+	},
+	"repositoryCli": {
+		"sectionLabel": "Repository-CLI-Einrichtung",
+		"heading": "Konten verbinden",
+		"description": "Jedes Repository nutzt eines deiner Konten. Füge es jetzt hinzu oder überspringe diesen Schritt – bestehende Anmeldungen werden automatisch erkannt. Alle Konten liegen in deiner lokalen gh/glab-CLI.",
+		"back": "Zurück",
+		"next": "Weiter",
+		"checkingAccounts": "Verbundene Konten werden geprüft…",
+		"noAccounts": "Noch keine Konten verbunden.",
+		"addingAccountWithLogin": "@{{login}} wird hinzugefügt…",
+		"addingAccountProvider": "{{provider}}-Konto wird hinzugefügt…",
+		"connectedCount_one": "{{count}} verbunden",
+		"connectedCount_other": "{{count}} verbunden",
+		"moreAccounts_one": "{{count}} weiteres Konto",
+		"moreAccounts_other": "{{count}} weitere Konten",
+		"connectedToast": "{{provider}} als @{{login}} verbunden",
+		"finishAuthToast": "Schließe die {{provider}}-CLI-Authentifizierung ab und klicke dann erneut auf „Einrichten“.",
+		"enterDomainError": "Gib eine GitLab-Domain ein.",
+		"providerGitlabHost": "GitLab · {{host}}",
+		"gitlabDomainTitle": "GitLab-Domain",
+		"gitlabDomainHelp": "Verwende gitlab.com oder deine selbst gehostete GitLab-Domain.",
+		"gitlabDomainLabel": "GitLab-Domain",
+		"cancel": "Abbrechen",
+		"logIn": "Anmelden",
+		"startLoginFailed": "Anmeldung konnte nicht gestartet werden."
+	},
+	"skills": {
+		"sectionLabel": "MCP- und Skills-Einrichtung",
+		"heading": "Grex aufladen",
+		"description": "Grex installiert im Hintergrund die CLI und die Skills, damit es Arbeit aufteilen, Agenten ausführen, Tools aufrufen und den Kontext über deine Arbeitsbereiche hinweg behalten kann.",
+		"setupFailed": "Etwas ist schiefgelaufen – keine Sorge, Grex funktioniert auch ohne einwandfrei.",
+		"installing": "Wird installiert",
+		"retry": "Erneut versuchen",
+		"back": "Zurück",
+		"next": "Weiter",
+		"cli": {
+			"label": "Grex-CLI",
+			"description": "Steuere Grex von deinem Terminal aus: Arbeitsbereiche erstellen, Prompts senden, Dateien inspizieren und wiederholbare Abläufe skripten."
+		},
+		"grexSkills": {
+			"label": "Grex-Skills (Beta)",
+			"description": "Installiere Skills, damit Grex dir in jedem Arbeitsbereich bei mehr Workflows helfen kann."
+		}
+	},
+	"repoImport": {
+		"sectionLabel": "Repository-Import",
+		"heading": "Bring deine ersten Repositories ein",
+		"description": "Beginne mit einem lokalen Projekt oder hole ein entferntes Repository von GitHub. Du kannst mehrere hinzufügen, bevor du Grex betrittst.",
+		"chooseLocalProject": "Lokales Projekt auswählen",
+		"addingRepository": "Repository wird hinzugefügt…",
+		"chooseLocalDescription": "Füge einen Ordner hinzu, der bereits auf diesem Rechner liegt.",
+		"addingLocalDescription": "Wähle einen Ordner, dann richten wir ihn ein.",
+		"importFromGithub": "Von GitHub importieren",
+		"importFromGithubDescription": "Klone ein entferntes Projekt in Grex.",
+		"importedRepositories": "Importierte Repositories",
+		"emptyState": "Wähle einen lokalen Ordner oder importiere von GitHub, um deine erste Warteschlange aufzubauen.",
+		"removeRepository": "{{name}} entfernen",
+		"back": "Zurück",
+		"ship": "Auf geht's"
+	},
+	"setupItem": {
+		"defaultAction": "Einrichten"
+	},
+	"terminal": {
+		"close": "Anmelde-Terminal schließen"
+	},
+	"errors": {
+		"addRepository": "Repository konnte nicht hinzugefügt werden.",
+		"removeRepository": "Repository konnte nicht entfernt werden."
+	},
+	"fallback": {
+		"localProject": "Lokales Projekt",
+		"githubRepository": "GitHub-Repository"
+	},
+	"mockup": {
+		"workspacePreview": "Grex-Arbeitsbereichsvorschau",
+		"sidebar": {
+			"title": "Arbeitsbereiche",
+			"addRepository": "Repository hinzufügen",
+			"newWorkspace": "Neuer Arbeitsbereich",
+			"openProject": "Projekt öffnen",
+			"cloneFromUrl": "Von URL klonen",
+			"groups": {
+				"done": "Fertig",
+				"review": "In Prüfung",
+				"progress": "In Bearbeitung",
+				"backlog": "Backlog"
+			},
+			"workspaces": {
+				"release": "Release v1.2",
+				"settings": "Einstellungen aufgefrischt",
+				"authPlan": "Plan für Authentifizierungsfunktion",
+				"authDb": "Benutzer-Authentifizierung – Datenbank",
+				"authBe": "Benutzer-Authentifizierung – Backend",
+				"authFe": "Benutzer-Authentifizierung – Frontend",
+				"cleanup": "API-Aufräumen"
+			},
+			"row": {
+				"interactionRequired": "Interaktion erforderlich",
+				"unread": "Ungelesen",
+				"deletePermanently": "Endgültig löschen"
+			}
+		},
+		"conversation": {
+			"sessions": {
+				"planSplit": "Aufteilung des Arbeitsbereichs planen",
+				"refineContracts": "API-Verträge verfeinern"
+			},
+			"sessionTab": {
+				"interactionRequired": "Interaktion erforderlich",
+				"unread": "Ungelesene Sitzung",
+				"newSession": "Neue Sitzung"
+			},
+			"userPrompt": "Teile diese Funktion in drei Arbeitsbereiche auf – DB-Migration, Backend-Handler und Frontend-Anbindung –, damit ich an jedem parallel arbeiten kann.",
+			"reasoning": "Aufteilung des Arbeitsbereichs wird geplant",
+			"assistantReply": "Drei Arbeitsbereiche erstellt – wechsle in der Seitenleiste zwischen ihnen, um jede Spur in Bewegung zu halten.",
+			"composerPlaceholder": "Bitte um Änderungen, @erwähne Dateien, führe /commands aus",
+			"effortHigh": "Hoch",
+			"plan": "Plan",
+			"working": "Arbeitet",
+			"planProgress": "Plan – {{completed}}/{{total}} erledigt"
+		},
+		"inspector": {
+			"git": "Git",
+			"actions": "Aktionen",
+			"review": "Prüfung",
+			"createPr": "PR erstellen",
+			"remote": "Remote",
+			"tabSetup": "Einrichtung",
+			"tabRun": "Ausführen",
+			"changes_one": "{{count}} Änderung",
+			"changes_other": "{{count}} Änderungen",
+			"branchUnpublished": "Branch nicht veröffentlicht",
+			"upToDate": "Aktuell",
+			"commit": "Commit",
+			"push": "Push",
+			"waitingForReview": "Wartet auf Prüfung",
+			"status": {
+				"passed": "Bestanden",
+				"running": "Läuft",
+				"failed": "Fehlgeschlagen",
+				"pending": "Ausstehend"
+			}
+		},
+		"header": {
+			"workspaceHeader": "Arbeitsbereich-Kopfzeile",
+			"composer": "Arbeitsbereich-Editor",
+			"noBranch": "Kein Branch"
+		}
+	}
+}

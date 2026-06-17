@@ -12,6 +12,7 @@ import {
 
 export type { InboxKind };
 
+import { useTranslation } from "react-i18next";
 import {
 	DEFAULT_INBOX_ACCOUNT_TOGGLES,
 	DEFAULT_INBOX_REPO_CONFIG,
@@ -235,6 +236,7 @@ export function useInboxItems(
 	// `<InboxErrorState>` still renders as the primary affordance —
 	// toast is an extra nudge in case the user is on a different sub-tab
 	// when the failure happens.
+	const { t } = useTranslation("inbox");
 	const pushToast = useWorkspaceToast();
 	const lastSurfacedErrorRef = useRef<unknown>(null);
 	useEffect(() => {
@@ -246,10 +248,8 @@ export function useInboxItems(
 		if (lastSurfacedErrorRef.current === query.error) return;
 		lastSurfacedErrorRef.current = query.error;
 		const message =
-			query.error instanceof Error
-				? query.error.message
-				: "Couldn't load context items.";
-		pushToast(message, "Context fetch failed", "destructive");
+			query.error instanceof Error ? query.error.message : t("error.fallback");
+		pushToast(message, t("toast.contextFetchFailed"), "destructive");
 	}, [query.error, pushToast]);
 
 	const items = useMemo<InboxItemWithDetailRef[]>(

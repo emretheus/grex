@@ -1,0 +1,190 @@
+{
+	"git": {
+		"title": "Git",
+		"sectionLabel": "Sección del inspector Git",
+		"changesPanelLabel": "Cuerpo del panel de cambios",
+		"browseFiles": "Explorar archivos",
+		"browseFilesTitle": "Explorar todos los archivos de este espacio de trabajo",
+		"openPullRequest": "Abrir pull request",
+		"openMergeRequest": "Abrir merge request",
+		"continue": "Continuar",
+		"continueWorkspace": "Continuar espacio de trabajo",
+		"empty": "Aún no hay cambios en esta rama.",
+		"groups": {
+			"stagedChanges": "Cambios preparados",
+			"changes": "Cambios",
+			"remote": "Remoto"
+		},
+		"switchingTargetBranch": "Cambiando de rama de destino…",
+		"viewToggle": {
+			"switchToListView": "Cambiar a vista de lista",
+			"switchToTreeView": "Cambiar a vista de árbol"
+		},
+		"row": {
+			"stageAll": "Preparar todos los cambios",
+			"unstageAll": "Quitar todos los cambios preparados",
+			"stageFile": "Preparar archivo",
+			"unstageFile": "Quitar archivo de preparación",
+			"openInEditor": "Abrir en el editor",
+			"discardFileChanges": "Descartar cambios del archivo"
+		},
+		"contextMenu": {
+			"revealInFinder": "Mostrar en Finder",
+			"copyPath": "Copiar ruta",
+			"copyRelativePath": "Copiar ruta relativa",
+			"copyRemoteFileUrl": "Copiar URL del archivo remoto"
+		},
+		"toast": {
+			"pathCopied": "Ruta copiada",
+			"relativePathCopied": "Ruta relativa copiada",
+			"remoteFileUrlCopied": "URL del archivo remoto copiada",
+			"copyPathFailed": "No se pudo copiar la ruta",
+			"copyRelativePathFailed": "No se pudo copiar la ruta relativa",
+			"copyRemoteFileUrlFailed": "No se pudo copiar la url del archivo remoto",
+			"revealFailed": "No se pudo mostrar en Finder",
+			"noEditorTitle": "Sin editor",
+			"noEditorMessage": "Selecciona un editor predeterminado antes de abrir archivos.",
+			"openEditorFailed": "No se pudo abrir {{editor}}",
+			"continuedTitle": "Continuado",
+			"continuedMessage": "El espacio de trabajo se movió a {{branch}}."
+		},
+		"mutationError": {
+			"stageFileFailed": "No se pudo preparar el archivo.",
+			"unstageFileFailed": "No se pudo quitar el archivo de preparación.",
+			"stageFilesFailed": "No se pudieron preparar los archivos.",
+			"unstageFilesFailed": "No se pudieron quitar los archivos de preparación.",
+			"discardChangesFailed": "No se pudieron descartar los cambios.",
+			"continueWorkspaceFailed": "No se pudo continuar el espacio de trabajo.",
+			"stageFileTitle": "No se puede preparar el archivo",
+			"unstageFileTitle": "No se puede quitar el archivo de preparación",
+			"stageFilesTitle": "No se pueden preparar los archivos",
+			"unstageFilesTitle": "No se pueden quitar los archivos de preparación",
+			"discardChangesTitle": "No se pueden descartar los cambios",
+			"continueWorkspaceTitle": "No se puede continuar el espacio de trabajo"
+		}
+	},
+	"forge": {
+		"connecting": "Conectando",
+		"detected": "Se detectó {{provider}} en {{host}}",
+		"thisHost": "este host",
+		"whyWeThinkSo": "Por qué lo creemos:"
+	},
+	"actions": {
+		"title": "Acciones",
+		"sectionLabel": "Sección del inspector Acciones",
+		"toggle": "Alternar sección de acciones del inspector",
+		"panelLabel": "Cuerpo del panel de acciones",
+		"groups": {
+			"helpers": "Ayudantes",
+			"git": "Git",
+			"review": "Revisión",
+			"deployments": "Despliegues",
+			"checks": "Comprobaciones"
+		},
+		"reviewChanges": "Revisar cambios",
+		"reviewing": "Revisando",
+		"reviewAction": "Revisar",
+		"skipped": "omitido",
+		"openItem": "Abrir {{name}}",
+		"insertCheckError": "No se pudo insertar la comprobación",
+		"loading": {
+			"pushing": "Subiendo",
+			"pulling": "Bajando",
+			"resolving": "Resolviendo",
+			"committing": "Confirmando",
+			"loading": "Cargando"
+		},
+		"status": {
+			"passed": "Superado",
+			"skipped": "Omitido",
+			"running": "En ejecución",
+			"failed": "Fallido",
+			"pending": "Pendiente"
+		},
+		"button": {
+			"commitAndPush": "Confirmar y subir",
+			"push": "Subir",
+			"resolve": "Resolver",
+			"pull": "Bajar"
+		},
+		"git": {
+			"noUncommittedChanges": "Sin cambios sin confirmar",
+			"uncommittedChanges_one": "{{count}} cambio sin confirmar",
+			"uncommittedChanges_other": "{{count}} cambios sin confirmar",
+			"branchNotPublished": "Rama no publicada en el remoto",
+			"commitsAheadOfRemote_one": "{{count}} commit por delante de {{ref}}",
+			"commitsAheadOfRemote_other": "{{count}} commits por delante de {{ref}}",
+			"branchFullyPushed": "Rama subida por completo",
+			"mergeConflictsDetected": "Conflictos de fusión detectados",
+			"commitsBehindTarget_one": "{{count}} commit por detrás de {{target}}",
+			"commitsBehindTarget_other": "{{count}} commits por detrás de {{target}}",
+			"upToDate": "Actualizado con {{target}}",
+			"syncUnavailable": "Estado de sincronización no disponible",
+			"targetBranch": "rama de destino",
+			"upstream": "upstream"
+		},
+		"review": {
+			"authRequired": "Se requiere autenticación de la CLI de {{provider}}",
+			"approved": "Revisión aprobada",
+			"changeRequestClosed": "{{changeRequest}} cerrado",
+			"changesRequested": "Cambios solicitados",
+			"waitingForReview": "Esperando la revisión de {{changeRequest}}",
+			"mergeConflictsDetected": "Conflictos de fusión detectados"
+		},
+		"sync": {
+			"pulledLatest": "Se bajaron los últimos cambios de {{target}}",
+			"alreadyUpToDate": "Ya está actualizado con {{target}}",
+			"pullFailed": "No se pudieron bajar las actualizaciones de destino."
+		}
+	},
+	"tabs": {
+		"sectionLabel": "Sección del inspector Pestañas",
+		"bodyLabel": "Cuerpo de las pestañas del inspector",
+		"toggle": "Alternar sección de pestañas del inspector",
+		"setup": "Configuración",
+		"run": "Ejecutar",
+		"terminal": "Terminal",
+		"terminalNumbered": "Terminal {{number}}",
+		"newTerminal": "Nueva terminal",
+		"closeTerminal": "Cerrar terminal",
+		"closeNamed": "Cerrar {{name}}",
+		"enableHoverZoom": "Activar zoom al pasar el cursor",
+		"disableHoverZoom": "Desactivar zoom al pasar el cursor",
+		"switchRunAction": "Cambiar acción de ejecución",
+		"create": "Crear"
+	},
+	"setup": {
+		"noScriptConfigured": "No hay script de configuración configurado",
+		"noScriptHint": "Añade un script de configuración en los ajustes del repositorio para ejecutarlo aquí.",
+		"openSettings": "Abrir ajustes",
+		"completed": "Configuración completada",
+		"completedLabel": "Configuración completada",
+		"noOutput": "No hay salida del script de configuración",
+		"noOutputHint": "La salida del script de configuración aparecerá aquí tras ejecutar la configuración.",
+		"runSetup": "Ejecutar configuración",
+		"rerunSetup": "Volver a ejecutar configuración",
+		"stop": "Detener"
+	},
+	"run": {
+		"open": "Abrir",
+		"openWithPort": "Abrir:{{port}}",
+		"openNoUrl": "Abrir servidor de desarrollo (aún no se detectó ninguna URL)",
+		"openAtUrl": "Abrir servidor de desarrollo en {{url}}",
+		"openWithCount_one": "Abrir servidor de desarrollo ({{count}} URL detectada)",
+		"openWithCount_other": "Abrir servidor de desarrollo ({{count}} URL detectadas)",
+		"addRunScript": "Añadir script de ejecución",
+		"addRunScriptHint": "Ejecuta pruebas o un servidor de desarrollo para probar cambios en este espacio de trabajo.",
+		"defaultActionName": "Predeterminado",
+		"noOutputFor": "Sin salida para",
+		"noOutputHint": "La salida del script de ejecución aparecerá aquí tras la ejecución.",
+		"run": "Ejecutar",
+		"rerun": "Volver a ejecutar",
+		"stop": "Detener",
+		"forceStop": "Forzar detención",
+		"runStopCommand": "Ejecutar comando de detención: {{command}}",
+		"skipCleanup": "Omitir limpieza y forzar cierre"
+	},
+	"terminal": {
+		"truncationNotice": "… salida anterior truncada (se alcanzó el límite del búfer) …"
+	}
+}

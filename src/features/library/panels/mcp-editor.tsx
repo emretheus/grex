@@ -7,6 +7,7 @@ import {
 	XCircle,
 } from "lucide-react";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
@@ -21,6 +22,7 @@ import {
 	testMcpServer,
 	upsertMcpServer,
 } from "@/lib/api";
+import { i18n } from "@/lib/i18n";
 import { grexQueryKeys } from "@/lib/query-client";
 import { MCP_AGENTS } from "../mcp-agents";
 
@@ -70,6 +72,7 @@ export function McpEditor({
 	draft?: McpEditorDraft;
 	onDone: () => void;
 }) {
+	const { t } = useTranslation("library");
 	const queryClient = useQueryClient();
 	const [name, setName] = useState(server?.name ?? draft?.name ?? "");
 	const [transport, setTransport] = useState<McpTransport>(
@@ -145,12 +148,12 @@ export function McpEditor({
 					variant="ghost"
 					size="icon-xs"
 					onClick={onDone}
-					aria-label="Back to servers"
+					aria-label={t("mcp.editor.back")}
 				>
 					<ArrowLeft className="size-4" />
 				</Button>
 				<span className="text-ui font-medium text-foreground">
-					{server ? "Edit MCP server" : "Add MCP server"}
+					{server ? t("mcp.editor.editTitle") : t("mcp.editor.newTitle")}
 				</span>
 				<div className="ml-auto flex items-center gap-2">
 					{server ? (
@@ -162,7 +165,7 @@ export function McpEditor({
 							onClick={() => remove.mutate()}
 						>
 							<Trash2 className="size-4" />
-							Delete
+							{t("mcp.editor.delete")}
 						</Button>
 					) : null}
 					<Button
@@ -172,10 +175,10 @@ export function McpEditor({
 						onClick={() => test.mutate()}
 					>
 						<PlugZap className="size-4" />
-						{test.isPending ? "Testing…" : "Test"}
+						{test.isPending ? t("mcp.editor.testing") : t("mcp.editor.test")}
 					</Button>
 					<Button size="sm" disabled={!canSave} onClick={() => save.mutate()}>
-						Save
+						{t("mcp.editor.save")}
 					</Button>
 				</div>
 			</div>
@@ -186,27 +189,29 @@ export function McpEditor({
 					serverName={test.data?.serverName ?? null}
 					toolCount={test.data?.toolCount ?? null}
 					message={
-						test.isError ? "Test failed to run." : (test.data?.error ?? null)
+						test.isError
+							? t("mcp.editor.testFailed")
+							: (test.data?.error ?? null)
 					}
 				/>
 			) : null}
 
 			<div className="min-h-0 flex-1 space-y-4 overflow-y-auto px-8 py-5">
-				<Field label="Name">
+				<Field label={t("mcp.editor.nameLabel")}>
 					<Input
 						value={name}
 						onChange={(e) => setName(e.target.value)}
-						placeholder="e.g. playwright"
+						placeholder={t("mcp.editor.namePlaceholder")}
 						autoFocus={!server}
 					/>
 					{name.length > 0 && !nameValid ? (
 						<p className="text-nano text-destructive">
-							Use only letters, numbers, '.', '_', '-'.
+							{t("mcp.editor.nameError")}
 						</p>
 					) : null}
 				</Field>
 
-				<Field label="Transport">
+				<Field label={t("mcp.editor.transportLabel")}>
 					<ToggleGroup
 						type="single"
 						value={transport}
@@ -220,7 +225,7 @@ export function McpEditor({
 
 				{transport === "stdio" ? (
 					<>
-						<Field label="Command">
+						<Field label={t("mcp.editor.commandLabel")}>
 							<Input
 								value={command}
 								onChange={(e) => setCommand(e.target.value)}
@@ -228,7 +233,7 @@ export function McpEditor({
 								className="font-mono text-small"
 							/>
 						</Field>
-						<Field label="Arguments (one per line)">
+						<Field label={t("mcp.editor.argsLabel")}>
 							<Textarea
 								value={argsText}
 								onChange={(e) => setArgsText(e.target.value)}
@@ -239,7 +244,7 @@ export function McpEditor({
 					</>
 				) : (
 					<>
-						<Field label="URL">
+						<Field label={t("mcp.editor.urlLabel")}>
 							<Input
 								value={url}
 								onChange={(e) => setUrl(e.target.value)}
@@ -247,7 +252,7 @@ export function McpEditor({
 								className="font-mono text-small"
 							/>
 						</Field>
-						<Field label="Headers (one Key: value per line)">
+						<Field label={t("mcp.editor.headersLabel")}>
 							<Textarea
 								value={headersText}
 								onChange={(e) => setHeadersText(e.target.value)}
@@ -258,7 +263,7 @@ export function McpEditor({
 					</>
 				)}
 
-				<Field label="Environment variables (one KEY=value per line)">
+				<Field label={t("mcp.editor.envLabel")}>
 					<Textarea
 						value={envText}
 						onChange={(e) => setEnvText(e.target.value)}
@@ -267,7 +272,7 @@ export function McpEditor({
 					/>
 				</Field>
 
-				<Field label="Sync to agents">
+				<Field label={t("mcp.editor.syncLabel")}>
 					<div className="flex flex-col gap-2">
 						{MCP_AGENTS.map((agent) => {
 							const unsupported = transport === "http" && !agent.http;
@@ -289,7 +294,7 @@ export function McpEditor({
 									</span>
 									{unsupported ? (
 										<span className="text-nano text-muted-foreground">
-											stdio only
+											{t("mcp.editor.stdioOnly")}
 										</span>
 									) : null}
 								</label>
@@ -300,10 +305,10 @@ export function McpEditor({
 
 				<div className="flex items-center justify-between">
 					<span className="text-small font-medium text-foreground">
-						Enabled
+						{t("mcp.editor.enabled")}
 					</span>
 					<Switch
-						aria-label="Enabled"
+						aria-label={t("mcp.editor.enabled")}
 						checked={enabled}
 						onCheckedChange={setEnabled}
 					/>
@@ -311,7 +316,7 @@ export function McpEditor({
 
 				{save.isError ? (
 					<p className="text-small text-destructive">
-						Couldn't save this server. Check the fields and try again.
+						{t("mcp.editor.saveError")}
 					</p>
 				) : null}
 			</div>
@@ -349,22 +354,22 @@ function TestResultBanner({
 	if (ok) {
 		const tools =
 			typeof toolCount === "number"
-				? ` · ${toolCount} tool${toolCount === 1 ? "" : "s"}`
+				? i18n.t("library:mcp.editor.tools", { count: toolCount })
 				: "";
+		const target = serverName
+			? i18n.t("library:mcp.editor.connectedTarget", { name: serverName })
+			: "";
 		return (
 			<div className="flex items-center gap-2 border-border/40 border-b bg-emerald-500/10 px-8 py-2 text-emerald-700 text-small dark:text-emerald-400">
 				<CheckCircle2 className="size-4 shrink-0" />
-				<span>
-					Connected{serverName ? ` to ${serverName}` : ""}
-					{tools}.
-				</span>
+				<span>{i18n.t("library:mcp.editor.connected", { target, tools })}</span>
 			</div>
 		);
 	}
 	return (
 		<div className="flex items-center gap-2 border-border/40 border-b bg-destructive/10 px-8 py-2 text-destructive text-small">
 			<XCircle className="size-4 shrink-0" />
-			<span>{message ?? "Couldn't connect."}</span>
+			<span>{message ?? i18n.t("library:mcp.editor.connectError")}</span>
 		</div>
 	);
 }

@@ -1,4 +1,5 @@
 import { Play, Sparkles, X } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 import { ActionRow, ActionRowButton } from "@/components/action-row";
 import { cn } from "@/lib/utils";
@@ -16,6 +17,7 @@ export function TriageQuickActions({
 	onDismiss,
 	disabled,
 }: TriageQuickActionsProps) {
+	const { t } = useTranslation("composer");
 	return (
 		<ActionRow
 			className={cn(
@@ -29,28 +31,32 @@ export function TriageQuickActions({
 						aria-hidden="true"
 					/>
 					<span className="truncate text-small font-medium tracking-[0.01em] text-muted-foreground">
-						AI proposed this task — start to engage or dismiss.
+						{t("triage.prompt")}
 					</span>
 				</>
 			}
 			trailing={
 				<>
 					<ActionRowButton
-						aria-label="Dismiss this triage proposal"
+						aria-label={t("triage.dismissAria")}
 						disabled={disabled}
 						onClick={onDismiss}
 					>
 						<X className="size-[13px] shrink-0" strokeWidth={1.8} />
-						<span className="inline-flex items-center">Dismiss</span>
+						<span className="inline-flex items-center">
+							{t("triage.dismiss")}
+						</span>
 					</ActionRowButton>
 					<ActionRowButton
 						active
-						aria-label="Start working on this triage proposal"
+						aria-label={t("triage.startAria")}
 						disabled={disabled}
 						onClick={onStart}
 					>
 						<Play className="size-[13px] shrink-0" strokeWidth={1.8} />
-						<span className="inline-flex items-center">Start</span>
+						<span className="inline-flex items-center">
+							{t("triage.start")}
+						</span>
 					</ActionRowButton>
 				</>
 			}

@@ -1,0 +1,50 @@
+{
+	"actions": {
+		"openExternally": "Abrir externamente",
+		"addToContext": "Añadir al contexto",
+		"addToContextError": "No se pudo insertar la tarjeta de contexto",
+		"copyMarkdown": "Copiar Markdown",
+		"copied": "Copiado",
+		"refresh": "Actualizar",
+		"refreshing": "Actualizando…"
+	},
+	"kind": {
+		"issue": "incidencia",
+		"pullRequest": "solicitud de incorporación",
+		"discussion": "debate",
+		"mergeRequest": "solicitud de fusión",
+		"post": "publicación",
+		"card": "tarjeta",
+		"thread": "hilo"
+	},
+	"body": {
+		"noDescription": "No se proporcionó ninguna descripción."
+	},
+	"meta": {
+		"updated": "Actualizado {{time}}",
+		"priority": "Prioridad: {{priority}}"
+	},
+	"relativeTime": {
+		"minutes_one": "hace {{count}} min",
+		"minutes_other": "hace {{count}} min",
+		"hours_one": "hace {{count}} h",
+		"hours_other": "hace {{count}} h",
+		"days_one": "hace {{count}} d",
+		"days_other": "hace {{count}} d"
+	},
+	"startWorkspace": {
+		"tooltip": "Iniciar espacio de trabajo",
+		"fromIssue": "Iniciar espacio de trabajo desde la incidencia",
+		"fromPost": "Iniciar espacio de trabajo desde la publicación",
+		"fromCard": "Iniciar espacio de trabajo desde la tarjeta",
+		"fromThread": "Iniciar espacio de trabajo desde el hilo"
+	},
+	"slack": {
+		"invalidReference": "Referencia de elemento de Slack no válida.",
+		"threadBadge": "Hilo",
+		"openInSlack": "Abrir en Slack",
+		"loadError": "No se pudo cargar el hilo de Slack.",
+		"noMessages": "No hay mensajes que mostrar.",
+		"emptyMessage": "(mensaje vacío)"
+	}
+}

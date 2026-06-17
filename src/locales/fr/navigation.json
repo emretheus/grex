@@ -1,0 +1,104 @@
+{
+	"sidebar": {
+		"title": "Espaces de travail"
+	},
+	"actions": {
+		"addRepository": "Ajouter un dépôt",
+		"openProject": "Ouvrir un projet",
+		"cloneFromUrl": "Cloner depuis une URL",
+		"newWorkspace": "Nouvel espace de travail",
+		"createNewWorkspace": "Créer un nouvel espace de travail",
+		"newWorkspaceInGroup": "Nouvel espace de travail dans {{group}}"
+	},
+	"sections": {
+		"archived": "Archivés"
+	},
+	"row": {
+		"restoreWorkspace": "Restaurer l'espace de travail",
+		"confirmArchiveWorkspace": "Confirmer l'archivage de l'espace de travail",
+		"archiveWorkspace": "Archiver l'espace de travail",
+		"interactionRequired": "Interaction requise",
+		"aiProposal": "Proposition de l'IA — ouvrir pour examiner",
+		"unread": "Non lu",
+		"deletePermanently": "Supprimer définitivement",
+		"contextMenu": {
+			"pin": "Épingler",
+			"unpin": "Désépingler",
+			"setStatus": "Définir le statut",
+			"markAsUnread": "Marquer comme non lu",
+			"openInFinder": "Ouvrir dans le Finder",
+			"moveIntoNewWorktree": "Déplacer vers un nouveau worktree",
+			"restore": "Restaurer",
+			"archive": "Archiver"
+		}
+	},
+	"stack": {
+		"tip": "Sommet de la pile",
+		"base": "Base de la pile",
+		"node": "Pile",
+		"depth": "{{current}} sur {{total}}"
+	},
+	"status": {
+		"backlog": "À traiter",
+		"inProgress": "En cours",
+		"inReview": "En revue",
+		"done": "Terminé",
+		"canceled": "Annulé"
+	},
+	"hoverCard": {
+		"uncommittedChanges_one": "{{count}} modification non validée",
+		"uncommittedChanges_other": "{{count}} modifications non validées",
+		"commitsBehind_one": "{{count}} commit de retard sur {{targetLabel}}",
+		"commitsBehind_other": "{{count}} commits de retard sur {{targetLabel}}",
+		"unpushedCommits_one": "{{count}} commit non poussé",
+		"unpushedCommits_other": "{{count}} commits non poussés",
+		"upToDateClean": "Branche à jour avec {{targetLabel}} · aucune modification non validée",
+		"upToDate": "Branche à jour avec {{targetLabel}}",
+		"runningFor": "En cours depuis {{elapsed}}",
+		"thinking": "Réflexion…",
+		"lastActivityCreated": "{{lastActivityLabel}} · créé {{createdAt}}",
+		"lastActivity": {
+			"lastMessage": "Dernier message",
+			"lastChanged": "Dernière modification",
+			"created": "Créé"
+		},
+		"sessionCount_one": "{{count}} session",
+		"sessionCount_other": "{{count}} sessions"
+	},
+	"cloneDialog": {
+		"title": "Cloner depuis une URL",
+		"gitUrl": "URL Git",
+		"cloneLocation": "Emplacement du clone",
+		"browse": "Parcourir…",
+		"folderPickerError": "Impossible d'ouvrir le sélecteur de dossier.",
+		"cloneError": "Impossible de cloner le dépôt.",
+		"submit": "Cloner le dépôt",
+		"cloning": "Clonage…"
+	},
+	"moveToWorktreeDialog": {
+		"title": "Déplacer vers un nouveau worktree",
+		"description": "<bold>{{name}}</bold> se poursuivra dans un nouveau worktree, sur une nouvelle branche nommée automatiquement.",
+		"localUntouched": "Votre dépôt local reste exactement tel quel — branche et fichiers intacts.",
+		"changesCarriedOver": "Les modifications suivies et non suivies sont reportées dans le nouveau worktree.",
+		"submit": "Déplacer vers le worktree",
+		"moving": "Déplacement…"
+	},
+	"viewPopover": {
+		"filterAndSortAria": "Filtrer et trier la barre latérale",
+		"filterAndSort": "Filtrer et trier",
+		"repository": "Dépôt",
+		"allRepositories": "Tous les dépôts",
+		"noRepositoriesFound": "Aucun dépôt trouvé.",
+		"searchRepositories": "Rechercher des dépôts",
+		"groupBy": "Grouper par",
+		"status": "Statut",
+		"sortBy": "Trier par",
+		"selectedCount": "{{count}} sélectionnés",
+		"sort": {
+			"draggableOrder": "Ordre personnalisé",
+			"repositoryName": "Nom du dépôt",
+			"lastUpdated": "Dernière mise à jour",
+			"createdTime": "Date de création"
+		}
+	}
+}

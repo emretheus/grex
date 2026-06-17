@@ -8,6 +8,7 @@
 
 import { Check, Goal, X } from "lucide-react";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { InteractionFooter } from "./interaction/footer";
 import { InteractionHeader } from "./interaction/header";
@@ -31,6 +32,7 @@ export function GoalReplaceConfirm({
 	onCancel,
 	disabled,
 }: GoalReplaceConfirmProps) {
+	const { t } = useTranslation(["composer", "common"]);
 	const [choice, setChoice] = useState<Choice | null>(null);
 
 	const handleConfirm = () => {
@@ -43,12 +45,14 @@ export function GoalReplaceConfirm({
 		<UserInputCard>
 			<InteractionHeader
 				icon={Goal}
-				title="Replace goal?"
+				title={t("goalReplace.title")}
 				description={
 					<>
-						Current: <span className="text-foreground">{currentObjective}</span>
+						{t("goalReplace.currentLabel")}{" "}
+						<span className="text-foreground">{currentObjective}</span>
 						<br />
-						New: <span className="text-foreground">{newObjective}</span>
+						{t("goalReplace.newLabel")}{" "}
+						<span className="text-foreground">{newObjective}</span>
 					</>
 				}
 			/>
@@ -56,16 +60,16 @@ export function GoalReplaceConfirm({
 				<InteractionOptionRow
 					selected={choice === "replace"}
 					indicator="radio"
-					label="Replace current goal"
-					description="Set the new objective and start it now"
+					label={t("goalReplace.replaceLabel")}
+					description={t("goalReplace.replaceDescription")}
 					disabled={disabled}
 					onClick={() => setChoice("replace")}
 				/>
 				<InteractionOptionRow
 					selected={choice === "cancel"}
 					indicator="radio"
-					label="Cancel"
-					description="Keep the current goal"
+					label={t("common:actions.cancel")}
+					description={t("goalReplace.keepDescription")}
 					disabled={disabled}
 					onClick={() => setChoice("cancel")}
 				/>
@@ -78,7 +82,7 @@ export function GoalReplaceConfirm({
 					onClick={onCancel}
 				>
 					<X className="size-3.5" strokeWidth={2} />
-					<span>Cancel</span>
+					<span>{t("common:actions.cancel")}</span>
 				</Button>
 				<Button
 					variant="default"
@@ -87,7 +91,7 @@ export function GoalReplaceConfirm({
 					onClick={handleConfirm}
 				>
 					<Check className="size-3.5" strokeWidth={2} />
-					<span>Confirm</span>
+					<span>{t("common:actions.confirm")}</span>
 				</Button>
 			</InteractionFooter>
 		</UserInputCard>

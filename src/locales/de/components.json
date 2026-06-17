@@ -1,0 +1,81 @@
+{
+	"ai": {
+		"reasoning": {
+			"thinking": "Denkt nach…",
+			"thinkingStatic": "Nachgedacht",
+			"thoughtForSeconds_one": "{{count}} s nachgedacht",
+			"thoughtForSeconds_other": "{{count}} s nachgedacht"
+		},
+		"openIn": {
+			"trigger": "Im Chat öffnen",
+			"open": "Öffnen",
+			"chatgpt": "In ChatGPT öffnen",
+			"claude": "In Claude öffnen",
+			"t3": "In T3 Chat öffnen",
+			"scira": "In Scira öffnen",
+			"v0": "In v0 öffnen",
+			"cursor": "In Cursor öffnen",
+			"github": "In GitHub öffnen"
+		}
+	},
+	"inlineBadge": {
+		"removeItem": "Element entfernen",
+		"unableToPreview": "Vorschau nicht möglich"
+	},
+	"branchPicker": {
+		"searchPlaceholder": "Branches suchen…",
+		"loading": "Branches werden geladen…",
+		"empty": "Keine Branches gefunden"
+	},
+	"appendContext": {
+		"errorTitle": "Kontext konnte nicht angehängt werden",
+		"errorFallback": "Kontext konnte nicht angehängt werden.",
+		"ariaLabel": "{{subject}} zum Editor hinzufügen"
+	},
+	"quitConfirm": {
+		"title": "Grex beenden?",
+		"description_one": "{{count}} Aufgabe wird gerade ausgeführt. Wenn du jetzt beendest, wird sie abgebrochen.",
+		"description_other": "{{count}} Aufgaben werden gerade ausgeführt. Wenn du jetzt beendest, werden sie abgebrochen.",
+		"confirm": "Trotzdem beenden"
+	},
+	"forgeConnect": {
+		"github": "GitHub",
+		"gitlab": "GitLab",
+		"forge": "Forge",
+		"connect": "{{provider}} verbinden",
+		"startError": "Anmeldung konnte nicht gestartet werden.",
+		"connectedAs": "{{provider}} verbunden als @{{login}}",
+		"connected": "{{provider}} verbunden"
+	},
+	"larkConnect": {
+		"install": "lark-cli installieren",
+		"signIn": "Anmelden",
+		"connectWithSuffix": "Lark verbinden — {{suffix}}",
+		"connect": "Lark verbinden",
+		"connected": "Lark verbunden",
+		"startError": "lark-cli konnte nicht gestartet werden."
+	},
+	"conductor": {
+		"importFailed": "Import fehlgeschlagen. Bitte erneut versuchen.",
+		"welcome": "Willkommen bei Grex",
+		"workspacesReady_one": "{{count}} Workspace bereit",
+		"workspacesReady_other": "{{count}} Workspaces bereit",
+		"getStarted": "Loslegen",
+		"overflowMore": "+{{count}} weitere",
+		"imported": "importiert",
+		"importWorkspaces_one": "{{count}} Workspace importieren",
+		"importWorkspaces_other": "{{count}} Workspaces importieren",
+		"importEmpty": "Workspaces importieren",
+		"skipForNow": "Vorerst überspringen",
+		"aboutImporting": "Über den Import",
+		"aboutImportingTooltip": "Keine Sorge – wir lesen deine Conductor-Daten nur, um sie hierher zu importieren. Deine Conductor-Daten werden in keiner Weise verändert.",
+		"importing": "Wird importiert…"
+	},
+	"ui": {
+		"commandDialogTitle": "Befehlspalette",
+		"commandDialogDescription": "Nach einem auszuführenden Befehl suchen…",
+		"sidebarTitle": "Seitenleiste",
+		"sidebarDescription": "Zeigt die mobile Seitenleiste an.",
+		"toggleSidebar": "Seitenleiste umschalten"
+	}
+}

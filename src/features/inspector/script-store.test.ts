@@ -31,9 +31,9 @@ vi.mock("@/lib/api", async (importOriginal) => {
 const {
 	_resetForTesting,
 	getScriptState,
+	getTruncationNotice,
 	startScript,
 	stopScript,
-	TRUNCATION_NOTICE,
 } = await import("./script-store");
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
@@ -131,10 +131,11 @@ describe("script-store ring buffer", () => {
 	});
 
 	it("exposes a truncation notice for replay prefixing", () => {
-		expect(TRUNCATION_NOTICE).toContain("truncated");
+		const notice = getTruncationNotice();
+		expect(notice).toContain("truncated");
 		// ANSI dim + reset so we don't leak styling into replayed chunks.
-		expect(TRUNCATION_NOTICE).toContain("\x1b[2m");
-		expect(TRUNCATION_NOTICE).toContain("\x1b[0m");
+		expect(notice).toContain("\x1b[2m");
+		expect(notice).toContain("\x1b[0m");
 	});
 });
 

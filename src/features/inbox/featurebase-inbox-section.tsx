@@ -1,4 +1,5 @@
 import { useIsMutating } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import { featurebaseListInboxItems, featurebaseSearchIssues } from "@/lib/api";
 import type { ComposerInsertTarget } from "@/lib/composer-insert";
 import { grexQueryKeys } from "@/lib/query-client";
@@ -23,6 +24,7 @@ export function FeaturebaseInboxSection({
 	appendContextTarget?: ComposerInsertTarget;
 	horizontalPaddingClass: string;
 }) {
+	const { t } = useTranslation("inbox");
 	const connectionsQuery = useFeaturebaseConnections();
 	const connections = connectionsQuery.data ?? [];
 	const displayNames = new Map(connections.map((c) => [c.id, c.orgName ?? ""]));
@@ -42,8 +44,8 @@ export function FeaturebaseInboxSection({
 			searchKey={grexQueryKeys.featurebaseSearch}
 			listFn={featurebaseListInboxItems}
 			searchFn={featurebaseSearchIssues}
-			emptyTitle="No posts"
-			emptySubtitle="Feedback posts from your Featurebase board will appear here."
+			emptyTitle={t("section.featurebase.emptyTitle")}
+			emptySubtitle={t("section.featurebase.emptySubtitle")}
 			onOpenCard={onOpenCard}
 			selectedCardId={selectedCardId}
 			appendContextTarget={appendContextTarget}

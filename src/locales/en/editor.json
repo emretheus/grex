@@ -1,0 +1,101 @@
+{
+	"surface": {
+		"ariaLabel": "Workspace editor surface",
+		"canvasAriaLabel": "Editor canvas",
+		"closeDiff": "Close diff view",
+		"closeEditor": "Close editor view"
+	},
+	"breadcrumb": {
+		"revealInExplorer": "Reveal in explorer",
+		"copyAbsolutePath": "Copy absolute path"
+	},
+	"tabs": {
+		"openFilesAriaLabel": "Open files",
+		"closeFileAriaLabel": "Close {{name}}",
+		"modifiedAriaLabel": "Modified",
+		"openFileAriaLabel": "Open file",
+		"close": "Close",
+		"closeOthers": "Close others",
+		"closeAll": "Close all"
+	},
+	"contextMenu": {
+		"copyPath": "Copy path",
+		"copyRelativePath": "Copy relative path",
+		"revealInFinder": "Reveal in Finder",
+		"openWith": "Open with",
+		"addToChat": "Add to chat"
+	},
+	"search": {
+		"placeholder": "Search files",
+		"loading": "Loading files",
+		"empty": "No files found"
+	},
+	"toolbar": {
+		"toggleExplorerAriaLabel": "Toggle file explorer",
+		"toggleExplorerTitle": "File explorer",
+		"viewModeAriaLabel": "Markdown view mode",
+		"source": "Source",
+		"preview": "Preview",
+		"edit": "Edit",
+		"diff": "Diff",
+		"addFileToChatAriaLabel": "Add this file to chat",
+		"addFileToChatTitle": "Add file to chat",
+		"viewOptionsAriaLabel": "Editor view options",
+		"viewOptionsTitle": "View options",
+		"close": "Close"
+	},
+	"viewOptions": {
+		"goToLine": "Go to line…",
+		"wordWrap": "Word wrap",
+		"minimap": "Minimap",
+		"stickyScroll": "Sticky scroll",
+		"renderWhitespace": "Render whitespace",
+		"sideBySideDiff": "Side-by-side diff"
+	},
+	"preview": {
+		"ariaLabel": "Markdown preview"
+	},
+	"landing": {
+		"ariaLabel": "File explorer",
+		"title": "Files",
+		"closeAriaLabel": "Close file explorer",
+		"close": "Close",
+		"heading": "Browse your codebase",
+		"pickFile": "Pick a file from the tree on the left to open it in the editor.",
+		"openWorkspace": "Open a workspace to browse its files."
+	},
+	"explorer": {
+		"ariaLabel": "File explorer",
+		"refreshAriaLabel": "Refresh file tree",
+		"refreshTitle": "Refresh",
+		"resizeAriaLabel": "Resize file explorer",
+		"heading": "Explorer",
+		"loading": "Loading…",
+		"loadError": "Couldn't load — retry",
+		"empty": "empty"
+	},
+	"image": {
+		"ariaLabel": "Image preview",
+		"previewAlt": "Preview of {{path}}",
+		"deleted": "This image was deleted in this change.",
+		"loadError": "Couldn't load this image from disk.",
+		"status": {
+			"added": "Added",
+			"modified": "Modified",
+			"deleted": "Deleted"
+		}
+	},
+	"errors": {
+		"loadFile": "Unable to load the selected file.",
+		"loadFileTitle": "File open failed",
+		"startEditor": "Unable to start the editor.",
+		"startEditorTitle": "Editor startup failed",
+		"startReview": "Unable to start the review surface.",
+		"startReviewTitle": "Review surface failed",
+		"listFiles": "Unable to list workspace files.",
+		"openFile": "Unable to open the selected file.",
+		"openFileTitle": "File open failed",
+		"saveFile": "Unable to save the selected file.",
+		"saveFileTitle": "Save failed"
+	}
+}

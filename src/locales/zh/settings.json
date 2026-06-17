@@ -1,0 +1,437 @@
+{
+	"appearance": {
+		"chatFontSize": {
+			"aria": "聊天字体大小",
+			"description": "聊天消息正文使用的字号",
+			"title": "聊天字体大小"
+		},
+		"codeFont": {
+			"aria": "代码字体",
+			"title": "代码字体"
+		},
+		"colorTheme": {
+			"description": "选择一种强调色搭配",
+			"title": "配色主题"
+		},
+		"pointerCursors": {
+			"description": "悬停在可交互元素上时将光标变为指针",
+			"title": "使用指针光标"
+		},
+		"terminalFont": {
+			"aria": "终端字体",
+			"title": "终端字体"
+		},
+		"theme": {
+			"dark": "深色",
+			"description": "使用浅色、深色或跟随系统",
+			"light": "浅色",
+			"system": "系统",
+			"title": "主题"
+		},
+		"uiFont": {
+			"aria": "界面字体",
+			"title": "界面字体"
+		}
+	},
+	"language": {
+		"aria": "显示语言",
+		"description": "选择应用的显示语言",
+		"title": "语言"
+	},
+	"nav": {
+		"settings": "设置",
+		"repositories": "仓库",
+		"repositoryFallback": "仓库",
+		"sections": {
+			"general": "通用",
+			"appearance": "外观",
+			"model": "模型",
+			"providers": "服务商",
+			"shortcuts": "快捷键",
+			"import": "导入",
+			"account": "账户",
+			"inbox": "上下文",
+			"experimental": "实验性功能",
+			"developer": "开发者"
+		},
+		"captions": {
+			"account": "与本地的 gh / glab CLI 同步。",
+			"inbox": "选择每个已连接账户向「上下文」贡献哪些项目。"
+		}
+	},
+	"general": {
+		"notifications": {
+			"title": "桌面通知",
+			"description": "当会话完成或需要输入时显示系统通知"
+		},
+		"notificationSound": {
+			"title": "通知声音",
+			"description": "桌面通知触发时播放声音",
+			"aria": "通知声音",
+			"testAria": "测试通知声音"
+		},
+		"terminalHoverExpansion": {
+			"title": "悬停时展开终端",
+			"description": "当光标停留在检查器终端上时将其放大。"
+		},
+		"terminalMode": {
+			"title": "终端模式",
+			"description": "添加一个编辑器切换按钮，可在 agent 的终端界面中打开提示词，而不是在聊天会话中。仅支持 Claude 和 Codex。"
+		},
+		"alwaysShowContextUsage": {
+			"title": "始终显示上下文使用量",
+			"description": "默认情况下，仅在使用量超过 70% 时才显示上下文使用量。"
+		},
+		"usageStats": {
+			"title": "用量统计",
+			"description": "在编辑器旁显示账户速率限制。"
+		},
+		"autoArchiveOnMerge": {
+			"title": "合并时自动归档",
+			"description": "当工作区关联的 PR/MR 被合并时，自动归档该工作区。"
+		},
+		"followUpBehavior": {
+			"title": "后续消息行为",
+			"description": "在 agent 运行时将后续消息排队，或引导当前运行。",
+			"pressToInvert": "按 {{shortcut}} 可对单条消息执行相反操作。",
+			"queue": "排队",
+			"steer": "引导"
+		},
+		"claudeThinking": {
+			"title": "Claude Code 思考显示",
+			"description": "控制 Claude Code 如何返回思考内容。",
+			"summarized": "摘要",
+			"omitted": "省略",
+			"tooltip": {
+				"summarizedLabel": "摘要",
+				"summarizedBody": "思考块包含经过摘要的文本。",
+				"omittedLabel": "省略",
+				"omittedBody": "思考块为空。服务器跳过流式传输思考 token，因此最终文本会更快地流式输出。可降低延迟，但不降低成本。"
+			}
+		}
+	},
+	"model": {
+		"default": {
+			"title": "默认模型",
+			"description": "用于新建聊天的模型"
+		},
+		"review": {
+			"title": "审查模型",
+			"description": "用于代码审查的模型"
+		},
+		"action": {
+			"title": "操作模型",
+			"description": "用于 PR/MR 以及提交并推送的模型"
+		},
+		"fastMode": "快速模式",
+		"fastModeAria": "{{prefix}} 快速模式",
+		"selectModel": "选择模型",
+		"effort": {
+			"low": "低",
+			"medium": "中",
+			"high": "高",
+			"xhigh": "极高"
+		}
+	},
+	"archiveCleanup": {
+		"title": "清理已归档的工作区",
+		"descriptionEmpty": "没有已归档的工作区。",
+		"description_other": "永久删除全部 {{count}} 个已归档的工作区，包括其会话和聊天记录。",
+		"button": "清理",
+		"buttonBusy": "正在清理",
+		"confirmTitle": "清理已归档的工作区？",
+		"confirmDescription_other": "这将永久删除全部 {{count}} 个已归档的工作区，包括其会话和聊天记录。此操作无法撤销。",
+		"confirmLabel": "全部删除",
+		"toast": {
+			"nothing": "没有可清理的已归档工作区",
+			"cleaned_other": "已清理 {{count}} 个已归档的工作区",
+			"partial_other": "已清理 {{deleted}} 个，但有 {{count}} 个工作区无法删除",
+			"failedTitle": "归档清理失败"
+		}
+	},
+	"appUpdates": {
+		"title": "应用更新",
+		"loadingStatus": "正在加载更新程序状态…",
+		"status": {
+			"notConfigured": "此版本未配置更新程序。",
+			"checking": "正在后台检查 GitHub 发行版。",
+			"downloadingVersion": "正在后台下载 {{version}}。",
+			"downloading": "正在后台下载更新。",
+			"downloadedVersion": "{{version}} 已下载完成，可以安装。",
+			"downloaded": "最新更新已下载完成，可以安装。",
+			"error": "上次更新检查失败。",
+			"disabledWaiting": "自动更新检查正在等待更新程序配置。",
+			"disabled": "自动更新检查已禁用。",
+			"idle": "检查 GitHub 发行版，在后台静默下载更新，准备就绪后提示。"
+		},
+		"versionNotice": "当前 {{current}} · 可用 {{available}}",
+		"check": {
+			"downloading": "正在下载",
+			"installing": "正在安装",
+			"checking": "正在检查",
+			"checkNow": "立即检查"
+		},
+		"updateAndRestart": "更新并重启",
+		"changeLog": "更新日志",
+		"toast": {
+			"upToDate": "Grex 已是最新版本",
+			"checkFailed": "更新检查失败",
+			"checkFailedFallback": "无法检查更新。",
+			"installFailed": "安装失败",
+			"installFailedFallback": "无法安装已下载的更新。"
+		}
+	},
+	"components": {
+		"title": "Grex 组件",
+		"loadingStatus": "正在加载组件状态…",
+		"summary": {
+			"upToDate": "Grex CLI 和技能均为最新版本 {{version}}。",
+			"healthy": "Grex CLI 和技能状态正常。",
+			"needsAttention": "有一个或多个组件需要处理。"
+		},
+		"cliLabel": "Grex CLI",
+		"skillsLabel": "Grex 技能",
+		"recheck": "立即重新检查",
+		"recheckBusy": "正在检查",
+		"cli": {
+			"installedAt": "已安装于 {{path}}。",
+			"installed": "已安装。",
+			"stale": "安装路径中存在较旧的副本。",
+			"missing": "此机器上未安装。",
+			"unavailable": "状态不可用。"
+		},
+		"skills": {
+			"installedFor": "已为 {{targets}} 安装。",
+			"installed": "已安装。",
+			"signInPrompt": "登录 Claude Code 或 Codex，然后重新检查。",
+			"join": " 和 "
+		},
+		"toast": {
+			"readFailed": "无法读取 Grex 组件状态",
+			"upToDate": "Grex 组件已是最新版本",
+			"recheckFailed": "重新检查失败",
+			"cliInstallFailed": "CLI 安装失败",
+			"skillsInstallFailed": "技能安装失败"
+		}
+	},
+	"account": {
+		"errorAria": "账户列表错误",
+		"loading": "正在加载账户…",
+		"empty": "尚未连接任何账户。"
+	},
+	"devTools": {
+		"showOnboarding": {
+			"title": "再次显示新手引导",
+			"description": "将新手引导标记为未完成，以便在下次启动 Grex 时显示。",
+			"notice": "新手引导将在下次启动时显示。",
+			"button": "重置新手引导"
+		},
+		"resetData": {
+			"title": "重置所有数据",
+			"description": "从开发数据库中删除所有工作区、会话、消息和仓库。文件系统中的产物（工作树、粘贴缓存）也将被移除。",
+			"dataDir": "数据目录：",
+			"button": "重置所有开发数据",
+			"resetting": "正在重置…",
+			"confirmTitle": "确认重置",
+			"confirmDescription": "这将从开发数据库中永久删除<strong>所有工作区、会话和仓库</strong>。此操作无法撤销。之后您可以从 Conductor 重新导入。",
+			"confirmLabel": "删除全部",
+			"confirmLabelBusy": "正在重置…"
+		}
+	},
+	"plain": {
+		"connectAnother": "连接另一个工作区",
+		"workspaceFallback": "Plain 工作区",
+		"disconnect": "断开连接",
+		"disconnecting": "正在断开连接…",
+		"threadsHint": "打开的会话（待办和已暂停）会显示在信息流中。",
+		"disconnectError": "无法断开 Plain 连接。",
+		"disconnectFailed": "Plain 断开连接失败"
+	},
+	"mobileCompanion": {
+		"title": "移动端伴侣",
+		"description": "通过私有链接在手机浏览器中操控 Grex。启用后会启动一个本地服务器和一个 Cloudflare 隧道——无需安装任何应用。",
+		"starting": "正在启动…",
+		"enableAria": "启用移动端伴侣",
+		"permanentUrl": {
+			"title": "永久 URL",
+			"stable": "您的手机将连接到一个固定地址，重启桌面端后依然有效。",
+			"signedIn": "分配一个永久的 remote-*.grex.ai 地址，无需再次扫描。",
+			"signedOut": "重启后快速链接会发生变化。登录 Cloudflare 以获取永久地址。",
+			"forget": "忘记",
+			"forgetting": "正在忘记…",
+			"allocate": "分配永久 URL",
+			"allocating": "正在分配…",
+			"signIn": "登录 Cloudflare",
+			"signingIn": "正在等待浏览器…",
+			"address": "永久地址："
+		},
+		"pair": {
+			"title": "配对手机",
+			"ready": "生成二维码，然后用手机摄像头扫描。",
+			"waiting": "正在等待公共 URL 启动…",
+			"button": "配对手机",
+			"generating": "正在生成…",
+			"scanHint": "用手机摄像头扫描。该二维码携带一次性设备令牌——配对一次后，手机会自行重新连接。",
+			"copied": "已复制"
+		},
+		"devices": {
+			"title": "已配对的设备",
+			"empty": "尚未配对任何手机。",
+			"revoke": "撤销",
+			"label": "手机 · {{date}}",
+			"neverConnected": "从未连接",
+			"lastSeenRecently": "最近曾连接",
+			"lastSeen": "上次连接于 {{time}}"
+		}
+	},
+	"repositoryPreferences": {
+		"title": "偏好设置",
+		"description": "由 Grex 操作和新建聊天使用的仓库级内置提示词。",
+		"preview": "预览",
+		"save": "保存",
+		"saving": "正在保存…",
+		"placeholderGeneral": "为在此仓库中工作的所有 agent 添加自定义指令。",
+		"placeholderDefault": "在此添加您的偏好设置。agent 将被告知优先遵循这些指令，而非其默认指令。",
+		"promptTitle": "{{label}}提示词",
+		"promptPreviewFallback": "提示词预览",
+		"labels": {
+			"createPr": "创建 PR 偏好设置",
+			"review": "审查偏好设置",
+			"fixErrors": "修复错误偏好设置",
+			"resolveConflicts": "解决冲突偏好设置",
+			"branchRename": "分支重命名偏好设置",
+			"general": "通用偏好设置"
+		},
+		"descriptions": {
+			"createPr": "添加在您点击「创建 PR」按钮时发送给 agent 的自定义指令。",
+			"review": "添加在您点击检查器中的「审查」时发送给 agent 的自定义指令。",
+			"fixErrors": "添加在您点击「修复错误」按钮时发送给 agent 的自定义指令。",
+			"resolveConflicts": "添加在您点击「解决冲突」按钮时发送给 agent 的自定义指令。",
+			"branchRename": "添加在 Grex 为新建聊天生成首个分支重命名建议时使用的自定义指令。",
+			"general": "添加在每次新建聊天开始时发送给 agent 的自定义指令。"
+		}
+	},
+	"repositorySettings": {
+		"remoteFallback": "仓库",
+		"remoteOrigin": {
+			"title": "远程源",
+			"description": "我们应该向何处推送、拉取并创建 PR？",
+			"empty": "未找到远程仓库",
+			"orphanedNotice_other": "有 {{count}} 个工作区指向了不在此远程仓库上的分支。请通过标题栏的分支选择器更新它们。"
+		},
+		"branchFrom": {
+			"title": "新工作区的分支来源",
+			"description": "每个工作区都是您代码库的独立副本。"
+		},
+		"forge": {
+			"notConnected": "{{provider}} 未连接",
+			"connectCta": "连接一个 {{provider}} 账户，以便为此仓库启用 {{provider}} 工作流程。",
+			"connect": "连接",
+			"connecting": "正在连接"
+		},
+		"branchPrefix": {
+			"title": "分支前缀",
+			"description": "在此仓库中创建新工作区时添加到分支名称的前缀。",
+			"username": "用户名",
+			"custom": "自定义",
+			"none": "无",
+			"customPlaceholder": "例如 feat/",
+			"customAria": "自定义分支前缀",
+			"preview": "预览：",
+			"connectAccount": "（连接一个账户）"
+		},
+		"delete": {
+			"title": "删除仓库",
+			"description": "永久移除此仓库及其所有工作区、会话和消息。",
+			"button": "删除仓库",
+			"confirmTitle": "删除 {{name}}？",
+			"confirmDescription": "这将永久删除与<strong>{{name}}</strong>关联的所有工作区、会话和消息。此操作无法撤销。",
+			"confirmLabel": "删除",
+			"deleting": "正在删除…"
+		},
+		"scripts": {
+			"title": "脚本",
+			"description": "在工作区设置、运行或归档时执行的命令。",
+			"lockedMessage": "由此工作区的 grex.json 设置——请在该文件中编辑",
+			"setup": {
+				"label": "设置脚本",
+				"description": "可在任意工作区的「设置」标签页中使用",
+				"placeholder": "例如 npm install",
+				"autoRun": "自动运行",
+				"autoRunTooltip": "默认开启——工作区创建后会立即自动运行设置脚本。关闭后可从「设置」标签页手动运行。",
+				"autoRunAria": "在创建工作区时自动运行设置脚本"
+			},
+			"archive": {
+				"label": "归档脚本",
+				"description": "在工作区被归档时运行",
+				"placeholder": "例如 docker compose down"
+			},
+			"run": {
+				"title": "运行脚本",
+				"description": "每个条目都会出现在检查器的「运行」下拉菜单中。",
+				"lockedEmpty": "由此工作区的 grex.json 设置——请在该文件中编辑。",
+				"emptyTitle": "尚无运行脚本",
+				"emptyDescription": "添加一个以暴露某个命令——例如开发服务器、测试运行器或后台任务。",
+				"addScript": "添加脚本",
+				"defaultName": "默认",
+				"scriptN": "脚本 {{index}}",
+				"unnamed": "（未命名）",
+				"noCommand": "（无命令）",
+				"empty": "（空）",
+				"exclusive": "独占",
+				"exclusiveTooltip": "同一时间只允许一个工作区运行此脚本。启动新的运行会停止此仓库中的任何其他运行——当脚本绑定固定端口时很有用。",
+				"exclusiveAria": "启动新运行时停止此仓库中的其他运行",
+				"scriptName": "脚本名称",
+				"command": "命令",
+				"commandPlaceholder": "例如 npm run dev",
+				"commandAria": "{{name}} 命令",
+				"stopCommand": "停止命令",
+				"stopCommandTooltip": "可选的清理命令，在您点击「停止」时运行。适用于管理外部资源的脚本（docker compose down、supabase stop）。与主命令使用相同的环境变量和工作目录。",
+				"stopCommandPlaceholder": "例如 docker compose down",
+				"stopCommandAria": "{{name}} 停止命令",
+				"scriptFallback": "脚本",
+				"collapseAria": "折叠 {{name}}",
+				"expandAria": "展开 {{name}}",
+				"rowFallback": "脚本",
+				"doneEditing": "完成编辑",
+				"edit": "编辑",
+				"stopEditing": "停止编辑",
+				"deleteScript": "删除脚本",
+				"clickAgainConfirm": "再次点击以确认",
+				"confirmDeleteAria": "确认删除 {{name}}",
+				"deleteScriptAria": "删除脚本 {{name}}",
+				"managedByProject": "由 grex.json 管理——请编辑该文件以添加或更改"
+			}
+		}
+	},
+	"conductorImport": {
+		"title": "从 Conductor 导入",
+		"repositoryFallback": "仓库",
+		"selectWorkspaces": "选择要导入的工作区",
+		"importLocal": "从本地 Conductor 安装中导入工作区",
+		"searchWorkspaces": "搜索工作区",
+		"searchRepositories": "搜索仓库",
+		"importing_other": "正在导入 {{count}} 个工作区",
+		"settingUp": "正在设置仓库并复制数据…",
+		"selectAll": "全选",
+		"deselectAll": "取消全选",
+		"noWorkspaces": "未找到工作区",
+		"noRepositories": "未找到 Conductor 仓库",
+		"noMatches": "无匹配项",
+		"importButton_other": "导入 {{count}} 个工作区",
+		"importFailed": "导入失败",
+		"importPartial": "已导入 {{imported}} 个，{{failed}} 个失败：{{error}}",
+		"importSuccess_other": "已成功导入 {{count}} 个工作区",
+		"status": {
+			"archived": "已归档",
+			"done": "已完成",
+			"inProgress": "进行中"
+		},
+		"alreadyImported": "已导入",
+		"allImported": "全部已导入",
+		"importedCount": "已导入 {{imported}}/{{total}}",
+		"workspaceCount_other": "{{count}} 个工作区",
+		"selectWorkspace": "选择 {{name}}",
+		"sessionCount_other": "{{count}} 个会话"
+	}
+}

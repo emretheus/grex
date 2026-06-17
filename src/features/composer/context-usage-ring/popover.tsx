@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { GrexThinkingIndicator } from "@/components/grex-thinking-indicator";
 import type { DisplayResolution } from "./parse";
 import {
@@ -19,6 +20,7 @@ export function ContextUsagePopoverContent({
 	display,
 	richLoading = false,
 }: Props) {
+	const { t } = useTranslation("composer");
 	const categories = display.kind === "full" ? display.categories : [];
 	const showCategories = categories.length > 0;
 	const hasMax = display.kind === "full" && display.maxTokens > 0;
@@ -56,7 +58,7 @@ export function ContextUsagePopoverContent({
 			{richLoading && !showCategories ? (
 				<div className="flex items-center gap-2 text-mini text-muted-foreground">
 					<GrexThinkingIndicator size={12} />
-					<span>Loading context details…</span>
+					<span>{t("contextUsage.loadingDetails")}</span>
 				</div>
 			) : null}
 		</div>

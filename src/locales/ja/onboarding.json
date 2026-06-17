@@ -1,0 +1,167 @@
+{
+	"region": {
+		"main": "Grex のオンボーディング",
+		"dragRegion": "Grex オンボーディングのドラッグ領域"
+	},
+	"intro": {
+		"logoAlt": "Grex",
+		"heading": "こんにちは、Grex です！",
+		"tagline": "コードは AI が生成します。Grex は、それをまとめ上げ、レビューし、出荷する場所です。",
+		"explore": "見てみる",
+		"previewLabel": "Grex プレビュー"
+	},
+	"agents": {
+		"sectionLabel": "エージェントへのログイン",
+		"heading": "エージェントにログイン",
+		"description": "Grex はローカルの Claude Code と Codex のログインセッションを利用します。今ログインすることも、先に進んで後でログインすることもできます。",
+		"back": "戻る",
+		"next": "次へ",
+		"cursorKeyError": "キーを検証できませんでした：{{error}}"
+	},
+	"repositoryCli": {
+		"sectionLabel": "リポジトリ CLI のセットアップ",
+		"heading": "アカウントを接続",
+		"description": "各リポジトリはあなたのアカウントのいずれかを使用します。今すぐ追加するかスキップしてください。既存のログインは自動的に検出されます。すべてのアカウントはローカルの gh/glab CLI に保存されます。",
+		"back": "戻る",
+		"next": "次へ",
+		"checkingAccounts": "接続済みのアカウントを確認中…",
+		"noAccounts": "まだ接続されているアカウントはありません。",
+		"addingAccountWithLogin": "@{{login}} を追加中…",
+		"addingAccountProvider": "{{provider}} アカウントを追加中…",
+		"connectedCount_other": "{{count}} 件接続済み",
+		"moreAccounts_other": "他に {{count}} 件のアカウント",
+		"connectedToast": "{{provider}} に @{{login}} として接続しました",
+		"finishAuthToast": "{{provider}} CLI の認証を完了してから、もう一度「セットアップ」をクリックしてください。",
+		"enterDomainError": "GitLab のドメインを入力してください。",
+		"providerGitlabHost": "GitLab · {{host}}",
+		"gitlabDomainTitle": "GitLab ドメイン",
+		"gitlabDomainHelp": "gitlab.com、またはセルフホストの GitLab ドメインを使用します。",
+		"gitlabDomainLabel": "GitLab ドメイン",
+		"cancel": "キャンセル",
+		"logIn": "ログイン",
+		"startLoginFailed": "ログインを開始できませんでした。"
+	},
+	"skills": {
+		"sectionLabel": "MCP とスキルのセットアップ",
+		"heading": "Grex を強化",
+		"description": "Grex はバックグラウンドで CLI とスキルをインストールしています。これにより作業の分割、エージェントの実行、ツールの呼び出し、そしてワークスペース間でのコンテキストの引き継ぎが可能になります。",
+		"setupFailed": "問題が発生しました。ご心配なく、Grex はこれがなくても問題なく動作します。",
+		"installing": "インストール中",
+		"retry": "再試行",
+		"back": "戻る",
+		"next": "次へ",
+		"cli": {
+			"label": "Grex CLI",
+			"description": "ターミナルから Grex を操作：ワークスペースの作成、プロンプトの送信、ファイルの確認、繰り返し可能なフローのスクリプト化ができます。"
+		},
+		"grexSkills": {
+			"label": "Grex スキル（ベータ）",
+			"description": "スキルをインストールすると、Grex がすべてのワークスペースでより多くのワークフローを支援できるようになります。"
+		}
+	},
+	"repoImport": {
+		"sectionLabel": "リポジトリのインポート",
+		"heading": "最初のリポジトリを取り込む",
+		"description": "ローカルのプロジェクトから始めるか、GitHub からリモートリポジトリを取り込みましょう。Grex に入る前に複数追加できます。",
+		"chooseLocalProject": "ローカルプロジェクトを選択",
+		"addingRepository": "リポジトリを追加中…",
+		"chooseLocalDescription": "このマシンにすでにあるフォルダーを追加します。",
+		"addingLocalDescription": "フォルダーを選ぶと、設定を行います。",
+		"importFromGithub": "GitHub からインポート",
+		"importFromGithubDescription": "リモートプロジェクトを Grex にクローンします。",
+		"importedRepositories": "インポート済みのリポジトリ",
+		"emptyState": "ローカルフォルダーを選ぶか GitHub からインポートして、最初のキューを作成しましょう。",
+		"removeRepository": "{{name}} を削除",
+		"back": "戻る",
+		"ship": "さあ出荷"
+	},
+	"setupItem": {
+		"defaultAction": "セットアップ"
+	},
+	"terminal": {
+		"close": "ログインターミナルを閉じる"
+	},
+	"errors": {
+		"addRepository": "リポジトリを追加できませんでした。",
+		"removeRepository": "リポジトリを削除できませんでした。"
+	},
+	"fallback": {
+		"localProject": "ローカルプロジェクト",
+		"githubRepository": "GitHub リポジトリ"
+	},
+	"mockup": {
+		"workspacePreview": "Grex ワークスペースのプレビュー",
+		"sidebar": {
+			"title": "ワークスペース",
+			"addRepository": "リポジトリを追加",
+			"newWorkspace": "新しいワークスペース",
+			"openProject": "プロジェクトを開く",
+			"cloneFromUrl": "URL からクローン",
+			"groups": {
+				"done": "完了",
+				"review": "レビュー中",
+				"progress": "進行中",
+				"backlog": "バックログ"
+			},
+			"workspaces": {
+				"release": "リリース v1.2",
+				"settings": "設定のリフレッシュ",
+				"authPlan": "認証機能の計画",
+				"authDb": "ユーザー認証 - データベース",
+				"authBe": "ユーザー認証 - バックエンド",
+				"authFe": "ユーザー認証 - フロントエンド",
+				"cleanup": "API のクリーンアップ"
+			},
+			"row": {
+				"interactionRequired": "操作が必要",
+				"unread": "未読",
+				"deletePermanently": "完全に削除"
+			}
+		},
+		"conversation": {
+			"sessions": {
+				"planSplit": "ワークスペース分割の計画",
+				"refineContracts": "API 契約の調整"
+			},
+			"sessionTab": {
+				"interactionRequired": "操作が必要",
+				"unread": "未読のセッション",
+				"newSession": "新しいセッション"
+			},
+			"userPrompt": "この機能を 3 つのワークスペース（DB マイグレーション、バックエンドのハンドラー、フロントエンドの配線）に分割して、それぞれを並行して進められるようにして。",
+			"reasoning": "ワークスペースの分割を計画中",
+			"assistantReply": "3 つのワークスペースを立ち上げました。サイドバーで切り替えながら、それぞれのレーンを動かし続けましょう。",
+			"composerPlaceholder": "変更を依頼、@ でファイルを指定、/commands を実行",
+			"effortHigh": "高",
+			"plan": "計画",
+			"working": "作業中",
+			"planProgress": "計画 - {{completed}}/{{total}} 完了"
+		},
+		"inspector": {
+			"git": "Git",
+			"actions": "アクション",
+			"review": "レビュー",
+			"createPr": "PR を作成",
+			"remote": "リモート",
+			"tabSetup": "セットアップ",
+			"tabRun": "実行",
+			"changes_other": "{{count}} 件の変更",
+			"branchUnpublished": "ブランチ未公開",
+			"upToDate": "最新の状態",
+			"commit": "コミット",
+			"push": "プッシュ",
+			"waitingForReview": "レビュー待ち",
+			"status": {
+				"passed": "成功",
+				"running": "実行中",
+				"failed": "失敗",
+				"pending": "保留中"
+			}
+		},
+		"header": {
+			"workspaceHeader": "ワークスペースのヘッダー",
+			"composer": "ワークスペースの入力欄",
+			"noBranch": "ブランチなし"
+		}
+	}
+}

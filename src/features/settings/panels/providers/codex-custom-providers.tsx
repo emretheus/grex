@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Loader2, Pencil, Plus, Trash2 } from "lucide-react";
 import { useId, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -46,6 +47,7 @@ function sanitizeId(raw: string): string {
 }
 
 export function CodexCustomProvidersPanel() {
+	const { t } = useTranslation(["providers", "common"]);
 	const queryClient = useQueryClient();
 	const providersQuery = useQuery({
 		queryKey: grexQueryKeys.codexCustomProviders,
@@ -76,8 +78,9 @@ export function CodexCustomProvidersPanel() {
 	const saveMutation = useMutation({
 		mutationFn: async (next: Draft) => {
 			const id = sanitizeId(next.id);
-			if (!id) throw new Error("Provider id is required.");
-			if (!next.baseUrl.trim()) throw new Error("Base URL is required.");
+			if (!id) throw new Error(t("codexCustom.errors.idRequired"));
+			if (!next.baseUrl.trim())
+				throw new Error(t("codexCustom.errors.baseUrlRequired"));
 			const provider: CodexCustomProvider = {
 				id,
 				name: next.name.trim() || id,
@@ -146,7 +149,7 @@ export function CodexCustomProvidersPanel() {
 			<div className="flex flex-col gap-3">
 				<div className="grid grid-cols-2 gap-2">
 					<div className="flex flex-col gap-1">
-						<Label htmlFor={idFieldId}>Provider id</Label>
+						<Label htmlFor={idFieldId}>{t("codexCustom.providerId")}</Label>
 						<Input
 							id={idFieldId}
 							value={draft.id}
@@ -155,7 +158,7 @@ export function CodexCustomProvidersPanel() {
 						/>
 					</div>
 					<div className="flex flex-col gap-1">
-						<Label htmlFor={nameId}>Display name</Label>
+						<Label htmlFor={nameId}>{t("codexCustom.displayName")}</Label>
 						<Input
 							id={nameId}
 							value={draft.name}
@@ -165,7 +168,7 @@ export function CodexCustomProvidersPanel() {
 					</div>
 				</div>
 				<div className="flex flex-col gap-1">
-					<Label htmlFor={baseUrlId}>Base URL</Label>
+					<Label htmlFor={baseUrlId}>{t("common.baseUrl")}</Label>
 					<Input
 						id={baseUrlId}
 						value={draft.baseUrl}
@@ -174,7 +177,7 @@ export function CodexCustomProvidersPanel() {
 					/>
 				</div>
 				<div className="flex flex-col gap-1">
-					<Label htmlFor={apiKeyId}>API key</Label>
+					<Label htmlFor={apiKeyId}>{t("common.apiKey")}</Label>
 					<Input
 						id={apiKeyId}
 						type="password"
@@ -186,9 +189,9 @@ export function CodexCustomProvidersPanel() {
 
 				<div className="flex items-center justify-between gap-2">
 					<div className="flex flex-col gap-1">
-						<span className="text-ui">Models</span>
+						<span className="text-ui">{t("common.models")}</span>
 						<span className="text-mini text-muted-foreground">
-							Fetch from the endpoint, then pick which appear in the composer.
+							{t("codexCustom.modelsHint")}
 						</span>
 					</div>
 					<Button
@@ -201,7 +204,7 @@ export function CodexCustomProvidersPanel() {
 						{fetchMutation.isPending ? (
 							<Loader2 className="size-4 animate-spin" />
 						) : null}
-						Fetch models
+						{t("actions.fetchModels")}
 					</Button>
 				</div>
 				<ModelMultiSelect
@@ -236,7 +239,7 @@ export function CodexCustomProvidersPanel() {
 							setError(null);
 						}}
 					>
-						Cancel
+						{t("common:actions.cancel")}
 					</Button>
 					<Button
 						type="button"
@@ -247,7 +250,7 @@ export function CodexCustomProvidersPanel() {
 						{saveMutation.isPending ? (
 							<Loader2 className="size-4 animate-spin" />
 						) : null}
-						Save
+						{t("common:actions.save")}
 					</Button>
 				</div>
 			</div>
@@ -258,8 +261,7 @@ export function CodexCustomProvidersPanel() {
 		<div className="flex flex-col gap-2">
 			{providers.length === 0 ? (
 				<p className="text-mini text-muted-foreground">
-					No custom Codex providers. Point Codex at any OpenAI-compatible
-					(Responses API) endpoint.
+					{t("codexCustom.emptyState")}
 				</p>
 			) : (
 				providers.map((provider) => (
@@ -280,7 +282,7 @@ export function CodexCustomProvidersPanel() {
 								type="button"
 								variant="ghost"
 								size="icon-sm"
-								aria-label={`Edit ${provider.id}`}
+								aria-label={t("codexCustom.editAria", { id: provider.id })}
 								onClick={() => startEdit(provider)}
 							>
 								<Pencil className="size-4" />
@@ -289,7 +291,7 @@ export function CodexCustomProvidersPanel() {
 								type="button"
 								variant="ghost"
 								size="icon-sm"
-								aria-label={`Delete ${provider.id}`}
+								aria-label={t("codexCustom.deleteAria", { id: provider.id })}
 								disabled={deleteMutation.isPending}
 								onClick={() => deleteMutation.mutate(provider.id)}
 							>
@@ -310,7 +312,7 @@ export function CodexCustomProvidersPanel() {
 					}}
 				>
 					<Plus className="size-4" />
-					Add provider
+					{t("actions.addProvider")}
 				</Button>
 			</div>
 		</div>

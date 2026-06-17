@@ -1,0 +1,82 @@
+{
+	"collapse": {
+		"working": "处理中...",
+		"done": "完成",
+		"separator": "，",
+		"activeSuffix": "{{clauses}}...",
+		"search": {
+			"onePattern": {
+				"lead": {
+					"active": "正在搜索 '{{pattern}}'",
+					"done": "已搜索 '{{pattern}}'"
+				},
+				"cont": {
+					"active": "正在搜索 '{{pattern}}'",
+					"done": "已搜索 '{{pattern}}'"
+				}
+			},
+			"onePatternRepeated": {
+				"lead": {
+					"active": "正在搜索 '{{pattern}}'（{{count}}×）",
+					"done": "已搜索 '{{pattern}}'（{{count}}×）"
+				},
+				"cont": {
+					"active": "正在搜索 '{{pattern}}'（{{count}}×）",
+					"done": "已搜索 '{{pattern}}'（{{count}}×）"
+				}
+			},
+			"manyPatterns": {
+				"lead": {
+					"active": "正在搜索 {{count}} 个模式",
+					"done": "已搜索 {{count}} 个模式"
+				},
+				"cont": {
+					"active": "正在搜索 {{count}} 个模式",
+					"done": "已搜索 {{count}} 个模式"
+				}
+			},
+			"times": {
+				"lead": {
+					"active_other": "正在搜索 {{count}} 次",
+					"done_other": "已搜索 {{count}} 次"
+				},
+				"cont": {
+					"active_other": "正在搜索 {{count}} 次",
+					"done_other": "已搜索 {{count}} 次"
+				}
+			}
+		},
+		"read": {
+			"lead": {
+				"active_other": "正在读取 {{count}} 个文件",
+				"done_other": "已读取 {{count}} 个文件"
+			},
+			"cont": {
+				"active_other": "正在读取 {{count}} 个文件",
+				"done_other": "已读取 {{count}} 个文件"
+			}
+		},
+		"shell": {
+			"lead": {
+				"active_other": "正在运行 {{count}} 条只读命令",
+				"done_other": "已运行 {{count}} 条只读命令"
+			},
+			"cont": {
+				"active_other": "正在运行 {{count}} 条只读命令",
+				"done_other": "已运行 {{count}} 条只读命令"
+			}
+		}
+	},
+	"toast": {
+		"genericError": "出现错误，请重试。",
+		"genericErrorTitle": "错误"
+	},
+	"error": {
+		"userInputMissingIds": "无法呈现用户输入请求：缺少 userInputId 或 modelId。",
+		"deliverUserInputFailed": "无法传递用户输入的响应。",
+		"sendMessageFailed": "消息发送失败。"
+	},
+	"pending": {
+		"awaitingAnswer": "正在等待你的回答。"
+	}
+}

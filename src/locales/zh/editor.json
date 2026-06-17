@@ -1,0 +1,101 @@
+{
+	"surface": {
+		"ariaLabel": "工作区编辑器界面",
+		"canvasAriaLabel": "编辑器画布",
+		"closeDiff": "关闭差异视图",
+		"closeEditor": "关闭编辑器视图"
+	},
+	"breadcrumb": {
+		"revealInExplorer": "在资源管理器中显示",
+		"copyAbsolutePath": "复制绝对路径"
+	},
+	"tabs": {
+		"openFilesAriaLabel": "已打开的文件",
+		"closeFileAriaLabel": "关闭 {{name}}",
+		"modifiedAriaLabel": "已修改",
+		"openFileAriaLabel": "打开文件",
+		"close": "关闭",
+		"closeOthers": "关闭其他",
+		"closeAll": "全部关闭"
+	},
+	"contextMenu": {
+		"copyPath": "复制路径",
+		"copyRelativePath": "复制相对路径",
+		"revealInFinder": "在访达中显示",
+		"openWith": "打开方式",
+		"addToChat": "添加到对话"
+	},
+	"search": {
+		"placeholder": "搜索文件",
+		"loading": "正在加载文件",
+		"empty": "未找到文件"
+	},
+	"toolbar": {
+		"toggleExplorerAriaLabel": "切换文件资源管理器",
+		"toggleExplorerTitle": "文件资源管理器",
+		"viewModeAriaLabel": "Markdown 视图模式",
+		"source": "源代码",
+		"preview": "预览",
+		"edit": "编辑",
+		"diff": "差异",
+		"addFileToChatAriaLabel": "将此文件添加到对话",
+		"addFileToChatTitle": "将文件添加到对话",
+		"viewOptionsAriaLabel": "编辑器视图选项",
+		"viewOptionsTitle": "视图选项",
+		"close": "关闭"
+	},
+	"viewOptions": {
+		"goToLine": "转到行…",
+		"wordWrap": "自动换行",
+		"minimap": "缩略图",
+		"stickyScroll": "粘性滚动",
+		"renderWhitespace": "显示空白字符",
+		"sideBySideDiff": "并排差异"
+	},
+	"preview": {
+		"ariaLabel": "Markdown 预览"
+	},
+	"landing": {
+		"ariaLabel": "文件资源管理器",
+		"title": "文件",
+		"closeAriaLabel": "关闭文件资源管理器",
+		"close": "关闭",
+		"heading": "浏览你的代码库",
+		"pickFile": "从左侧的文件树中选择一个文件，在编辑器中打开。",
+		"openWorkspace": "打开一个工作区以浏览其文件。"
+	},
+	"explorer": {
+		"ariaLabel": "文件资源管理器",
+		"refreshAriaLabel": "刷新文件树",
+		"refreshTitle": "刷新",
+		"resizeAriaLabel": "调整文件资源管理器大小",
+		"heading": "资源管理器",
+		"loading": "加载中…",
+		"loadError": "加载失败 — 重试",
+		"empty": "空"
+	},
+	"image": {
+		"ariaLabel": "图片预览",
+		"previewAlt": "{{path}} 的预览",
+		"deleted": "此图片已在本次更改中删除。",
+		"loadError": "无法从磁盘加载此图片。",
+		"status": {
+			"added": "已添加",
+			"modified": "已修改",
+			"deleted": "已删除"
+		}
+	},
+	"errors": {
+		"loadFile": "无法加载所选文件。",
+		"loadFileTitle": "打开文件失败",
+		"startEditor": "无法启动编辑器。",
+		"startEditorTitle": "编辑器启动失败",
+		"startReview": "无法启动审阅界面。",
+		"startReviewTitle": "审阅界面失败",
+		"listFiles": "无法列出工作区文件。",
+		"openFile": "无法打开所选文件。",
+		"openFileTitle": "打开文件失败",
+		"saveFile": "无法保存所选文件。",
+		"saveFileTitle": "保存失败"
+	}
+}

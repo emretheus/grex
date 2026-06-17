@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Loader2, Plus } from "lucide-react";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -22,6 +23,7 @@ import { useWorkspaceToast } from "@/lib/workspace-toast-context";
  *  (with a project filter when "All"), plus Disconnect. A "Connect another
  *  site" affordance reuses `JiraConnectState`. */
 export function JiraSettingsPanel() {
+	const { t } = useTranslation("integrations");
 	const connectionsQuery = useJiraConnections();
 	const connections = connectionsQuery.data ?? [];
 	const [showConnectAnother, setShowConnectAnother] = useState(false);
@@ -59,7 +61,7 @@ export function JiraSettingsPanel() {
 					onClick={() => setShowConnectAnother(true)}
 				>
 					<Plus className="size-3.5" strokeWidth={2} />
-					Connect another site
+					{t("jira.connectAnother")}
 				</Button>
 			)}
 		</div>
@@ -67,6 +69,7 @@ export function JiraSettingsPanel() {
 }
 
 function JiraConnectionCard({ connection }: { connection: JiraConnection }) {
+	const { t } = useTranslation("integrations");
 	const pushToast = useWorkspaceToast();
 	const queryClient = useQueryClient();
 
@@ -83,8 +86,8 @@ function JiraConnectionCard({ connection }: { connection: JiraConnection }) {
 		mutationFn: jiraUpdateScope,
 		onError: (error) => {
 			const message =
-				error instanceof Error ? error.message : "Couldn't save Jira scope.";
-			pushToast(message, "Jira update failed", "destructive");
+				error instanceof Error ? error.message : t("jira.updateError");
+			pushToast(message, t("jira.updateFailed"), "destructive");
 		},
 	});
 
@@ -97,8 +100,8 @@ function JiraConnectionCard({ connection }: { connection: JiraConnection }) {
 		},
 		onError: (error) => {
 			const message =
-				error instanceof Error ? error.message : "Couldn't disconnect Jira.";
-			pushToast(message, "Jira disconnect failed", "destructive");
+				error instanceof Error ? error.message : t("jira.disconnectError");
+			pushToast(message, t("jira.disconnectFailed"), "destructive");
 		},
 	});
 
@@ -136,7 +139,7 @@ function JiraConnectionCard({ connection }: { connection: JiraConnection }) {
 			<div className="flex items-start justify-between gap-3">
 				<div className="min-w-0">
 					<div className="truncate text-ui font-medium text-foreground">
-						{site || "Jira site"}
+						{site || t("jira.siteFallback")}
 					</div>
 					{user ? (
 						<div className="truncate text-mini text-muted-foreground/70">
@@ -152,7 +155,9 @@ function JiraConnectionCard({ connection }: { connection: JiraConnection }) {
 					onClick={() => disconnectMutation.mutate()}
 					disabled={disconnectMutation.isPending}
 				>
-					{disconnectMutation.isPending ? "Disconnecting…" : "Disconnect"}
+					{disconnectMutation.isPending
+						? t("common.disconnecting")
+						: t("common.disconnect")}
 				</Button>
 			</div>
 
@@ -165,10 +170,10 @@ function JiraConnectionCard({ connection }: { connection: JiraConnection }) {
 					size="sm"
 				>
 					<ToggleGroupItem value="assigned" className="cursor-interactive">
-						Assigned to me
+						{t("scope.assignedToMe")}
 					</ToggleGroupItem>
 					<ToggleGroupItem value="all" className="cursor-interactive">
-						All projects
+						{t("jira.scopeAll")}
 					</ToggleGroupItem>
 				</ToggleGroup>
 			</div>
@@ -181,7 +186,7 @@ function JiraConnectionCard({ connection }: { connection: JiraConnection }) {
 				/>
 			) : (
 				<p className="text-mini text-muted-foreground/65">
-					Only issues assigned to you appear in the feed.
+					{t("common.assignedFeedHint")}
 				</p>
 			)}
 		</div>
@@ -197,6 +202,7 @@ function ProjectPicker({
 	projectKeys: string[];
 	onToggleProject: (key: string) => void;
 }) {
+	const { t } = useTranslation("integrations");
 	const projectsQuery = useQuery({
 		queryKey: grexQueryKeys.jiraProjects(connectionId),
 		queryFn: () => jiraListProjects(connectionId),
@@ -205,8 +211,8 @@ function ProjectPicker({
 
 	return (
 		<CheckboxList
-			label="Projects"
-			emptyHint="All projects"
+			label={t("jira.projectsLabel")}
+			emptyHint={t("jira.allProjects")}
 			isLoading={projectsQuery.isLoading}
 			options={(projectsQuery.data ?? []).map((p) => ({
 				id: p.key,
@@ -233,12 +239,15 @@ function CheckboxList({
 	selected: string[];
 	onToggle: (id: string) => void;
 }) {
+	const { t } = useTranslation("integrations");
 	return (
 		<div className="flex flex-col gap-1.5">
 			<div className="flex items-baseline justify-between">
 				<span className="text-mini font-medium text-foreground">{label}</span>
 				<span className="text-mini text-muted-foreground/55">
-					{selected.length === 0 ? emptyHint : `${selected.length} selected`}
+					{selected.length === 0
+						? emptyHint
+						: t("common.countSelected", { count: selected.length })}
 				</span>
 			</div>
 			<ScrollArea className="h-32 rounded-md border border-border/50">
@@ -249,7 +258,7 @@ function CheckboxList({
 						</div>
 					) : options.length === 0 ? (
 						<div className="px-1 py-2 text-mini text-muted-foreground/60">
-							Nothing to filter.
+							{t("common.nothingToFilter")}
 						</div>
 					) : (
 						options.map((option) => {

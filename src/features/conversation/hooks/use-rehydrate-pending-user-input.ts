@@ -34,6 +34,7 @@ import type {
 	ThreadMessageLike,
 	UserQuestionPart,
 } from "@/lib/api";
+import { i18n } from "@/lib/i18n";
 
 /**
  * How far back from the tail to look for the question. A pending (or
@@ -108,7 +109,7 @@ function buildFromPart(
 		permissionMode: null,
 		userInputId: part.id,
 		source: part.source || "Claude",
-		message: "Awaiting your answer.",
+		message: i18n.t("conversation:pending.awaitingAnswer"),
 		payload: {
 			kind: "ask-user-question",
 			// The persisted questions are already in the canonical

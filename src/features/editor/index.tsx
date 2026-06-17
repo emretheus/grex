@@ -23,6 +23,7 @@ import {
 	useRef,
 	useState,
 } from "react";
+import { useTranslation } from "react-i18next";
 import { TrafficLightSpacer } from "@/components/chrome/traffic-light-spacer";
 import { LazyStreamdown } from "@/components/streamdown-loader";
 import { Button } from "@/components/ui/button";
@@ -185,6 +186,7 @@ function EditorPathBreadcrumb({
 	/** Reveal the current file in the explorer (ensures the sidebar is open). */
 	onReveal?: () => void;
 }) {
+	const { t } = useTranslation("editor");
 	const [copied, setCopied] = useState(false);
 	const handleCopyPath = () => {
 		if (!navigator.clipboard?.writeText) return;
@@ -219,7 +221,7 @@ function EditorPathBreadcrumb({
 						<button
 							type="button"
 							onClick={onReveal}
-							title="Reveal in explorer"
+							title={t("breadcrumb.revealInExplorer")}
 							className="cursor-interactive truncate rounded text-muted-foreground transition-colors hover:text-foreground"
 						>
 							{segment}
@@ -231,7 +233,7 @@ function EditorPathBreadcrumb({
 				type="button"
 				variant="ghost"
 				size="icon-xs"
-				aria-label="Copy absolute path"
+				aria-label={t("breadcrumb.copyAbsolutePath")}
 				onClick={handleCopyPath}
 				className="pointer-events-none ml-1 size-5 shrink-0 rounded-sm text-muted-foreground/35 opacity-0 hover:bg-accent/50 hover:text-muted-foreground group-hover/path:pointer-events-auto group-hover/path:opacity-100 focus-visible:pointer-events-auto focus-visible:opacity-100"
 			>
@@ -277,6 +279,7 @@ function EditorFileTabs({
 	detectedEditors: DetectedEditor[];
 	onAddToChat: (absPath: string) => void;
 }) {
+	const { t } = useTranslation("editor");
 	const tabRelPath = (absPath: string): string => {
 		if (!workspaceRootPath) return absPath;
 		const root = normalizePath(workspaceRootPath).replace(/\/+$/, "");
@@ -301,7 +304,7 @@ function EditorFileTabs({
 					className="h-full min-w-max gap-0"
 				>
 					<TabsList
-						aria-label="Open files"
+						aria-label={t("tabs.openFilesAriaLabel")}
 						className="inline-flex h-full w-max justify-start self-start bg-transparent p-0"
 					>
 						{tabs.map((tab) => {
@@ -330,7 +333,7 @@ function EditorFileTabs({
 												</span>
 												{tab.session.dirty ? (
 													<span
-														aria-label="Modified"
+														aria-label={t("tabs.modifiedAriaLabel")}
 														className="size-1.5 shrink-0 rounded-full bg-muted-foreground/55"
 													/>
 												) : null}
@@ -338,7 +341,9 @@ function EditorFileTabs({
 											<span className="pointer-events-none invisible absolute inset-y-0 right-0 flex items-center pr-1 group-hover/tab:pointer-events-auto group-hover/tab:visible">
 												<span
 													role="button"
-													aria-label={`Close ${getBaseName(tab.session.path)}`}
+													aria-label={t("tabs.closeFileAriaLabel", {
+														name: getBaseName(tab.session.path),
+													})}
 													onPointerDown={(event) => {
 														event.preventDefault();
 														event.stopPropagation();
@@ -357,32 +362,34 @@ function EditorFileTabs({
 									</ContextMenuTrigger>
 									<ContextMenuContent className="w-52">
 										<ContextMenuItem onSelect={() => onCloseTab(tab.id)}>
-											Close
+											{t("tabs.close")}
 										</ContextMenuItem>
 										<ContextMenuItem
 											disabled={tabs.length < 2}
 											onSelect={() => onCloseOthers(tab.id)}
 										>
-											Close others
+											{t("tabs.closeOthers")}
 										</ContextMenuItem>
 										<ContextMenuItem onSelect={onCloseAll}>
-											Close all
+											{t("tabs.closeAll")}
 										</ContextMenuItem>
 										<ContextMenuSeparator />
 										<ContextMenuItem onSelect={() => copy(path)}>
-											Copy path
+											{t("contextMenu.copyPath")}
 										</ContextMenuItem>
 										<ContextMenuItem onSelect={() => copy(tabRelPath(path))}>
-											Copy relative path
+											{t("contextMenu.copyRelativePath")}
 										</ContextMenuItem>
 										<ContextMenuItem
 											onSelect={() => void revealPathInFinder(path)}
 										>
-											Reveal in Finder
+											{t("contextMenu.revealInFinder")}
 										</ContextMenuItem>
 										{detectedEditors.length > 0 ? (
 											<ContextMenuSub>
-												<ContextMenuSubTrigger>Open with</ContextMenuSubTrigger>
+												<ContextMenuSubTrigger>
+													{t("contextMenu.openWith")}
+												</ContextMenuSubTrigger>
 												<ContextMenuSubContent>
 													{detectedEditors.map((editor) => (
 														<ContextMenuItem
@@ -399,7 +406,7 @@ function EditorFileTabs({
 										) : null}
 										<ContextMenuSeparator />
 										<ContextMenuItem onSelect={() => onAddToChat(path)}>
-											Add to chat
+											{t("contextMenu.addToChat")}
 										</ContextMenuItem>
 									</ContextMenuContent>
 								</ContextMenu>
@@ -410,7 +417,7 @@ function EditorFileTabs({
 			</div>
 			<button
 				type="button"
-				aria-label="Open file"
+				aria-label={t("tabs.openFileAriaLabel")}
 				onClick={onOpenSearch}
 				className="ml-1 flex h-full w-6 shrink-0 cursor-interactive items-center justify-center self-center text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-0"
 			>
@@ -441,6 +448,7 @@ function FileSearchOverlay({
 	onOpen: (file: InspectorFileItem) => void;
 	onClose: () => void;
 }) {
+	const { t } = useTranslation("editor");
 	const inputRef = useRef<HTMLInputElement>(null);
 	const selectedItemRef = useRef<HTMLButtonElement | null>(null);
 
@@ -455,11 +463,11 @@ function FileSearchOverlay({
 	}, [selectedIndex]);
 
 	const statusText = loading
-		? "Loading files"
+		? t("search.loading")
 		: error
 			? error
 			: files.length === 0
-				? "No files found"
+				? t("search.empty")
 				: null;
 
 	return (
@@ -503,7 +511,7 @@ function FileSearchOverlay({
 								if (file) onOpen(file);
 							}
 						}}
-						placeholder="Search files"
+						placeholder={t("search.placeholder")}
 						className="h-full min-w-0 flex-1 bg-transparent text-body font-medium text-foreground outline-none placeholder:text-muted-foreground/55"
 					/>
 				</div>
@@ -558,6 +566,7 @@ export function WorkspaceEditorSurface({
 	onCloseLastFile,
 	onError,
 }: WorkspaceEditorSurfaceProps) {
+	const { t } = useTranslation("editor");
 	const queryClient = useQueryClient();
 	// Read the workspace id from the ROUTER (Stage 3b: navigation intent is
 	// router-owned). Same value AppShell used to read off the store's
@@ -595,7 +604,9 @@ export function WorkspaceEditorSurface({
 		editorSession.originalText !== undefined &&
 		editorSession.modifiedText !== undefined;
 	const closeLabel =
-		editorSession.kind === "diff" ? "Close diff view" : "Close editor view";
+		editorSession.kind === "diff"
+			? t("surface.closeDiff")
+			: t("surface.closeEditor");
 	// Image files render as a picture (asset protocol), never through Monaco.
 	// This bypasses both the text-loader (which throws on binary bytes) and the
 	// editor/diff controllers below.
@@ -768,12 +779,9 @@ export function WorkspaceEditorSurface({
 					return;
 				}
 
-				const message = describeUnknownError(
-					error,
-					"Unable to load the selected file.",
-				);
+				const message = describeUnknownError(error, t("errors.loadFile"));
 				setSurfaceStatus({ kind: "error", message });
-				onErrorRef.current?.(message, "File open failed");
+				onErrorRef.current?.(message, t("errors.loadFileTitle"));
 			}
 		})();
 
@@ -998,12 +1006,9 @@ export function WorkspaceEditorSurface({
 					}
 					setSurfaceStatus({ kind: "ready" });
 				} catch (error) {
-					const message = describeUnknownError(
-						error,
-						"Unable to start the editor.",
-					);
+					const message = describeUnknownError(error, t("errors.startEditor"));
 					setSurfaceStatus({ kind: "error", message });
-					onErrorRef.current?.(message, "Editor startup failed");
+					onErrorRef.current?.(message, t("errors.startEditorTitle"));
 				}
 			})();
 		} else {
@@ -1030,12 +1035,9 @@ export function WorkspaceEditorSurface({
 					}
 					setSurfaceStatus({ kind: "ready" });
 				} catch (error) {
-					const message = describeUnknownError(
-						error,
-						"Unable to start the review surface.",
-					);
+					const message = describeUnknownError(error, t("errors.startReview"));
 					setSurfaceStatus({ kind: "error", message });
-					onErrorRef.current?.(message, "Review surface failed");
+					onErrorRef.current?.(message, t("errors.startReviewTitle"));
 				}
 			})();
 		}
@@ -1211,11 +1213,8 @@ export function WorkspaceEditorSurface({
 			setSearchQuery("");
 			setSelectedSearchIndex(0);
 		} catch (error) {
-			const message = describeUnknownError(
-				error,
-				"Unable to open the selected file.",
-			);
-			onErrorRef.current?.(message, "File open failed");
+			const message = describeUnknownError(error, t("errors.openFile"));
+			onErrorRef.current?.(message, t("errors.openFileTitle"));
 		}
 	};
 
@@ -1314,11 +1313,8 @@ export function WorkspaceEditorSurface({
 				});
 			}
 		} catch (error) {
-			const message = describeUnknownError(
-				error,
-				"Unable to save the selected file.",
-			);
-			onErrorRef.current?.(message, "Save failed");
+			const message = describeUnknownError(error, t("errors.saveFile"));
+			onErrorRef.current?.(message, t("errors.saveFileTitle"));
 		}
 	};
 
@@ -1338,7 +1334,7 @@ export function WorkspaceEditorSurface({
 	return (
 		<section
 			ref={surfaceRef}
-			aria-label="Workspace editor surface"
+			aria-label={t("surface.ariaLabel")}
 			data-focus-scope="editor"
 			tabIndex={-1}
 			className="flex h-full min-h-0 flex-col overflow-hidden bg-background text-foreground focus:outline-none"
@@ -1352,9 +1348,9 @@ export function WorkspaceEditorSurface({
 
 				<button
 					type="button"
-					aria-label="Toggle file explorer"
+					aria-label={t("toolbar.toggleExplorerAriaLabel")}
 					aria-pressed={explorerOpen}
-					title="File explorer"
+					title={t("toolbar.toggleExplorerTitle")}
 					onClick={onToggleExplorer}
 					className={cn(
 						"mr-1 inline-flex size-6 shrink-0 cursor-interactive items-center justify-center rounded text-muted-foreground transition-colors hover:bg-accent/60 hover:text-foreground",
@@ -1387,17 +1383,17 @@ export function WorkspaceEditorSurface({
 						<Tabs
 							value={viewMode}
 							onValueChange={handleViewModeChange}
-							aria-label="Markdown view mode"
+							aria-label={t("toolbar.viewModeAriaLabel")}
 						>
 							{/* No tray: bg-transparent + p-0. Pill highlight only on the active trigger. */}
 							<TabsList className="h-5 gap-0 bg-transparent p-0">
 								<TabsTrigger value="source" className={SEGMENT_CLASS}>
 									<FileCode strokeWidth={1.8} />
-									Source
+									{t("toolbar.source")}
 								</TabsTrigger>
 								<TabsTrigger value="preview" className={SEGMENT_CLASS}>
 									<Eye strokeWidth={1.8} />
-									Preview
+									{t("toolbar.preview")}
 								</TabsTrigger>
 							</TabsList>
 						</Tabs>
@@ -1410,7 +1406,7 @@ export function WorkspaceEditorSurface({
 							onClick={handleEnterEditMode}
 							className="gap-1 px-1.5 text-muted-foreground hover:text-foreground"
 						>
-							<span>Edit</span>
+							<span>{t("toolbar.edit")}</span>
 							<EditorShortcutHint hotkey={editShortcut} />
 						</Button>
 					)}
@@ -1422,7 +1418,7 @@ export function WorkspaceEditorSurface({
 							onClick={handleReturnToDiffMode}
 							className="gap-1 px-1.5 text-muted-foreground hover:text-foreground"
 						>
-							<span>Diff</span>
+							<span>{t("toolbar.diff")}</span>
 							<EditorShortcutHint hotkey={editShortcut} />
 						</Button>
 					)}
@@ -1431,8 +1427,8 @@ export function WorkspaceEditorSurface({
 						variant="ghost"
 						size="icon-sm"
 						onClick={() => addPathToChat(editorSession.path)}
-						aria-label="Add this file to chat"
-						title="Add file to chat"
+						aria-label={t("toolbar.addFileToChatAriaLabel")}
+						title={t("toolbar.addFileToChatTitle")}
 						className="text-muted-foreground hover:text-foreground"
 					>
 						<MessageSquarePlus className="size-4" strokeWidth={1.8} />
@@ -1443,8 +1439,8 @@ export function WorkspaceEditorSurface({
 								type="button"
 								variant="ghost"
 								size="icon-sm"
-								aria-label="Editor view options"
-								title="View options"
+								aria-label={t("toolbar.viewOptionsAriaLabel")}
+								title={t("toolbar.viewOptionsTitle")}
 								className="text-muted-foreground hover:text-foreground"
 							>
 								<MoreHorizontal className="size-4" strokeWidth={1.8} />
@@ -1452,32 +1448,32 @@ export function WorkspaceEditorSurface({
 						</DropdownMenuTrigger>
 						<DropdownMenuContent align="end" className="w-52">
 							<DropdownMenuItem onSelect={triggerGotoLine}>
-								Go to line…
+								{t("viewOptions.goToLine")}
 							</DropdownMenuItem>
 							<DropdownMenuSeparator />
 							<DropdownMenuCheckboxItem
 								checked={viewPrefs.wordWrap}
 								onCheckedChange={() => toggleViewPref("wordWrap")}
 							>
-								Word wrap
+								{t("viewOptions.wordWrap")}
 							</DropdownMenuCheckboxItem>
 							<DropdownMenuCheckboxItem
 								checked={viewPrefs.minimap}
 								onCheckedChange={() => toggleViewPref("minimap")}
 							>
-								Minimap
+								{t("viewOptions.minimap")}
 							</DropdownMenuCheckboxItem>
 							<DropdownMenuCheckboxItem
 								checked={viewPrefs.stickyScroll}
 								onCheckedChange={() => toggleViewPref("stickyScroll")}
 							>
-								Sticky scroll
+								{t("viewOptions.stickyScroll")}
 							</DropdownMenuCheckboxItem>
 							<DropdownMenuCheckboxItem
 								checked={viewPrefs.whitespace}
 								onCheckedChange={() => toggleViewPref("whitespace")}
 							>
-								Render whitespace
+								{t("viewOptions.renderWhitespace")}
 							</DropdownMenuCheckboxItem>
 							{editorSession.kind === "diff" ? (
 								<>
@@ -1486,7 +1482,7 @@ export function WorkspaceEditorSurface({
 										checked={diffSideBySide}
 										onCheckedChange={toggleDiffLayout}
 									>
-										Side-by-side diff
+										{t("viewOptions.sideBySideDiff")}
 									</DropdownMenuCheckboxItem>
 								</>
 							) : null}
@@ -1500,7 +1496,7 @@ export function WorkspaceEditorSurface({
 						aria-label={closeLabel}
 						className="gap-1 px-1.5 text-muted-foreground hover:text-foreground"
 					>
-						<span>Close</span>
+						<span>{t("toolbar.close")}</span>
 						<EditorShortcutHint hotkey="Escape" />
 					</Button>
 				</div>
@@ -1543,7 +1539,7 @@ export function WorkspaceEditorSurface({
 								workspaceFilesQuery.isError
 									? describeUnknownError(
 											workspaceFilesQuery.error,
-											"Unable to list workspace files.",
+											t("errors.listFiles"),
 										)
 									: null
 							}
@@ -1556,7 +1552,7 @@ export function WorkspaceEditorSurface({
 					{/* Monaco host stays mounted in preview mode so model + dirty state survive toggling. */}
 					<div
 						ref={editorHostRef}
-						aria-label="Editor canvas"
+						aria-label={t("surface.canvasAriaLabel")}
 						className="h-full min-h-0 flex-1"
 						aria-hidden={showPreview || isImage}
 						style={
@@ -1568,7 +1564,7 @@ export function WorkspaceEditorSurface({
 
 					{showPreview && (
 						<div
-							aria-label="Markdown preview"
+							aria-label={t("preview.ariaLabel")}
 							className="absolute inset-0 overflow-y-auto bg-background"
 						>
 							<div className="conversation-markdown mx-auto max-w-3xl break-words px-8 py-6 text-ui leading-6 text-foreground">

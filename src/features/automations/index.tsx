@@ -9,6 +9,7 @@ import {
 	Trash2,
 } from "lucide-react";
 import { type ReactElement, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { ButtonGroup } from "@/components/ui/button-group";
@@ -39,25 +40,30 @@ function CreateSplitButton({
 	onCreateViaChat: () => void;
 	onCreateManually: () => void;
 }) {
+	const { t } = useTranslation("automations");
 	return (
 		<ButtonGroup>
 			<Button size="sm" onClick={onCreateViaChat}>
-				Create via chat
+				{t("create.viaChat")}
 			</Button>
 			<DropdownMenu>
 				<DropdownMenuTrigger asChild>
-					<Button size="sm" aria-label="More create options" className="px-1.5">
+					<Button
+						size="sm"
+						aria-label={t("create.moreOptions")}
+						className="px-1.5"
+					>
 						<ChevronDown />
 					</Button>
 				</DropdownMenuTrigger>
 				<DropdownMenuContent align="end">
 					<DropdownMenuItem onSelect={onCreateViaChat}>
 						<MessageCircle />
-						Create via chat
+						{t("create.viaChat")}
 					</DropdownMenuItem>
 					<DropdownMenuItem onSelect={onCreateManually}>
 						<Pencil />
-						Create manually
+						{t("create.manually")}
 					</DropdownMenuItem>
 				</DropdownMenuContent>
 			</DropdownMenu>
@@ -78,6 +84,7 @@ function AutomationRow({
 	onToggleStatus: () => void;
 	onDelete: () => void;
 }) {
+	const { t } = useTranslation(["automations", "common"]);
 	const [menuOpen, setMenuOpen] = useState(false);
 	const paused = automation.status === "paused";
 	const subtitle = `${scheduleSummary(automation.schedule)} · ${automation.prompt.replace(/\s+/g, " ")}`;
@@ -120,7 +127,7 @@ function AutomationRow({
 				<Button
 					variant="ghost"
 					size="icon-sm"
-					aria-label="Run now"
+					aria-label={t("row.runNow")}
 					onClick={(event) => {
 						event.stopPropagation();
 						onRunNow();
@@ -131,7 +138,7 @@ function AutomationRow({
 				<Button
 					variant="ghost"
 					size="icon-sm"
-					aria-label="Edit automation"
+					aria-label={t("row.edit")}
 					onClick={(event) => {
 						event.stopPropagation();
 						onOpen();
@@ -144,7 +151,7 @@ function AutomationRow({
 						<Button
 							variant="ghost"
 							size="icon-sm"
-							aria-label="More actions"
+							aria-label={t("row.moreActions")}
 							onClick={(event) => event.stopPropagation()}
 						>
 							<MoreHorizontal />
@@ -156,12 +163,12 @@ function AutomationRow({
 					>
 						<DropdownMenuItem onSelect={onToggleStatus}>
 							{paused ? <Play /> : <Pause />}
-							{paused ? "Resume" : "Pause"}
+							{paused ? t("row.resume") : t("row.pause")}
 						</DropdownMenuItem>
 						<DropdownMenuSeparator />
 						<DropdownMenuItem variant="destructive" onSelect={onDelete}>
 							<Trash2 />
-							Delete
+							{t("common:actions.delete")}
 						</DropdownMenuItem>
 					</DropdownMenuContent>
 				</DropdownMenu>
@@ -179,6 +186,7 @@ export function AutomationsSurface({
 	/** "Create via chat" — shell opens a new chat with a prefilled prompt. */
 	onCreateViaChat: () => void;
 }): ReactElement {
+	const { t } = useTranslation(["automations", "common"]);
 	const [detailId, setDetailId] = useState<string | null>(null);
 	const [createOpen, setCreateOpen] = useState(false);
 	const [pendingDelete, setPendingDelete] = useState<Automation | null>(null);
@@ -195,8 +203,8 @@ export function AutomationsSurface({
 				if (automation.workspaceId) {
 					onOpenSession(automation.workspaceId, sessionId);
 				} else {
-					toast.success("Automation started", {
-						description: "Running in its chat.",
+					toast.success(t("toast.started"), {
+						description: t("toast.runningInChat"),
 					});
 				}
 			},
@@ -223,7 +231,7 @@ export function AutomationsSurface({
 			<div className="mx-auto w-full max-w-3xl px-8 py-10">
 				<div className="flex items-start justify-between gap-4">
 					<h1 className="text-heading font-semibold text-foreground">
-						Automations
+						{t("title")}
 					</h1>
 					<CreateSplitButton
 						onCreateViaChat={onCreateViaChat}
@@ -233,22 +241,21 @@ export function AutomationsSurface({
 
 				<div className="mt-10">
 					<h2 className="border-b border-border pb-2 text-ui font-medium text-muted-foreground">
-						Current
+						{t("list.currentHeading")}
 					</h2>
 					{automationsQuery.isPending ? (
-						<p className="py-6 text-ui text-muted-foreground">Loading…</p>
+						<p className="py-6 text-ui text-muted-foreground">
+							{t("common:state.loading")}
+						</p>
 					) : automationsQuery.isError ? (
 						<p className="py-6 text-ui text-muted-foreground">
-							Unable to load automations.
+							{t("list.loadError")}
 						</p>
 					) : automations.length === 0 ? (
 						<div className="flex flex-col items-start gap-3 py-8">
-							<p className="text-ui text-muted-foreground">
-								No automations yet. Schedule a recurring prompt and it will run
-								on its own.
-							</p>
+							<p className="text-ui text-muted-foreground">{t("list.empty")}</p>
 							<Button size="sm" onClick={() => setCreateOpen(true)}>
-								Create automation
+								{t("list.createButton")}
 							</Button>
 						</div>
 					) : (
@@ -278,13 +285,13 @@ export function AutomationsSurface({
 				onOpenChange={(open) => {
 					if (!open) setPendingDelete(null);
 				}}
-				title="Delete automation?"
+				title={t("confirmDelete.title")}
 				description={
 					pendingDelete
-						? `"${pendingDelete.title}" will stop running and be removed. This cannot be undone.`
+						? t("confirmDelete.description", { title: pendingDelete.title })
 						: ""
 				}
-				confirmLabel="Delete"
+				confirmLabel={t("common:actions.delete")}
 				loading={remove.isPending}
 				onConfirm={() => {
 					if (!pendingDelete) return;

@@ -1,0 +1,101 @@
+{
+	"surface": {
+		"ariaLabel": "Surface de l'éditeur de l'espace de travail",
+		"canvasAriaLabel": "Zone de l'éditeur",
+		"closeDiff": "Fermer la vue des différences",
+		"closeEditor": "Fermer la vue de l'éditeur"
+	},
+	"breadcrumb": {
+		"revealInExplorer": "Afficher dans l'explorateur",
+		"copyAbsolutePath": "Copier le chemin absolu"
+	},
+	"tabs": {
+		"openFilesAriaLabel": "Fichiers ouverts",
+		"closeFileAriaLabel": "Fermer {{name}}",
+		"modifiedAriaLabel": "Modifié",
+		"openFileAriaLabel": "Ouvrir un fichier",
+		"close": "Fermer",
+		"closeOthers": "Fermer les autres",
+		"closeAll": "Tout fermer"
+	},
+	"contextMenu": {
+		"copyPath": "Copier le chemin",
+		"copyRelativePath": "Copier le chemin relatif",
+		"revealInFinder": "Afficher dans le Finder",
+		"openWith": "Ouvrir avec",
+		"addToChat": "Ajouter à la discussion"
+	},
+	"search": {
+		"placeholder": "Rechercher des fichiers",
+		"loading": "Chargement des fichiers",
+		"empty": "Aucun fichier trouvé"
+	},
+	"toolbar": {
+		"toggleExplorerAriaLabel": "Basculer l'explorateur de fichiers",
+		"toggleExplorerTitle": "Explorateur de fichiers",
+		"viewModeAriaLabel": "Mode d'affichage Markdown",
+		"source": "Source",
+		"preview": "Aperçu",
+		"edit": "Modifier",
+		"diff": "Différences",
+		"addFileToChatAriaLabel": "Ajouter ce fichier à la discussion",
+		"addFileToChatTitle": "Ajouter le fichier à la discussion",
+		"viewOptionsAriaLabel": "Options d'affichage de l'éditeur",
+		"viewOptionsTitle": "Options d'affichage",
+		"close": "Fermer"
+	},
+	"viewOptions": {
+		"goToLine": "Aller à la ligne…",
+		"wordWrap": "Retour à la ligne",
+		"minimap": "Minimap",
+		"stickyScroll": "Défilement épinglé",
+		"renderWhitespace": "Afficher les espaces",
+		"sideBySideDiff": "Différences côte à côte"
+	},
+	"preview": {
+		"ariaLabel": "Aperçu Markdown"
+	},
+	"landing": {
+		"ariaLabel": "Explorateur de fichiers",
+		"title": "Fichiers",
+		"closeAriaLabel": "Fermer l'explorateur de fichiers",
+		"close": "Fermer",
+		"heading": "Parcourez votre base de code",
+		"pickFile": "Choisissez un fichier dans l'arborescence à gauche pour l'ouvrir dans l'éditeur.",
+		"openWorkspace": "Ouvrez un espace de travail pour parcourir ses fichiers."
+	},
+	"explorer": {
+		"ariaLabel": "Explorateur de fichiers",
+		"refreshAriaLabel": "Actualiser l'arborescence des fichiers",
+		"refreshTitle": "Actualiser",
+		"resizeAriaLabel": "Redimensionner l'explorateur de fichiers",
+		"heading": "Explorateur",
+		"loading": "Chargement…",
+		"loadError": "Échec du chargement — réessayer",
+		"empty": "vide"
+	},
+	"image": {
+		"ariaLabel": "Aperçu de l'image",
+		"previewAlt": "Aperçu de {{path}}",
+		"deleted": "Cette image a été supprimée dans cette modification.",
+		"loadError": "Impossible de charger cette image depuis le disque.",
+		"status": {
+			"added": "Ajoutée",
+			"modified": "Modifiée",
+			"deleted": "Supprimée"
+		}
+	},
+	"errors": {
+		"loadFile": "Impossible de charger le fichier sélectionné.",
+		"loadFileTitle": "Échec de l'ouverture du fichier",
+		"startEditor": "Impossible de démarrer l'éditeur.",
+		"startEditorTitle": "Échec du démarrage de l'éditeur",
+		"startReview": "Impossible de démarrer la surface de revue.",
+		"startReviewTitle": "Échec de la surface de revue",
+		"listFiles": "Impossible de lister les fichiers de l'espace de travail.",
+		"openFile": "Impossible d'ouvrir le fichier sélectionné.",
+		"openFileTitle": "Échec de l'ouverture du fichier",
+		"saveFile": "Impossible d'enregistrer le fichier sélectionné.",
+		"saveFileTitle": "Échec de l'enregistrement"
+	}
+}

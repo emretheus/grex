@@ -1,0 +1,21 @@
+{
+	"actions": {
+		"save": "Speichern",
+		"cancel": "Abbrechen",
+		"dismiss": "Schließen",
+		"retry": "Wiederholen",
+		"close": "Schließen",
+		"confirm": "Bestätigen",
+		"delete": "Löschen",
+		"remove": "Entfernen",
+		"edit": "Bearbeiten",
+		"copy": "Kopieren",
+		"done": "Fertig"
+	},
+	"state": {
+		"loading": "Wird geladen…"
+	},
+	"toast": {
+		"actionFailed": "Aktion fehlgeschlagen"
+	}
+}

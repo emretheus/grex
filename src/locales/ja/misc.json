@@ -1,0 +1,81 @@
+{
+	"quickPanel": {
+		"panelLabel": "クイックパネル",
+		"newWorkspace": "新規ワークスペース",
+		"openInGrex": "Grex で開く"
+	},
+	"quickSwitch": {
+		"switchWorkspace": "ワークスペースをすばやく切り替え",
+		"thinking": "考え中…"
+	},
+	"workspaceStart": {
+		"chatHeading": "何に取り組みましょうか？",
+		"buildHeadingPrefix": "何を作りましょうか",
+		"buildHeadingIn": "—",
+		"buildHeadingSuffix": "？",
+		"repositoryPlaceholder": "リポジトリ",
+		"repositoryShort": "リポジトリ",
+		"switchRepository": "リポジトリを切り替え",
+		"closeSourcePreview": "ソースのプレビューを閉じる",
+		"workLocally": "ローカルで作業",
+		"justChat": "チャットのみ",
+		"newWorktree": "新規ワークツリー",
+		"selectWhereToRun": "タスクの実行場所を選択",
+		"addRepository": "リポジトリを追加…",
+		"reuse": "再利用",
+		"branchOff": "分岐",
+		"reuseDescription": "選択したブランチを直接チェックアウトします。",
+		"branchOffDescription": "選択したベースから新しいブランチを分岐します。",
+		"reuseTooltip": "選択したブランチを直接チェックアウトします。",
+		"branchOffTooltip": "選択したベースから新しいブランチを分岐します",
+		"switchBranch": "ブランチを切り替え",
+		"branchToReuse": "再利用するブランチ",
+		"baseToForkOff": "分岐元のベース",
+		"createCheckoutNewBranch": "新しいブランチを作成してチェックアウト…",
+		"contexts": "コンテキスト",
+		"backToInspector": "インスペクターに戻る",
+		"createBranchDialog": {
+			"title": "ブランチを作成してチェックアウト",
+			"branchNameLabel": "ブランチ名",
+			"branchNamePlaceholder": "feature/awesome",
+			"submit": "作成してチェックアウト"
+		},
+		"branchValidation": {
+			"empty": "ブランチ名を空にすることはできません。",
+			"endsWithSlash": "ブランチ名は「/」で終わることはできません。",
+			"startInvalid": "ブランチ名は「/」「.」「-」で始めることはできません。",
+			"doubleDot": "ブランチ名に「..」を含めることはできません。",
+			"whitespace": "ブランチ名に空白を含めることはできません。",
+			"invalidCharacter": "ブランチ名に無効な文字が含まれています。",
+			"endsWithLock": "ブランチ名は「.lock」で終わることはできません。",
+			"atBrace": "ブランチ名に「@{」を含めることはできません。",
+			"alreadyExists": "「{{name}}」という名前のブランチはすでに存在します。"
+		}
+	},
+	"updater": {
+		"update": "更新",
+		"updateGrexAria": "Grex を {{version}} に更新",
+		"installFailed": "インストールに失敗しました",
+		"installFailedDescription": "ダウンロードした更新をインストールできませんでした。",
+		"changeLog": "変更履歴",
+		"updateReady": "更新の準備が整いました",
+		"updateDownloaded": "Grex {{version}} のダウンロードが完了しました。",
+		"updateAndRestart": "更新して再起動",
+		"viewChangeLog": "変更履歴を表示"
+	},
+	"announcements": {
+		"newInVersion": "v{{version}} の新機能",
+		"expand": "リリースのお知らせを展開",
+		"collapse": "リリースのお知らせを折りたたむ",
+		"dismiss": "リリースのお知らせを閉じる",
+		"changelogs": "変更履歴"
+	},
+	"terminal": {
+		"starting": "{{agent}} を起動中…",
+		"agentFallback": "ターミナル",
+		"preparingWorkspace": "ワークスペースを準備中…",
+		"truncationNotice": "… 以前の出力は切り捨てられました（バッファ上限に達しました）…",
+		"processExited": "[プロセスはコード {{code}} で終了しました]",
+		"failedToStart": "ターミナルの起動に失敗しました: {{error}}"
+	}
+}

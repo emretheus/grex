@@ -4,6 +4,7 @@
 // dropdown. All purely presentational — state lives in the parent panel.
 import { ChevronDown, X } from "lucide-react";
 import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { GithubBrandIcon } from "@/components/brand-icon";
 import { CachedAvatar } from "@/components/cached-avatar";
 import { Badge } from "@/components/ui/badge";
@@ -45,6 +46,7 @@ export function ScopeMultiSelect<T extends string>({
 	options: Option<T>[];
 	onChange: (value: T[]) => void;
 }) {
+	const { t } = useTranslation("inbox");
 	const allValue = options.find((option) => option.value === "all")?.value;
 	const fallbackValue = allValue ?? options[0]?.value;
 	const normalizeValues = (values: T[]) => {
@@ -96,7 +98,9 @@ export function ScopeMultiSelect<T extends string>({
 								{option.label}
 								<button
 									type="button"
-									aria-label={`Remove ${option.label}`}
+									aria-label={t("settings.controls.removeOption", {
+										label: option.label,
+									})}
 									onClick={(event) => {
 										event.preventDefault();
 										event.stopPropagation();
@@ -117,9 +121,9 @@ export function ScopeMultiSelect<T extends string>({
 			</PopoverTrigger>
 			<PopoverContent align="end" className="w-[280px] p-1.5">
 				<Command>
-					<CommandInput placeholder="Search scopes" />
+					<CommandInput placeholder={t("settings.controls.searchScopes")} />
 					<CommandList>
-						<CommandEmpty>No scopes found.</CommandEmpty>
+						<CommandEmpty>{t("settings.controls.noScopes")}</CommandEmpty>
 						<CommandGroup>
 							{options.map((option) => {
 								const checked = selectedValues.includes(option.value);
@@ -153,6 +157,7 @@ export function LabelMultiSelect({
 	loading: boolean;
 	onChange: (value: string[]) => void;
 }) {
+	const { t } = useTranslation("inbox");
 	const optionMap = useMemo(
 		() => new Map(options.map((option) => [option.name, option])),
 		[options],
@@ -194,7 +199,7 @@ export function LabelMultiSelect({
 									{label}
 									<button
 										type="button"
-										aria-label={`Remove ${label}`}
+										aria-label={t("settings.controls.removeOption", { label })}
 										onClick={(event) => {
 											event.preventDefault();
 											event.stopPropagation();
@@ -208,7 +213,9 @@ export function LabelMultiSelect({
 							))
 						) : (
 							<span className="px-1 text-small text-muted-foreground">
-								{loading ? "Loading labels" : "Select labels"}
+								{loading
+									? t("settings.controls.loadingLabels")
+									: t("settings.controls.selectLabels")}
 							</span>
 						)}
 					</span>
@@ -220,10 +227,12 @@ export function LabelMultiSelect({
 			</PopoverTrigger>
 			<PopoverContent align="end" className="w-[280px] p-1.5">
 				<Command>
-					<CommandInput placeholder="Search labels" />
+					<CommandInput placeholder={t("settings.controls.searchLabels")} />
 					<CommandList>
 						<CommandEmpty>
-							{loading ? "Loading labels..." : "No labels found."}
+							{loading
+								? t("settings.controls.loadingLabelsEmpty")
+								: t("settings.controls.noLabels")}
 						</CommandEmpty>
 						<CommandGroup>
 							{mergedOptions.map((option) => {
@@ -314,6 +323,7 @@ export function RepoPicker({
 	selected: RepositoryCreateOption | null;
 	onSelect: (repoFilter: string) => void;
 }) {
+	const { t } = useTranslation("inbox");
 	const selectedEntry =
 		repositories.find((entry) => entry.repository.id === selected?.id) ?? null;
 	return (
@@ -332,7 +342,7 @@ export function RepoPicker({
 							<GithubBrandIcon size={16} />
 						)}
 						<span className="min-w-0 truncate font-medium">
-							{selected ? selected.name : "Select repo"}
+							{selected ? selected.name : t("settings.controls.selectRepo")}
 						</span>
 					</span>
 					<ChevronDown

@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ArrowLeft, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -20,6 +21,7 @@ export function SkillEditor({
 	skillName: string | null;
 	onDone: () => void;
 }) {
+	const { t } = useTranslation("library");
 	const queryClient = useQueryClient();
 	const isNew = skillName === null;
 
@@ -82,12 +84,12 @@ export function SkillEditor({
 					variant="ghost"
 					size="icon-xs"
 					onClick={onDone}
-					aria-label="Back to skills"
+					aria-label={t("skills.editor.back")}
 				>
 					<ArrowLeft className="size-4" />
 				</Button>
 				<span className="text-ui font-medium text-foreground">
-					{isNew ? "New skill" : skillName}
+					{isNew ? t("skills.editor.newTitle") : skillName}
 				</span>
 				<div className="ml-auto flex items-center gap-2">
 					{!isNew && managed ? (
@@ -99,16 +101,16 @@ export function SkillEditor({
 							onClick={() => remove.mutate()}
 						>
 							<Trash2 className="size-4" />
-							Delete
+							{t("skills.editor.delete")}
 						</Button>
 					) : null}
 					{managed ? (
 						<Button size="sm" disabled={!canSave} onClick={() => save.mutate()}>
-							{isNew ? "Create" : "Save"}
+							{isNew ? t("skills.editor.create") : t("skills.editor.save")}
 						</Button>
 					) : (
 						<span className="text-small text-muted-foreground">
-							Installed outside Grex · read-only
+							{t("skills.editor.readOnlyBadge")}
 						</span>
 					)}
 				</div>
@@ -119,41 +121,39 @@ export function SkillEditor({
 					<>
 						<div className="space-y-1.5">
 							<span className="text-small font-medium text-foreground">
-								Name
+								{t("skills.editor.nameLabel")}
 							</span>
 							<Input
 								value={name}
 								onChange={(e) => setName(e.target.value)}
-								placeholder="e.g. deploy-vercel"
+								placeholder={t("skills.editor.namePlaceholder")}
 								autoFocus
 								className="font-mono text-small"
 							/>
 							{name.length > 0 && !nameValid ? (
 								<p className="text-nano text-destructive">
-									Lowercase letters, numbers, and hyphens; start with a letter
-									or number.
+									{t("skills.editor.nameError")}
 								</p>
 							) : null}
 						</div>
 						<div className="space-y-1.5">
 							<span className="text-small font-medium text-foreground">
-								Description
+								{t("skills.editor.descriptionLabel")}
 							</span>
 							<Input
 								value={description}
 								onChange={(e) => setDescription(e.target.value)}
-								placeholder="What this skill helps the agent do"
+								placeholder={t("skills.editor.descriptionPlaceholder")}
 							/>
 							<p className="text-nano text-muted-foreground">
-								Grex generates a starter SKILL.md and links it into your agents.
-								You can edit it afterwards.
+								{t("skills.editor.descriptionHint")}
 							</p>
 						</div>
 					</>
 				) : (
 					<div className="flex min-h-0 flex-1 flex-col space-y-1.5">
 						<span className="text-small font-medium text-foreground">
-							SKILL.md
+							{t("skills.editor.contentLabel")}
 						</span>
 						<Textarea
 							value={content}
@@ -166,7 +166,7 @@ export function SkillEditor({
 				)}
 				{save.isError ? (
 					<p className="text-small text-destructive">
-						Couldn't save this skill. Check the name and try again.
+						{t("skills.editor.saveError")}
 					</p>
 				) : null}
 			</div>

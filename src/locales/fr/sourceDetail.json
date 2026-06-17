@@ -1,0 +1,50 @@
+{
+	"actions": {
+		"openExternally": "Ouvrir en externe",
+		"addToContext": "Ajouter au contexte",
+		"addToContextError": "Impossible d'insérer la carte de contexte",
+		"copyMarkdown": "Copier le Markdown",
+		"copied": "Copié",
+		"refresh": "Actualiser",
+		"refreshing": "Actualisation…"
+	},
+	"kind": {
+		"issue": "ticket",
+		"pullRequest": "pull request",
+		"discussion": "discussion",
+		"mergeRequest": "merge request",
+		"post": "publication",
+		"card": "carte",
+		"thread": "fil"
+	},
+	"body": {
+		"noDescription": "Aucune description fournie."
+	},
+	"meta": {
+		"updated": "Mis à jour {{time}}",
+		"priority": "Priorité : {{priority}}"
+	},
+	"relativeTime": {
+		"minutes_one": "il y a {{count}} min",
+		"minutes_other": "il y a {{count}} min",
+		"hours_one": "il y a {{count}} h",
+		"hours_other": "il y a {{count}} h",
+		"days_one": "il y a {{count}} j",
+		"days_other": "il y a {{count}} j"
+	},
+	"startWorkspace": {
+		"tooltip": "Démarrer un espace de travail",
+		"fromIssue": "Démarrer un espace de travail depuis le ticket",
+		"fromPost": "Démarrer un espace de travail depuis la publication",
+		"fromCard": "Démarrer un espace de travail depuis la carte",
+		"fromThread": "Démarrer un espace de travail depuis le fil"
+	},
+	"slack": {
+		"invalidReference": "Référence d'élément Slack non valide.",
+		"threadBadge": "Fil",
+		"openInSlack": "Ouvrir dans Slack",
+		"loadError": "Impossible de charger le fil Slack.",
+		"noMessages": "Aucun message à afficher.",
+		"emptyMessage": "(message vide)"
+	}
+}

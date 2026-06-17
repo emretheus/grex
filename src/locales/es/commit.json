@@ -1,0 +1,126 @@
+{
+	"states": {
+		"commitAndPush": {
+			"idle": "Confirmar y enviar",
+			"busy": "Confirmando...",
+			"done": "Enviado",
+			"disabled": "Confirmar y enviar"
+		},
+		"push": {
+			"idle": "Enviar",
+			"busy": "Enviando...",
+			"done": "Enviado",
+			"disabled": "Enviar"
+		},
+		"fix": {
+			"idle": "Corregir CI",
+			"busy": "Corrigiendo CI...",
+			"done": "CI corregida",
+			"disabled": "Corregir CI"
+		},
+		"resolveConflicts": {
+			"idle": "Resolver conflictos",
+			"busy": "Resolviendo...",
+			"done": "Resueltos",
+			"disabled": "Resolver conflictos"
+		},
+		"checksRunning": {
+			"idle": "Comprobaciones en curso",
+			"busy": "Fusionando...",
+			"done": "Fusionado",
+			"disabled": "Comprobaciones en curso"
+		},
+		"mergeBlocked": {
+			"idle": "Fusión bloqueada",
+			"busy": "Fusionando...",
+			"done": "Fusionado",
+			"disabled": "Fusión bloqueada"
+		},
+		"merge": {
+			"idle": "Fusionar",
+			"busy": "Fusionando...",
+			"done": "Fusionado",
+			"disabled": "Fusionar"
+		},
+		"merged": "Fusionado",
+		"closed": "Cerrado"
+	},
+	"createPr": {
+		"busy": "Creando {{changeRequestName}}...",
+		"done": "{{changeRequestName}} creada",
+		"idle": "Crear {{changeRequestName}}"
+	},
+	"openPr": {
+		"busy": "Abriendo {{changeRequestName}}...",
+		"done": "Abierta",
+		"idle": "Abrir {{changeRequestName}}"
+	},
+	"menu": {
+		"commitAndPushManually": "Confirmar y enviar manualmente",
+		"pushManually": "Enviar manualmente",
+		"fixManually": "Corregir CI manualmente",
+		"createDraftPr": "Crear borrador de {{changeRequestName}}",
+		"createPrManually": "Crear {{changeRequestName}} manualmente"
+	},
+	"options": {
+		"commitAndPush": "Opciones de confirmar y enviar",
+		"push": "Opciones de envío",
+		"fix": "Opciones de corregir CI",
+		"resolveConflicts": "Opciones de resolver conflictos",
+		"checksRunning": "Opciones de comprobaciones en curso",
+		"mergeBlocked": "Opciones de fusión bloqueada",
+		"merge": "Opciones de fusión",
+		"openPr": "Opciones de abrir {{changeRequestName}}",
+		"merged": "Opciones de fusionado",
+		"closed": "Opciones de cerrado",
+		"createPr": "Opciones de crear {{changeRequestName}}"
+	},
+	"splitButton": {
+		"defaultLabel": "Confirmar",
+		"commitAria": "Confirmar los cambios actuales",
+		"moreActionsAria": "Más acciones de la sección Git"
+	},
+	"mergeBlockedReason": {
+		"behindShort": "Detrás de la base",
+		"blockedShort": "Fusión bloqueada",
+		"draftShort": "PR en borrador",
+		"unstableShort": "Inestable",
+		"behindDetail": "Esta rama está por detrás de la rama base. ¿Intentar de todos modos?",
+		"blockedDetail": "La protección de rama está bloqueando esta fusión. Probablemente falte una revisión, haya una conversación sin resolver o una comprobación obligatoria. ¿Intentar de todos modos?",
+		"draftDetail": "Esta solicitud de incorporación de cambios sigue en borrador. ¿Intentar de todos modos?",
+		"unstableDetail": "Hay comprobaciones no obligatorias que están fallando. ¿Intentar de todos modos?"
+	},
+	"confirm": {
+		"mergeAnyway": "Fusionar de todos modos",
+		"tryAnyway": "Intentar de todos modos",
+		"beforeChecksTitle": "¿Fusionar antes de que pasen las comprobaciones?",
+		"beforeChecksDescription": "Las comprobaciones de GitHub aún no han pasado. ¿Fusionar de todos modos y omitirlas?",
+		"blockedMergeTitle": "¿Intentar la fusión bloqueada?"
+	},
+	"failureTitle": {
+		"createPr": "Error al crear {{changeRequestName}}",
+		"commitAndPush": "Error al confirmar y enviar",
+		"push": "Error al enviar",
+		"fix": "Error al corregir CI",
+		"resolveConflicts": "Error al resolver conflictos",
+		"merge": "Error al fusionar",
+		"openPr": "Error al abrir {{changeRequestName}}",
+		"closed": "Error al cerrar {{changeRequestName}}",
+		"generic": "Acción fallida"
+	},
+	"toast": {
+		"mergeBlockedTitle": "Fusión bloqueada",
+		"conflictMessage": "{{changeRequestName}} tiene conflictos de fusión y aún no se puede fusionar.",
+		"mergeabilityComputing": "Aún se está calculando si se puede fusionar. Espera e inténtalo de nuevo.",
+		"pushFailedFallback": "No se pudo enviar la rama.",
+		"promptNotDeliveredTitle": "Mensaje no entregado",
+		"openChatFallback": "No se pudo abrir una sesión de chat.",
+		"reviewFailedTitle": "Error en la revisión",
+		"reviewFallback": "No se pudo iniciar la revisión.",
+		"reconnectMessage": "Vuelve a conectar tu cuenta de {{providerName}} e inténtalo de nuevo.",
+		"notConnectedTitle": "{{providerName}} no conectado",
+		"startActionFallback": "No se pudo iniciar la acción.",
+		"completeActionFallback": "No se pudo completar la acción.",
+		"verifyActionFallback": "No se pudo verificar el resultado de la acción."
+	}
+}

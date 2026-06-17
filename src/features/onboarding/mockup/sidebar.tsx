@@ -1,4 +1,5 @@
 import { Folder, FolderPlus, Globe, Plus } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import {
 	DropdownMenu,
@@ -29,6 +30,7 @@ export function MockSidebar({
 	interactive?: boolean;
 	cliSplitSpotlight?: boolean;
 }) {
+	const { t } = useTranslation("onboarding");
 	return (
 		<WorkspaceSidebarShellUI
 			headerActions={
@@ -37,7 +39,7 @@ export function MockSidebar({
 						<DropdownMenuTrigger asChild>
 							<Button
 								type="button"
-								aria-label="Add repository"
+								aria-label={t("mockup.sidebar.addRepository")}
 								variant="ghost"
 								size="icon-xs"
 								disabled={!interactive}
@@ -49,17 +51,17 @@ export function MockSidebar({
 						<DropdownMenuContent align="end" className="min-w-40">
 							<DropdownMenuItem onSelect={(event) => event.preventDefault()}>
 								<Folder strokeWidth={2} />
-								<span>Open project</span>
+								<span>{t("mockup.sidebar.openProject")}</span>
 							</DropdownMenuItem>
 							<DropdownMenuItem onSelect={(event) => event.preventDefault()}>
 								<Globe strokeWidth={2} />
-								<span>Clone from URL</span>
+								<span>{t("mockup.sidebar.cloneFromUrl")}</span>
 							</DropdownMenuItem>
 						</DropdownMenuContent>
 					</DropdownMenu>
 					<Button
 						type="button"
-						aria-label="New workspace"
+						aria-label={t("mockup.sidebar.newWorkspace")}
 						variant="ghost"
 						size="icon-xs"
 						className="text-muted-foreground"
@@ -74,33 +76,36 @@ export function MockSidebar({
 					{mockSidebar.groups.map((group) => (
 						<div key={group.id} className="space-y-0.5">
 							<WorkspaceGroupHeaderUI
-								label={group.label}
+								label={t(group.label)}
 								count={group.rows.length}
 								tone={group.tone}
 								isOpen
 								canCollapse
 							/>
-							{group.rows.map((row) => (
-								<div
-									key={row.id}
-									className={
-										cliSplitSpotlight && row.cliSplitTarget
-											? "relative z-40 isolate rounded-[10px] bg-sidebar pl-2"
-											: "pl-2"
-									}
-								>
-									<WorkspaceRowUI
-										displayTitle={row.title}
-										repoInitials={row.repoInitials}
-										repoName={row.title}
-										branchTone={row.branchTone}
-										hasUnread={row.hasUnread}
-										selected={row.isSelected}
-										isSending={row.isSending}
-										dataWorkspaceRowId={row.id}
-									/>
-								</div>
-							))}
+							{group.rows.map((row) => {
+								const rowTitle = t(row.title);
+								return (
+									<div
+										key={row.id}
+										className={
+											cliSplitSpotlight && row.cliSplitTarget
+												? "relative z-40 isolate rounded-[10px] bg-sidebar pl-2"
+												: "pl-2"
+										}
+									>
+										<WorkspaceRowUI
+											displayTitle={rowTitle}
+											repoInitials={row.repoInitials}
+											repoName={rowTitle}
+											branchTone={row.branchTone}
+											hasUnread={row.hasUnread}
+											selected={row.isSelected}
+											isSending={row.isSending}
+											dataWorkspaceRowId={row.id}
+										/>
+									</div>
+								);
+							})}
 						</div>
 					))}
 				</div>

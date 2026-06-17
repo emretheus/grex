@@ -1,0 +1,68 @@
+{
+	"common": {
+		"disconnect": "Déconnecter",
+		"disconnecting": "Déconnexion…",
+		"nothingToFilter": "Rien à filtrer.",
+		"countSelected_one": "{{count}} sélectionné",
+		"countSelected_other": "{{count}} sélectionnés",
+		"assignedFeedHint": "Seuls les tickets qui vous sont attribués apparaissent dans le flux."
+	},
+	"scope": {
+		"assignedToMe": "Attribués à moi"
+	},
+	"jira": {
+		"connectAnother": "Connecter un autre site",
+		"siteFallback": "Site Jira",
+		"updateFailed": "Échec de la mise à jour de Jira",
+		"updateError": "Impossible d'enregistrer la portée Jira.",
+		"disconnectFailed": "Échec de la déconnexion de Jira",
+		"disconnectError": "Impossible de déconnecter Jira.",
+		"scopeAll": "Tous les projets",
+		"projectsLabel": "Projets",
+		"allProjects": "Tous les projets"
+	},
+	"linear": {
+		"connectAnother": "Connecter un autre espace de travail",
+		"workspaceFallback": "Espace de travail Linear",
+		"updateFailed": "Échec de la mise à jour de Linear",
+		"updateError": "Impossible d'enregistrer la portée Linear.",
+		"disconnectFailed": "Échec de la déconnexion de Linear",
+		"disconnectError": "Impossible de déconnecter Linear.",
+		"scopeAll": "Tous les tickets",
+		"teamsLabel": "Équipes",
+		"allTeams": "Toutes les équipes",
+		"projectsLabel": "Projets",
+		"allProjects": "Tous les projets"
+	},
+	"trello": {
+		"connectAnother": "Connecter un autre compte",
+		"accountFallback": "Compte Trello",
+		"updateFailed": "Échec de la mise à jour de Trello",
+		"updateError": "Impossible d'enregistrer la portée Trello.",
+		"disconnectFailed": "Échec de la déconnexion de Trello",
+		"disconnectError": "Impossible de déconnecter Trello.",
+		"scopeMine": "Mes cartes",
+		"scopeAll": "Tous les tableaux",
+		"boardsLabel": "Tableaux",
+		"allBoards": "Tous les tableaux",
+		"memberFeedHint": "Seules les cartes dont vous êtes membre apparaissent dans le flux."
+	},
+	"forgejo": {
+		"connectAnother": "Connecter une autre instance",
+		"instanceFallback": "Instance Forgejo",
+		"updateFailed": "Échec de la mise à jour de Forgejo",
+		"updateError": "Impossible d'enregistrer la portée Forgejo.",
+		"disconnectFailed": "Échec de la déconnexion de Forgejo",
+		"disconnectError": "Impossible de déconnecter Forgejo.",
+		"scopeMine": "Mes tickets",
+		"scopeAll": "Tous les tickets",
+		"allIssuesHint": "Tous les tickets des dépôts que votre jeton peut lire."
+	},
+	"featurebase": {
+		"connectAnother": "Connecter un autre tableau",
+		"boardFallback": "Tableau Featurebase",
+		"disconnectFailed": "Échec de la déconnexion de Featurebase",
+		"disconnectError": "Impossible de déconnecter Featurebase.",
+		"readOnlyHint": "Les publications de feedback sont en lecture seule ; tout ce tableau apparaît dans le flux."
+	}
+}

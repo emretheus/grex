@@ -1,0 +1,47 @@
+{
+	"actions": {
+		"openExternally": "外部で開く",
+		"addToContext": "コンテキストに追加",
+		"addToContextError": "コンテキストカードを挿入できませんでした",
+		"copyMarkdown": "Markdown をコピー",
+		"copied": "コピーしました",
+		"refresh": "更新",
+		"refreshing": "更新中…"
+	},
+	"kind": {
+		"issue": "イシュー",
+		"pullRequest": "プルリクエスト",
+		"discussion": "ディスカッション",
+		"mergeRequest": "マージリクエスト",
+		"post": "投稿",
+		"card": "カード",
+		"thread": "スレッド"
+	},
+	"body": {
+		"noDescription": "説明はありません。"
+	},
+	"meta": {
+		"updated": "{{time}}に更新",
+		"priority": "優先度: {{priority}}"
+	},
+	"relativeTime": {
+		"minutes_other": "{{count}}分前",
+		"hours_other": "{{count}}時間前",
+		"days_other": "{{count}}日前"
+	},
+	"startWorkspace": {
+		"tooltip": "ワークスペースを開始",
+		"fromIssue": "イシューからワークスペースを開始",
+		"fromPost": "投稿からワークスペースを開始",
+		"fromCard": "カードからワークスペースを開始",
+		"fromThread": "スレッドからワークスペースを開始"
+	},
+	"slack": {
+		"invalidReference": "無効な Slack アイテム参照です。",
+		"threadBadge": "スレッド",
+		"openInSlack": "Slack で開く",
+		"loadError": "Slack スレッドを読み込めませんでした。",
+		"noMessages": "表示するメッセージはありません。",
+		"emptyMessage": "(空のメッセージ)"
+	}
+}

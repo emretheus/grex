@@ -1,4 +1,5 @@
 import { AtSign, MessageCircle, MessagesSquare } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import {
 	AppendContextButton,
@@ -11,6 +12,7 @@ import {
 } from "@/components/ui/tooltip";
 import { type SlackInboxItem, slackPrepareThreadContext } from "@/lib/api";
 import type { ComposerInsertTarget } from "@/lib/composer-insert";
+import { i18n } from "@/lib/i18n";
 import {
 	formatSlackTextPlain,
 	renderSlackText,
@@ -47,10 +49,14 @@ export function SlackSourceCard({
 	selected?: boolean;
 	appendContextTarget?: ComposerInsertTarget;
 }) {
+	const { t } = useTranslation("inbox");
 	const meta = describeKind(item);
 	return (
 		<article
-			aria-label={`${item.authorName}: ${formatSlackTextPlain(item.textSnippet)}`}
+			aria-label={t("slackCard.ariaLabel", {
+				author: item.authorName,
+				snippet: formatSlackTextPlain(item.textSnippet),
+			})}
 			role={onOpen ? "button" : undefined}
 			tabIndex={onOpen ? 0 : undefined}
 			onClick={() => onOpen?.(card)}
@@ -101,11 +107,11 @@ export function SlackSourceCard({
 					<span className="absolute right-1 bottom-0.5 z-10 inline-flex">
 						<AppendContextButton
 							subjectLabel={card.title}
-							ariaLabel="Add to context"
+							ariaLabel={t("card.addToContext")}
 							getPayload={() =>
 								prepareSlackContextPayload(item, card, appendContextTarget)
 							}
-							errorTitle="Couldn't insert context card"
+							errorTitle={t("card.insertError")}
 							className={cn(
 								"flex size-7.5 cursor-interactive items-center justify-center rounded-md",
 								"border-0 bg-transparent text-muted-foreground opacity-0 shadow-none",
@@ -118,7 +124,7 @@ export function SlackSourceCard({
 						/>
 					</span>
 				</TooltipTrigger>
-				<TooltipContent side="top">Add to context</TooltipContent>
+				<TooltipContent side="top">{t("card.addToContext")}</TooltipContent>
 			</Tooltip>
 		</article>
 	);
@@ -144,9 +150,9 @@ async function prepareSlackContextPayload(
 	appendContextTarget: ComposerInsertTarget | undefined,
 ): Promise<AppendContextPayload> {
 	const toastId = `slack-prepare:${item.id}`;
-	toast.loading("Preparing Slack context…", {
+	toast.loading(i18n.t("inbox:slackCard.preparing"), {
 		id: toastId,
-		description: "Fetching thread",
+		description: i18n.t("inbox:slackCard.fetchingThread"),
 	});
 	try {
 		const prepared = await slackPrepareThreadContext({
@@ -159,17 +165,20 @@ async function prepareSlackContextPayload(
 			anchorTs: item.ts,
 			onProgress: (event) => {
 				if (event.stage === "fetchingThread") {
-					toast.loading("Preparing Slack context…", {
+					toast.loading(i18n.t("inbox:slackCard.preparing"), {
 						id: toastId,
-						description: "Fetching thread",
+						description: i18n.t("inbox:slackCard.fetchingThread"),
 					});
 				} else if (event.stage === "cachingFiles") {
-					toast.loading("Preparing Slack context…", {
+					toast.loading(i18n.t("inbox:slackCard.preparing"), {
 						id: toastId,
 						description:
 							event.total === 0
-								? "No attachments to cache"
-								: `Caching attachments ${event.current + 1}/${event.total}`,
+								? i18n.t("inbox:slackCard.noAttachments")
+								: i18n.t("inbox:slackCard.cachingAttachments", {
+										current: event.current + 1,
+										total: event.total,
+									}),
 					});
 				}
 			},
@@ -183,15 +192,19 @@ async function prepareSlackContextPayload(
 		const attachedCount = prepared.imagePaths.length;
 		const totalImageCandidates = prepared.filesTotal;
 		const summary = (() => {
-			if (totalImageCandidates === 0) return "Thread inlined";
+			if (totalImageCandidates === 0)
+				return i18n.t("inbox:slackCard.threadInlined");
 			if (attachedCount === totalImageCandidates) {
-				return attachedCount === 1
-					? "Thread inlined · 1 image attached"
-					: `Thread inlined · ${attachedCount} images attached`;
+				return i18n.t("inbox:slackCard.threadInlinedImages", {
+					count: attachedCount,
+				});
 			}
-			return `Thread inlined · ${attachedCount}/${totalImageCandidates} images attached (rest unavailable)`;
+			return i18n.t("inbox:slackCard.threadInlinedPartial", {
+				attached: attachedCount,
+				total: totalImageCandidates,
+			});
 		})();
-		toast.success("Slack context ready", {
+		toast.success(i18n.t("inbox:slackCard.ready"), {
 			id: toastId,
 			description: summary,
 		});
@@ -231,12 +244,12 @@ async function prepareSlackContextPayload(
 		}
 		return fallbackPayload;
 	} catch (error) {
-		toast.error("Couldn't prepare Slack context", {
+		toast.error(i18n.t("inbox:slackCard.prepareFailed"), {
 			id: toastId,
 			description:
 				error instanceof Error
 					? error.message
-					: "Falling back to summary-only context.",
+					: i18n.t("inbox:slackCard.prepareFallback"),
 		});
 		// Degraded fallback so the user still gets something inserted.
 		return buildCardContextPayload(card, appendContextTarget);
@@ -298,18 +311,22 @@ function describeKind(item: SlackInboxItem): {
 	if (item.kind === "direct_message") {
 		return {
 			Icon: MessageCircle,
-			label: "DM",
+			label: i18n.t("inbox:slackCard.dm"),
 			chip: dmPartnerLabel(item.channelLabel),
 		};
 	}
 	if (item.threadTs) {
 		return {
 			Icon: MessagesSquare,
-			label: "Thread in",
+			label: i18n.t("inbox:slackCard.threadIn"),
 			chip: item.channelLabel,
 		};
 	}
-	return { Icon: AtSign, label: "Mention in", chip: item.channelLabel };
+	return {
+		Icon: AtSign,
+		label: i18n.t("inbox:slackCard.mentionIn"),
+		chip: item.channelLabel,
+	};
 }
 
 /** `channelLabel` for DMs comes back as `"DM · Partner"` (or

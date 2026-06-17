@@ -1,5 +1,6 @@
 import { Send } from "lucide-react";
 import { useEffect, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -22,6 +23,7 @@ export function StepPrompt({
 	onEditPrompt,
 	onSubmit,
 }: StepPromptProps) {
+	const { t } = useTranslation("feedback");
 	const template = useMemo(() => buildPromptTemplate(input), [input]);
 
 	// Seed the prompt textarea with the default template the first time the
@@ -39,8 +41,8 @@ export function StepPrompt({
 	return (
 		<div className="flex flex-col gap-3">
 			<p className="text-small leading-snug text-muted-foreground">
-				Tweak this if you want — it's what the agent starts with.
-				{existing ? " Reusing your local grex repo." : null}
+				{t("prompt.description")}
+				{existing ? t("prompt.reuseLocalRepo") : null}
 			</p>
 
 			<Textarea
@@ -58,7 +60,7 @@ export function StepPrompt({
 					disabled={!canSubmit}
 				>
 					<Send data-icon="inline-start" />
-					Send to agent
+					{t("prompt.sendToAgent")}
 				</Button>
 			</div>
 		</div>

@@ -4,6 +4,7 @@ import type {
 	ThreadMessageLike,
 	ToolCallPart,
 } from "@/lib/api";
+import { i18n } from "@/lib/i18n";
 
 type ToolCategory = "search" | "read" | "shell" | "other";
 type CollapseCategory = "search" | "read" | "shell" | "mixed";
@@ -398,9 +399,16 @@ function buildGroupSummary(tools: ToolCallPart[], active: boolean): string {
 		}
 	}
 
+	const t = i18n.t.bind(i18n);
+	// `lead` = first clause (capitalized verb in English), `cont` = subsequent
+	// clauses (lowercase verb, fused with a comma). `state` mirrors the
+	// active/done split. Localizers translate per-clause; the
+	// grammatical verb-fusion is intentionally English-shaped.
+	const state = active ? "active" : "done";
 	const parts: string[] = [];
 
 	if (searchTools.length > 0) {
+		const pos = parts.length === 0 ? "lead" : "cont";
 		const patterns: string[] = [];
 		const seen = new Set<string>();
 		for (const tool of searchTools) {
@@ -413,57 +421,58 @@ function buildGroupSummary(tools: ToolCallPart[], active: boolean): string {
 		}
 
 		if (patterns.length === 1) {
-			const verb = active ? "Searching for" : "Searched for";
-			const suffix = searchTools.length > 1 ? ` (${searchTools.length}×)` : "";
-			parts.push(`${verb} '${patterns[0]}'${suffix}`);
+			const group =
+				searchTools.length > 1 ? "onePatternRepeated" : "onePattern";
+			parts.push(
+				t(`conversation:collapse.search.${group}.${pos}.${state}`, {
+					pattern: patterns[0],
+					count: searchTools.length,
+				}),
+			);
 		} else if (patterns.length > 1) {
 			parts.push(
-				`${active ? "Searching" : "Searched"} ${searchTools.length} patterns`,
+				t(`conversation:collapse.search.manyPatterns.${pos}.${state}`, {
+					count: searchTools.length,
+				}),
 			);
 		} else {
-			const plural = searchTools.length > 1 ? "s" : "";
 			parts.push(
-				`${active ? "Searching" : "Searched"} ${searchTools.length} time${plural}`,
+				t(`conversation:collapse.search.times.${pos}.${state}`, {
+					count: searchTools.length,
+				}),
 			);
 		}
 	}
 
 	if (readTools.length > 0) {
+		const pos = parts.length === 0 ? "lead" : "cont";
 		const paths = new Set<string>();
 		for (const tool of readTools) {
 			const filePath = extractFilePath(tool.args);
 			if (filePath) paths.add(filePath);
 		}
 		const count = paths.size > 0 ? paths.size : readTools.length;
-		const verb =
-			parts.length === 0
-				? active
-					? "Reading"
-					: "Read"
-				: active
-					? "reading"
-					: "read";
-		const plural = count > 1 ? "s" : "";
-		parts.push(`${verb} ${count} file${plural}`);
+		parts.push(t(`conversation:collapse.read.${pos}.${state}`, { count }));
 	}
 
 	if (shellTools.length > 0) {
-		const verb =
-			parts.length === 0
-				? active
-					? "Running"
-					: "Ran"
-				: active
-					? "running"
-					: "ran";
-		const plural = shellTools.length > 1 ? "s" : "";
-		parts.push(`${verb} ${shellTools.length} read-only command${plural}`);
+		const pos = parts.length === 0 ? "lead" : "cont";
+		parts.push(
+			t(`conversation:collapse.shell.${pos}.${state}`, {
+				count: shellTools.length,
+			}),
+		);
 	}
 
 	if (parts.length === 0) {
-		return active ? "Working..." : "Done";
+		return active
+			? t("conversation:collapse.working")
+			: t("conversation:collapse.done");
 	}
-	return active ? `${parts.join(", ")}...` : parts.join(", ");
+	const joined = parts.join(t("conversation:collapse.separator"));
+	return active
+		? t("conversation:collapse.activeSuffix", { clauses: joined })
+		: joined;
 }
 
 function extractPattern(args: Record<string, unknown>): string | null {

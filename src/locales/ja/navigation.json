@@ -1,0 +1,100 @@
+{
+	"sidebar": {
+		"title": "ワークスペース"
+	},
+	"actions": {
+		"addRepository": "リポジトリを追加",
+		"openProject": "プロジェクトを開く",
+		"cloneFromUrl": "URL から複製",
+		"newWorkspace": "新規ワークスペース",
+		"createNewWorkspace": "新しいワークスペースを作成",
+		"newWorkspaceInGroup": "{{group}} に新規ワークスペース"
+	},
+	"sections": {
+		"archived": "アーカイブ済み"
+	},
+	"row": {
+		"restoreWorkspace": "ワークスペースを復元",
+		"confirmArchiveWorkspace": "ワークスペースのアーカイブを確認",
+		"archiveWorkspace": "ワークスペースをアーカイブ",
+		"interactionRequired": "操作が必要です",
+		"aiProposal": "AI の提案 — 開いて確認",
+		"unread": "未読",
+		"deletePermanently": "完全に削除",
+		"contextMenu": {
+			"pin": "ピン留め",
+			"unpin": "ピン留めを解除",
+			"setStatus": "ステータスを設定",
+			"markAsUnread": "未読にする",
+			"openInFinder": "Finder で開く",
+			"moveIntoNewWorktree": "新しいワークツリーに移動",
+			"restore": "復元",
+			"archive": "アーカイブ"
+		}
+	},
+	"stack": {
+		"tip": "スタックの先端",
+		"base": "スタックの基点",
+		"node": "スタック",
+		"depth": "{{total}} 件中 {{current}} 件目"
+	},
+	"status": {
+		"backlog": "バックログ",
+		"inProgress": "進行中",
+		"inReview": "レビュー中",
+		"done": "完了",
+		"canceled": "キャンセル済み"
+	},
+	"hoverCard": {
+		"uncommittedChanges_other": "未コミットの変更 {{count}} 件",
+		"commitsBehind_other": "{{targetLabel}} より {{count}} コミット遅れ",
+		"unpushedCommits_other": "未プッシュのコミット {{count}} 件",
+		"upToDateClean": "ブランチは {{targetLabel}} と最新の状態です · 未コミットの変更なし",
+		"upToDate": "ブランチは {{targetLabel}} と最新の状態です",
+		"runningFor": "{{elapsed}} 実行中",
+		"thinking": "思考中…",
+		"lastActivityCreated": "{{lastActivityLabel}} · 作成 {{createdAt}}",
+		"lastActivity": {
+			"lastMessage": "最終メッセージ",
+			"lastChanged": "最終変更",
+			"created": "作成"
+		},
+		"sessionCount_other": "{{count}} 件のセッション"
+	},
+	"cloneDialog": {
+		"title": "URL から複製",
+		"gitUrl": "Git URL",
+		"cloneLocation": "複製先",
+		"browse": "参照…",
+		"folderPickerError": "フォルダ選択を開けませんでした。",
+		"cloneError": "リポジトリを複製できませんでした。",
+		"submit": "リポジトリを複製",
+		"cloning": "複製中…"
+	},
+	"moveToWorktreeDialog": {
+		"title": "新しいワークツリーに移動",
+		"description": "<bold>{{name}}</bold> は自動命名された新しいブランチ上の新規ワークツリーで続行されます。",
+		"localUntouched": "ローカルリポジトリはそのまま維持されます — ブランチもファイルも変更されません。",
+		"changesCarriedOver": "追跡対象および未追跡の変更は新しいワークツリーに引き継がれます。",
+		"submit": "ワークツリーに移動",
+		"moving": "移動中…"
+	},
+	"viewPopover": {
+		"filterAndSortAria": "サイドバーを絞り込み・並べ替え",
+		"filterAndSort": "絞り込みと並べ替え",
+		"repository": "リポジトリ",
+		"allRepositories": "すべてのリポジトリ",
+		"noRepositoriesFound": "リポジトリが見つかりません。",
+		"searchRepositories": "リポジトリを検索",
+		"groupBy": "グループ化",
+		"status": "ステータス",
+		"sortBy": "並べ替え",
+		"selectedCount": "{{count}} 件選択中",
+		"sort": {
+			"draggableOrder": "ドラッグ順",
+			"repositoryName": "リポジトリ名",
+			"lastUpdated": "最終更新",
+			"createdTime": "作成日時"
+		}
+	}
+}

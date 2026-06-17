@@ -13,6 +13,7 @@ import {
 	useMemo,
 	useState,
 } from "react";
+import { useTranslation } from "react-i18next";
 import {
 	ContextMenu,
 	ContextMenuContent,
@@ -96,6 +97,7 @@ export function FileExplorer({
 	width = DEFAULT_WIDTH,
 	onWidthChange,
 }: FileExplorerProps) {
+	const { t } = useTranslation("editor");
 	const queryClient = useQueryClient();
 	const expandedKey = `grex.explorer.expanded:${workspaceRootPath}`;
 	const [expandedPaths, setExpandedPaths] = useState<Set<string>>(() => {
@@ -219,18 +221,18 @@ export function FileExplorer({
 
 	return (
 		<aside
-			aria-label="File explorer"
+			aria-label={t("explorer.ariaLabel")}
 			style={{ width }}
 			className="relative flex h-full shrink-0 flex-col border-r border-border/65 bg-[var(--sidebar)]"
 		>
 			<div className="flex h-8 shrink-0 items-center justify-between gap-2 border-b border-border/50 px-3">
 				<span className="truncate text-mini font-medium uppercase tracking-wide text-muted-foreground/80">
-					Explorer
+					{t("explorer.heading")}
 				</span>
 				<button
 					type="button"
-					aria-label="Refresh file tree"
-					title="Refresh"
+					aria-label={t("explorer.refreshAriaLabel")}
+					title={t("explorer.refreshTitle")}
 					onClick={refreshTree}
 					className="inline-flex size-5 cursor-interactive items-center justify-center rounded text-muted-foreground/70 transition-colors hover:bg-accent/60 hover:text-foreground"
 				>
@@ -249,7 +251,7 @@ export function FileExplorer({
 			{onWidthChange ? (
 				<button
 					type="button"
-					aria-label="Resize file explorer"
+					aria-label={t("explorer.resizeAriaLabel")}
 					tabIndex={-1}
 					onMouseDown={startResize}
 					className="absolute inset-y-0 right-0 z-10 w-1.5 translate-x-1/2 cursor-ew-resize bg-transparent transition-colors hover:bg-primary/40"
@@ -293,12 +295,15 @@ function DirChildren({
 	relPath: string;
 	depth: number;
 }) {
+	const { t } = useTranslation("editor");
 	const query = useQuery(
 		directoryListingQueryOptions(workspaceRootPath, relPath),
 	);
 
 	if (query.isLoading) {
-		return <LeafMessage depth={depth} icon="spinner" label="Loading…" />;
+		return (
+			<LeafMessage depth={depth} icon="spinner" label={t("explorer.loading")} />
+		);
 	}
 	if (query.isError) {
 		return (
@@ -308,14 +313,14 @@ function DirChildren({
 				style={{ paddingLeft: depth * INDENT_STEP + BASE_INDENT }}
 				className="flex w-full cursor-interactive items-center gap-1.5 py-1 pr-2 text-left text-mini text-destructive/80 hover:underline"
 			>
-				Couldn't load — retry
+				{t("explorer.loadError")}
 			</button>
 		);
 	}
 
 	const entries = query.data ?? [];
 	if (entries.length === 0) {
-		return <LeafMessage depth={depth} label="empty" />;
+		return <LeafMessage depth={depth} label={t("explorer.empty")} />;
 	}
 
 	return (
@@ -450,6 +455,7 @@ function NodeContextMenu({
 	isDir: boolean;
 	children: ReactNode;
 }) {
+	const { t } = useTranslation("editor");
 	const { workspaceRootPath, detectedEditors, addToChat } = useExplorer();
 	const absPath = `${workspaceRootPath.replace(/\/+$/, "")}/${relPath}`;
 	const copy = (text: string) => {
@@ -460,17 +466,19 @@ function NodeContextMenu({
 			<ContextMenuTrigger asChild>{children}</ContextMenuTrigger>
 			<ContextMenuContent className="w-52">
 				<ContextMenuItem onSelect={() => copy(absPath)}>
-					Copy path
+					{t("contextMenu.copyPath")}
 				</ContextMenuItem>
 				<ContextMenuItem onSelect={() => copy(relPath)}>
-					Copy relative path
+					{t("contextMenu.copyRelativePath")}
 				</ContextMenuItem>
 				<ContextMenuItem onSelect={() => void revealPathInFinder(absPath)}>
-					Reveal in Finder
+					{t("contextMenu.revealInFinder")}
 				</ContextMenuItem>
 				{!isDir && detectedEditors.length > 0 ? (
 					<ContextMenuSub>
-						<ContextMenuSubTrigger>Open with</ContextMenuSubTrigger>
+						<ContextMenuSubTrigger>
+							{t("contextMenu.openWith")}
+						</ContextMenuSubTrigger>
 						<ContextMenuSubContent>
 							{detectedEditors.map((editor) => (
 								<ContextMenuItem
@@ -487,7 +495,7 @@ function NodeContextMenu({
 					<>
 						<ContextMenuSeparator />
 						<ContextMenuItem onSelect={() => addToChat(relPath)}>
-							Add to chat
+							{t("contextMenu.addToChat")}
 						</ContextMenuItem>
 					</>
 				) : null}

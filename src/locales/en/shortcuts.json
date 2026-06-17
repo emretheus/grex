@@ -1,0 +1,96 @@
+{
+	"search": {
+		"placeholder": "Search shortcuts"
+	},
+	"section": {
+		"global": "Global"
+	},
+	"groups": {
+		"Navigation": "Navigation",
+		"Session": "Session",
+		"Workspace": "Workspace",
+		"Actions": "Actions",
+		"System": "System",
+		"Composer": "Composer",
+		"Start surface": "Start surface",
+		"Editor": "Editor",
+		"Terminal": "Terminal"
+	},
+	"row": {
+		"conflictAria": "Shortcut conflict",
+		"conflictUsedBy": "Already used by {{names}}",
+		"resetAria": "Reset to default",
+		"resetTooltip": "Reset to default"
+	},
+	"menu": {
+		"remove": "Remove Shortcut",
+		"resetDefault": "Reset Shortcut to Default"
+	},
+	"toast": {
+		"registerFailed": "Failed to register global hotkey"
+	},
+	"definitions": {
+		"workspace.previous": { "title": "Previous workspace" },
+		"workspace.next": { "title": "Next workspace" },
+		"workspace.quickSwitchNext": { "title": "Quick switch workspace" },
+		"workspace.quickSwitchPrevious": {
+			"title": "Quick switch workspace (reverse)"
+		},
+		"session.previous": { "title": "Previous session" },
+		"session.next": { "title": "Next session" },
+		"session.new": { "title": "New session" },
+		"session.close": { "title": "Close current session" },
+		"session.reopenClosed": { "title": "Reopen closed session" },
+		"window.close": { "title": "Close window" },
+		"workspace.copyPath": { "title": "Copy workspace path" },
+		"workspace.openInEditor": { "title": "Open repository in default app" },
+		"workspace.new": { "title": "Open Start Page" },
+		"workspace.justChat": { "title": "Open Start Page (Just chat)" },
+		"workspace.addRepository": { "title": "Add repository" },
+		"workspace.filterSidebar": { "title": "Filter and sort sidebar" },
+		"script.run": { "title": "Run / stop script" },
+		"action.createPr": { "title": "Create PR" },
+		"action.commitAndPush": { "title": "Commit and push" },
+		"action.pullLatest": { "title": "Pull latest from main" },
+		"action.mergePr": { "title": "Merge PR" },
+		"action.fixErrors": { "title": "Fix errors" },
+		"action.openPullRequest": { "title": "Open PR in browser" },
+		"settings.open": { "title": "Open settings" },
+		"library.open": { "title": "Open Library" },
+		"global.hotkey": {
+			"title": "Global hotkey",
+			"description": "Show/hide Grex from anywhere."
+		},
+		"quickPanel.hotkey": {
+			"title": "Quick panel hotkey",
+			"description": "Open the quick task panel from anywhere."
+		},
+		"theme.toggle": { "title": "Toggle theme (dark/light)" },
+		"window.miniMode.toggle": { "title": "Toggle mini mode" },
+		"sidebar.left.toggle": { "title": "Toggle left sidebar" },
+		"sidebar.right.toggle": { "title": "Toggle right sidebar" },
+		"zen.toggle": { "title": "Toggle zen mode" },
+		"zoom.in": { "title": "Zoom in" },
+		"zoom.out": { "title": "Zoom out" },
+		"zoom.reset": { "title": "Reset zoom" },
+		"composer.focus": { "title": "Focus chat input" },
+		"composer.togglePlanMode": { "title": "Toggle plan mode" },
+		"composer.toggleTerminalMode": { "title": "Toggle terminal mode" },
+		"startSurface.cycleRepository": { "title": "Switch repository" },
+		"composer.toggleContextPanel": { "title": "Toggle context panel" },
+		"composer.openModelPicker": { "title": "Open model picker" },
+		"composer.toggleFollowUpBehavior": {
+			"title": "Send with opposite follow-up behavior"
+		},
+		"editor.edit": { "title": "Toggle diff and edit" },
+		"editor.new": { "title": "Open file" },
+		"editor.close": { "title": "Close current file" },
+		"editor.toggleExplorer": { "title": "Toggle file explorer" },
+		"terminal.new": { "title": "New terminal" },
+		"terminal.close": { "title": "Close current terminal" },
+		"terminal.previous": { "title": "Previous terminal" },
+		"terminal.next": { "title": "Next terminal" },
+		"inspector.focusTerminal": { "title": "Focus terminal" },
+		"inspector.toggleScripts": { "title": "Toggle scripts panel" }
+	}
+}

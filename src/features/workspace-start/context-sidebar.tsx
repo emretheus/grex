@@ -1,5 +1,6 @@
 import { ArrowLeft } from "lucide-react";
 import { useEffect, useState, useTransition } from "react";
+import { useTranslation } from "react-i18next";
 import Skeleton from "react-loading-skeleton";
 import { Button } from "@/components/ui/button";
 import { InboxSidebar } from "@/features/inbox";
@@ -38,6 +39,7 @@ export function WorkspaceStartContextSidebar({
 	onOpenCard,
 	onBackToInspector,
 }: WorkspaceStartContextSidebarProps) {
+	const { t } = useTranslation("misc");
 	const [inboxMounted, setInboxMounted] = useState(false);
 	const [, startTransition] = useTransition();
 
@@ -65,14 +67,14 @@ export function WorkspaceStartContextSidebar({
 						size="icon-xs"
 						onClick={onBackToInspector}
 						className="-ml-1.5 cursor-pointer text-muted-foreground hover:text-foreground"
-						title="Back to inspector"
-						aria-label="Back to inspector"
+						title={t("workspaceStart.backToInspector")}
+						aria-label={t("workspaceStart.backToInspector")}
 					>
 						<ArrowLeft />
 					</Button>
 				) : null}
 				<h2 className="text-ui font-medium leading-8 tracking-[-0.01em] text-muted-foreground">
-					Contexts
+					{t("workspaceStart.contexts")}
 				</h2>
 			</div>
 			{inboxMounted ? (

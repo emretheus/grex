@@ -1,4 +1,5 @@
 import { ArrowUpRight, Plus, X } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import {
 	Tooltip,
@@ -42,8 +43,12 @@ function ActionButton({
 }
 
 export function QuickPanelCloseButton() {
+	const { t } = useTranslation("common");
 	return (
-		<ActionButton label="Close" onClick={() => void hideQuickPanel()}>
+		<ActionButton
+			label={t("actions.close")}
+			onClick={() => void hideQuickPanel()}
+		>
 			<X className="size-3.5" strokeWidth={1.8} />
 		</ActionButton>
 	);
@@ -62,14 +67,15 @@ export function QuickPanelActions({
 	selectedSessionId: string | null;
 	onNewTask: () => void;
 }) {
+	const { t } = useTranslation("misc");
 	return (
 		<>
-			<ActionButton label="New Workspace" onClick={onNewTask}>
+			<ActionButton label={t("quickPanel.newWorkspace")} onClick={onNewTask}>
 				<Plus className="size-3.5" strokeWidth={1.8} />
 			</ActionButton>
 			{selectedWorkspaceId ? (
 				<ActionButton
-					label="Open in Grex"
+					label={t("quickPanel.openInGrex")}
 					onClick={() =>
 						void revealWorkspaceInMainWindow(
 							selectedWorkspaceId,

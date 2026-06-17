@@ -1,0 +1,68 @@
+{
+	"common": {
+		"disconnect": "Trennen",
+		"disconnecting": "Wird getrennt…",
+		"nothingToFilter": "Nichts zum Filtern.",
+		"countSelected_one": "{{count}} ausgewählt",
+		"countSelected_other": "{{count}} ausgewählt",
+		"assignedFeedHint": "Nur dir zugewiesene Vorgänge erscheinen im Feed."
+	},
+	"scope": {
+		"assignedToMe": "Mir zugewiesen"
+	},
+	"jira": {
+		"connectAnother": "Weitere Site verbinden",
+		"siteFallback": "Jira-Site",
+		"updateFailed": "Jira-Aktualisierung fehlgeschlagen",
+		"updateError": "Jira-Bereich konnte nicht gespeichert werden.",
+		"disconnectFailed": "Jira-Trennung fehlgeschlagen",
+		"disconnectError": "Jira konnte nicht getrennt werden.",
+		"scopeAll": "Alle Projekte",
+		"projectsLabel": "Projekte",
+		"allProjects": "Alle Projekte"
+	},
+	"linear": {
+		"connectAnother": "Weiteren Workspace verbinden",
+		"workspaceFallback": "Linear-Workspace",
+		"updateFailed": "Linear-Aktualisierung fehlgeschlagen",
+		"updateError": "Linear-Bereich konnte nicht gespeichert werden.",
+		"disconnectFailed": "Linear-Trennung fehlgeschlagen",
+		"disconnectError": "Linear konnte nicht getrennt werden.",
+		"scopeAll": "Alle Vorgänge",
+		"teamsLabel": "Teams",
+		"allTeams": "Alle Teams",
+		"projectsLabel": "Projekte",
+		"allProjects": "Alle Projekte"
+	},
+	"trello": {
+		"connectAnother": "Weiteres Konto verbinden",
+		"accountFallback": "Trello-Konto",
+		"updateFailed": "Trello-Aktualisierung fehlgeschlagen",
+		"updateError": "Trello-Bereich konnte nicht gespeichert werden.",
+		"disconnectFailed": "Trello-Trennung fehlgeschlagen",
+		"disconnectError": "Trello konnte nicht getrennt werden.",
+		"scopeMine": "Meine Karten",
+		"scopeAll": "Alle Boards",
+		"boardsLabel": "Boards",
+		"allBoards": "Alle Boards",
+		"memberFeedHint": "Nur Karten, bei denen du Mitglied bist, erscheinen im Feed."
+	},
+	"forgejo": {
+		"connectAnother": "Weitere Instanz verbinden",
+		"instanceFallback": "Forgejo-Instanz",
+		"updateFailed": "Forgejo-Aktualisierung fehlgeschlagen",
+		"updateError": "Forgejo-Bereich konnte nicht gespeichert werden.",
+		"disconnectFailed": "Forgejo-Trennung fehlgeschlagen",
+		"disconnectError": "Forgejo konnte nicht getrennt werden.",
+		"scopeMine": "Meine Vorgänge",
+		"scopeAll": "Alle Vorgänge",
+		"allIssuesHint": "Alle Vorgänge in Repositorys, die dein Token lesen kann."
+	},
+	"featurebase": {
+		"connectAnother": "Weiteres Board verbinden",
+		"boardFallback": "Featurebase-Board",
+		"disconnectFailed": "Featurebase-Trennung fehlgeschlagen",
+		"disconnectError": "Featurebase konnte nicht getrennt werden.",
+		"readOnlyHint": "Feedback-Beiträge sind schreibgeschützt; alles von diesem Board erscheint im Feed."
+	}
+}

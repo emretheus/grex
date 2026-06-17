@@ -1,0 +1,94 @@
+{
+	"collapse": {
+		"working": "Arbeitet...",
+		"done": "Fertig",
+		"separator": ", ",
+		"activeSuffix": "{{clauses}}...",
+		"search": {
+			"onePattern": {
+				"lead": {
+					"active": "Sucht nach '{{pattern}}'",
+					"done": "Nach '{{pattern}}' gesucht"
+				},
+				"cont": {
+					"active": "sucht nach '{{pattern}}'",
+					"done": "nach '{{pattern}}' gesucht"
+				}
+			},
+			"onePatternRepeated": {
+				"lead": {
+					"active": "Sucht nach '{{pattern}}' ({{count}}×)",
+					"done": "Nach '{{pattern}}' gesucht ({{count}}×)"
+				},
+				"cont": {
+					"active": "sucht nach '{{pattern}}' ({{count}}×)",
+					"done": "nach '{{pattern}}' gesucht ({{count}}×)"
+				}
+			},
+			"manyPatterns": {
+				"lead": {
+					"active": "Sucht {{count}} Muster",
+					"done": "{{count}} Muster durchsucht"
+				},
+				"cont": {
+					"active": "sucht {{count}} Muster",
+					"done": "{{count}} Muster durchsucht"
+				}
+			},
+			"times": {
+				"lead": {
+					"active_one": "Sucht {{count}} Mal",
+					"active_other": "Sucht {{count}} Mal",
+					"done_one": "{{count}} Mal gesucht",
+					"done_other": "{{count}} Mal gesucht"
+				},
+				"cont": {
+					"active_one": "sucht {{count}} Mal",
+					"active_other": "sucht {{count}} Mal",
+					"done_one": "{{count}} Mal gesucht",
+					"done_other": "{{count}} Mal gesucht"
+				}
+			}
+		},
+		"read": {
+			"lead": {
+				"active_one": "Liest {{count}} Datei",
+				"active_other": "Liest {{count}} Dateien",
+				"done_one": "{{count}} Datei gelesen",
+				"done_other": "{{count}} Dateien gelesen"
+			},
+			"cont": {
+				"active_one": "liest {{count}} Datei",
+				"active_other": "liest {{count}} Dateien",
+				"done_one": "{{count}} Datei gelesen",
+				"done_other": "{{count}} Dateien gelesen"
+			}
+		},
+		"shell": {
+			"lead": {
+				"active_one": "Führt {{count}} schreibgeschützten Befehl aus",
+				"active_other": "Führt {{count}} schreibgeschützte Befehle aus",
+				"done_one": "{{count}} schreibgeschützten Befehl ausgeführt",
+				"done_other": "{{count}} schreibgeschützte Befehle ausgeführt"
+			},
+			"cont": {
+				"active_one": "führt {{count}} schreibgeschützten Befehl aus",
+				"active_other": "führt {{count}} schreibgeschützte Befehle aus",
+				"done_one": "{{count}} schreibgeschützten Befehl ausgeführt",
+				"done_other": "{{count}} schreibgeschützte Befehle ausgeführt"
+			}
+		}
+	},
+	"toast": {
+		"genericError": "Etwas ist schiefgelaufen. Bitte versuche es erneut.",
+		"genericErrorTitle": "Fehler"
+	},
+	"error": {
+		"userInputMissingIds": "Benutzereingabeanfrage kann nicht angezeigt werden: userInputId oder modelId fehlt.",
+		"deliverUserInputFailed": "Die Antwort auf die Benutzereingabe konnte nicht übermittelt werden.",
+		"sendMessageFailed": "Nachricht konnte nicht gesendet werden."
+	},
+	"pending": {
+		"awaitingAnswer": "Warte auf deine Antwort."
+	}
+}

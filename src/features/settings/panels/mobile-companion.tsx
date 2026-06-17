@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { QRCodeSVG } from "qrcode.react";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import {
@@ -16,6 +17,7 @@ import {
 	revokePairedDevice,
 	signInCloudflare,
 } from "@/lib/api";
+import { i18n } from "@/lib/i18n";
 import { grexQueryKeys } from "@/lib/query-client";
 import { SettingsGroup, SettingsRow } from "../components/settings-row";
 
@@ -35,14 +37,17 @@ function deviceLabel(): string {
 		month: "short",
 		day: "numeric",
 	});
-	return `Phone · ${date}`;
+	return i18n.t("settings:mobileCompanion.devices.label", { date });
 }
 
 function formatLastSeen(ts: string | null): string {
-	if (!ts) return "Never connected";
+	if (!ts) return i18n.t("settings:mobileCompanion.devices.neverConnected");
 	const parsed = new Date(ts);
-	if (Number.isNaN(parsed.getTime())) return "Last seen recently";
-	return `Last seen ${parsed.toLocaleString()}`;
+	if (Number.isNaN(parsed.getTime()))
+		return i18n.t("settings:mobileCompanion.devices.lastSeenRecently");
+	return i18n.t("settings:mobileCompanion.devices.lastSeen", {
+		time: parsed.toLocaleString(),
+	});
 }
 
 function errorText(error: unknown): string {
@@ -54,6 +59,7 @@ function errorText(error: unknown): string {
 /// section upgrades the ephemeral quick tunnel to a stable
 /// remote-*.grex.ai address; pairing mints a per-device token shown as a QR.
 export function MobileCompanionPanel() {
+	const { t } = useTranslation(["settings", "common"]);
 	const queryClient = useQueryClient();
 	const [pairing, setPairing] = useState<CompanionPairingPayload | null>(null);
 	const [copied, setCopied] = useState(false);
@@ -130,12 +136,14 @@ export function MobileCompanionPanel() {
 	return (
 		<SettingsGroup>
 			<SettingsRow
-				title="Mobile companion"
-				description="Drive Grex from your phone's browser over a private link. Enabling starts a local server and a Cloudflare tunnel — no app to install."
+				title={t("mobileCompanion.title")}
+				description={t("mobileCompanion.description")}
 			>
 				<div className="flex items-center gap-2">
 					{enableMutation.isPending ? (
-						<span className="text-small text-muted-foreground">Starting…</span>
+						<span className="text-small text-muted-foreground">
+							{t("mobileCompanion.starting")}
+						</span>
 					) : null}
 					<Switch
 						checked={running}
@@ -144,7 +152,7 @@ export function MobileCompanionPanel() {
 							if (checked) enableMutation.mutate();
 							else disableMutation.mutate();
 						}}
-						aria-label="Enable mobile companion"
+						aria-label={t("mobileCompanion.enableAria")}
 					/>
 				</div>
 			</SettingsRow>
@@ -158,14 +166,14 @@ export function MobileCompanionPanel() {
 			{running ? (
 				<>
 					<SettingsRow
-						title="Permanent URL"
+						title={t("mobileCompanion.permanentUrl.title")}
 						align="start"
 						description={
 							stableHost
-								? "Your phone connects at a fixed address that survives desktop restarts."
+								? t("mobileCompanion.permanentUrl.stable")
 								: signedIn
-									? "Allocate a permanent remote-*.grex.ai address so you never have to re-scan."
-									: "The quick link changes when you restart. Sign in to Cloudflare for a permanent address."
+									? t("mobileCompanion.permanentUrl.signedIn")
+									: t("mobileCompanion.permanentUrl.signedOut")
 						}
 					>
 						{stableHost ? (
@@ -177,7 +185,9 @@ export function MobileCompanionPanel() {
 								disabled={forgetMutation.isPending}
 								onClick={() => forgetMutation.mutate()}
 							>
-								{forgetMutation.isPending ? "Forgetting…" : "Forget"}
+								{forgetMutation.isPending
+									? t("mobileCompanion.permanentUrl.forgetting")
+									: t("mobileCompanion.permanentUrl.forget")}
 							</Button>
 						) : signedIn ? (
 							<Button
@@ -189,8 +199,8 @@ export function MobileCompanionPanel() {
 								onClick={() => allocateMutation.mutate()}
 							>
 								{allocateMutation.isPending
-									? "Allocating…"
-									: "Allocate permanent URL"}
+									? t("mobileCompanion.permanentUrl.allocating")
+									: t("mobileCompanion.permanentUrl.allocate")}
 							</Button>
 						) : (
 							<Button
@@ -202,15 +212,15 @@ export function MobileCompanionPanel() {
 								onClick={() => signInMutation.mutate()}
 							>
 								{signInMutation.isPending
-									? "Waiting for browser…"
-									: "Sign in to Cloudflare"}
+									? t("mobileCompanion.permanentUrl.signingIn")
+									: t("mobileCompanion.permanentUrl.signIn")}
 							</Button>
 						)}
 					</SettingsRow>
 
 					{stableHost ? (
 						<p className="text-small text-muted-foreground">
-							Permanent address:{" "}
+							{t("mobileCompanion.permanentUrl.address")}{" "}
 							<span className="font-mono text-foreground">{stableHost}</span>
 						</p>
 					) : null}
@@ -226,12 +236,12 @@ export function MobileCompanionPanel() {
 					) : null}
 
 					<SettingsRow
-						title="Pair a phone"
+						title={t("mobileCompanion.pair.title")}
 						align="start"
 						description={
 							publicUrl
-								? "Generate a QR code, then scan it with your phone's camera."
-								: "Waiting for the public URL to come up…"
+								? t("mobileCompanion.pair.ready")
+								: t("mobileCompanion.pair.waiting")
 						}
 					>
 						<Button
@@ -242,7 +252,9 @@ export function MobileCompanionPanel() {
 							disabled={!publicUrl || pairMutation.isPending}
 							onClick={() => pairMutation.mutate()}
 						>
-							{pairMutation.isPending ? "Generating…" : "Pair phone"}
+							{pairMutation.isPending
+								? t("mobileCompanion.pair.generating")
+								: t("mobileCompanion.pair.button")}
 						</Button>
 					</SettingsRow>
 
@@ -258,8 +270,7 @@ export function MobileCompanionPanel() {
 								<QRCodeSVG value={pairing.url} size={184} />
 							</div>
 							<p className="max-w-[340px] text-center text-small leading-snug text-muted-foreground">
-								Scan with your phone's camera. The code carries a one-time
-								device token — pair once and the phone reconnects on its own.
+								{t("mobileCompanion.pair.scanHint")}
 							</p>
 							{/* Also expose the link as copyable text: phones that can't
 							    scan can paste it into the browser, and it's the address to
@@ -279,7 +290,9 @@ export function MobileCompanionPanel() {
 										window.setTimeout(() => setCopied(false), 1500);
 									}}
 								>
-									{copied ? "Copied" : "Copy"}
+									{copied
+										? t("mobileCompanion.pair.copied")
+										: t("common:actions.copy")}
 								</Button>
 							</div>
 						</div>
@@ -287,11 +300,11 @@ export function MobileCompanionPanel() {
 
 					<div className="flex flex-col gap-2 py-5">
 						<p className="text-ui font-medium text-foreground">
-							Paired devices
+							{t("mobileCompanion.devices.title")}
 						</p>
 						{devices.length === 0 ? (
 							<p className="text-small text-muted-foreground">
-								No phones paired yet.
+								{t("mobileCompanion.devices.empty")}
 							</p>
 						) : (
 							devices.map((device) => (

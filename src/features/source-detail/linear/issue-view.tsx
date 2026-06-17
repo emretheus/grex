@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { Clock3, GitBranchPlus } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import {
 	Tooltip,
@@ -28,6 +29,7 @@ export function LinearIssueView({
 	appendContextTarget,
 	onStartWorkspace,
 }: SourceDetailProps) {
+	const { t } = useTranslation("sourceDetail");
 	const meta = card.meta.type === "linear" ? card.meta : null;
 	const connectionId = meta?.connectionId ?? "";
 	// The card id IS the Linear issue UUID (set in `linearItemToContextCard`);
@@ -41,8 +43,7 @@ export function LinearIssueView({
 		refetchOnWindowFocus: "always",
 	});
 	const detail = detailQuery.data ?? null;
-	const markdownBody =
-		detail?.description?.trim() || "No description provided.";
+	const markdownBody = detail?.description?.trim() || t("body.noDescription");
 
 	const insertIntoComposer = useComposerInsert();
 	const handleStartWorkspace = () => {
@@ -71,7 +72,7 @@ export function LinearIssueView({
 						) : null}
 						<span className="inline-flex items-center gap-1 font-normal text-muted-foreground/70">
 							<SourceIcon source="linear" size={13} className="shrink-0" />
-							issue
+							{t("kind.issue")}
 						</span>
 						{meta && meta.priorityLabel !== "No priority" ? (
 							<span className="font-normal text-muted-foreground/70">
@@ -80,7 +81,9 @@ export function LinearIssueView({
 						) : null}
 						<span className="inline-flex items-center gap-1 font-normal text-muted-foreground/70">
 							<Clock3 className="size-[13px]" strokeWidth={1.8} />
-							Updated {formatRelativeTime(card.lastActivityAt)}
+							{t("meta.updated", {
+								time: formatRelativeTime(card.lastActivityAt),
+							})}
 						</span>
 					</div>
 					<SourceDetailActions
@@ -137,6 +140,7 @@ function cnDetailBody(centered: boolean) {
 }
 
 function StartWorkspaceButton({ onClick }: { onClick: () => void }) {
+	const { t } = useTranslation("sourceDetail");
 	return (
 		<Tooltip>
 			<TooltipTrigger asChild>
@@ -144,14 +148,14 @@ function StartWorkspaceButton({ onClick }: { onClick: () => void }) {
 					type="button"
 					variant="ghost"
 					size="icon-xs"
-					aria-label="Start workspace from issue"
+					aria-label={t("startWorkspace.fromIssue")}
 					onClick={onClick}
 					className="size-7 cursor-interactive rounded-md text-muted-foreground hover:bg-foreground/10 hover:text-foreground"
 				>
 					<GitBranchPlus className="size-[13px]" strokeWidth={1.8} />
 				</Button>
 			</TooltipTrigger>
-			<TooltipContent side="top">Start workspace</TooltipContent>
+			<TooltipContent side="top">{t("startWorkspace.tooltip")}</TooltipContent>
 		</Tooltip>
 	);
 }

@@ -1,5 +1,6 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { ArrowRight, Minus, Plus, TriangleAlert } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import {
 	Dialog,
@@ -32,6 +33,7 @@ export function McpSyncDialog({
 	open: boolean;
 	onOpenChange: (open: boolean) => void;
 }) {
+	const { t } = useTranslation("library");
 	const preview = useQuery({
 		queryKey: ["libraryMcpSyncPreview"],
 		queryFn: previewMcpSync,
@@ -52,21 +54,20 @@ export function McpSyncDialog({
 		<Dialog open={open} onOpenChange={onOpenChange}>
 			<DialogContent className="sm:max-w-[560px]">
 				<DialogHeader>
-					<DialogTitle>Sync MCP servers to agents</DialogTitle>
+					<DialogTitle>{t("mcp.syncDialog.title")}</DialogTitle>
 					<DialogDescription>
-						Grex will write these changes to each agent's native config file.
-						Unrelated entries are left untouched.
+						{t("mcp.syncDialog.description")}
 					</DialogDescription>
 				</DialogHeader>
 
 				<div className="max-h-[320px] space-y-4 overflow-y-auto py-1">
 					{preview.isLoading ? (
 						<p className="text-small text-muted-foreground">
-							Computing changes…
+							{t("mcp.syncDialog.computing")}
 						</p>
 					) : changes.length === 0 ? (
 						<p className="text-small text-muted-foreground">
-							No agents available.
+							{t("mcp.syncDialog.noAgents")}
 						</p>
 					) : (
 						changes.map((change) => (
@@ -81,7 +82,7 @@ export function McpSyncDialog({
 								</div>
 								{isNoop(change) && change.unsupported.length === 0 ? (
 									<p className="text-small text-muted-foreground">
-										No changes.
+										{t("mcp.syncDialog.noChanges")}
 									</p>
 								) : (
 									<ul className="space-y-0.5">
@@ -101,7 +102,7 @@ export function McpSyncDialog({
 												icon={TriangleAlert}
 												tone="warn"
 											>
-												{name} — not supported by this agent, skipped
+												{t("mcp.syncDialog.unsupported", { name })}
 											</ChangeRow>
 										))}
 									</ul>
@@ -113,20 +114,20 @@ export function McpSyncDialog({
 
 				{sync.isError ? (
 					<p className="text-small text-destructive">
-						Sync failed. Your config files were not changed.
+						{t("mcp.syncDialog.syncError")}
 					</p>
 				) : null}
 
 				<DialogFooter>
 					<Button variant="ghost" onClick={() => onOpenChange(false)}>
-						Cancel
+						{t("mcp.syncDialog.cancel")}
 					</Button>
 					<Button
 						disabled={!hasWork || sync.isPending || preview.isLoading}
 						onClick={() => sync.mutate()}
 					>
 						<ArrowRight className="size-4" />
-						Sync now
+						{t("mcp.syncDialog.syncNow")}
 					</Button>
 				</DialogFooter>
 			</DialogContent>

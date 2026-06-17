@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Loader2, Plus } from "lucide-react";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { ForgejoConnectState } from "@/features/inbox/forgejo-connect-button";
@@ -20,6 +21,7 @@ import { useWorkspaceToast } from "@/lib/workspace-toast-context";
  *  `ForgejoConnectState`. Unlike Trello there's no board/repo picker — scope
  *  is a simple assigned-only flag. */
 export function ForgejoSettingsPanel() {
+	const { t } = useTranslation("integrations");
 	const connectionsQuery = useForgejoConnections();
 	const connections = connectionsQuery.data ?? [];
 	const [showConnectAnother, setShowConnectAnother] = useState(false);
@@ -57,7 +59,7 @@ export function ForgejoSettingsPanel() {
 					onClick={() => setShowConnectAnother(true)}
 				>
 					<Plus className="size-3.5" strokeWidth={2} />
-					Connect another instance
+					{t("forgejo.connectAnother")}
 				</Button>
 			)}
 		</div>
@@ -69,6 +71,7 @@ function ForgejoConnectionCard({
 }: {
 	connection: ForgejoConnection;
 }) {
+	const { t } = useTranslation("integrations");
 	const pushToast = useWorkspaceToast();
 	const queryClient = useQueryClient();
 
@@ -82,8 +85,8 @@ function ForgejoConnectionCard({
 		mutationFn: forgejoUpdateScope,
 		onError: (error) => {
 			const message =
-				error instanceof Error ? error.message : "Couldn't save Forgejo scope.";
-			pushToast(message, "Forgejo update failed", "destructive");
+				error instanceof Error ? error.message : t("forgejo.updateError");
+			pushToast(message, t("forgejo.updateFailed"), "destructive");
 		},
 	});
 
@@ -96,8 +99,8 @@ function ForgejoConnectionCard({
 		},
 		onError: (error) => {
 			const message =
-				error instanceof Error ? error.message : "Couldn't disconnect Forgejo.";
-			pushToast(message, "Forgejo disconnect failed", "destructive");
+				error instanceof Error ? error.message : t("forgejo.disconnectError");
+			pushToast(message, t("forgejo.disconnectFailed"), "destructive");
 		},
 	});
 
@@ -119,7 +122,7 @@ function ForgejoConnectionCard({
 			<div className="flex items-start justify-between gap-3">
 				<div className="min-w-0">
 					<div className="truncate text-ui font-medium text-foreground">
-						{host || "Forgejo instance"}
+						{host || t("forgejo.instanceFallback")}
 					</div>
 					{user ? (
 						<div className="truncate text-mini text-muted-foreground/70">
@@ -135,7 +138,9 @@ function ForgejoConnectionCard({
 					onClick={() => disconnectMutation.mutate()}
 					disabled={disconnectMutation.isPending}
 				>
-					{disconnectMutation.isPending ? "Disconnecting…" : "Disconnect"}
+					{disconnectMutation.isPending
+						? t("common.disconnecting")
+						: t("common.disconnect")}
 				</Button>
 			</div>
 
@@ -148,21 +153,21 @@ function ForgejoConnectionCard({
 					size="sm"
 				>
 					<ToggleGroupItem value="assigned" className="cursor-interactive">
-						My issues
+						{t("forgejo.scopeMine")}
 					</ToggleGroupItem>
 					<ToggleGroupItem value="all" className="cursor-interactive">
-						All issues
+						{t("forgejo.scopeAll")}
 					</ToggleGroupItem>
 				</ToggleGroup>
 			</div>
 
 			{assignedOnly ? (
 				<p className="text-mini text-muted-foreground/65">
-					Only issues assigned to you appear in the feed.
+					{t("common.assignedFeedHint")}
 				</p>
 			) : (
 				<p className="text-mini text-muted-foreground/65">
-					Every issue across repositories your token can read.
+					{t("forgejo.allIssuesHint")}
 				</p>
 			)}
 		</div>

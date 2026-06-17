@@ -36,6 +36,7 @@ import {
 	locatePastedTextRanges,
 } from "@/lib/composer-insert";
 import { extractError, isRecoverableByPurge } from "@/lib/errors";
+import { i18n } from "@/lib/i18n";
 import {
 	agentModelSectionsQueryOptions,
 	grexQueryKeys,
@@ -601,7 +602,7 @@ export function useConversationStreaming({
 				console.error("[conversation] user-input response:", error);
 				const { code, message: errorMsg } = extractError(
 					error,
-					"Failed to deliver user-input response.",
+					i18n.t("conversation:error.deliverUserInputFailed"),
 				);
 				if (isRecoverableByPurge(code) && displayedWorkspaceId) {
 					showWorkspaceBrokenToast({
@@ -1053,7 +1054,7 @@ export function useConversationStreaming({
 				console.error("[conversation] invoke error:", error);
 				const { code, message: errorMsg } = extractError(
 					error,
-					"Failed to send message.",
+					i18n.t("conversation:error.sendMessageFailed"),
 				);
 				if (isRecoverableByPurge(code) && targetWorkspaceId) {
 					showWorkspaceBrokenToast({

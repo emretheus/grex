@@ -1,4 +1,5 @@
 import { useIsMutating } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import { jiraListInboxItems, jiraSearchIssues } from "@/lib/api";
 import type { ComposerInsertTarget } from "@/lib/composer-insert";
 import { grexQueryKeys } from "@/lib/query-client";
@@ -23,6 +24,7 @@ export function JiraInboxSection({
 	appendContextTarget?: ComposerInsertTarget;
 	horizontalPaddingClass: string;
 }) {
+	const { t } = useTranslation("inbox");
 	const connectionsQuery = useJiraConnections();
 	const connections = connectionsQuery.data ?? [];
 	const displayNames = new Map(
@@ -44,8 +46,8 @@ export function JiraInboxSection({
 			searchKey={grexQueryKeys.jiraSearch}
 			listFn={jiraListInboxItems}
 			searchFn={jiraSearchIssues}
-			emptyTitle="No assigned issues"
-			emptySubtitle="Issues assigned to you in Jira will appear here."
+			emptyTitle={t("section.jira.emptyTitle")}
+			emptySubtitle={t("section.jira.emptySubtitle")}
 			onOpenCard={onOpenCard}
 			selectedCardId={selectedCardId}
 			appendContextTarget={appendContextTarget}

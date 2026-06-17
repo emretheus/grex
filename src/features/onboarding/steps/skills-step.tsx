@@ -6,6 +6,7 @@ import {
 	Terminal,
 } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import {
 	getCliStatus,
@@ -15,9 +16,6 @@ import {
 } from "@/lib/api";
 import { SetupItem } from "../components/setup-item";
 import type { OnboardingStep } from "../types";
-
-const SETUP_FAILED_MESSAGE =
-	"Something went wrong — don't worry, Grex will work fine without it.";
 
 /**
  * The CLI binary name to show in the "Power up Grex" mockup
@@ -59,6 +57,8 @@ export function SkillsStep({
 	onNext: () => void;
 	isRoutingImport: boolean;
 }) {
+	const { t } = useTranslation("onboarding");
+	const setupFailedMessage = t("skills.setupFailed");
 	const [isInstallingCli, setIsInstallingCli] = useState(true);
 	const [cliInstalled, setCliInstalled] = useState(false);
 	const [cliInstallFailed, setCliInstallFailed] = useState(false);
@@ -125,7 +125,7 @@ export function SkillsStep({
 
 	return (
 		<section
-			aria-label="MCP and skills setup"
+			aria-label={t("skills.sectionLabel")}
 			aria-hidden={step !== "skills"}
 			className={`absolute left-[calc(30vw-260px)] top-20 z-30 w-[520px] transition-all duration-1000 ease-[cubic-bezier(.22,.82,.2,1)] ${
 				step === "skills"
@@ -210,35 +210,37 @@ Options:
 
 				<div className="w-full text-center">
 					<h2 className="text-3xl font-semibold tracking-normal text-foreground">
-						Power up Grex
+						{t("skills.heading")}
 					</h2>
 					<p className="mx-auto mt-3 max-w-md text-body leading-6 text-muted-foreground">
-						Grex is installing the CLI and skills in the background so it can
-						split work, run agents, call tools, and carry context across your
-						workspaces.
+						{t("skills.description")}
 					</p>
 				</div>
 
 				<div className="mt-7 grid w-full gap-3">
 					<SetupItem
 						icon={<Terminal className="size-5" />}
-						label="Grex CLI"
-						description="Control Grex from your terminal: create workspaces, send prompts, inspect files, and script repeatable flows."
-						actionLabel={isInstallingCli ? "Installing" : "Retry"}
+						label={t("skills.cli.label")}
+						description={t("skills.cli.description")}
+						actionLabel={
+							isInstallingCli ? t("skills.installing") : t("skills.retry")
+						}
 						onAction={runInstallCli}
 						busy={isInstallingCli}
 						ready={cliInstalled}
-						error={cliInstallFailed ? SETUP_FAILED_MESSAGE : null}
+						error={cliInstallFailed ? setupFailedMessage : null}
 					/>
 					<SetupItem
 						icon={<PackageCheck className="size-5" />}
-						label="Grex Skills (Beta)"
-						description="Install skills so Grex can help with more workflows across every workspace."
-						actionLabel={isInstallingSkills ? "Installing" : "Retry"}
+						label={t("skills.grexSkills.label")}
+						description={t("skills.grexSkills.description")}
+						actionLabel={
+							isInstallingSkills ? t("skills.installing") : t("skills.retry")
+						}
 						onAction={runInstallSkills}
 						busy={isInstallingSkills}
 						ready={skillsInstalled}
-						error={skillsInstallFailed ? SETUP_FAILED_MESSAGE : null}
+						error={skillsInstallFailed ? setupFailedMessage : null}
 					/>
 				</div>
 
@@ -251,7 +253,7 @@ Options:
 						className="h-11 gap-2 px-4 text-title"
 					>
 						<ArrowLeft data-icon="inline-start" className="size-4" />
-						Back
+						{t("skills.back")}
 					</Button>
 					<Button
 						type="button"
@@ -260,7 +262,7 @@ Options:
 						disabled={isRoutingImport}
 						className="h-11 gap-2 px-4 text-title"
 					>
-						Next
+						{t("skills.next")}
 						<ArrowRight data-icon="inline-end" className="size-4" />
 					</Button>
 				</div>

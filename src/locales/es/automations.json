@@ -1,0 +1,134 @@
+{
+	"title": "Automatizaciones",
+	"create": {
+		"viaChat": "Crear desde el chat",
+		"manually": "Crear manualmente",
+		"moreOptions": "Más opciones de creación",
+		"dialogTitle": "Crear automatización",
+		"titlePlaceholder": "Título de la automatización",
+		"promptPlaceholder": "Añade un prompt, p. ej. busca errores en $sentry",
+		"submit": "Crear"
+	},
+	"list": {
+		"currentHeading": "Actuales",
+		"loadError": "No se pudieron cargar las automatizaciones.",
+		"empty": "Aún no hay automatizaciones. Programa un prompt recurrente y se ejecutará por sí solo.",
+		"createButton": "Crear automatización"
+	},
+	"row": {
+		"runNow": "Ejecutar ahora",
+		"edit": "Editar automatización",
+		"moreActions": "Más acciones",
+		"resume": "Reanudar",
+		"pause": "Pausar"
+	},
+	"detail": {
+		"breadcrumb": "Automatizaciones",
+		"resumeAria": "Reanudar automatización",
+		"pauseAria": "Pausar automatización",
+		"deleteAria": "Eliminar automatización",
+		"runNow": "Ejecutar ahora",
+		"titleAria": "Título de la automatización",
+		"promptAria": "Prompt de la automatización",
+		"promptPlaceholder": "Añade un prompt, p. ej. busca errores en $sentry",
+		"sections": {
+			"status": "Estado",
+			"details": "Detalles"
+		},
+		"fields": {
+			"status": "Estado",
+			"nextRun": "Próxima ejecución",
+			"lastRan": "Última ejecución",
+			"runsIn": "Se ejecuta en",
+			"chat": "Chat",
+			"workspace": "Espacio de trabajo",
+			"interval": "Intervalo"
+		},
+		"never": "Nunca",
+		"runsInChat": "Chat",
+		"runsInWorkspace": "Espacio de trabajo",
+		"unknownWorkspace": "Espacio de trabajo desconocido",
+		"unknownChat": "Chat desconocido",
+		"none": "—"
+	},
+	"target": {
+		"target": "Destino",
+		"selectWorkspace": "Seleccionar espacio de trabajo",
+		"selectChat": "Seleccionar chat",
+		"nothingAvailable": "Nada disponible",
+		"chat": "Chat",
+		"workspace": "Espacio de trabajo"
+	},
+	"interval": {
+		"amountAria": "Cantidad del intervalo",
+		"hourly": "Cada hora",
+		"dailyAt": "A diario a las",
+		"weeklyOn": "Semanalmente el",
+		"every": "Cada",
+		"at": "a las",
+		"dailyTimeAria": "Hora de ejecución diaria",
+		"weeklyTimeAria": "Hora de ejecución semanal",
+		"unit": {
+			"minutes": "minutos",
+			"hours": "horas"
+		}
+	},
+	"weekday": {
+		"sunday": "Domingo",
+		"monday": "Lunes",
+		"tuesday": "Martes",
+		"wednesday": "Miércoles",
+		"thursday": "Jueves",
+		"friday": "Viernes",
+		"saturday": "Sábado"
+	},
+	"month": {
+		"jan": "ene",
+		"feb": "feb",
+		"mar": "mar",
+		"apr": "abr",
+		"may": "may",
+		"jun": "jun",
+		"jul": "jul",
+		"aug": "ago",
+		"sep": "sep",
+		"oct": "oct",
+		"nov": "nov",
+		"dec": "dic"
+	},
+	"schedule": {
+		"hourly": "Cada hora",
+		"daily": "A diario",
+		"weekly": "Semanalmente",
+		"dailyAt": "A diario a las {{time}}",
+		"weeklyAt": "Semanalmente el {{weekday}} a las {{time}}",
+		"everyMinutes": "Cada {{amount}} min",
+		"everyHours": "Cada {{amount}} h"
+	},
+	"status": {
+		"active": "Activa",
+		"paused": "En pausa"
+	},
+	"runTime": {
+		"today": "Hoy a las {{clock}}",
+		"yesterday": "Ayer a las {{clock}}",
+		"date": "{{day}} de {{month}} a las {{clock}}",
+		"meridiem": {
+			"am": "a. m.",
+			"pm": "p. m."
+		}
+	},
+	"confirmDelete": {
+		"title": "¿Eliminar automatización?",
+		"description": "«{{title}}» dejará de ejecutarse y se eliminará. Esto no se puede deshacer."
+	},
+	"toast": {
+		"started": "Automatización iniciada",
+		"runningInChat": "Ejecutándose en su chat.",
+		"createFailed": "No se pudo crear la automatización",
+		"updateFailed": "No se pudo actualizar la automatización",
+		"deleteFailed": "No se pudo eliminar la automatización",
+		"statusFailed": "No se pudo cambiar el estado de la automatización",
+		"runFailed": "No se pudo ejecutar la automatización"
+	}
+}

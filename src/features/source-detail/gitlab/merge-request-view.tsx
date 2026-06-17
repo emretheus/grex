@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import {
 	GitHubDetailPage,
 	type SourceDetailProps,
@@ -9,6 +10,7 @@ export function GitLabMergeRequestView({
 	card,
 	appendContextTarget,
 }: SourceDetailProps) {
+	const { t } = useTranslation("sourceDetail");
 	const detailRef =
 		card.detailRef?.source === "gitlab_mr" ? card.detailRef : null;
 	const detailQuery = useInboxItemDetailQuery(detailRef, card.id);
@@ -22,7 +24,7 @@ export function GitLabMergeRequestView({
 			description={detail?.body ?? undefined}
 			error={detailQuery.error}
 			isLoading={detailQuery.isLoading}
-			kindLabel="merge request"
+			kindLabel={t("kind.mergeRequest")}
 			refresh={detailRef ? toRefreshControl(detailQuery) : undefined}
 		/>
 	);

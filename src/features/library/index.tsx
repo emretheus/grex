@@ -1,5 +1,6 @@
 import { Library } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import {
 	Dialog,
@@ -25,12 +26,7 @@ import { publishShellEvent, useShellEvent } from "@/shell/event-bus";
 import { LibraryMcpPanel } from "./panels/mcp";
 import { LibraryPromptsPanel } from "./panels/prompts";
 import { LibrarySkillsPanel } from "./panels/skills";
-import {
-	LIBRARY_SECTION_CAPTIONS,
-	LIBRARY_SECTION_LABELS,
-	LIBRARY_SECTIONS,
-	type LibrarySection,
-} from "./types";
+import { LIBRARY_SECTIONS, type LibrarySection } from "./types";
 
 /** Open the Library from anywhere (sidebar button, shortcut, command). */
 export function openLibrary(section?: LibrarySection): void {
@@ -43,6 +39,7 @@ export function openLibrary(section?: LibrarySection): void {
  * shell event so callers don't need to thread open-state through the tree.
  */
 export function LibraryDialog() {
+	const { t } = useTranslation("library");
 	const [open, setOpen] = useState(false);
 	const [section, setSection] = useState<LibrarySection>("mcp");
 
@@ -70,7 +67,7 @@ export function LibraryDialog() {
 												isActive={section === key}
 												onClick={() => setSection(key)}
 											>
-												{LIBRARY_SECTION_LABELS[key]}
+												{t(`sections.${key}.label`)}
 											</SidebarMenuButton>
 										</SidebarMenuItem>
 									))}
@@ -82,10 +79,10 @@ export function LibraryDialog() {
 					<div className="flex min-w-0 flex-1 flex-col overflow-hidden">
 						<div className="flex items-baseline gap-3 border-b border-border/40 px-8 py-4">
 							<DialogTitle className="text-title font-semibold text-foreground">
-								{LIBRARY_SECTION_LABELS[section]}
+								{t(`sections.${section}.label`)}
 							</DialogTitle>
 							<DialogDescription className="truncate text-small text-muted-foreground/70">
-								{LIBRARY_SECTION_CAPTIONS[section]}
+								{t(`sections.${section}.caption`)}
 							</DialogDescription>
 						</div>
 						<div className="min-h-0 flex-1 overflow-hidden">
@@ -106,6 +103,7 @@ export function LibraryDialog() {
 
 /** Sidebar entry button — opens the Library. Mirrors `SettingsButton`. */
 export function LibraryButton({ shortcut }: { shortcut?: string | null }) {
+	const { t } = useTranslation("library");
 	return (
 		<Tooltip>
 			<TooltipTrigger asChild>
@@ -113,7 +111,7 @@ export function LibraryButton({ shortcut }: { shortcut?: string | null }) {
 					variant="ghost"
 					size="icon"
 					onClick={() => openLibrary()}
-					aria-label="Open Library"
+					aria-label={t("openLibrary")}
 					className="text-muted-foreground hover:text-foreground"
 				>
 					<Library className="size-[15px]" strokeWidth={1.8} />
@@ -124,7 +122,7 @@ export function LibraryButton({ shortcut }: { shortcut?: string | null }) {
 				sideOffset={4}
 				className="flex h-[24px] items-center gap-2 rounded-md px-2 text-small leading-none"
 			>
-				<span className="leading-none">Library</span>
+				<span className="leading-none">{t("title")}</span>
 				{shortcut ? (
 					<InlineShortcutDisplay
 						hotkey={shortcut}

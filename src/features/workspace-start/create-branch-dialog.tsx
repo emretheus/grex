@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import {
 	Dialog,
@@ -8,7 +9,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-import { validateBranchName } from "./branch-name-validation";
+import { branchNameValidationKey } from "./branch-name-validation";
 
 export type CreateBranchDialogProps = {
 	open: boolean;
@@ -30,6 +31,7 @@ export function CreateBranchDialog({
 	existingBranches,
 	onSubmit,
 }: CreateBranchDialogProps) {
+	const { t } = useTranslation(["misc", "common"]);
 	const [value, setValue] = useState(defaultPrefix);
 	const [submitting, setSubmitting] = useState(false);
 	const [serverError, setServerError] = useState<string | null>(null);
@@ -42,12 +44,15 @@ export function CreateBranchDialog({
 		}
 	}, [open, defaultPrefix]);
 
-	const validationError = useMemo(
-		() => validateBranchName(value, existingBranches),
+	const validation = useMemo(
+		() => branchNameValidationKey(value, existingBranches),
 		[value, existingBranches],
 	);
+	const validationError = validation
+		? t(validation.key, validation.params)
+		: null;
 	const error = serverError ?? validationError;
-	const canSubmit = !validationError && !submitting && value.trim().length > 0;
+	const canSubmit = !validation && !submitting && value.trim().length > 0;
 
 	async function handleSubmit(event?: React.FormEvent) {
 		event?.preventDefault();
@@ -67,20 +72,24 @@ export function CreateBranchDialog({
 		<Dialog open={open} onOpenChange={onOpenChange}>
 			<DialogContent className="gap-3 sm:max-w-md">
 				<DialogHeader>
-					<DialogTitle>Create and checkout branch</DialogTitle>
+					<DialogTitle>
+						{t("workspaceStart.createBranchDialog.title")}
+					</DialogTitle>
 				</DialogHeader>
 				<form onSubmit={handleSubmit} className="flex flex-col gap-1.5">
 					<label
 						htmlFor="create-branch-name"
 						className="text-small font-medium text-muted-foreground"
 					>
-						Branch name
+						{t("workspaceStart.createBranchDialog.branchNameLabel")}
 					</label>
 					<Input
 						id="create-branch-name"
 						value={value}
 						autoFocus
-						placeholder="feature/awesome"
+						placeholder={t(
+							"workspaceStart.createBranchDialog.branchNamePlaceholder",
+						)}
 						disabled={submitting}
 						aria-invalid={error ? true : undefined}
 						onChange={(e) => {
@@ -104,10 +113,10 @@ export function CreateBranchDialog({
 							disabled={submitting}
 							onClick={() => onOpenChange(false)}
 						>
-							Close
+							{t("common:actions.close")}
 						</Button>
 						<Button type="submit" size="sm" disabled={!canSubmit}>
-							Create and checkout
+							{t("workspaceStart.createBranchDialog.submit")}
 						</Button>
 					</div>
 				</form>

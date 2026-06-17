@@ -1,5 +1,6 @@
 import { Check, ChevronDown } from "lucide-react";
 import { type ReactNode, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import {
 	DropdownMenu,
@@ -16,7 +17,7 @@ import {
 } from "@/components/ui/popover";
 import type { AutomationSchedule } from "@/lib/api";
 import { cn } from "@/lib/utils";
-import { DEFAULT_TIME, scheduleSummary, WEEKDAY_NAMES } from "./schedule";
+import { DEFAULT_TIME, scheduleSummary, weekdayNames } from "./schedule";
 
 function timeOf(value: AutomationSchedule): string {
 	if (value.kind === "daily" || value.kind === "weekly") return value.time;
@@ -34,6 +35,7 @@ function AmountInput({
 	amount: number;
 	onCommit: (amount: number) => void;
 }) {
+	const { t } = useTranslation("automations");
 	const [draft, setDraft] = useState(String(amount));
 	useEffect(() => {
 		setDraft(String(amount));
@@ -42,7 +44,7 @@ function AmountInput({
 		<Input
 			type="number"
 			min={1}
-			aria-label="Interval amount"
+			aria-label={t("interval.amountAria")}
 			value={draft}
 			onChange={(event) => {
 				setDraft(event.target.value);
@@ -160,6 +162,7 @@ export function IntervalPicker({
 	className?: string;
 	align?: "start" | "end";
 }) {
+	const { t } = useTranslation("automations");
 	const setKind = (kind: AutomationSchedule["kind"]) => {
 		if (kind === value.kind) return;
 		switch (kind) {
@@ -196,19 +199,19 @@ export function IntervalPicker({
 			</PopoverTrigger>
 			<PopoverContent align={align} className="w-80 p-1">
 				<IntervalOption
-					label="Hourly"
+					label={t("interval.hourly")}
 					active={value.kind === "hourly"}
 					onSelect={() => setKind("hourly")}
 				/>
 				<IntervalOption
-					label="Daily at"
+					label={t("interval.dailyAt")}
 					active={value.kind === "daily"}
 					onSelect={() => setKind("daily")}
 				>
 					{value.kind === "daily" ? (
 						<Input
 							type="time"
-							aria-label="Daily run time"
+							aria-label={t("interval.dailyTimeAria")}
 							value={value.time}
 							onChange={(event) => {
 								if (event.target.value) {
@@ -220,7 +223,7 @@ export function IntervalPicker({
 					) : null}
 				</IntervalOption>
 				<IntervalOption
-					label="Weekly on"
+					label={t("interval.weeklyOn")}
 					active={value.kind === "weekly"}
 					onSelect={() => setKind("weekly")}
 				>
@@ -228,16 +231,18 @@ export function IntervalPicker({
 						<>
 							<InlineSelect
 								value={value.weekday}
-								options={WEEKDAY_NAMES.map((name, weekday) => ({
+								options={weekdayNames().map((name, weekday) => ({
 									value: weekday,
 									label: name,
 								}))}
 								onChange={(weekday) => onChange({ ...value, weekday })}
 							/>
-							<span className="text-ui text-muted-foreground">at</span>
+							<span className="text-ui text-muted-foreground">
+								{t("interval.at")}
+							</span>
 							<Input
 								type="time"
-								aria-label="Weekly run time"
+								aria-label={t("interval.weeklyTimeAria")}
 								value={value.time}
 								onChange={(event) => {
 									if (event.target.value) {
@@ -250,7 +255,7 @@ export function IntervalPicker({
 					) : null}
 				</IntervalOption>
 				<IntervalOption
-					label="Every"
+					label={t("interval.every")}
 					active={value.kind === "every"}
 					onSelect={() => setKind("every")}
 				>
@@ -263,8 +268,11 @@ export function IntervalPicker({
 							<InlineSelect
 								value={value.unit}
 								options={[
-									{ value: "minutes" as const, label: "minutes" },
-									{ value: "hours" as const, label: "hours" },
+									{
+										value: "minutes" as const,
+										label: t("interval.unit.minutes"),
+									},
+									{ value: "hours" as const, label: t("interval.unit.hours") },
 								]}
 								onChange={(unit) => onChange({ ...value, unit })}
 							/>

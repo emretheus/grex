@@ -7,6 +7,7 @@ import {
 	useRef,
 	useState,
 } from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import {
 	ContextMenu,
@@ -292,6 +293,7 @@ export function InspectorTabsSection({
 	canHoverExpand,
 	children,
 }: InspectorTabsSectionProps) {
+	const { t } = useTranslation("inspector");
 	const { settings } = useSettings();
 	const newTerminalShortcut = getShortcut(settings.shortcuts, "terminal.new");
 
@@ -432,7 +434,7 @@ export function InspectorTabsSection({
 				}}
 			>
 				<section
-					aria-label="Inspector section Tabs"
+					aria-label={t("tabs.sectionLabel")}
 					// Whole scripts-area belongs to terminal scope so Mod+T from
 					// Run output spawns a terminal instead of a chat session.
 					data-focus-scope="terminal"
@@ -487,7 +489,7 @@ export function InspectorTabsSection({
 									onClick={() => handleTabClick("setup")}
 								>
 									<ScriptStatusIcon state={setupScriptState} />
-									Setup
+									{t("tabs.setup")}
 									<span
 										aria-hidden="true"
 										className={cn(
@@ -567,7 +569,7 @@ export function InspectorTabsSection({
 											"shrink-0 disabled:cursor-not-allowed disabled:opacity-50",
 										)}
 									>
-										Terminal
+										{t("tabs.terminal")}
 									</button>
 								) : (
 									terminalInstances.map((instance, index) => {
@@ -618,7 +620,7 @@ export function InspectorTabsSection({
 														</span>
 														<button
 															type="button"
-															aria-label={`Close ${label}`}
+															aria-label={t("tabs.closeNamed", { name: label })}
 															onClick={(e) => {
 																e.stopPropagation();
 																onCloseTerminal(instance.id);
@@ -660,8 +662,8 @@ export function InspectorTabsSection({
 														)}
 														<span>
 															{isHoverZoomDisabled
-																? "Enable hover zoom"
-																: "Disable hover zoom"}
+																? t("tabs.enableHoverZoom")
+																: t("tabs.disableHoverZoom")}
 														</span>
 													</ContextMenuItem>
 													<ContextMenuSeparator />

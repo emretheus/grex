@@ -16,6 +16,7 @@ import {
 	CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { ShimmerText } from "@/components/ui/shimmer-text";
+import { i18n } from "@/lib/i18n";
 import type { ReasoningLifecycle } from "@/lib/reasoning-lifecycle";
 import { cn } from "@/lib/utils";
 
@@ -159,12 +160,20 @@ export type ReasoningTriggerProps = ComponentProps<
 
 function defaultGetThinkingMessage(isStreaming: boolean, duration?: number) {
 	if (isStreaming) {
-		return <ShimmerText>Thinking...</ShimmerText>;
+		return (
+			<ShimmerText>{i18n.t("components:ai.reasoning.thinking")}</ShimmerText>
+		);
 	}
 	if (duration === undefined) {
-		return <span>Thinking</span>;
+		return <span>{i18n.t("components:ai.reasoning.thinkingStatic")}</span>;
 	}
-	return <span>Thought for {duration}s</span>;
+	return (
+		<span>
+			{i18n.t("components:ai.reasoning.thoughtForSeconds", {
+				count: duration,
+			})}
+		</span>
+	);
 }
 
 export const ReasoningTrigger = memo(

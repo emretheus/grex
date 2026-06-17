@@ -35,14 +35,16 @@ export const branchToneClasses: Record<WorkspaceBranchTone, string> = {
 export const ARCHIVED_SECTION_ID = "__archived__";
 export const STATUS_OPTIONS: ReadonlyArray<{
 	value: WorkspaceStatus;
-	label: string;
+	/** Translation key under the `navigation` namespace (`status.*`).
+	 *  Resolved via `t()` at render so the label reacts to language switches. */
+	labelKey: string;
 	tone: GroupTone;
 }> = [
-	{ value: "backlog", label: "Backlog", tone: "backlog" },
-	{ value: "in-progress", label: "In progress", tone: "progress" },
-	{ value: "review", label: "In review", tone: "review" },
-	{ value: "done", label: "Done", tone: "done" },
-	{ value: "canceled", label: "Canceled", tone: "canceled" },
+	{ value: "backlog", labelKey: "status.backlog", tone: "backlog" },
+	{ value: "in-progress", labelKey: "status.inProgress", tone: "progress" },
+	{ value: "review", labelKey: "status.inReview", tone: "review" },
+	{ value: "done", labelKey: "status.done", tone: "done" },
+	{ value: "canceled", labelKey: "status.canceled", tone: "canceled" },
 ];
 
 export function humanizeBranch(branch: string): string {

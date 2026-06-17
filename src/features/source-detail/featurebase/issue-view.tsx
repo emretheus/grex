@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { Clock3, GitBranchPlus, Lightbulb } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import {
 	Tooltip,
@@ -27,6 +28,7 @@ export function FeaturebasePostView({
 	appendContextTarget,
 	onStartWorkspace,
 }: SourceDetailProps) {
+	const { t } = useTranslation("sourceDetail");
 	const meta = card.meta.type === "featurebase" ? card.meta : null;
 	const connectionId = meta?.connectionId ?? "";
 	// The card id IS the Featurebase post id (set in
@@ -41,8 +43,7 @@ export function FeaturebasePostView({
 		refetchOnWindowFocus: "always",
 	});
 	const detail = detailQuery.data ?? null;
-	const markdownBody =
-		detail?.description?.trim() || "No description provided.";
+	const markdownBody = detail?.description?.trim() || t("body.noDescription");
 
 	const insertIntoComposer = useComposerInsert();
 	const handleStartWorkspace = () => {
@@ -71,11 +72,13 @@ export function FeaturebasePostView({
 						) : null}
 						<span className="inline-flex items-center gap-1 font-normal text-muted-foreground/70">
 							<Lightbulb className="size-[13px]" strokeWidth={1.8} />
-							post
+							{t("kind.post")}
 						</span>
 						<span className="inline-flex items-center gap-1 font-normal text-muted-foreground/70">
 							<Clock3 className="size-[13px]" strokeWidth={1.8} />
-							Updated {formatRelativeTime(card.lastActivityAt)}
+							{t("meta.updated", {
+								time: formatRelativeTime(card.lastActivityAt),
+							})}
 						</span>
 					</div>
 					<SourceDetailActions
@@ -115,6 +118,7 @@ function cnDetailBody(centered: boolean) {
 }
 
 function StartWorkspaceButton({ onClick }: { onClick: () => void }) {
+	const { t } = useTranslation("sourceDetail");
 	return (
 		<Tooltip>
 			<TooltipTrigger asChild>
@@ -122,14 +126,14 @@ function StartWorkspaceButton({ onClick }: { onClick: () => void }) {
 					type="button"
 					variant="ghost"
 					size="icon-xs"
-					aria-label="Start workspace from post"
+					aria-label={t("startWorkspace.fromPost")}
 					onClick={onClick}
 					className="size-7 cursor-interactive rounded-md text-muted-foreground hover:bg-foreground/10 hover:text-foreground"
 				>
 					<GitBranchPlus className="size-[13px]" strokeWidth={1.8} />
 				</Button>
 			</TooltipTrigger>
-			<TooltipContent side="top">Start workspace</TooltipContent>
+			<TooltipContent side="top">{t("startWorkspace.tooltip")}</TooltipContent>
 		</Tooltip>
 	);
 }

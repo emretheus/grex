@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import {
 	Dialog,
@@ -37,6 +38,7 @@ export function FeedbackDialog({
 	onOpenSettings,
 	onSubmitPrompt,
 }: FeedbackDialogProps) {
+	const { t } = useTranslation("feedback");
 	const [state, dispatch] = useFeedbackState();
 	// Existing-repo hint: local-only (SQLite + package.json), so a fresh
 	// re-fetch on every open is fine. GitHub connection state comes from
@@ -84,23 +86,26 @@ export function FeedbackDialog({
 			const result = await createGrexIssue(title, body);
 			dispatch({ type: "reset" });
 			setConfirming(false);
-			toast.success(`Issue #${result.number} created`, {
+			toast.success(t("toast.issueCreated", { number: result.number }), {
 				description: result.url,
 				action: {
-					label: "View",
+					label: t("toast.viewIssue"),
 					onClick: () => {
 						void openUrl(result.url);
 					},
 				},
 			});
 		} catch (error) {
-			toast.error("Failed to create issue", {
-				description: describeUnknownError(error, "Please try again."),
+			toast.error(t("toast.createIssueFailed"), {
+				description: describeUnknownError(
+					error,
+					t("toast.createIssueFailedDescription"),
+				),
 			});
 		} finally {
 			setSending(false);
 		}
-	}, [confirming, dispatch, state.step]);
+	}, [confirming, dispatch, state.step, t]);
 
 	const handleCancelConfirm = useCallback(() => setConfirming(false), []);
 
@@ -136,8 +141,8 @@ export function FeedbackDialog({
 				<DialogHeader>
 					<DialogTitle className="text-ui font-medium tracking-[-0.01em]">
 						{state.step.kind === "input"
-							? "Send feedback"
-							: "Contribute to Grex"}
+							? t("dialog.titleInput")
+							: t("dialog.titleContribute")}
 					</DialogTitle>
 				</DialogHeader>
 

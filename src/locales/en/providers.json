@@ -1,0 +1,247 @@
+{
+	"status": {
+		"ready": "Ready",
+		"connecting": "Connecting"
+	},
+	"actions": {
+		"logIn": "Log in",
+		"getApiKey": "Get your API key",
+		"addProvider": "Add provider",
+		"addModel": "Add model",
+		"newProvider": "New provider",
+		"fetchModels": "Fetch models",
+		"refreshModels": "Refresh models",
+		"refreshModelList": "Refresh model list",
+		"syncModels": "Sync models",
+		"unselectAll": "Unselect all",
+		"removeModel": "Remove model"
+	},
+	"row": {
+		"version": "v{{version}}"
+	},
+	"common": {
+		"models": "Models",
+		"customProviders": "Custom Providers",
+		"apiKey": "API key",
+		"baseUrl": "Base URL",
+		"displayName": "Display name",
+		"apiStyle": "API style",
+		"custom": "Custom"
+	},
+	"providers": {
+		"opencode": {
+			"modelsDescription": "Pick which models appear in the composer's picker.",
+			"customProvidersDescription": "Add a provider by API key or OpenAI-compatible endpoint, saved to ~/.config/opencode."
+		},
+		"claude": {
+			"modelsDescription": "Pick which official Claude models appear in the composer's picker.",
+			"customProvidersDescription": "Enter API keys here to use third-party models. They run alongside Claude Code's official models."
+		},
+		"codex": {
+			"modelsDescription": "Pick which official Codex models appear in the composer's picker.",
+			"customProvidersDescription": "Point Codex at any OpenAI-compatible (Responses API) endpoint. Runs alongside the official models."
+		},
+		"cursor": {
+			"description": "Add your API key, then pick which models appear in the composer's picker."
+		},
+		"kimi": {
+			"customProvidersDescription": "Add an OpenAI-compatible or Anthropic-shaped endpoint, saved to ~/.kimi-code/config.toml."
+		}
+	},
+	"proxy": {
+		"title": "Proxy",
+		"description": "Routes all provider traffic — Claude Code, Codex, OpenCode, Cursor, and Gemini.",
+		"placeholder": "http://127.0.0.1:7890",
+		"modes": {
+			"none": "Not set",
+			"system": "System proxy",
+			"custom": "Custom proxy"
+		}
+	},
+	"multiSelect": {
+		"searchModels": "Search models",
+		"noModelsPicked": "No models picked",
+		"selected": "{{count}} selected",
+		"loadingModels": "Loading models…",
+		"noCachedModels": "No cached models yet — click Refresh.",
+		"noModelsFound": "No models found.",
+		"overflowMore": "+{{count}} more",
+		"removeModel": "Remove {{label}}"
+	},
+	"claudeCustom": {
+		"apiKeyPlaceholder": "{{provider}} API key",
+		"getApiKeyAria": "Get {{provider}} API key",
+		"baseUrlPlaceholder": "Base URL",
+		"apiKeyPlaceholderPlain": "API key",
+		"customLabel": "Custom",
+		"noneConfigured": "No third-party providers configured.",
+		"removeAria": "Remove {{label}}"
+	},
+	"cursorBody": {
+		"apiKeyPlaceholder": "Cursor API key",
+		"getApiKeyAria": "Get Cursor API key",
+		"fetchError": "Could not fetch models — {{error}}. The composer will fall back to Auto."
+	},
+	"cursorKey": {
+		"apiKeyPlaceholder": "API key",
+		"validating": "Validating…",
+		"validatingAria": "Validating API key",
+		"getApiKeyAria": "Get Cursor API key"
+	},
+	"codexCustom": {
+		"providerId": "Provider id",
+		"providerIdPlaceholder": "hundun",
+		"displayName": "Display name",
+		"displayNamePlaceholder": "Codex (Hundun)",
+		"baseUrlPlaceholder": "https://api.example.com/v1",
+		"apiKeyPlaceholder": "sk-…",
+		"modelsHint": "Fetch from the endpoint, then pick which appear in the composer.",
+		"emptyState": "No custom Codex providers. Point Codex at any OpenAI-compatible (Responses API) endpoint.",
+		"editAria": "Edit {{id}}",
+		"deleteAria": "Delete {{id}}",
+		"errors": {
+			"idRequired": "Provider id is required.",
+			"baseUrlRequired": "Base URL is required."
+		}
+	},
+	"opencodeCustom": {
+		"namePlaceholder": "Display name (e.g. My Proxy)",
+		"baseUrlPlaceholder": "Base URL (https://…/v1)",
+		"apiKeyPlaceholder": "API key",
+		"presetApiKeyPlaceholder": "{{provider}} API key",
+		"getApiKeyAria": "Get API key",
+		"customOption": "Custom (OpenAI-compatible)",
+		"noneConfigured": "No custom providers configured.",
+		"apiKeyConfigured": "API key configured",
+		"detail_one": "{{baseUrl}} · {{count}} model",
+		"detail_other": "{{baseUrl}} · {{count}} models",
+		"editAria": "Edit {{id}}",
+		"deleteAria": "Delete {{id}}",
+		"apiStyles": {
+			"chatCompletions": {
+				"label": "Chat Completions",
+				"hint": "/v1/chat/completions — widest compatibility."
+			},
+			"responses": {
+				"label": "Responses API",
+				"hint": "/v1/responses — advanced reasoning & tools."
+			}
+		}
+	},
+	"kimiCustom": {
+		"namePlaceholder": "Display name (e.g. My Proxy)",
+		"baseUrlPlaceholder": "Base URL (https://…/v1)",
+		"apiKeyPlaceholder": "API key",
+		"noneConfigured": "No custom providers configured.",
+		"noBaseUrl": "no base URL",
+		"detail_one": "{{baseUrl}} · {{count}} model",
+		"detail_other": "{{baseUrl}} · {{count}} models",
+		"editAria": "Edit {{id}}",
+		"deleteAria": "Delete {{id}}",
+		"apiStyles": {
+			"openai": {
+				"label": "OpenAI-compatible",
+				"hint": "GET {base}/models · Authorization: Bearer. Base URL includes /v1."
+			},
+			"openaiResponses": {
+				"label": "OpenAI Responses",
+				"hint": "OpenAI Responses API (/v1/responses)."
+			},
+			"anthropic": {
+				"label": "Anthropic",
+				"hint": "GET {base}/v1/models · x-api-key / anthropic-version."
+			},
+			"kimi": {
+				"label": "Kimi (Moonshot)",
+				"hint": "Moonshot's OpenAI-shaped API."
+			}
+		}
+	},
+	"modelsEditor": {
+		"title": "Models",
+		"emptyState": "No models yet — add the model ids your endpoint serves.",
+		"modelIdPlaceholder": "model-id",
+		"displayNamePlaceholder": "Display name (optional)",
+		"reasoningLabel": "Reasoning (effort) — only if the model supports it",
+		"removeModelAria": "Remove model"
+	},
+	"opencodeModels": {
+		"syncModelsAria": "Sync models",
+		"syncTooltip": "Sync models — re-reads ~/.config/opencode",
+		"confirmTitle": "Sync OpenCode models?",
+		"confirmDescription_one": "Re-reading your config restarts OpenCode and will stop {{count}} running chat.",
+		"confirmDescription_other": "Re-reading your config restarts OpenCode and will stop {{count}} running chats.",
+		"confirmLabel": "Sync anyway"
+	},
+	"localLlm": {
+		"title": "Local LLM",
+		"description": "Powers session title / branch name generation and Smart Triage — both run entirely on your device.",
+		"status": {
+			"starting": "Starting",
+			"running": "Running",
+			"noModel": "No model",
+			"stopped": "Stopped"
+		},
+		"noModelBanner": "No model selected. Pick one from the Models dropdown below to start — including Custom if you already have a GGUF on disk.",
+		"models": "Models",
+		"loadingModels": "Loading models…",
+		"custom": "Custom",
+		"customSlotHint": "Use your own GGUF file. Set the path below.",
+		"active": "Active",
+		"badges": {
+			"downloading": "Downloading",
+			"paused": "Paused",
+			"failed": "Failed",
+			"downloaded": "Downloaded",
+			"recommended": "Recommended"
+		},
+		"actions": {
+			"addVision": "Add vision",
+			"cancel": "Cancel",
+			"resume": "Resume",
+			"retry": "Retry",
+			"download": "Download",
+			"delete": "Delete",
+			"pause": "Pause",
+			"reset": "Reset",
+			"apply": "Apply"
+		},
+		"downloads": "Downloads",
+		"customPath": {
+			"label": "Custom model path",
+			"placeholder": "/path/to/model.gguf",
+			"helpAria": "About custom model path",
+			"helpTooltip": "Point this at a <0>.gguf</0> you've downloaded yourself. Curated models above take precedence — clear this field to switch back to the picker."
+		},
+		"context": {
+			"label": "Context",
+			"helpAria": "What is context size?",
+			"helpTooltip": "The total token budget for input + generated output combined. Bigger context lets you send longer prompts but uses more RAM and takes longer to start.",
+			"helpDefault": "If you're unsure, the default ({{value}}) is sized to fit your hardware — leave it as is.",
+			"discardPending": "Discard pending change",
+			"resetToDefault": "Reset to default"
+		},
+		"deleteDialog": {
+			"title": "Delete this model?",
+			"descriptionFallback": "This will remove the model from disk.",
+			"descriptionPrefix": "This will remove ",
+			"descriptionSuffix": " ({{size}}) from disk. You'll have to download it again to use it."
+		},
+		"progress": {
+			"paused": "Paused",
+			"connecting": "Connecting…",
+			"perSecond": "{{rate}}/s",
+			"etaLeft": "{{eta}} left"
+		}
+	},
+	"loginDialog": {
+		"title": "{{provider}} login",
+		"close": "Close"
+	},
+	"agentStatus": {
+		"waiting": "Waiting...",
+		"restart": "Restart",
+		"restartSetup": "Restart setup",
+		"logIn": "Log in"
+	}
+}

@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Loader2, Plus } from "lucide-react";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -22,6 +23,7 @@ import { useWorkspaceToast } from "@/lib/workspace-toast-context";
  *  toggle (with a board filter when "All boards"), plus Disconnect. A
  *  "Connect another account" affordance reuses `TrelloConnectState`. */
 export function TrelloSettingsPanel() {
+	const { t } = useTranslation("integrations");
 	const connectionsQuery = useTrelloConnections();
 	const connections = connectionsQuery.data ?? [];
 	const [showConnectAnother, setShowConnectAnother] = useState(false);
@@ -59,7 +61,7 @@ export function TrelloSettingsPanel() {
 					onClick={() => setShowConnectAnother(true)}
 				>
 					<Plus className="size-3.5" strokeWidth={2} />
-					Connect another account
+					{t("trello.connectAnother")}
 				</Button>
 			)}
 		</div>
@@ -71,6 +73,7 @@ function TrelloConnectionCard({
 }: {
 	connection: TrelloConnection;
 }) {
+	const { t } = useTranslation("integrations");
 	const pushToast = useWorkspaceToast();
 	const queryClient = useQueryClient();
 
@@ -85,8 +88,8 @@ function TrelloConnectionCard({
 		mutationFn: trelloUpdateScope,
 		onError: (error) => {
 			const message =
-				error instanceof Error ? error.message : "Couldn't save Trello scope.";
-			pushToast(message, "Trello update failed", "destructive");
+				error instanceof Error ? error.message : t("trello.updateError");
+			pushToast(message, t("trello.updateFailed"), "destructive");
 		},
 	});
 
@@ -99,8 +102,8 @@ function TrelloConnectionCard({
 		},
 		onError: (error) => {
 			const message =
-				error instanceof Error ? error.message : "Couldn't disconnect Trello.";
-			pushToast(message, "Trello disconnect failed", "destructive");
+				error instanceof Error ? error.message : t("trello.disconnectError");
+			pushToast(message, t("trello.disconnectFailed"), "destructive");
 		},
 	});
 
@@ -138,7 +141,7 @@ function TrelloConnectionCard({
 			<div className="flex items-start justify-between gap-3">
 				<div className="min-w-0">
 					<div className="truncate text-ui font-medium text-foreground">
-						{member || "Trello account"}
+						{member || t("trello.accountFallback")}
 					</div>
 				</div>
 				<Button
@@ -149,7 +152,9 @@ function TrelloConnectionCard({
 					onClick={() => disconnectMutation.mutate()}
 					disabled={disconnectMutation.isPending}
 				>
-					{disconnectMutation.isPending ? "Disconnecting…" : "Disconnect"}
+					{disconnectMutation.isPending
+						? t("common.disconnecting")
+						: t("common.disconnect")}
 				</Button>
 			</div>
 
@@ -162,10 +167,10 @@ function TrelloConnectionCard({
 					size="sm"
 				>
 					<ToggleGroupItem value="assigned" className="cursor-interactive">
-						My cards
+						{t("trello.scopeMine")}
 					</ToggleGroupItem>
 					<ToggleGroupItem value="all" className="cursor-interactive">
-						All boards
+						{t("trello.scopeAll")}
 					</ToggleGroupItem>
 				</ToggleGroup>
 			</div>
@@ -178,7 +183,7 @@ function TrelloConnectionCard({
 				/>
 			) : (
 				<p className="text-mini text-muted-foreground/65">
-					Only cards you're a member of appear in the feed.
+					{t("trello.memberFeedHint")}
 				</p>
 			)}
 		</div>
@@ -194,6 +199,7 @@ function BoardPicker({
 	boardIds: string[];
 	onToggleBoard: (id: string) => void;
 }) {
+	const { t } = useTranslation("integrations");
 	const boardsQuery = useQuery({
 		queryKey: grexQueryKeys.trelloBoards(connectionId),
 		queryFn: () => trelloListBoards(connectionId),
@@ -202,8 +208,8 @@ function BoardPicker({
 
 	return (
 		<CheckboxList
-			label="Boards"
-			emptyHint="All boards"
+			label={t("trello.boardsLabel")}
+			emptyHint={t("trello.allBoards")}
 			isLoading={boardsQuery.isLoading}
 			options={(boardsQuery.data ?? []).map((b) => ({
 				id: b.id,
@@ -230,12 +236,15 @@ function CheckboxList({
 	selected: string[];
 	onToggle: (id: string) => void;
 }) {
+	const { t } = useTranslation("integrations");
 	return (
 		<div className="flex flex-col gap-1.5">
 			<div className="flex items-baseline justify-between">
 				<span className="text-mini font-medium text-foreground">{label}</span>
 				<span className="text-mini text-muted-foreground/55">
-					{selected.length === 0 ? emptyHint : `${selected.length} selected`}
+					{selected.length === 0
+						? emptyHint
+						: t("common.countSelected", { count: selected.length })}
 				</span>
 			</div>
 			<ScrollArea className="h-32 rounded-md border border-border/50">
@@ -246,7 +255,7 @@ function CheckboxList({
 						</div>
 					) : options.length === 0 ? (
 						<div className="px-1 py-2 text-mini text-muted-foreground/60">
-							Nothing to filter.
+							{t("common.nothingToFilter")}
 						</div>
 					) : (
 						options.map((option) => {

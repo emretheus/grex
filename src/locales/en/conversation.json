@@ -1,0 +1,94 @@
+{
+	"collapse": {
+		"working": "Working...",
+		"done": "Done",
+		"separator": ", ",
+		"activeSuffix": "{{clauses}}...",
+		"search": {
+			"onePattern": {
+				"lead": {
+					"active": "Searching for '{{pattern}}'",
+					"done": "Searched for '{{pattern}}'"
+				},
+				"cont": {
+					"active": "searching for '{{pattern}}'",
+					"done": "searched for '{{pattern}}'"
+				}
+			},
+			"onePatternRepeated": {
+				"lead": {
+					"active": "Searching for '{{pattern}}' ({{count}}×)",
+					"done": "Searched for '{{pattern}}' ({{count}}×)"
+				},
+				"cont": {
+					"active": "searching for '{{pattern}}' ({{count}}×)",
+					"done": "searched for '{{pattern}}' ({{count}}×)"
+				}
+			},
+			"manyPatterns": {
+				"lead": {
+					"active": "Searching {{count}} patterns",
+					"done": "Searched {{count}} patterns"
+				},
+				"cont": {
+					"active": "searching {{count}} patterns",
+					"done": "searched {{count}} patterns"
+				}
+			},
+			"times": {
+				"lead": {
+					"active_one": "Searching {{count}} time",
+					"active_other": "Searching {{count}} times",
+					"done_one": "Searched {{count}} time",
+					"done_other": "Searched {{count}} times"
+				},
+				"cont": {
+					"active_one": "searching {{count}} time",
+					"active_other": "searching {{count}} times",
+					"done_one": "searched {{count}} time",
+					"done_other": "searched {{count}} times"
+				}
+			}
+		},
+		"read": {
+			"lead": {
+				"active_one": "Reading {{count}} file",
+				"active_other": "Reading {{count}} files",
+				"done_one": "Read {{count}} file",
+				"done_other": "Read {{count}} files"
+			},
+			"cont": {
+				"active_one": "reading {{count}} file",
+				"active_other": "reading {{count}} files",
+				"done_one": "read {{count}} file",
+				"done_other": "read {{count}} files"
+			}
+		},
+		"shell": {
+			"lead": {
+				"active_one": "Running {{count}} read-only command",
+				"active_other": "Running {{count}} read-only commands",
+				"done_one": "Ran {{count}} read-only command",
+				"done_other": "Ran {{count}} read-only commands"
+			},
+			"cont": {
+				"active_one": "running {{count}} read-only command",
+				"active_other": "running {{count}} read-only commands",
+				"done_one": "ran {{count}} read-only command",
+				"done_other": "ran {{count}} read-only commands"
+			}
+		}
+	},
+	"toast": {
+		"genericError": "Something went wrong. Please try again.",
+		"genericErrorTitle": "Error"
+	},
+	"error": {
+		"userInputMissingIds": "Unable to render user-input request: missing userInputId or modelId.",
+		"deliverUserInputFailed": "Failed to deliver user-input response.",
+		"sendMessageFailed": "Failed to send message."
+	},
+	"pending": {
+		"awaitingAnswer": "Awaiting your answer."
+	}
+}

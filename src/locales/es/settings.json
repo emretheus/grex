@@ -1,0 +1,447 @@
+{
+	"appearance": {
+		"chatFontSize": {
+			"aria": "Tamaño de fuente del chat",
+			"description": "Tamaño usado en el cuerpo de los mensajes",
+			"title": "Tamaño de fuente del chat"
+		},
+		"codeFont": {
+			"aria": "Fuente del código",
+			"title": "Fuente del código"
+		},
+		"colorTheme": {
+			"description": "Elige una paleta de acento",
+			"title": "Tema de color"
+		},
+		"pointerCursors": {
+			"description": "Cambia el cursor a un puntero al pasar sobre elementos interactivos",
+			"title": "Usar cursor de puntero"
+		},
+		"terminalFont": {
+			"aria": "Fuente del terminal",
+			"title": "Fuente del terminal"
+		},
+		"theme": {
+			"dark": "Oscuro",
+			"description": "Usa claro, oscuro o sigue al sistema",
+			"light": "Claro",
+			"system": "Sistema",
+			"title": "Tema"
+		},
+		"uiFont": {
+			"aria": "Fuente de la interfaz",
+			"title": "Fuente de la interfaz"
+		}
+	},
+	"language": {
+		"aria": "Idioma de la interfaz",
+		"description": "Elige el idioma de la aplicación",
+		"title": "Idioma"
+	},
+	"nav": {
+		"settings": "Ajustes",
+		"repositories": "Repositorios",
+		"repositoryFallback": "Repositorio",
+		"sections": {
+			"general": "General",
+			"appearance": "Apariencia",
+			"model": "Modelos",
+			"providers": "Proveedores",
+			"shortcuts": "Atajos",
+			"import": "Importar",
+			"account": "Cuentas",
+			"inbox": "Contextos",
+			"experimental": "Experimental",
+			"developer": "Desarrollador"
+		},
+		"captions": {
+			"account": "Sincronizado con tu CLI local de gh / glab.",
+			"inbox": "Elige qué elementos aporta cada cuenta conectada a Contextos."
+		}
+	},
+	"general": {
+		"notifications": {
+			"title": "Notificaciones de escritorio",
+			"description": "Muestra notificaciones del sistema cuando las sesiones se completan o requieren intervención"
+		},
+		"notificationSound": {
+			"title": "Sonido de notificación",
+			"description": "Reproduce un sonido cuando se dispara una notificación de escritorio",
+			"aria": "Sonido de notificación",
+			"testAria": "Probar sonido de notificación"
+		},
+		"terminalHoverExpansion": {
+			"title": "Ampliar terminales al pasar el cursor",
+			"description": "Amplía los terminales del inspector cuando el cursor se posa sobre ellos."
+		},
+		"terminalMode": {
+			"title": "Modo terminal",
+			"description": "Añade un interruptor en el editor que abre tu prompt en la interfaz de terminal del agente en lugar de en una sesión de chat. Solo para Claude y Codex."
+		},
+		"alwaysShowContextUsage": {
+			"title": "Mostrar siempre el uso del contexto",
+			"description": "De forma predeterminada, el uso del contexto solo se muestra cuando se ha usado más del 70 %."
+		},
+		"usageStats": {
+			"title": "Estadísticas de uso",
+			"description": "Muestra los límites de tasa de la cuenta junto al editor."
+		},
+		"autoArchiveOnMerge": {
+			"title": "Archivar automáticamente al fusionar",
+			"description": "Cuando el PR/MR vinculado de un espacio de trabajo se fusiona, archiva el espacio de trabajo automáticamente."
+		},
+		"followUpBehavior": {
+			"title": "Comportamiento de seguimiento",
+			"description": "Pon en cola los seguimientos mientras el agente trabaja o redirige la ejecución actual.",
+			"pressToInvert": "Pulsa {{shortcut}} para hacer lo contrario en un solo mensaje.",
+			"queue": "En cola",
+			"steer": "Redirigir"
+		},
+		"claudeThinking": {
+			"title": "Visualización del razonamiento de Claude Code",
+			"description": "Controla cómo Claude Code devuelve el contenido del razonamiento.",
+			"summarized": "Resumido",
+			"omitted": "Omitido",
+			"tooltip": {
+				"summarizedLabel": "Resumido",
+				"summarizedBody": "los bloques de razonamiento contienen texto resumido.",
+				"omittedLabel": "Omitido",
+				"omittedBody": "los bloques de razonamiento están vacíos. El servidor omite el streaming de los tokens de razonamiento, por lo que el texto final se transmite antes. Reduce la latencia, no el coste."
+			}
+		}
+	},
+	"model": {
+		"default": {
+			"title": "Modelo predeterminado",
+			"description": "Modelo para chats nuevos"
+		},
+		"review": {
+			"title": "Modelo de revisión",
+			"description": "Modelo para la revisión de código"
+		},
+		"action": {
+			"title": "Modelo de acción",
+			"description": "Modelo para PR/MR y para confirmar y enviar"
+		},
+		"fastMode": "Modo rápido",
+		"fastModeAria": "Modo rápido de {{prefix}}",
+		"selectModel": "Seleccionar modelo",
+		"effort": {
+			"low": "Bajo",
+			"medium": "Medio",
+			"high": "Alto",
+			"xhigh": "Muy alto"
+		}
+	},
+	"archiveCleanup": {
+		"title": "Limpiar espacios de trabajo archivados",
+		"descriptionEmpty": "No hay espacios de trabajo archivados.",
+		"description_one": "Elimina permanentemente el {{count}} espacio de trabajo archivado, incluidas sus sesiones y su historial de chat.",
+		"description_other": "Elimina permanentemente los {{count}} espacios de trabajo archivados, incluidas sus sesiones y su historial de chat.",
+		"button": "Limpiar",
+		"buttonBusy": "Limpiando",
+		"confirmTitle": "¿Limpiar los espacios de trabajo archivados?",
+		"confirmDescription_one": "Esto eliminará permanentemente el {{count}} espacio de trabajo archivado, incluidas sus sesiones y su historial de chat. Esta acción no se puede deshacer.",
+		"confirmDescription_other": "Esto eliminará permanentemente los {{count}} espacios de trabajo archivados, incluidas sus sesiones y su historial de chat. Esta acción no se puede deshacer.",
+		"confirmLabel": "Eliminar todo",
+		"toast": {
+			"nothing": "No hay espacios de trabajo archivados que limpiar",
+			"cleaned_one": "Se limpió {{count}} espacio de trabajo archivado",
+			"cleaned_other": "Se limpiaron {{count}} espacios de trabajo archivados",
+			"partial_one": "Se limpió {{deleted}}, pero no se pudo eliminar {{count}} espacio de trabajo",
+			"partial_other": "Se limpiaron {{deleted}}, pero no se pudieron eliminar {{count}} espacios de trabajo",
+			"failedTitle": "Error al limpiar el archivo"
+		}
+	},
+	"appUpdates": {
+		"title": "Actualizaciones de la app",
+		"loadingStatus": "Cargando el estado del actualizador…",
+		"status": {
+			"notConfigured": "El actualizador no está configurado en esta compilación.",
+			"checking": "Comprobando las versiones de GitHub en segundo plano.",
+			"downloadingVersion": "Descargando {{version}} en segundo plano.",
+			"downloading": "Descargando una actualización en segundo plano.",
+			"downloadedVersion": "{{version}} se ha descargado y está lista para instalar.",
+			"downloaded": "La última actualización se ha descargado y está lista para instalar.",
+			"error": "La última comprobación de actualizaciones falló.",
+			"disabledWaiting": "Las comprobaciones automáticas de actualizaciones están a la espera de la configuración del actualizador.",
+			"disabled": "Las comprobaciones automáticas de actualizaciones están desactivadas.",
+			"idle": "Comprueba las versiones de GitHub, descarga las actualizaciones de forma silenciosa y luego avisa cuando están listas."
+		},
+		"versionNotice": "Actual {{current}} · Disponible {{available}}",
+		"check": {
+			"downloading": "Descargando",
+			"installing": "Instalando",
+			"checking": "Comprobando",
+			"checkNow": "Comprobar ahora"
+		},
+		"updateAndRestart": "Actualizar y reiniciar",
+		"changeLog": "Registro de cambios",
+		"toast": {
+			"upToDate": "Grex está actualizado",
+			"checkFailed": "Error al comprobar actualizaciones",
+			"checkFailedFallback": "No se pudieron comprobar las actualizaciones.",
+			"installFailed": "Error de instalación",
+			"installFailedFallback": "No se pudo instalar la actualización descargada."
+		}
+	},
+	"components": {
+		"title": "Componentes de Grex",
+		"loadingStatus": "Cargando el estado de los componentes…",
+		"summary": {
+			"upToDate": "El CLI y las habilidades de Grex están actualizados a {{version}}.",
+			"healthy": "El CLI y las habilidades de Grex parecen estar en buen estado.",
+			"needsAttention": "Uno o más componentes necesitan atención."
+		},
+		"cliLabel": "CLI de Grex",
+		"skillsLabel": "Habilidades de Grex",
+		"recheck": "Volver a comprobar",
+		"recheckBusy": "Comprobando",
+		"cli": {
+			"installedAt": "Instalado en {{path}}.",
+			"installed": "Instalado.",
+			"stale": "Existe una copia más antigua en la ruta de instalación.",
+			"missing": "No instalado en este equipo.",
+			"unavailable": "Estado no disponible."
+		},
+		"skills": {
+			"installedFor": "Instaladas para {{targets}}.",
+			"installed": "Instaladas.",
+			"signInPrompt": "Inicia sesión en Claude Code o Codex y vuelve a comprobar.",
+			"join": " y "
+		},
+		"toast": {
+			"readFailed": "No se pudo leer el estado de los componentes de Grex",
+			"upToDate": "Los componentes de Grex están actualizados",
+			"recheckFailed": "Error al volver a comprobar",
+			"cliInstallFailed": "Error al instalar el CLI",
+			"skillsInstallFailed": "Error al instalar las habilidades"
+		}
+	},
+	"account": {
+		"errorAria": "Error en la lista de cuentas",
+		"loading": "Cargando cuentas…",
+		"empty": "Aún no hay cuentas conectadas."
+	},
+	"devTools": {
+		"showOnboarding": {
+			"title": "Mostrar la introducción de nuevo",
+			"description": "Marca la introducción como incompleta para que aparezca la próxima vez que se inicie Grex.",
+			"notice": "La introducción se mostrará en el próximo inicio.",
+			"button": "Restablecer introducción"
+		},
+		"resetData": {
+			"title": "Restablecer todos los datos",
+			"description": "Elimina todos los espacios de trabajo, sesiones, mensajes y repositorios de la base de datos de desarrollo. También se eliminarán los artefactos del sistema de archivos (árboles de trabajo, caché de pegado).",
+			"dataDir": "Directorio de datos:",
+			"button": "Restablecer todos los datos de desarrollo",
+			"resetting": "Restableciendo...",
+			"confirmTitle": "Confirmar restablecimiento",
+			"confirmDescription": "Esto eliminará permanentemente <strong>todos los espacios de trabajo, sesiones y repositorios</strong> de la base de datos de desarrollo. Esta acción no se puede deshacer. Después podrás volver a importar desde Conductor.",
+			"confirmLabel": "Eliminar todo",
+			"confirmLabelBusy": "Restableciendo..."
+		}
+	},
+	"plain": {
+		"connectAnother": "Conectar otro espacio de trabajo",
+		"workspaceFallback": "Espacio de trabajo de Plain",
+		"disconnect": "Desconectar",
+		"disconnecting": "Desconectando…",
+		"threadsHint": "Los hilos abiertos (Por hacer y Pospuestos) aparecen en el feed.",
+		"disconnectError": "No se pudo desconectar Plain.",
+		"disconnectFailed": "Error al desconectar Plain"
+	},
+	"mobileCompanion": {
+		"title": "Compañero móvil",
+		"description": "Controla Grex desde el navegador de tu teléfono a través de un enlace privado. Al activarlo se inicia un servidor local y un túnel de Cloudflare; no hay ninguna app que instalar.",
+		"starting": "Iniciando…",
+		"enableAria": "Activar el compañero móvil",
+		"permanentUrl": {
+			"title": "URL permanente",
+			"stable": "Tu teléfono se conecta a una dirección fija que se mantiene tras reiniciar el escritorio.",
+			"signedIn": "Asigna una dirección permanente remote-*.grex.ai para no tener que volver a escanear.",
+			"signedOut": "El enlace rápido cambia al reiniciar. Inicia sesión en Cloudflare para obtener una dirección permanente.",
+			"forget": "Olvidar",
+			"forgetting": "Olvidando…",
+			"allocate": "Asignar URL permanente",
+			"allocating": "Asignando…",
+			"signIn": "Iniciar sesión en Cloudflare",
+			"signingIn": "Esperando al navegador…",
+			"address": "Dirección permanente:"
+		},
+		"pair": {
+			"title": "Vincular un teléfono",
+			"ready": "Genera un código QR y luego escanéalo con la cámara de tu teléfono.",
+			"waiting": "Esperando a que se active la URL pública…",
+			"button": "Vincular teléfono",
+			"generating": "Generando…",
+			"scanHint": "Escanea con la cámara de tu teléfono. El código lleva un token de dispositivo de un solo uso: vincula una vez y el teléfono se reconecta por sí solo.",
+			"copied": "Copiado"
+		},
+		"devices": {
+			"title": "Dispositivos vinculados",
+			"empty": "Aún no hay teléfonos vinculados.",
+			"revoke": "Revocar",
+			"label": "Teléfono · {{date}}",
+			"neverConnected": "Nunca se ha conectado",
+			"lastSeenRecently": "Visto recientemente",
+			"lastSeen": "Visto por última vez {{time}}"
+		}
+	},
+	"repositoryPreferences": {
+		"title": "Preferencias",
+		"description": "Prompts integrados a nivel de repositorio usados por las acciones de Grex y los chats nuevos.",
+		"preview": "Vista previa",
+		"save": "Guardar",
+		"saving": "Guardando...",
+		"placeholderGeneral": "Añade instrucciones personalizadas para todos los agentes que trabajen en este repositorio.",
+		"placeholderDefault": "Añade aquí tus preferencias. Se le indicará al agente que priorice estas instrucciones sobre sus instrucciones predeterminadas.",
+		"promptTitle": "Prompt de {{label}}",
+		"promptPreviewFallback": "Vista previa del prompt",
+		"labels": {
+			"createPr": "Preferencias de crear PR",
+			"review": "Preferencias de revisión",
+			"fixErrors": "Preferencias de corregir errores",
+			"resolveConflicts": "Preferencias de resolver conflictos",
+			"branchRename": "Preferencias de renombrar ramas",
+			"general": "Preferencias generales"
+		},
+		"descriptions": {
+			"createPr": "Añade instrucciones personalizadas que se envían al agente cuando pulsas el botón Crear PR.",
+			"review": "Añade instrucciones personalizadas que se envían al agente cuando pulsas Revisar en el inspector.",
+			"fixErrors": "Añade instrucciones personalizadas que se envían al agente cuando pulsas el botón Corregir errores.",
+			"resolveConflicts": "Añade instrucciones personalizadas que se envían al agente cuando pulsas el botón Resolver conflictos.",
+			"branchRename": "Añade instrucciones personalizadas que se usan cuando Grex genera la primera sugerencia de renombrado de rama para un chat nuevo.",
+			"general": "Añade instrucciones personalizadas que se envían al agente al inicio de cada chat nuevo."
+		}
+	},
+	"repositorySettings": {
+		"remoteFallback": "Repositorio",
+		"remoteOrigin": {
+			"title": "Origen remoto",
+			"description": "¿Dónde deberíamos enviar, traer y crear PR?",
+			"empty": "No se encontraron remotos",
+			"orphanedNotice_one": "{{count}} espacio de trabajo apunta a una rama que no está en este remoto. Actualízalo desde el selector de ramas de la cabecera.",
+			"orphanedNotice_other": "{{count}} espacios de trabajo apuntan a una rama que no está en este remoto. Actualízalos desde el selector de ramas de la cabecera."
+		},
+		"branchFrom": {
+			"title": "Crear ramas de los nuevos espacios de trabajo a partir de",
+			"description": "Cada espacio de trabajo es una copia aislada de tu base de código."
+		},
+		"forge": {
+			"notConnected": "{{provider}} no conectado",
+			"connectCta": "Conecta una cuenta de {{provider}} para habilitar el flujo de trabajo de {{provider}} en este repositorio.",
+			"connect": "Conectar",
+			"connecting": "Conectando"
+		},
+		"branchPrefix": {
+			"title": "Prefijo de rama",
+			"description": "Prefijo añadido a los nombres de las ramas al crear nuevos espacios de trabajo en este repositorio.",
+			"username": "Nombre de usuario",
+			"custom": "Personalizado",
+			"none": "Ninguno",
+			"customPlaceholder": "p. ej. feat/",
+			"customAria": "Prefijo de rama personalizado",
+			"preview": "Vista previa:",
+			"connectAccount": "(conecta una cuenta)"
+		},
+		"delete": {
+			"title": "Eliminar repositorio",
+			"description": "Elimina permanentemente este repositorio y todos sus espacios de trabajo, sesiones y mensajes.",
+			"button": "Eliminar repositorio",
+			"confirmTitle": "¿Eliminar {{name}}?",
+			"confirmDescription": "Esto eliminará permanentemente todos los espacios de trabajo, sesiones y mensajes asociados con <strong>{{name}}</strong>. Esta acción no se puede deshacer.",
+			"confirmLabel": "Eliminar",
+			"deleting": "Eliminando..."
+		},
+		"scripts": {
+			"title": "Scripts",
+			"description": "Comandos que se ejecutan cuando los espacios de trabajo se configuran, ejecutan o archivan.",
+			"lockedMessage": "Establecido por el grex.json de este espacio de trabajo; edítalo ahí",
+			"setup": {
+				"label": "Script de configuración",
+				"description": "Disponible desde la pestaña Configuración en cualquier espacio de trabajo",
+				"placeholder": "p. ej., npm install",
+				"autoRun": "Ejecución automática",
+				"autoRunTooltip": "Activado de forma predeterminada: la configuración se ejecuta automáticamente en cuanto se crea un espacio de trabajo. Desactívalo para ejecutarlo manualmente desde la pestaña Configuración.",
+				"autoRunAria": "Ejecutar automáticamente el script de configuración al crear el espacio de trabajo"
+			},
+			"archive": {
+				"label": "Script de archivado",
+				"description": "Se ejecuta cuando se archiva un espacio de trabajo",
+				"placeholder": "p. ej., docker compose down"
+			},
+			"run": {
+				"title": "Scripts de ejecución",
+				"description": "Cada entrada aparece en el menú desplegable Ejecutar del inspector.",
+				"lockedEmpty": "Establecido por el grex.json de este espacio de trabajo; edítalo ahí.",
+				"emptyTitle": "Aún no hay scripts de ejecución",
+				"emptyDescription": "Añade uno para exponer un comando, como un servidor de desarrollo, un ejecutor de pruebas o una tarea en segundo plano.",
+				"addScript": "Añadir script",
+				"defaultName": "Predeterminado",
+				"scriptN": "Script {{index}}",
+				"unnamed": "(sin nombre)",
+				"noCommand": "(sin comando)",
+				"empty": "(vacío)",
+				"exclusive": "Exclusivo",
+				"exclusiveTooltip": "Permite que solo un espacio de trabajo ejecute este script a la vez. Iniciar una nueva ejecución detiene cualquier otra ejecución en este repositorio; útil cuando el script ocupa un puerto fijo.",
+				"exclusiveAria": "Detener otras ejecuciones en este repositorio al iniciar una nueva ejecución",
+				"scriptName": "Nombre del script",
+				"command": "Comando",
+				"commandPlaceholder": "p. ej., npm run dev",
+				"commandAria": "Comando de {{name}}",
+				"stopCommand": "Comando de parada",
+				"stopCommandTooltip": "Comando de limpieza opcional que se ejecuta al pulsar Detener. Útil para scripts que gestionan recursos externos (docker compose down, supabase stop). Mismo entorno y directorio de trabajo que el comando principal.",
+				"stopCommandPlaceholder": "p. ej., docker compose down",
+				"stopCommandAria": "Comando de parada de {{name}}",
+				"scriptFallback": "Script",
+				"collapseAria": "Contraer {{name}}",
+				"expandAria": "Expandir {{name}}",
+				"rowFallback": "script",
+				"doneEditing": "Terminar de editar",
+				"edit": "Editar",
+				"stopEditing": "Dejar de editar",
+				"deleteScript": "Eliminar script",
+				"clickAgainConfirm": "Pulsa de nuevo para confirmar",
+				"confirmDeleteAria": "Confirmar eliminación de {{name}}",
+				"deleteScriptAria": "Eliminar script {{name}}",
+				"managedByProject": "Gestionado por grex.json; edita el archivo para añadir o cambiar"
+			}
+		}
+	},
+	"conductorImport": {
+		"title": "Importar desde Conductor",
+		"repositoryFallback": "Repositorio",
+		"selectWorkspaces": "Selecciona los espacios de trabajo a importar",
+		"importLocal": "Importa espacios de trabajo desde una instalación local de Conductor",
+		"searchWorkspaces": "Buscar espacios de trabajo",
+		"searchRepositories": "Buscar repositorios",
+		"importing_one": "Importando {{count}} espacio de trabajo",
+		"importing_other": "Importando {{count}} espacios de trabajo",
+		"settingUp": "Configurando repositorios y copiando datos...",
+		"selectAll": "Seleccionar todo",
+		"deselectAll": "Deseleccionar todo",
+		"noWorkspaces": "No se encontraron espacios de trabajo",
+		"noRepositories": "No se encontraron repositorios de Conductor",
+		"noMatches": "Sin coincidencias",
+		"importButton_one": "Importar {{count}} espacio de trabajo",
+		"importButton_other": "Importar {{count}} espacios de trabajo",
+		"importFailed": "Error de importación",
+		"importPartial": "{{imported}} importados, {{failed}} fallidos: {{error}}",
+		"importSuccess_one": "Se importó correctamente {{count}} espacio de trabajo",
+		"importSuccess_other": "Se importaron correctamente {{count}} espacios de trabajo",
+		"status": {
+			"archived": "Archivado",
+			"done": "Hecho",
+			"inProgress": "En curso"
+		},
+		"alreadyImported": "Ya importado",
+		"allImported": "Todo importado",
+		"importedCount": "{{imported}}/{{total}} importados",
+		"workspaceCount_one": "{{count}} espacio de trabajo",
+		"workspaceCount_other": "{{count}} espacios de trabajo",
+		"selectWorkspace": "Seleccionar {{name}}",
+		"sessionCount_one": "{{count}} sesión",
+		"sessionCount_other": "{{count}} sesiones"
+	}
+}

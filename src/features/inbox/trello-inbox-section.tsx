@@ -1,4 +1,5 @@
 import { useIsMutating } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import { trelloListInboxItems, trelloSearchIssues } from "@/lib/api";
 import type { ComposerInsertTarget } from "@/lib/composer-insert";
 import { grexQueryKeys } from "@/lib/query-client";
@@ -23,6 +24,7 @@ export function TrelloInboxSection({
 	appendContextTarget?: ComposerInsertTarget;
 	horizontalPaddingClass: string;
 }) {
+	const { t } = useTranslation("inbox");
 	const connectionsQuery = useTrelloConnections();
 	const connections = connectionsQuery.data ?? [];
 	const displayNames = new Map(
@@ -44,8 +46,8 @@ export function TrelloInboxSection({
 			searchKey={grexQueryKeys.trelloSearch}
 			listFn={trelloListInboxItems}
 			searchFn={trelloSearchIssues}
-			emptyTitle="No cards"
-			emptySubtitle="Cards you're a member of in Trello will appear here."
+			emptyTitle={t("section.trello.emptyTitle")}
+			emptySubtitle={t("section.trello.emptySubtitle")}
 			onOpenCard={onOpenCard}
 			selectedCardId={selectedCardId}
 			appendContextTarget={appendContextTarget}

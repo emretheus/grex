@@ -1,0 +1,101 @@
+{
+	"surface": {
+		"ariaLabel": "Editoroberfläche des Arbeitsbereichs",
+		"canvasAriaLabel": "Editor-Arbeitsfläche",
+		"closeDiff": "Diff-Ansicht schließen",
+		"closeEditor": "Editor-Ansicht schließen"
+	},
+	"breadcrumb": {
+		"revealInExplorer": "Im Explorer anzeigen",
+		"copyAbsolutePath": "Absoluten Pfad kopieren"
+	},
+	"tabs": {
+		"openFilesAriaLabel": "Geöffnete Dateien",
+		"closeFileAriaLabel": "{{name}} schließen",
+		"modifiedAriaLabel": "Geändert",
+		"openFileAriaLabel": "Datei öffnen",
+		"close": "Schließen",
+		"closeOthers": "Andere schließen",
+		"closeAll": "Alle schließen"
+	},
+	"contextMenu": {
+		"copyPath": "Pfad kopieren",
+		"copyRelativePath": "Relativen Pfad kopieren",
+		"revealInFinder": "Im Finder anzeigen",
+		"openWith": "Öffnen mit",
+		"addToChat": "Zum Chat hinzufügen"
+	},
+	"search": {
+		"placeholder": "Dateien suchen",
+		"loading": "Dateien werden geladen",
+		"empty": "Keine Dateien gefunden"
+	},
+	"toolbar": {
+		"toggleExplorerAriaLabel": "Datei-Explorer umschalten",
+		"toggleExplorerTitle": "Datei-Explorer",
+		"viewModeAriaLabel": "Markdown-Ansichtsmodus",
+		"source": "Quelltext",
+		"preview": "Vorschau",
+		"edit": "Bearbeiten",
+		"diff": "Diff",
+		"addFileToChatAriaLabel": "Diese Datei zum Chat hinzufügen",
+		"addFileToChatTitle": "Datei zum Chat hinzufügen",
+		"viewOptionsAriaLabel": "Editor-Ansichtsoptionen",
+		"viewOptionsTitle": "Ansichtsoptionen",
+		"close": "Schließen"
+	},
+	"viewOptions": {
+		"goToLine": "Zu Zeile springen…",
+		"wordWrap": "Zeilenumbruch",
+		"minimap": "Minimap",
+		"stickyScroll": "Fixiertes Scrollen",
+		"renderWhitespace": "Leerzeichen anzeigen",
+		"sideBySideDiff": "Diff nebeneinander"
+	},
+	"preview": {
+		"ariaLabel": "Markdown-Vorschau"
+	},
+	"landing": {
+		"ariaLabel": "Datei-Explorer",
+		"title": "Dateien",
+		"closeAriaLabel": "Datei-Explorer schließen",
+		"close": "Schließen",
+		"heading": "Durchsuche deine Codebasis",
+		"pickFile": "Wähle eine Datei aus dem Baum links, um sie im Editor zu öffnen.",
+		"openWorkspace": "Öffne einen Arbeitsbereich, um seine Dateien zu durchsuchen."
+	},
+	"explorer": {
+		"ariaLabel": "Datei-Explorer",
+		"refreshAriaLabel": "Dateibaum aktualisieren",
+		"refreshTitle": "Aktualisieren",
+		"resizeAriaLabel": "Größe des Datei-Explorers ändern",
+		"heading": "Explorer",
+		"loading": "Wird geladen…",
+		"loadError": "Laden fehlgeschlagen — erneut versuchen",
+		"empty": "leer"
+	},
+	"image": {
+		"ariaLabel": "Bildvorschau",
+		"previewAlt": "Vorschau von {{path}}",
+		"deleted": "Dieses Bild wurde in dieser Änderung gelöscht.",
+		"loadError": "Dieses Bild konnte nicht von der Festplatte geladen werden.",
+		"status": {
+			"added": "Hinzugefügt",
+			"modified": "Geändert",
+			"deleted": "Gelöscht"
+		}
+	},
+	"errors": {
+		"loadFile": "Die ausgewählte Datei konnte nicht geladen werden.",
+		"loadFileTitle": "Öffnen der Datei fehlgeschlagen",
+		"startEditor": "Der Editor konnte nicht gestartet werden.",
+		"startEditorTitle": "Editorstart fehlgeschlagen",
+		"startReview": "Die Prüfoberfläche konnte nicht gestartet werden.",
+		"startReviewTitle": "Prüfoberfläche fehlgeschlagen",
+		"listFiles": "Die Dateien des Arbeitsbereichs konnten nicht aufgelistet werden.",
+		"openFile": "Die ausgewählte Datei konnte nicht geöffnet werden.",
+		"openFileTitle": "Öffnen der Datei fehlgeschlagen",
+		"saveFile": "Die ausgewählte Datei konnte nicht gespeichert werden.",
+		"saveFileTitle": "Speichern fehlgeschlagen"
+	}
+}

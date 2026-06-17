@@ -1,0 +1,81 @@
+{
+	"quickPanel": {
+		"panelLabel": "Panneau rapide",
+		"newWorkspace": "Nouvel espace de travail",
+		"openInGrex": "Ouvrir dans Grex"
+	},
+	"quickSwitch": {
+		"switchWorkspace": "Changement rapide d'espace de travail",
+		"thinking": "Réflexion…"
+	},
+	"workspaceStart": {
+		"chatHeading": "Sur quoi devrions-nous travailler ?",
+		"buildHeadingPrefix": "Que devrions-nous créer",
+		"buildHeadingIn": "dans",
+		"buildHeadingSuffix": "?",
+		"repositoryPlaceholder": "un dépôt",
+		"repositoryShort": "Dépôt",
+		"switchRepository": "Changer de dépôt",
+		"closeSourcePreview": "Fermer l'aperçu de la source",
+		"workLocally": "Travailler en local",
+		"justChat": "Simple discussion",
+		"newWorktree": "Nouvel arbre de travail",
+		"selectWhereToRun": "Choisissez où exécuter la tâche",
+		"addRepository": "Ajouter un dépôt…",
+		"reuse": "Réutiliser",
+		"branchOff": "Créer une branche",
+		"reuseDescription": "Basculer directement sur la branche choisie.",
+		"branchOffDescription": "Créer une nouvelle branche à partir de la base choisie.",
+		"reuseTooltip": "Basculer directement sur la branche choisie.",
+		"branchOffTooltip": "Créer une nouvelle branche à partir de la base choisie",
+		"switchBranch": "Changer de branche",
+		"branchToReuse": "Branche à réutiliser",
+		"baseToForkOff": "Base de la nouvelle branche",
+		"createCheckoutNewBranch": "Créer et basculer sur une nouvelle branche…",
+		"contexts": "Contextes",
+		"backToInspector": "Retour à l'inspecteur",
+		"createBranchDialog": {
+			"title": "Créer et basculer sur une branche",
+			"branchNameLabel": "Nom de la branche",
+			"branchNamePlaceholder": "feature/awesome",
+			"submit": "Créer et basculer"
+		},
+		"branchValidation": {
+			"empty": "Le nom de la branche ne peut pas être vide.",
+			"endsWithSlash": "Le nom de la branche ne peut pas se terminer par « / ».",
+			"startInvalid": "Le nom de la branche ne peut pas commencer par « / », « . » ou « - ».",
+			"doubleDot": "Le nom de la branche ne peut pas contenir « .. ».",
+			"whitespace": "Le nom de la branche ne peut pas contenir d'espace.",
+			"invalidCharacter": "Le nom de la branche contient un caractère non valide.",
+			"endsWithLock": "Le nom de la branche ne peut pas se terminer par « .lock ».",
+			"atBrace": "Le nom de la branche ne peut pas contenir « @{ ».",
+			"alreadyExists": "Une branche nommée « {{name}} » existe déjà."
+		}
+	},
+	"updater": {
+		"update": "Mettre à jour",
+		"updateGrexAria": "Mettre à jour Grex vers {{version}}",
+		"installFailed": "Échec de l'installation",
+		"installFailedDescription": "Impossible d'installer la mise à jour téléchargée.",
+		"changeLog": "Journal des modifications",
+		"updateReady": "Mise à jour prête à être installée",
+		"updateDownloaded": "Grex {{version}} a été téléchargé.",
+		"updateAndRestart": "Mettre à jour et redémarrer",
+		"viewChangeLog": "Voir le journal des modifications"
+	},
+	"announcements": {
+		"newInVersion": "Nouveautés de la v{{version}}",
+		"expand": "Développer l'annonce de version",
+		"collapse": "Réduire l'annonce de version",
+		"dismiss": "Ignorer l'annonce de version",
+		"changelogs": "Journaux des modifications"
+	},
+	"terminal": {
+		"starting": "Démarrage de {{agent}}…",
+		"agentFallback": "terminal",
+		"preparingWorkspace": "Préparation de l'espace de travail…",
+		"truncationNotice": "… sortie antérieure tronquée (limite du tampon atteinte) …",
+		"processExited": "[Processus terminé avec le code {{code}}]",
+		"failedToStart": "Échec du démarrage du terminal : {{error}}"
+	}
+}

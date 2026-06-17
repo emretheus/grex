@@ -1,4 +1,5 @@
 import { ArrowRight } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import grexLogoSrc from "@/assets/grex-logo-light.png";
 import { Button } from "@/components/ui/button";
 import { GrexOnboardingMockup } from "../mockup";
@@ -11,6 +12,7 @@ export function IntroPreview({
 	step: OnboardingStep;
 	onNext: () => void;
 }) {
+	const { t } = useTranslation("onboarding");
 	return (
 		<div
 			aria-hidden={step !== "intro"}
@@ -25,16 +27,15 @@ export function IntroPreview({
 			>
 				<img
 					src={grexLogoSrc}
-					alt="Grex"
+					alt={t("intro.logoAlt")}
 					draggable={false}
 					className="size-14 rounded-[10px] opacity-95"
 				/>
 				<h1 className="mt-7 text-[2.625rem] font-semibold leading-[1.1] tracking-normal text-foreground max-lg:text-3xl">
-					Hi, Grex!
+					{t("intro.heading")}
 				</h1>
 				<p className="mt-6 max-w-md text-base font-medium leading-7 text-muted-foreground">
-					AI generates the code. Grex is where you orchestrate, review, and ship
-					it.
+					{t("intro.tagline")}
 				</p>
 
 				<Button
@@ -43,13 +44,13 @@ export function IntroPreview({
 					onClick={onNext}
 					className="mt-7 h-10 gap-2 px-3.5 text-body"
 				>
-					Explore
+					{t("intro.explore")}
 					<ArrowRight data-icon="inline-end" className="size-4" />
 				</Button>
 			</section>
 
 			<section
-				aria-label="Grex preview"
+				aria-label={t("intro.previewLabel")}
 				className={`relative flex min-h-[560px] min-w-0 items-center justify-center transition-transform duration-1000 ease-[cubic-bezier(.22,.82,.2,1)] max-lg:hidden ${
 					step === "skills"
 						? "translate-x-[28vw] translate-y-0"

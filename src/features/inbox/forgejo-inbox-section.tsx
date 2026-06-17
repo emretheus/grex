@@ -1,4 +1,5 @@
 import { useIsMutating } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import { forgejoListInboxItems, forgejoSearchIssues } from "@/lib/api";
 import type { ComposerInsertTarget } from "@/lib/composer-insert";
 import { grexQueryKeys } from "@/lib/query-client";
@@ -23,6 +24,7 @@ export function ForgejoInboxSection({
 	appendContextTarget?: ComposerInsertTarget;
 	horizontalPaddingClass: string;
 }) {
+	const { t } = useTranslation("inbox");
 	const connectionsQuery = useForgejoConnections();
 	const connections = connectionsQuery.data ?? [];
 	const displayNames = new Map(
@@ -44,8 +46,8 @@ export function ForgejoInboxSection({
 			searchKey={grexQueryKeys.forgejoSearch}
 			listFn={forgejoListInboxItems}
 			searchFn={forgejoSearchIssues}
-			emptyTitle="No issues"
-			emptySubtitle="Issues assigned to you in Forgejo will appear here."
+			emptyTitle={t("section.forgejo.emptyTitle")}
+			emptySubtitle={t("section.forgejo.emptySubtitle")}
 			onOpenCard={onOpenCard}
 			selectedCardId={selectedCardId}
 			appendContextTarget={appendContextTarget}

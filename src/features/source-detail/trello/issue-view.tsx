@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { Clock3, GitBranchPlus } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import {
 	Tooltip,
@@ -28,6 +29,7 @@ export function TrelloCardView({
 	appendContextTarget,
 	onStartWorkspace,
 }: SourceDetailProps) {
+	const { t } = useTranslation("sourceDetail");
 	const meta = card.meta.type === "trello" ? card.meta : null;
 	const connectionId = meta?.connectionId ?? "";
 	// The card id IS the Trello card id (set in `trelloItemToContextCard`);
@@ -41,8 +43,7 @@ export function TrelloCardView({
 		refetchOnWindowFocus: "always",
 	});
 	const detail = detailQuery.data ?? null;
-	const markdownBody =
-		detail?.description?.trim() || "No description provided.";
+	const markdownBody = detail?.description?.trim() || t("body.noDescription");
 
 	const insertIntoComposer = useComposerInsert();
 	const handleStartWorkspace = () => {
@@ -71,11 +72,13 @@ export function TrelloCardView({
 						) : null}
 						<span className="inline-flex items-center gap-1 font-normal text-muted-foreground/70">
 							<SourceIcon source="trello" size={13} className="shrink-0" />
-							card
+							{t("kind.card")}
 						</span>
 						<span className="inline-flex items-center gap-1 font-normal text-muted-foreground/70">
 							<Clock3 className="size-[13px]" strokeWidth={1.8} />
-							Updated {formatRelativeTime(card.lastActivityAt)}
+							{t("meta.updated", {
+								time: formatRelativeTime(card.lastActivityAt),
+							})}
 						</span>
 					</div>
 					<SourceDetailActions
@@ -132,6 +135,7 @@ function cnDetailBody(centered: boolean) {
 }
 
 function StartWorkspaceButton({ onClick }: { onClick: () => void }) {
+	const { t } = useTranslation("sourceDetail");
 	return (
 		<Tooltip>
 			<TooltipTrigger asChild>
@@ -139,14 +143,14 @@ function StartWorkspaceButton({ onClick }: { onClick: () => void }) {
 					type="button"
 					variant="ghost"
 					size="icon-xs"
-					aria-label="Start workspace from card"
+					aria-label={t("startWorkspace.fromCard")}
 					onClick={onClick}
 					className="size-7 cursor-interactive rounded-md text-muted-foreground hover:bg-foreground/10 hover:text-foreground"
 				>
 					<GitBranchPlus className="size-[13px]" strokeWidth={1.8} />
 				</Button>
 			</TooltipTrigger>
-			<TooltipContent side="top">Start workspace</TooltipContent>
+			<TooltipContent side="top">{t("startWorkspace.tooltip")}</TooltipContent>
 		</Tooltip>
 	);
 }

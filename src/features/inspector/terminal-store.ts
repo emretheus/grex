@@ -5,6 +5,7 @@ import {
 	stopTerminal,
 	writeTerminalStdin,
 } from "@/lib/api";
+import { i18n } from "@/lib/i18n";
 
 // Module-level store for Terminal tab instances. Mirrors script-store but
 // keyed per (workspace, instanceId) so multiple shells can coexist.
@@ -30,8 +31,8 @@ export type TerminalInstance = {
 
 /** Positional label: 1 instance → "Terminal", 2+ → "Terminal N". */
 export function getTerminalDisplayTitle(index: number, total: number): string {
-	if (total <= 1) return "Terminal";
-	return `Terminal ${index + 1}`;
+	if (total <= 1) return i18n.t("inspector:tabs.terminal");
+	return i18n.t("inspector:tabs.terminalNumbered", { number: index + 1 });
 }
 
 /** Soft cap on concurrent terminals per workspace (memory + reflow cost). */
@@ -47,8 +48,11 @@ type WorkspaceListListener = (instances: TerminalInstance[]) => void;
 /** ~2 MB ≈ 20k lines, well beyond xterm's 5000-line scrollback. */
 const MAX_CHUNK_BYTES = 2 * 1024 * 1024;
 
-export const TRUNCATION_NOTICE =
-	"\r\n\x1b[2m… earlier output truncated (buffer limit reached) …\x1b[0m\r\n";
+/** Built per call so it reflects the active language; wraps the localized
+ * message in the dim-ANSI sequence xterm renders. */
+export function getTruncationNotice(): string {
+	return `\r\n\x1b[2m${i18n.t("inspector:terminal.truncationNotice")}\x1b[0m\r\n`;
+}
 
 /** workspaceId → ordered list of terminals (left-to-right in the sub-tab row). */
 const instancesByWorkspace = new Map<string, TerminalInstance[]>();

@@ -11,6 +11,7 @@ import {
 	X,
 } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
 	BranchPickerPopover,
 	resolveBranchSource,
@@ -109,6 +110,7 @@ export function WorkspaceStartPage({
 	composerAtBottom = false,
 	children,
 }: WorkspaceStartPageProps) {
+	const { t } = useTranslation("misc");
 	const [createBranchOpen, setCreateBranchOpen] = useState(false);
 
 	// Local mode mirrors git DWIM (local-first) for icon resolution; UseBranch
@@ -237,7 +239,7 @@ export function WorkspaceStartPage({
 									variant="ghost"
 									size="sm"
 									onClick={onClosePreview}
-									aria-label="Close source preview"
+									aria-label={t("workspaceStart.closeSourcePreview")}
 									className="gap-1.5 px-2 text-muted-foreground hover:text-foreground"
 								>
 									<ShortcutDisplay hotkey="Escape" />
@@ -298,7 +300,7 @@ export function WorkspaceStartPage({
 											: "max-w-[32rem] translate-y-0 opacity-100",
 									)}
 								>
-									What should we work on?
+									{t("workspaceStart.chatHeading")}
 								</span>
 							) : (
 								<>
@@ -310,7 +312,7 @@ export function WorkspaceStartPage({
 												: "max-w-[22rem] translate-y-0 opacity-100",
 										)}
 									>
-										What should we build
+										{t("workspaceStart.buildHeadingPrefix")}
 									</span>
 									<span
 										className={cn(
@@ -320,7 +322,7 @@ export function WorkspaceStartPage({
 												: "max-w-[2rem] translate-y-0 opacity-100",
 										)}
 									>
-										in
+										{t("workspaceStart.buildHeadingIn")}
 									</span>
 									<DropdownMenu>
 										<Tooltip>
@@ -361,7 +363,7 @@ export function WorkspaceStartPage({
 															</>
 														) : (
 															<span className="text-muted-foreground">
-																a repository
+																{t("workspaceStart.repositoryPlaceholder")}
 															</span>
 														)}
 													</Button>
@@ -372,7 +374,7 @@ export function WorkspaceStartPage({
 												sideOffset={4}
 												className="flex h-[24px] items-center gap-2 rounded-md px-2 text-small leading-none"
 											>
-												<span>Switch repository</span>
+												<span>{t("workspaceStart.switchRepository")}</span>
 												<InlineShortcutDisplay
 													hotkey={cycleRepositoryShortcut}
 													className="text-background/60"
@@ -414,7 +416,7 @@ export function WorkspaceStartPage({
 												: "max-w-[2rem] translate-y-0 opacity-100",
 										)}
 									>
-										?
+										{t("workspaceStart.buildHeadingSuffix")}
 									</span>
 								</>
 							)}
@@ -457,7 +459,9 @@ export function WorkspaceStartPage({
 												/>
 											</>
 										) : (
-											<span className="truncate">Repository</span>
+											<span className="truncate">
+												{t("workspaceStart.repositoryShort")}
+											</span>
 										)}
 									</button>
 								</DropdownMenuTrigger>
@@ -513,10 +517,10 @@ export function WorkspaceStartPage({
 											)}
 											<span>
 												{mode === "local"
-													? "Work locally"
+													? t("workspaceStart.workLocally")
 													: mode === "chat"
-														? "Just chat"
-														: "New worktree"}
+														? t("workspaceStart.justChat")
+														: t("workspaceStart.newWorktree")}
 											</span>
 											<ChevronDown
 												className="size-3 shrink-0 text-muted-foreground"
@@ -530,7 +534,7 @@ export function WorkspaceStartPage({
 									sideOffset={4}
 									className="rounded-md px-2 text-small leading-none"
 								>
-									Select where to run the task
+									{t("workspaceStart.selectWhereToRun")}
 								</TooltipContent>
 							</Tooltip>
 							{/* Skip focus return so the wrapping Tooltip doesn't re-open via onFocus after selection. */}
@@ -551,7 +555,7 @@ export function WorkspaceStartPage({
 											className="gap-2 pr-3"
 										>
 											<FolderPlus className="size-3.5" strokeWidth={1.8} />
-											<span>Add a repository…</span>
+											<span>{t("workspaceStart.addRepository")}</span>
 										</DropdownMenuItem>
 										<DropdownMenuSeparator />
 										<DropdownMenuItem
@@ -560,7 +564,7 @@ export function WorkspaceStartPage({
 											data-checked="true"
 										>
 											<MessageCircle className="size-3.5" strokeWidth={1.8} />
-											<span>Just chat</span>
+											<span>{t("workspaceStart.justChat")}</span>
 											{justChatShortcut ? (
 												<InlineShortcutDisplay
 													hotkey={justChatShortcut}
@@ -577,7 +581,7 @@ export function WorkspaceStartPage({
 											data-checked={mode === "local" ? "true" : undefined}
 										>
 											<Laptop className="size-3.5" strokeWidth={1.8} />
-											<span>Work locally</span>
+											<span>{t("workspaceStart.workLocally")}</span>
 										</DropdownMenuItem>
 										<DropdownMenuItem
 											onClick={() => onModeChange("worktree")}
@@ -585,7 +589,7 @@ export function WorkspaceStartPage({
 											data-checked={mode === "worktree" ? "true" : undefined}
 										>
 											<Split className="size-3.5 rotate-90" strokeWidth={1.8} />
-											<span>New worktree</span>
+											<span>{t("workspaceStart.newWorktree")}</span>
 										</DropdownMenuItem>
 										<DropdownMenuItem
 											onClick={() => onModeChange("chat")}
@@ -593,7 +597,7 @@ export function WorkspaceStartPage({
 											data-checked={mode === "chat" ? "true" : undefined}
 										>
 											<MessageCircle className="size-3.5" strokeWidth={1.8} />
-											<span>Just chat</span>
+											<span>{t("workspaceStart.justChat")}</span>
 											{justChatShortcut ? (
 												<InlineShortcutDisplay
 													hotkey={justChatShortcut}
@@ -629,8 +633,8 @@ export function WorkspaceStartPage({
 												)}
 												<span>
 													{branchIntent === "use_branch"
-														? "Reuse"
-														: "Branch off"}
+														? t("workspaceStart.reuse")
+														: t("workspaceStart.branchOff")}
 												</span>
 												<ChevronDown
 													className="size-3 shrink-0 text-muted-foreground"
@@ -645,8 +649,8 @@ export function WorkspaceStartPage({
 										className="rounded-md px-2 text-small leading-none"
 									>
 										{branchIntent === "use_branch"
-											? "Check out the picked branch directly."
-											: "Fork a fresh branch off the picked base"}
+											? t("workspaceStart.reuseTooltip")
+											: t("workspaceStart.branchOffTooltip")}
 									</TooltipContent>
 								</Tooltip>
 								{/* Skip focus return so the wrapping Tooltip doesn't re-open via onFocus after selection. */}
@@ -664,10 +668,10 @@ export function WorkspaceStartPage({
 									>
 										<div className="flex items-center gap-2">
 											<GitBranchPlus className="size-3.5" strokeWidth={1.8} />
-											<span>Branch off</span>
+											<span>{t("workspaceStart.branchOff")}</span>
 										</div>
 										<span className="pl-[1.375rem] text-mini text-muted-foreground">
-											Fork a fresh branch off the picked base.
+											{t("workspaceStart.branchOffDescription")}
 										</span>
 									</DropdownMenuItem>
 									<DropdownMenuItem
@@ -679,10 +683,10 @@ export function WorkspaceStartPage({
 									>
 										<div className="flex items-center gap-2">
 											<GitMerge className="size-3.5" strokeWidth={1.8} />
-											<span>Reuse</span>
+											<span>{t("workspaceStart.reuse")}</span>
 										</div>
 										<span className="pl-[1.375rem] text-mini text-muted-foreground">
-											Check out the picked branch directly.
+											{t("workspaceStart.reuseDescription")}
 										</span>
 									</DropdownMenuItem>
 								</DropdownMenuContent>
@@ -712,7 +716,9 @@ export function WorkspaceStartPage({
 															}}
 														>
 															<Plus className="size-3.5" strokeWidth={2} />
-															<span>Create and checkout new branch…</span>
+															<span>
+																{t("workspaceStart.createCheckoutNewBranch")}
+															</span>
 														</button>
 													)
 												: undefined
@@ -749,10 +755,10 @@ export function WorkspaceStartPage({
 										className="rounded-md px-2 text-small leading-none"
 									>
 										{mode === "local"
-											? "Switch branch"
+											? t("workspaceStart.switchBranch")
 											: branchIntent === "use_branch"
-												? "Branch to reuse"
-												: "Base to fork off"}
+												? t("workspaceStart.branchToReuse")
+												: t("workspaceStart.baseToForkOff")}
 									</TooltipContent>
 								</Tooltip>
 								<CreateBranchDialog

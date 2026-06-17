@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Loader2, Trash2 } from "lucide-react";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
@@ -19,6 +20,7 @@ import { SettingsRow } from "../components/settings-row";
  * the outcome (including partial failures) lands as a toast.
  */
 export function ArchiveCleanupPanel() {
+	const { t } = useTranslation("settings");
 	const queryClient = useQueryClient();
 	const [confirmOpen, setConfirmOpen] = useState(false);
 	const archivedQuery = useQuery(archivedWorkspacesQueryOptions());
@@ -30,17 +32,18 @@ export function ArchiveCleanupPanel() {
 			if (result.failures.length === 0) {
 				toast.success(
 					result.deletedCount === 0
-						? "No archived workspaces to clean up"
-						: `Cleaned up ${result.deletedCount} archived workspace${
-								result.deletedCount === 1 ? "" : "s"
-							}`,
+						? t("archiveCleanup.toast.nothing")
+						: t("archiveCleanup.toast.cleaned", {
+								count: result.deletedCount,
+							}),
 				);
 				return;
 			}
 			toast.error(
-				`Cleaned up ${result.deletedCount}, but ${result.failures.length} workspace${
-					result.failures.length === 1 ? "" : "s"
-				} could not be deleted`,
+				t("archiveCleanup.toast.partial", {
+					deleted: result.deletedCount,
+					count: result.failures.length,
+				}),
 				{
 					description: result.failures
 						.map((failure) =>
@@ -53,7 +56,7 @@ export function ArchiveCleanupPanel() {
 			);
 		},
 		onError: (error) => {
-			toast.error("Archive cleanup failed", {
+			toast.error(t("archiveCleanup.toast.failedTitle"), {
 				description: error instanceof Error ? error.message : String(error),
 			});
 		},
@@ -65,13 +68,11 @@ export function ArchiveCleanupPanel() {
 
 	return (
 		<SettingsRow
-			title="Clean up archived workspaces"
+			title={t("archiveCleanup.title")}
 			description={
 				archivedCount === 0
-					? "No archived workspaces."
-					: `Permanently delete all ${archivedCount} archived workspace${
-							archivedCount === 1 ? "" : "s"
-						}, including their sessions and chat history.`
+					? t("archiveCleanup.descriptionEmpty")
+					: t("archiveCleanup.description", { count: archivedCount })
 			}
 		>
 			<Button
@@ -85,7 +86,9 @@ export function ArchiveCleanupPanel() {
 				) : (
 					<Trash2 className="size-3.5" />
 				)}
-				{cleanup.isPending ? "Cleaning up" : "Clean up"}
+				{cleanup.isPending
+					? t("archiveCleanup.buttonBusy")
+					: t("archiveCleanup.button")}
 			</Button>
 			<ConfirmDialog
 				open={confirmOpen}
@@ -96,11 +99,11 @@ export function ArchiveCleanupPanel() {
 						setConfirmOpen(open);
 					}
 				}}
-				title="Clean up archived workspaces?"
-				description={`This will permanently delete all ${archivedCount} archived workspace${
-					archivedCount === 1 ? "" : "s"
-				}, including their sessions and chat history. This cannot be undone.`}
-				confirmLabel="Delete All"
+				title={t("archiveCleanup.confirmTitle")}
+				description={t("archiveCleanup.confirmDescription", {
+					count: archivedCount,
+				})}
+				confirmLabel={t("archiveCleanup.confirmLabel")}
 				onConfirm={() => cleanup.mutate()}
 				loading={cleanup.isPending}
 			/>

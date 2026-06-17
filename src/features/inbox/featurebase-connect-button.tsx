@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { ExternalLink, Lightbulb, Loader2 } from "lucide-react";
 import { type FormEvent, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { type FeaturebaseConnection, featurebaseConnect } from "@/lib/api";
@@ -33,6 +34,7 @@ export function FeaturebaseConnectState({
 	onConnected?: (connection: FeaturebaseConnection) => void;
 	className?: string;
 }) {
+	const { t } = useTranslation("inbox");
 	const [apiKey, setApiKey] = useState("");
 	const [orgUrl, setOrgUrl] = useState("");
 	const connectMutation = useFeaturebaseConnectMutation({ onConnected });
@@ -55,11 +57,10 @@ export function FeaturebaseConnectState({
 			<Lightbulb className="text-muted-foreground/80" size={28} />
 			<div className="space-y-1">
 				<div className="text-ui font-medium text-foreground">
-					Connect Featurebase
+					{t("connect.featurebase.title")}
 				</div>
 				<div className="text-pretty text-small leading-5 text-muted-foreground">
-					Paste your Featurebase API key and your public feedback URL. Stored
-					locally in your macOS Keychain.
+					{t("connect.featurebase.description")}
 				</div>
 			</div>
 			<form
@@ -70,8 +71,8 @@ export function FeaturebaseConnectState({
 					type="password"
 					autoComplete="off"
 					spellCheck={false}
-					placeholder="Your Featurebase API key"
-					aria-label="Featurebase API key"
+					placeholder={t("connect.featurebase.apiKeyPlaceholder")}
+					aria-label={t("connect.featurebase.apiKeyLabel")}
 					value={apiKey}
 					onChange={(event) => setApiKey(event.target.value)}
 					disabled={connectMutation.isPending}
@@ -81,8 +82,8 @@ export function FeaturebaseConnectState({
 					type="text"
 					autoComplete="off"
 					spellCheck={false}
-					placeholder="https://acme.featurebase.app"
-					aria-label="Featurebase feedback URL"
+					placeholder={t("connect.featurebase.urlPlaceholder")}
+					aria-label={t("connect.featurebase.urlLabel")}
 					value={orgUrl}
 					onChange={(event) => setOrgUrl(event.target.value)}
 					disabled={connectMutation.isPending}
@@ -98,10 +99,10 @@ export function FeaturebaseConnectState({
 					{connectMutation.isPending ? (
 						<>
 							<Loader2 className="size-3.5 animate-spin" strokeWidth={2} />
-							Connecting…
+							{t("connect.connecting")}
 						</>
 					) : (
-						"Connect"
+						t("connect.connect")
 					)}
 				</Button>
 			</form>
@@ -110,7 +111,7 @@ export function FeaturebaseConnectState({
 				onClick={() => void openUrl(FEATUREBASE_HELP_URL)}
 				className="inline-flex cursor-interactive items-center gap-1 text-mini text-muted-foreground/80 transition-colors hover:text-foreground"
 			>
-				Where do I find these?
+				{t("connect.featurebase.help")}
 				<ExternalLink className="size-3" strokeWidth={1.8} />
 			</button>
 		</div>
@@ -124,6 +125,7 @@ export function FeaturebaseConnectState({
 export function useFeaturebaseConnectMutation(opts?: {
 	onConnected?: (connection: FeaturebaseConnection) => void;
 }) {
+	const { t } = useTranslation("inbox");
 	const pushToast = useWorkspaceToast();
 	const queryClient = useQueryClient();
 	return useMutation({
@@ -145,8 +147,8 @@ export function useFeaturebaseConnectMutation(opts?: {
 			const message =
 				error instanceof Error
 					? error.message
-					: "Couldn't connect Featurebase.";
-			pushToast(message, "Featurebase connect failed", "destructive");
+					: t("connect.featurebase.failedMessage");
+			pushToast(message, t("connect.featurebase.failedTitle"), "destructive");
 		},
 	});
 }

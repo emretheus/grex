@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { FileText, Plus, Search } from "lucide-react";
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -13,6 +14,7 @@ type EditorTarget = { mode: "new" } | { mode: "edit"; prompt: PromptTemplate };
 
 /** Library → Prompts: list, search, create, edit, and delete reusable prompts. */
 export function LibraryPromptsPanel() {
+	const { t } = useTranslation("library");
 	const { data: prompts = [] } = useQuery(libraryPromptsQueryOptions());
 	const [search, setSearch] = useState("");
 	const [editor, setEditor] = useState<EditorTarget | null>(null);
@@ -43,27 +45,27 @@ export function LibraryPromptsPanel() {
 					<Input
 						value={search}
 						onChange={(e) => setSearch(e.target.value)}
-						placeholder="Search prompts…"
+						placeholder={t("prompts.searchPlaceholder")}
 						className="pl-8"
 					/>
 				</div>
 				<Button size="sm" onClick={() => setEditor({ mode: "new" })}>
 					<Plus className="size-4" />
-					New prompt
+					{t("prompts.new")}
 				</Button>
 			</div>
 
 			{prompts.length === 0 ? (
 				<LibraryEmptyState
 					icon={FileText}
-					title="No prompts yet"
-					description="Save reusable instructions and insert them into any task conversation with /prompt."
+					title={t("prompts.emptyTitle")}
+					description={t("prompts.emptyDescription")}
 				/>
 			) : filtered.length === 0 ? (
 				<LibraryEmptyState
 					icon={Search}
-					title="No matches"
-					description="No prompts match your search."
+					title={t("prompts.noMatchesTitle")}
+					description={t("prompts.noMatchesDescription")}
 				/>
 			) : (
 				<ScrollArea className="min-h-0 flex-1">

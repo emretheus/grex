@@ -1,0 +1,53 @@
+{
+	"header": {
+		"workspaceHeader": "Arbeitsbereich-Kopfzeile",
+		"loading": "Wird geladen",
+		"sessions": "Sitzungen",
+		"contextPreview": "Kontextvorschau",
+		"closeContextPreview": "Kontextvorschau schließen",
+		"noSessions": "Keine Sitzungen",
+		"newSession": "Neue Sitzung",
+		"sessionHistory": "Sitzungsverlauf",
+		"noHiddenSessions": "Keine ausgeblendeten Sitzungen",
+		"renameSession": "Sitzung umbenennen",
+		"closeSession": "Sitzung schließen",
+		"restoreSession": "Sitzung wiederherstellen",
+		"deleteSessionPermanently": "Sitzung endgültig löschen",
+		"untitled": "Ohne Titel",
+		"renameBranch": "Branch umbenennen",
+		"copyBranchName": "Branch-Namen kopieren",
+		"noBranch": "Kein Branch",
+		"baseBranch": "Basis-Branch {{remote}}/{{branch}}",
+		"stackedOn": "Gestapelt auf {{label}}",
+		"interactionRequired": "Interaktion erforderlich",
+		"unreadSession": "Ungelesene Sitzung"
+	},
+	"emptyState": {
+		"creatingWorkspace": "Arbeitsbereich wird erstellt",
+		"nothingHereYet": "Hier ist noch nichts",
+		"noSessionSelected": "Keine Sitzung ausgewählt",
+		"preparingWorkspace": "Grex bereitet diesen Arbeitsbereich noch vor. Das Senden von Nachrichten wird automatisch freigeschaltet, sobald die Einrichtung abgeschlossen ist.",
+		"newSessionIn": "Neue Sitzung in",
+		"newSession": "Neue Sitzung",
+		"chooseSession": "Wähle eine Sitzung in der Kopfzeile, um ihren Verlauf anzuzeigen.",
+		"scriptActions": {
+			"setup": {
+				"title": "Setup-Skript erstellen",
+				"description": "Abhängigkeiten installieren, nachdem ein Arbeitsbereich erstellt wurde."
+			},
+			"run": {
+				"title": "Ausführungsaktionen erstellen",
+				"description": "Benannte Befehle, die du aus dem Ausführen-Dropdown des Inspektors auswählst."
+			},
+			"archive": {
+				"title": "Archivierungsskript erstellen",
+				"description": "Leichte Bereinigung oder Übergabe vor der Archivierung."
+			}
+		},
+		"tipsLabel": "Tipps:",
+		"tipsBody": "Das Konfigurieren dieser Skripte verbessert deinen Entwicklungsablauf."
+	},
+	"systemMessage": {
+		"useThisPrompt": "Diesen Prompt verwenden"
+	}
+}

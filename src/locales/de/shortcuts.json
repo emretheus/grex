@@ -1,0 +1,100 @@
+{
+	"search": {
+		"placeholder": "Tastenkürzel suchen"
+	},
+	"section": {
+		"global": "Global"
+	},
+	"groups": {
+		"Navigation": "Navigation",
+		"Session": "Sitzung",
+		"Workspace": "Arbeitsbereich",
+		"Actions": "Aktionen",
+		"System": "System",
+		"Composer": "Eingabefeld",
+		"Start surface": "Startseite",
+		"Editor": "Editor",
+		"Terminal": "Terminal"
+	},
+	"row": {
+		"conflictAria": "Tastenkürzel-Konflikt",
+		"conflictUsedBy": "Bereits verwendet von {{names}}",
+		"resetAria": "Auf Standard zurücksetzen",
+		"resetTooltip": "Auf Standard zurücksetzen"
+	},
+	"menu": {
+		"remove": "Tastenkürzel entfernen",
+		"resetDefault": "Tastenkürzel auf Standard zurücksetzen"
+	},
+	"toast": {
+		"registerFailed": "Globales Tastenkürzel konnte nicht registriert werden"
+	},
+	"definitions": {
+		"workspace.previous": { "title": "Vorheriger Arbeitsbereich" },
+		"workspace.next": { "title": "Nächster Arbeitsbereich" },
+		"workspace.quickSwitchNext": { "title": "Arbeitsbereich schnell wechseln" },
+		"workspace.quickSwitchPrevious": {
+			"title": "Arbeitsbereich schnell wechseln (rückwärts)"
+		},
+		"session.previous": { "title": "Vorherige Sitzung" },
+		"session.next": { "title": "Nächste Sitzung" },
+		"session.new": { "title": "Neue Sitzung" },
+		"session.close": { "title": "Aktuelle Sitzung schließen" },
+		"session.reopenClosed": { "title": "Geschlossene Sitzung erneut öffnen" },
+		"window.close": { "title": "Fenster schließen" },
+		"workspace.copyPath": { "title": "Arbeitsbereichspfad kopieren" },
+		"workspace.openInEditor": {
+			"title": "Repository in Standard-App öffnen"
+		},
+		"workspace.new": { "title": "Startseite öffnen" },
+		"workspace.justChat": { "title": "Startseite öffnen (nur Chat)" },
+		"workspace.addRepository": { "title": "Repository hinzufügen" },
+		"workspace.filterSidebar": {
+			"title": "Seitenleiste filtern und sortieren"
+		},
+		"script.run": { "title": "Skript ausführen / stoppen" },
+		"action.createPr": { "title": "PR erstellen" },
+		"action.commitAndPush": { "title": "Committen und pushen" },
+		"action.pullLatest": { "title": "Neueste Änderungen von main holen" },
+		"action.mergePr": { "title": "PR zusammenführen" },
+		"action.fixErrors": { "title": "Fehler beheben" },
+		"action.openPullRequest": { "title": "PR im Browser öffnen" },
+		"settings.open": { "title": "Einstellungen öffnen" },
+		"library.open": { "title": "Bibliothek öffnen" },
+		"global.hotkey": {
+			"title": "Globales Tastenkürzel",
+			"description": "Grex von überall ein-/ausblenden."
+		},
+		"quickPanel.hotkey": {
+			"title": "Tastenkürzel für Schnellpanel",
+			"description": "Das Schnellaufgaben-Panel von überall öffnen."
+		},
+		"theme.toggle": { "title": "Design wechseln (dunkel/hell)" },
+		"window.miniMode.toggle": { "title": "Mini-Modus umschalten" },
+		"sidebar.left.toggle": { "title": "Linke Seitenleiste umschalten" },
+		"sidebar.right.toggle": { "title": "Rechte Seitenleiste umschalten" },
+		"zen.toggle": { "title": "Zen-Modus umschalten" },
+		"zoom.in": { "title": "Vergrößern" },
+		"zoom.out": { "title": "Verkleinern" },
+		"zoom.reset": { "title": "Zoom zurücksetzen" },
+		"composer.focus": { "title": "Chat-Eingabe fokussieren" },
+		"composer.togglePlanMode": { "title": "Planungsmodus umschalten" },
+		"composer.toggleTerminalMode": { "title": "Terminal-Modus umschalten" },
+		"startSurface.cycleRepository": { "title": "Repository wechseln" },
+		"composer.toggleContextPanel": { "title": "Kontextpanel umschalten" },
+		"composer.openModelPicker": { "title": "Modellauswahl öffnen" },
+		"composer.toggleFollowUpBehavior": {
+			"title": "Mit umgekehrtem Folgeverhalten senden"
+		},
+		"editor.edit": { "title": "Zwischen Diff und Bearbeiten umschalten" },
+		"editor.new": { "title": "Datei öffnen" },
+		"editor.close": { "title": "Aktuelle Datei schließen" },
+		"editor.toggleExplorer": { "title": "Datei-Explorer umschalten" },
+		"terminal.new": { "title": "Neues Terminal" },
+		"terminal.close": { "title": "Aktuelles Terminal schließen" },
+		"terminal.previous": { "title": "Vorheriges Terminal" },
+		"terminal.next": { "title": "Nächstes Terminal" },
+		"inspector.focusTerminal": { "title": "Terminal fokussieren" },
+		"inspector.toggleScripts": { "title": "Skript-Panel umschalten" }
+	}
+}

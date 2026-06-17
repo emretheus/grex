@@ -1,0 +1,63 @@
+{
+	"button": {
+		"tooltip": "フィードバックを送信"
+	},
+	"dialog": {
+		"titleInput": "フィードバックを送信",
+		"titleContribute": "Grex に貢献する"
+	},
+	"input": {
+		"placeholder": "バグの報告、改善の提案、質問などを記入してください。",
+		"ariaLabel": "フィードバック",
+		"connectGithubPrefix": "フィードバックを送信するには、",
+		"settingsLink": "設定",
+		"connectGithubSuffix": "で GitHub を連携してください。",
+		"reuseLocalRepo": "ローカルの grex リポジトリを再利用します。",
+		"confirmPrompt": "{{slug}} に issue を作成します。よろしいですか？",
+		"createIssue": "issue を作成",
+		"confirmSend": "送信を確定",
+		"sending": "送信中…",
+		"quickFix": "クイック修正",
+		"quickFixTooltip": "Grex に貢献する — とても簡単"
+	},
+	"clone": {
+		"forking": "{{slug}} をあなたの GitHub アカウントに fork しています…",
+		"forkReady": "Fork の準備ができました。マシン上でクローンする場所を選んでください。",
+		"forkIntro": "アップストリームの Grex リポジトリをあなたの GitHub アカウントに fork します。",
+		"cloneLocationLabel": "クローン先",
+		"cloneLocationPlaceholder": "フォルダーを選択…",
+		"browse": "参照…",
+		"tryAgain": "再試行",
+		"cloning": "クローン中…",
+		"cloneToFolder": "このフォルダーにクローン",
+		"forkFailed": "GitHub で grex の fork に失敗しました。",
+		"folderPickerFailed": "フォルダー選択ダイアログを開けませんでした。",
+		"cloneFailed": "リポジトリのクローンに失敗しました。"
+	},
+	"prompt": {
+		"description": "必要なら調整してください — これがエージェントの開始内容になります。",
+		"reuseLocalRepo": " ローカルの grex リポジトリを再利用します。",
+		"sendToAgent": "エージェントに送信"
+	},
+	"template": {
+		"intro": "{{slug}} に貢献しています。これを完成させて出せるよう手伝ってください。",
+		"feedbackHeading": "## 私のフィードバック",
+		"howToHeading": "## 対応方法",
+		"step1": "1. コードを調べ、不明点があれば質問し、最小限の変更を提案してください。",
+		"step2": "2. 私が同意したら実装してください。私が「go ahead」と言うまでは、commit、push、PR の作成を行わないでください。",
+		"step3": "3. 私の「go ahead」の後：commit して origin に push し、diff から生成したタイトルと本文で `gh pr create --repo {{slug}} --base main` を実行してください。",
+		"replyInLanguage": "上記の「## 私のフィードバック」セクションで使用したのと同じ言語で返信してください。"
+	},
+	"toast": {
+		"issueCreated": "issue #{{number}} を作成しました",
+		"viewIssue": "表示",
+		"createIssueFailed": "issue の作成に失敗しました",
+		"createIssueFailedDescription": "もう一度お試しください。",
+		"noModelTitle": "フィードバックを送信できません",
+		"noModelMessage": "まず設定でデフォルトのモデルを選択してください。",
+		"workspaceSetupFailedTitle": "ワークスペースのセットアップに失敗しました",
+		"workspaceSetupFailedMessage": "ワークスペースのセットアップに失敗しました。",
+		"openWorkspaceFailedTitle": "ワークスペースを開けませんでした",
+		"sendToAgentFailedMessage": "エージェントへのフィードバックの送信に失敗しました。"
+	}
+}

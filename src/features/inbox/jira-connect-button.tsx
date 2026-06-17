@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { ExternalLink, Loader2 } from "lucide-react";
 import { type FormEvent, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { JiraBrandIcon } from "@/components/brand-icon";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -33,6 +34,7 @@ export function JiraConnectState({
 	onConnected?: (connection: JiraConnection) => void;
 	className?: string;
 }) {
+	const { t } = useTranslation("inbox");
 	const [site, setSite] = useState("");
 	const [email, setEmail] = useState("");
 	const [token, setToken] = useState("");
@@ -64,10 +66,11 @@ export function JiraConnectState({
 		>
 			<JiraBrandIcon className="text-muted-foreground/80" size={28} />
 			<div className="space-y-1">
-				<div className="text-ui font-medium text-foreground">Connect Jira</div>
+				<div className="text-ui font-medium text-foreground">
+					{t("connect.jira.title")}
+				</div>
 				<div className="text-pretty text-small leading-5 text-muted-foreground">
-					Enter your site URL, email, and API token. Stored locally in your
-					macOS Keychain.
+					{t("connect.jira.description")}
 				</div>
 			</div>
 			<form
@@ -78,8 +81,8 @@ export function JiraConnectState({
 					type="text"
 					autoComplete="off"
 					spellCheck={false}
-					placeholder="https://your-team.atlassian.net"
-					aria-label="Jira site URL"
+					placeholder={t("connect.jira.sitePlaceholder")}
+					aria-label={t("connect.jira.siteLabel")}
 					value={site}
 					onChange={(event) => setSite(event.target.value)}
 					disabled={connectMutation.isPending}
@@ -89,8 +92,8 @@ export function JiraConnectState({
 					type="email"
 					autoComplete="off"
 					spellCheck={false}
-					placeholder="you@example.com"
-					aria-label="Jira account email"
+					placeholder={t("connect.jira.emailPlaceholder")}
+					aria-label={t("connect.jira.emailLabel")}
 					value={email}
 					onChange={(event) => setEmail(event.target.value)}
 					disabled={connectMutation.isPending}
@@ -100,8 +103,8 @@ export function JiraConnectState({
 					type="password"
 					autoComplete="off"
 					spellCheck={false}
-					placeholder="API token"
-					aria-label="Jira API token"
+					placeholder={t("connect.jira.tokenPlaceholder")}
+					aria-label={t("connect.jira.tokenLabel")}
 					value={token}
 					onChange={(event) => setToken(event.target.value)}
 					disabled={connectMutation.isPending}
@@ -117,10 +120,10 @@ export function JiraConnectState({
 					{connectMutation.isPending ? (
 						<>
 							<Loader2 className="size-3.5 animate-spin" strokeWidth={2} />
-							Connecting…
+							{t("connect.connecting")}
 						</>
 					) : (
-						"Connect"
+						t("connect.connect")
 					)}
 				</Button>
 			</form>
@@ -129,7 +132,7 @@ export function JiraConnectState({
 				onClick={() => void openUrl(JIRA_API_TOKENS_URL)}
 				className="inline-flex cursor-interactive items-center gap-1 text-mini text-muted-foreground/80 transition-colors hover:text-foreground"
 			>
-				Create an API token
+				{t("connect.jira.help")}
 				<ExternalLink className="size-3" strokeWidth={1.8} />
 			</button>
 		</div>
@@ -143,6 +146,7 @@ export function JiraConnectState({
 export function useJiraConnectMutation(opts?: {
 	onConnected?: (connection: JiraConnection) => void;
 }) {
+	const { t } = useTranslation("inbox");
 	const pushToast = useWorkspaceToast();
 	const queryClient = useQueryClient();
 	return useMutation({
@@ -162,8 +166,10 @@ export function useJiraConnectMutation(opts?: {
 		},
 		onError: (error) => {
 			const message =
-				error instanceof Error ? error.message : "Couldn't connect Jira.";
-			pushToast(message, "Jira connect failed", "destructive");
+				error instanceof Error
+					? error.message
+					: t("connect.jira.failedMessage");
+			pushToast(message, t("connect.jira.failedTitle"), "destructive");
 		},
 	});
 }

@@ -1,0 +1,186 @@
+{
+	"git": {
+		"title": "Git",
+		"sectionLabel": "インスペクターのセクション Git",
+		"changesPanelLabel": "変更パネルの本体",
+		"browseFiles": "ファイルを参照",
+		"browseFilesTitle": "このワークスペースのすべてのファイルを参照",
+		"openPullRequest": "プルリクエストを開く",
+		"openMergeRequest": "マージリクエストを開く",
+		"continue": "続行",
+		"continueWorkspace": "ワークスペースを続行",
+		"empty": "このブランチにはまだ変更がありません。",
+		"groups": {
+			"stagedChanges": "ステージ済みの変更",
+			"changes": "変更",
+			"remote": "リモート"
+		},
+		"switchingTargetBranch": "ターゲットブランチを切り替えています…",
+		"viewToggle": {
+			"switchToListView": "リスト表示に切り替え",
+			"switchToTreeView": "ツリー表示に切り替え"
+		},
+		"row": {
+			"stageAll": "すべての変更をステージ",
+			"unstageAll": "すべての変更のステージを解除",
+			"stageFile": "ファイルをステージ",
+			"unstageFile": "ファイルのステージを解除",
+			"openInEditor": "エディターで開く",
+			"discardFileChanges": "ファイルの変更を破棄"
+		},
+		"contextMenu": {
+			"revealInFinder": "Finder で表示",
+			"copyPath": "パスをコピー",
+			"copyRelativePath": "相対パスをコピー",
+			"copyRemoteFileUrl": "リモートファイル URL をコピー"
+		},
+		"toast": {
+			"pathCopied": "パスをコピーしました",
+			"relativePathCopied": "相対パスをコピーしました",
+			"remoteFileUrlCopied": "リモートファイル URL をコピーしました",
+			"copyPathFailed": "パスのコピーに失敗しました",
+			"copyRelativePathFailed": "相対パスのコピーに失敗しました",
+			"copyRemoteFileUrlFailed": "リモートファイル url のコピーに失敗しました",
+			"revealFailed": "Finder での表示に失敗しました",
+			"noEditorTitle": "エディターがありません",
+			"noEditorMessage": "ファイルを開く前にデフォルトのエディターを選択してください。",
+			"openEditorFailed": "{{editor}} を開けませんでした",
+			"continuedTitle": "続行しました",
+			"continuedMessage": "ワークスペースを {{branch}} に移動しました。"
+		},
+		"mutationError": {
+			"stageFileFailed": "ファイルのステージに失敗しました。",
+			"unstageFileFailed": "ファイルのステージ解除に失敗しました。",
+			"stageFilesFailed": "ファイルのステージに失敗しました。",
+			"unstageFilesFailed": "ファイルのステージ解除に失敗しました。",
+			"discardChangesFailed": "変更の破棄に失敗しました。",
+			"continueWorkspaceFailed": "ワークスペースの続行に失敗しました。",
+			"stageFileTitle": "ファイルをステージできません",
+			"unstageFileTitle": "ファイルのステージを解除できません",
+			"stageFilesTitle": "ファイルをステージできません",
+			"unstageFilesTitle": "ファイルのステージを解除できません",
+			"discardChangesTitle": "変更を破棄できません",
+			"continueWorkspaceTitle": "ワークスペースを続行できません"
+		}
+	},
+	"forge": {
+		"connecting": "接続中",
+		"detected": "{{host}} で {{provider}} を検出しました",
+		"thisHost": "このホスト",
+		"whyWeThinkSo": "判断の根拠："
+	},
+	"actions": {
+		"title": "アクション",
+		"sectionLabel": "インスペクターのセクション アクション",
+		"toggle": "インスペクターのアクションセクションを切り替え",
+		"panelLabel": "アクションパネルの本体",
+		"groups": {
+			"helpers": "ヘルパー",
+			"git": "Git",
+			"review": "レビュー",
+			"deployments": "デプロイ",
+			"checks": "チェック"
+		},
+		"reviewChanges": "変更をレビュー",
+		"reviewing": "レビュー中",
+		"reviewAction": "レビュー",
+		"skipped": "スキップ済み",
+		"openItem": "{{name}} を開く",
+		"insertCheckError": "チェックを挿入できませんでした",
+		"loading": {
+			"pushing": "プッシュ中",
+			"pulling": "プル中",
+			"resolving": "解決中",
+			"committing": "コミット中",
+			"loading": "読み込み中"
+		},
+		"status": {
+			"passed": "成功",
+			"skipped": "スキップ済み",
+			"running": "実行中",
+			"failed": "失敗",
+			"pending": "保留中"
+		},
+		"button": {
+			"commitAndPush": "コミットしてプッシュ",
+			"push": "プッシュ",
+			"resolve": "解決",
+			"pull": "プル"
+		},
+		"git": {
+			"noUncommittedChanges": "コミットされていない変更はありません",
+			"uncommittedChanges_other": "コミットされていない変更が {{count}} 件",
+			"branchNotPublished": "ブランチがリモートに公開されていません",
+			"commitsAheadOfRemote_other": "{{ref}} より {{count}} 件先行",
+			"branchFullyPushed": "ブランチは完全にプッシュ済み",
+			"mergeConflictsDetected": "マージの競合が検出されました",
+			"commitsBehindTarget_other": "{{target}} より {{count}} 件遅れ",
+			"upToDate": "{{target}} と同期済み",
+			"syncUnavailable": "同期状態を取得できません",
+			"targetBranch": "ターゲットブランチ",
+			"upstream": "アップストリーム"
+		},
+		"review": {
+			"authRequired": "{{provider}} CLI の認証が必要です",
+			"approved": "レビューが承認されました",
+			"changeRequestClosed": "{{changeRequest}} はクローズされました",
+			"changesRequested": "変更が要求されました",
+			"waitingForReview": "{{changeRequest}} のレビュー待ち",
+			"mergeConflictsDetected": "マージの競合が検出されました"
+		},
+		"sync": {
+			"pulledLatest": "{{target}} から最新の内容を取得しました",
+			"alreadyUpToDate": "{{target}} と既に同期されています",
+			"pullFailed": "ターゲットの更新を取得できませんでした。"
+		}
+	},
+	"tabs": {
+		"sectionLabel": "インスペクターのセクション タブ",
+		"bodyLabel": "インスペクターのタブ本体",
+		"toggle": "インスペクターのタブセクションを切り替え",
+		"setup": "セットアップ",
+		"run": "実行",
+		"terminal": "ターミナル",
+		"terminalNumbered": "ターミナル {{number}}",
+		"newTerminal": "新しいターミナル",
+		"closeTerminal": "ターミナルを閉じる",
+		"closeNamed": "{{name}} を閉じる",
+		"enableHoverZoom": "ホバーズームを有効化",
+		"disableHoverZoom": "ホバーズームを無効化",
+		"switchRunAction": "実行アクションを切り替え",
+		"create": "作成"
+	},
+	"setup": {
+		"noScriptConfigured": "セットアップスクリプトが設定されていません",
+		"noScriptHint": "リポジトリ設定でセットアップスクリプトを追加すると、ここで実行できます。",
+		"openSettings": "設定を開く",
+		"completed": "セットアップが完了しました",
+		"completedLabel": "セットアップが完了しました",
+		"noOutput": "セットアップスクリプトの出力がありません",
+		"noOutputHint": "セットアップを実行すると、セットアップスクリプトの出力がここに表示されます。",
+		"runSetup": "セットアップを実行",
+		"rerunSetup": "セットアップを再実行",
+		"stop": "停止"
+	},
+	"run": {
+		"open": "開く",
+		"openWithPort": "開く:{{port}}",
+		"openNoUrl": "開発サーバーを開く（URL はまだ検出されていません）",
+		"openAtUrl": "{{url}} で開発サーバーを開く",
+		"openWithCount_other": "開発サーバーを開く（{{count}} 件の URL を検出）",
+		"addRunScript": "実行スクリプトを追加",
+		"addRunScriptHint": "テストや開発サーバーを実行して、このワークスペースで変更を確認できます。",
+		"defaultActionName": "デフォルト",
+		"noOutputFor": "出力なし：",
+		"noOutputHint": "実行すると、実行スクリプトの出力がここに表示されます。",
+		"run": "実行",
+		"rerun": "再実行",
+		"stop": "停止",
+		"forceStop": "強制停止",
+		"runStopCommand": "停止コマンドを実行：{{command}}",
+		"skipCleanup": "クリーンアップをスキップして強制終了"
+	},
+	"terminal": {
+		"truncationNotice": "… 以前の出力は切り捨てられました（バッファ上限に達しました）…"
+	}
+}

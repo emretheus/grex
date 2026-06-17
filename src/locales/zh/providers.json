@@ -1,0 +1,244 @@
+{
+	"status": {
+		"ready": "就绪",
+		"connecting": "连接中"
+	},
+	"actions": {
+		"logIn": "登录",
+		"getApiKey": "获取你的 API 密钥",
+		"addProvider": "添加提供方",
+		"addModel": "添加模型",
+		"newProvider": "新建提供方",
+		"fetchModels": "获取模型",
+		"refreshModels": "刷新模型",
+		"refreshModelList": "刷新模型列表",
+		"syncModels": "同步模型",
+		"unselectAll": "全部取消选择",
+		"removeModel": "移除模型"
+	},
+	"row": {
+		"version": "v{{version}}"
+	},
+	"common": {
+		"models": "模型",
+		"customProviders": "自定义提供方",
+		"apiKey": "API 密钥",
+		"baseUrl": "基础 URL",
+		"displayName": "显示名称",
+		"apiStyle": "API 风格",
+		"custom": "自定义"
+	},
+	"providers": {
+		"opencode": {
+			"modelsDescription": "选择在编辑器选择器中显示的模型。",
+			"customProvidersDescription": "通过 API 密钥或兼容 OpenAI 的端点添加提供方，保存到 ~/.config/opencode。"
+		},
+		"claude": {
+			"modelsDescription": "选择在编辑器选择器中显示的官方 Claude 模型。",
+			"customProvidersDescription": "在此输入 API 密钥即可使用第三方模型。它们将与 Claude Code 的官方模型一同运行。"
+		},
+		"codex": {
+			"modelsDescription": "选择在编辑器选择器中显示的官方 Codex 模型。",
+			"customProvidersDescription": "将 Codex 指向任意兼容 OpenAI（Responses API）的端点。与官方模型一同运行。"
+		},
+		"cursor": {
+			"description": "添加你的 API 密钥，然后选择在编辑器选择器中显示的模型。"
+		},
+		"kimi": {
+			"customProvidersDescription": "添加兼容 OpenAI 或 Anthropic 格式的端点，保存到 ~/.kimi-code/config.toml。"
+		}
+	},
+	"proxy": {
+		"title": "代理",
+		"description": "为所有提供方流量路由 —— Claude Code、Codex、OpenCode、Cursor 和 Gemini。",
+		"placeholder": "http://127.0.0.1:7890",
+		"modes": {
+			"none": "未设置",
+			"system": "系统代理",
+			"custom": "自定义代理"
+		}
+	},
+	"multiSelect": {
+		"searchModels": "搜索模型",
+		"noModelsPicked": "未选择模型",
+		"selected": "已选择 {{count}} 个",
+		"loadingModels": "正在加载模型…",
+		"noCachedModels": "尚无缓存的模型 —— 点击刷新。",
+		"noModelsFound": "未找到模型。",
+		"overflowMore": "另外 {{count}} 个",
+		"removeModel": "移除 {{label}}"
+	},
+	"claudeCustom": {
+		"apiKeyPlaceholder": "{{provider}} API 密钥",
+		"getApiKeyAria": "获取 {{provider}} API 密钥",
+		"baseUrlPlaceholder": "基础 URL",
+		"apiKeyPlaceholderPlain": "API 密钥",
+		"customLabel": "自定义",
+		"noneConfigured": "未配置任何第三方提供方。",
+		"removeAria": "移除 {{label}}"
+	},
+	"cursorBody": {
+		"apiKeyPlaceholder": "Cursor API 密钥",
+		"getApiKeyAria": "获取 Cursor API 密钥",
+		"fetchError": "无法获取模型 —— {{error}}。编辑器将回退到 Auto。"
+	},
+	"cursorKey": {
+		"apiKeyPlaceholder": "API 密钥",
+		"validating": "验证中…",
+		"validatingAria": "正在验证 API 密钥",
+		"getApiKeyAria": "获取 Cursor API 密钥"
+	},
+	"codexCustom": {
+		"providerId": "提供方 id",
+		"providerIdPlaceholder": "hundun",
+		"displayName": "显示名称",
+		"displayNamePlaceholder": "Codex (Hundun)",
+		"baseUrlPlaceholder": "https://api.example.com/v1",
+		"apiKeyPlaceholder": "sk-…",
+		"modelsHint": "从端点获取，然后选择在编辑器中显示哪些模型。",
+		"emptyState": "没有自定义的 Codex 提供方。将 Codex 指向任意兼容 OpenAI（Responses API）的端点。",
+		"editAria": "编辑 {{id}}",
+		"deleteAria": "删除 {{id}}",
+		"errors": {
+			"idRequired": "提供方 id 为必填项。",
+			"baseUrlRequired": "基础 URL 为必填项。"
+		}
+	},
+	"opencodeCustom": {
+		"namePlaceholder": "显示名称（例如 My Proxy）",
+		"baseUrlPlaceholder": "基础 URL (https://…/v1)",
+		"apiKeyPlaceholder": "API 密钥",
+		"presetApiKeyPlaceholder": "{{provider}} API 密钥",
+		"getApiKeyAria": "获取 API 密钥",
+		"customOption": "自定义（兼容 OpenAI）",
+		"noneConfigured": "未配置任何自定义提供方。",
+		"apiKeyConfigured": "已配置 API 密钥",
+		"detail_other": "{{baseUrl}} · {{count}} 个模型",
+		"editAria": "编辑 {{id}}",
+		"deleteAria": "删除 {{id}}",
+		"apiStyles": {
+			"chatCompletions": {
+				"label": "Chat Completions",
+				"hint": "/v1/chat/completions —— 兼容性最广。"
+			},
+			"responses": {
+				"label": "Responses API",
+				"hint": "/v1/responses —— 高级推理与工具。"
+			}
+		}
+	},
+	"kimiCustom": {
+		"namePlaceholder": "显示名称（例如 My Proxy）",
+		"baseUrlPlaceholder": "基础 URL (https://…/v1)",
+		"apiKeyPlaceholder": "API 密钥",
+		"noneConfigured": "未配置任何自定义提供方。",
+		"noBaseUrl": "无基础 URL",
+		"detail_other": "{{baseUrl}} · {{count}} 个模型",
+		"editAria": "编辑 {{id}}",
+		"deleteAria": "删除 {{id}}",
+		"apiStyles": {
+			"openai": {
+				"label": "OpenAI-compatible",
+				"hint": "GET {base}/models · Authorization: Bearer。基础 URL 包含 /v1。"
+			},
+			"openaiResponses": {
+				"label": "OpenAI Responses",
+				"hint": "OpenAI Responses API (/v1/responses)。"
+			},
+			"anthropic": {
+				"label": "Anthropic",
+				"hint": "GET {base}/v1/models · x-api-key / anthropic-version。"
+			},
+			"kimi": {
+				"label": "Kimi (Moonshot)",
+				"hint": "Moonshot 的 OpenAI 格式 API。"
+			}
+		}
+	},
+	"modelsEditor": {
+		"title": "模型",
+		"emptyState": "尚无模型 —— 添加你的端点提供的模型 id。",
+		"modelIdPlaceholder": "model-id",
+		"displayNamePlaceholder": "显示名称（可选）",
+		"reasoningLabel": "推理（强度）—— 仅当模型支持时",
+		"removeModelAria": "移除模型"
+	},
+	"opencodeModels": {
+		"syncModelsAria": "同步模型",
+		"syncTooltip": "同步模型 —— 重新读取 ~/.config/opencode",
+		"confirmTitle": "同步 OpenCode 模型？",
+		"confirmDescription_other": "重新读取你的配置会重启 OpenCode，并停止 {{count}} 个正在运行的对话。",
+		"confirmLabel": "仍然同步"
+	},
+	"localLlm": {
+		"title": "本地 LLM",
+		"description": "为会话标题 / 分支名称生成和智能分流提供支持 —— 两者均完全在你的设备上运行。",
+		"status": {
+			"starting": "启动中",
+			"running": "运行中",
+			"noModel": "无模型",
+			"stopped": "已停止"
+		},
+		"noModelBanner": "未选择模型。从下方的「模型」下拉框中选择一个即可开始 —— 如果你磁盘上已有 GGUF，也可选择自定义。",
+		"models": "模型",
+		"loadingModels": "正在加载模型…",
+		"custom": "自定义",
+		"customSlotHint": "使用你自己的 GGUF 文件。在下方设置路径。",
+		"active": "已启用",
+		"badges": {
+			"downloading": "下载中",
+			"paused": "已暂停",
+			"failed": "失败",
+			"downloaded": "已下载",
+			"recommended": "推荐"
+		},
+		"actions": {
+			"addVision": "添加视觉",
+			"cancel": "取消",
+			"resume": "继续",
+			"retry": "重试",
+			"download": "下载",
+			"delete": "删除",
+			"pause": "暂停",
+			"reset": "重置",
+			"apply": "应用"
+		},
+		"downloads": "下载",
+		"customPath": {
+			"label": "自定义模型路径",
+			"placeholder": "/path/to/model.gguf",
+			"helpAria": "关于自定义模型路径",
+			"helpTooltip": "将其指向你自己下载的 <0>.gguf</0> 文件。上方的精选模型优先 —— 清空此字段即可切换回选择器。"
+		},
+		"context": {
+			"label": "上下文",
+			"helpAria": "什么是上下文大小？",
+			"helpTooltip": "输入加生成输出的总 token 预算。更大的上下文可让你发送更长的提示，但会占用更多内存且启动更慢。",
+			"helpDefault": "如果不确定，默认值（{{value}}）已根据你的硬件调整 —— 保持原样即可。",
+			"discardPending": "放弃待应用的更改",
+			"resetToDefault": "重置为默认值"
+		},
+		"deleteDialog": {
+			"title": "删除此模型？",
+			"descriptionFallback": "这将从磁盘移除该模型。",
+			"descriptionPrefix": "这将从磁盘移除 ",
+			"descriptionSuffix": "（{{size}}）。再次使用时需要重新下载。"
+		},
+		"progress": {
+			"paused": "已暂停",
+			"connecting": "连接中…",
+			"perSecond": "{{rate}}/秒",
+			"etaLeft": "剩余 {{eta}}"
+		}
+	},
+	"loginDialog": {
+		"title": "{{provider}} 登录",
+		"close": "关闭"
+	},
+	"agentStatus": {
+		"waiting": "等待中...",
+		"restart": "重新开始",
+		"restartSetup": "重新开始设置",
+		"logIn": "登录"
+	}
+}

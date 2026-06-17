@@ -1,0 +1,81 @@
+{
+	"quickPanel": {
+		"panelLabel": "Panel rápido",
+		"newWorkspace": "Nuevo espacio de trabajo",
+		"openInGrex": "Abrir en Grex"
+	},
+	"quickSwitch": {
+		"switchWorkspace": "Cambio rápido de espacio de trabajo",
+		"thinking": "Pensando…"
+	},
+	"workspaceStart": {
+		"chatHeading": "¿En qué deberíamos trabajar?",
+		"buildHeadingPrefix": "¿Qué deberíamos crear",
+		"buildHeadingIn": "en",
+		"buildHeadingSuffix": "?",
+		"repositoryPlaceholder": "un repositorio",
+		"repositoryShort": "Repositorio",
+		"switchRepository": "Cambiar de repositorio",
+		"closeSourcePreview": "Cerrar vista previa de la fuente",
+		"workLocally": "Trabajar localmente",
+		"justChat": "Solo chatear",
+		"newWorktree": "Nuevo árbol de trabajo",
+		"selectWhereToRun": "Selecciona dónde ejecutar la tarea",
+		"addRepository": "Añadir un repositorio…",
+		"reuse": "Reutilizar",
+		"branchOff": "Ramificar",
+		"reuseDescription": "Cambiar directamente a la rama elegida.",
+		"branchOffDescription": "Crear una nueva rama a partir de la base elegida.",
+		"reuseTooltip": "Cambiar directamente a la rama elegida.",
+		"branchOffTooltip": "Crear una nueva rama a partir de la base elegida",
+		"switchBranch": "Cambiar de rama",
+		"branchToReuse": "Rama a reutilizar",
+		"baseToForkOff": "Base de la que ramificar",
+		"createCheckoutNewBranch": "Crear y cambiar a una nueva rama…",
+		"contexts": "Contextos",
+		"backToInspector": "Volver al inspector",
+		"createBranchDialog": {
+			"title": "Crear y cambiar de rama",
+			"branchNameLabel": "Nombre de la rama",
+			"branchNamePlaceholder": "feature/awesome",
+			"submit": "Crear y cambiar"
+		},
+		"branchValidation": {
+			"empty": "El nombre de la rama no puede estar vacío.",
+			"endsWithSlash": "El nombre de la rama no puede terminar con «/».",
+			"startInvalid": "El nombre de la rama no puede empezar con «/», «.» o «-».",
+			"doubleDot": "El nombre de la rama no puede contener «..».",
+			"whitespace": "El nombre de la rama no puede contener espacios en blanco.",
+			"invalidCharacter": "El nombre de la rama contiene un carácter no válido.",
+			"endsWithLock": "El nombre de la rama no puede terminar con «.lock».",
+			"atBrace": "El nombre de la rama no puede contener «@{».",
+			"alreadyExists": "Ya existe una rama llamada «{{name}}»."
+		}
+	},
+	"updater": {
+		"update": "Actualizar",
+		"updateGrexAria": "Actualizar Grex a {{version}}",
+		"installFailed": "Error en la instalación",
+		"installFailedDescription": "No se pudo instalar la actualización descargada.",
+		"changeLog": "Registro de cambios",
+		"updateReady": "Actualización lista para instalar",
+		"updateDownloaded": "Se ha descargado Grex {{version}}.",
+		"updateAndRestart": "Actualizar y reiniciar",
+		"viewChangeLog": "Ver registro de cambios"
+	},
+	"announcements": {
+		"newInVersion": "Novedades de la v{{version}}",
+		"expand": "Expandir anuncio de la versión",
+		"collapse": "Contraer anuncio de la versión",
+		"dismiss": "Descartar anuncio de la versión",
+		"changelogs": "Registros de cambios"
+	},
+	"terminal": {
+		"starting": "Iniciando {{agent}}…",
+		"agentFallback": "terminal",
+		"preparingWorkspace": "Preparando el espacio de trabajo…",
+		"truncationNotice": "… salida anterior truncada (se alcanzó el límite del búfer) …",
+		"processExited": "[El proceso finalizó con el código {{code}}]",
+		"failedToStart": "No se pudo iniciar la terminal: {{error}}"
+	}
+}

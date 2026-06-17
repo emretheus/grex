@@ -1,0 +1,53 @@
+{
+	"header": {
+		"workspaceHeader": "Workspace header",
+		"loading": "Loading",
+		"sessions": "Sessions",
+		"contextPreview": "Context preview",
+		"closeContextPreview": "Close context preview",
+		"noSessions": "No sessions",
+		"newSession": "New session",
+		"sessionHistory": "Session history",
+		"noHiddenSessions": "No hidden sessions",
+		"renameSession": "Rename session",
+		"closeSession": "Close session",
+		"restoreSession": "Restore session",
+		"deleteSessionPermanently": "Delete session permanently",
+		"untitled": "Untitled",
+		"renameBranch": "Rename branch",
+		"copyBranchName": "Copy branch name",
+		"noBranch": "No branch",
+		"baseBranch": "Base branch {{remote}}/{{branch}}",
+		"stackedOn": "Stacked on {{label}}",
+		"interactionRequired": "Interaction required",
+		"unreadSession": "Unread session"
+	},
+	"emptyState": {
+		"creatingWorkspace": "Creating workspace",
+		"nothingHereYet": "Nothing here yet",
+		"noSessionSelected": "No session selected",
+		"preparingWorkspace": "Grex is still preparing this workspace. Messaging will unlock automatically when setup finishes.",
+		"newSessionIn": "New session in",
+		"newSession": "New session",
+		"chooseSession": "Choose a session from the header to inspect its timeline.",
+		"scriptActions": {
+			"setup": {
+				"title": "Create setup script",
+				"description": "Bootstrap dependencies after a workspace is created."
+			},
+			"run": {
+				"title": "Create run actions",
+				"description": "Named commands you'll pick from the Inspector's Run dropdown."
+			},
+			"archive": {
+				"title": "Create archive script",
+				"description": "Light cleanup or handoff before archiving."
+			}
+		},
+		"tipsLabel": "Tips:",
+		"tipsBody": "Configuring these scripts upgrades your dev loop."
+	},
+	"systemMessage": {
+		"useThisPrompt": "Use this prompt"
+	}
+}

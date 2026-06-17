@@ -1,4 +1,5 @@
 import { FolderTree } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { TrafficLightSpacer } from "@/components/chrome/traffic-light-spacer";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -28,6 +29,7 @@ export function EditorExplorerLanding({
 	explorerWidth,
 	onExplorerWidthChange,
 }: EditorExplorerLandingProps) {
+	const { t } = useTranslation("editor");
 	const workspaceId = useRouterSelectedWorkspaceId();
 	const root = workspaceRootPath?.replace(/\/+$/, "") ?? null;
 
@@ -38,7 +40,7 @@ export function EditorExplorerLanding({
 
 	return (
 		<section
-			aria-label="File explorer"
+			aria-label={t("landing.ariaLabel")}
 			className="flex h-full min-h-0 flex-col overflow-hidden bg-background text-foreground"
 		>
 			<div
@@ -51,7 +53,7 @@ export function EditorExplorerLanding({
 					className="flex min-w-0 flex-1 items-center gap-1.5 text-ui font-medium text-muted-foreground"
 				>
 					<FolderTree className="size-3.5 shrink-0" strokeWidth={2} />
-					<span className="truncate">Files</span>
+					<span className="truncate">{t("landing.title")}</span>
 				</div>
 				<div className="flex shrink-0 items-center pr-2">
 					<Button
@@ -59,10 +61,10 @@ export function EditorExplorerLanding({
 						variant="ghost"
 						size="sm"
 						onClick={onExit}
-						aria-label="Close file explorer"
+						aria-label={t("landing.closeAriaLabel")}
 						className="gap-1 px-1.5 text-muted-foreground hover:text-foreground"
 					>
-						Close
+						{t("landing.close")}
 					</Button>
 				</div>
 			</div>
@@ -85,12 +87,10 @@ export function EditorExplorerLanding({
 							strokeWidth={1.6}
 						/>
 						<div className="text-ui font-medium text-foreground">
-							Browse your codebase
+							{t("landing.heading")}
 						</div>
 						<p className="text-pretty text-small leading-5">
-							{root
-								? "Pick a file from the tree on the left to open it in the editor."
-								: "Open a workspace to browse its files."}
+							{root ? t("landing.pickFile") : t("landing.openWorkspace")}
 						</p>
 					</div>
 				</div>

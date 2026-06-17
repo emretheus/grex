@@ -1,0 +1,437 @@
+{
+	"appearance": {
+		"chatFontSize": {
+			"aria": "チャットの文字サイズ",
+			"description": "チャットメッセージ本文に使用するサイズ",
+			"title": "チャットの文字サイズ"
+		},
+		"codeFont": {
+			"aria": "コードフォント",
+			"title": "コードフォント"
+		},
+		"colorTheme": {
+			"description": "アクセントパレットを選択します",
+			"title": "カラーテーマ"
+		},
+		"pointerCursors": {
+			"description": "操作可能な要素にカーソルを合わせるとポインターに変わります",
+			"title": "ポインターカーソルを使用"
+		},
+		"terminalFont": {
+			"aria": "ターミナルフォント",
+			"title": "ターミナルフォント"
+		},
+		"theme": {
+			"dark": "ダーク",
+			"description": "ライト、ダーク、またはシステムに合わせる",
+			"light": "ライト",
+			"system": "システム",
+			"title": "テーマ"
+		},
+		"uiFont": {
+			"aria": "UIフォント",
+			"title": "UIフォント"
+		}
+	},
+	"language": {
+		"aria": "表示言語",
+		"description": "アプリの表示言語を選択します",
+		"title": "言語"
+	},
+	"nav": {
+		"settings": "設定",
+		"repositories": "リポジトリ",
+		"repositoryFallback": "リポジトリ",
+		"sections": {
+			"general": "一般",
+			"appearance": "外観",
+			"model": "モデル",
+			"providers": "プロバイダー",
+			"shortcuts": "ショートカット",
+			"import": "インポート",
+			"account": "アカウント",
+			"inbox": "コンテキスト",
+			"experimental": "実験的機能",
+			"developer": "開発者"
+		},
+		"captions": {
+			"account": "ローカルの gh / glab CLI と同期されています。",
+			"inbox": "接続済みの各アカウントがコンテキストに提供する項目を選択します。"
+		}
+	},
+	"general": {
+		"notifications": {
+			"title": "デスクトップ通知",
+			"description": "セッションが完了したり入力が必要になったときにシステム通知を表示します"
+		},
+		"notificationSound": {
+			"title": "通知音",
+			"description": "デスクトップ通知が発生したときに音を鳴らします",
+			"aria": "通知音",
+			"testAria": "通知音をテスト"
+		},
+		"terminalHoverExpansion": {
+			"title": "ホバー時にターミナルを拡大",
+			"description": "カーソルがインスペクターのターミナル上にとどまると拡大します。"
+		},
+		"terminalMode": {
+			"title": "ターミナルモード",
+			"description": "プロンプトをチャットセッションではなくエージェントのターミナルUIで開くトグルをコンポーザーに追加します。Claude と Codex のみ対応。"
+		},
+		"alwaysShowContextUsage": {
+			"title": "コンテキスト使用量を常に表示",
+			"description": "デフォルトでは、使用量が70%を超えた場合にのみコンテキスト使用量が表示されます。"
+		},
+		"usageStats": {
+			"title": "使用状況の統計",
+			"description": "コンポーザーの横にアカウントのレート制限を表示します。"
+		},
+		"autoArchiveOnMerge": {
+			"title": "マージ時に自動アーカイブ",
+			"description": "ワークスペースにリンクされた PR/MR がマージされると、ワークスペースを自動的にアーカイブします。"
+		},
+		"followUpBehavior": {
+			"title": "フォローアップの動作",
+			"description": "エージェントの実行中にフォローアップをキューに入れるか、現在の実行を誘導します。",
+			"pressToInvert": "{{shortcut}} を押すと、1件のメッセージに対して逆の動作を行います。",
+			"queue": "キュー",
+			"steer": "誘導"
+		},
+		"claudeThinking": {
+			"title": "Claude Code の思考表示",
+			"description": "Claude Code が思考内容をどのように返すかを制御します。",
+			"summarized": "要約",
+			"omitted": "省略",
+			"tooltip": {
+				"summarizedLabel": "要約",
+				"summarizedBody": "思考ブロックには要約されたテキストが含まれます。",
+				"omittedLabel": "省略",
+				"omittedBody": "思考ブロックは空です。サーバーは思考トークンのストリーミングをスキップするため、最終テキストがより早くストリーミングされます。レイテンシは低減しますが、コストは下がりません。"
+			}
+		}
+	},
+	"model": {
+		"default": {
+			"title": "デフォルトモデル",
+			"description": "新しいチャット用のモデル"
+		},
+		"review": {
+			"title": "レビューモデル",
+			"description": "コードレビュー用のモデル"
+		},
+		"action": {
+			"title": "アクションモデル",
+			"description": "PR/MR およびコミットとプッシュ用のモデル"
+		},
+		"fastMode": "高速モード",
+		"fastModeAria": "{{prefix}} 高速モード",
+		"selectModel": "モデルを選択",
+		"effort": {
+			"low": "低",
+			"medium": "中",
+			"high": "高",
+			"xhigh": "最高"
+		}
+	},
+	"archiveCleanup": {
+		"title": "アーカイブ済みワークスペースをクリーンアップ",
+		"descriptionEmpty": "アーカイブ済みのワークスペースはありません。",
+		"description_other": "{{count}} 件のアーカイブ済みワークスペースを、そのセッションとチャット履歴も含めてすべて完全に削除します。",
+		"button": "クリーンアップ",
+		"buttonBusy": "クリーンアップ中",
+		"confirmTitle": "アーカイブ済みワークスペースをクリーンアップしますか？",
+		"confirmDescription_other": "{{count}} 件のアーカイブ済みワークスペースを、そのセッションとチャット履歴も含めてすべて完全に削除します。この操作は取り消せません。",
+		"confirmLabel": "すべて削除",
+		"toast": {
+			"nothing": "クリーンアップするアーカイブ済みワークスペースはありません",
+			"cleaned_other": "{{count}} 件のアーカイブ済みワークスペースをクリーンアップしました",
+			"partial_other": "{{deleted}} 件をクリーンアップしましたが、{{count}} 件のワークスペースを削除できませんでした",
+			"failedTitle": "アーカイブのクリーンアップに失敗しました"
+		}
+	},
+	"appUpdates": {
+		"title": "アプリのアップデート",
+		"loadingStatus": "アップデーターの状態を読み込み中…",
+		"status": {
+			"notConfigured": "このビルドではアップデーターが構成されていません。",
+			"checking": "バックグラウンドで GitHub のリリースを確認しています。",
+			"downloadingVersion": "{{version}} をバックグラウンドでダウンロードしています。",
+			"downloading": "アップデートをバックグラウンドでダウンロードしています。",
+			"downloadedVersion": "{{version}} のダウンロードが完了し、インストールの準備ができました。",
+			"downloaded": "最新のアップデートのダウンロードが完了し、インストールの準備ができました。",
+			"error": "前回のアップデート確認に失敗しました。",
+			"disabledWaiting": "自動アップデート確認はアップデーターの構成を待っています。",
+			"disabled": "自動アップデート確認は無効になっています。",
+			"idle": "GitHub のリリースを確認し、アップデートを静かにダウンロードして、準備ができたら通知します。"
+		},
+		"versionNotice": "現在 {{current}} · 利用可能 {{available}}",
+		"check": {
+			"downloading": "ダウンロード中",
+			"installing": "インストール中",
+			"checking": "確認中",
+			"checkNow": "今すぐ確認"
+		},
+		"updateAndRestart": "アップデートして再起動",
+		"changeLog": "変更履歴",
+		"toast": {
+			"upToDate": "Grex は最新です",
+			"checkFailed": "アップデートの確認に失敗しました",
+			"checkFailedFallback": "アップデートを確認できませんでした。",
+			"installFailed": "インストールに失敗しました",
+			"installFailedFallback": "ダウンロードしたアップデートをインストールできませんでした。"
+		}
+	},
+	"components": {
+		"title": "Grex コンポーネント",
+		"loadingStatus": "コンポーネントの状態を読み込み中…",
+		"summary": {
+			"upToDate": "Grex CLI とスキルは {{version}} で最新です。",
+			"healthy": "Grex CLI とスキルは正常なようです。",
+			"needsAttention": "1つ以上のコンポーネントに対応が必要です。"
+		},
+		"cliLabel": "Grex CLI",
+		"skillsLabel": "Grex スキル",
+		"recheck": "今すぐ再確認",
+		"recheckBusy": "確認中",
+		"cli": {
+			"installedAt": "{{path}} にインストールされています。",
+			"installed": "インストール済み。",
+			"stale": "インストールパスに古いコピーが存在します。",
+			"missing": "このマシンにはインストールされていません。",
+			"unavailable": "状態を取得できません。"
+		},
+		"skills": {
+			"installedFor": "{{targets}} 用にインストール済み。",
+			"installed": "インストール済み。",
+			"signInPrompt": "Claude Code または Codex にサインインしてから再確認してください。",
+			"join": "、"
+		},
+		"toast": {
+			"readFailed": "Grex コンポーネントの状態を読み取れません",
+			"upToDate": "Grex コンポーネントは最新です",
+			"recheckFailed": "再確認に失敗しました",
+			"cliInstallFailed": "CLI のインストールに失敗しました",
+			"skillsInstallFailed": "スキルのインストールに失敗しました"
+		}
+	},
+	"account": {
+		"errorAria": "アカウント一覧のエラー",
+		"loading": "アカウントを読み込み中…",
+		"empty": "まだアカウントが接続されていません。"
+	},
+	"devTools": {
+		"showOnboarding": {
+			"title": "オンボーディングを再表示",
+			"description": "オンボーディングを未完了としてマークし、次回 Grex 起動時に表示されるようにします。",
+			"notice": "オンボーディングは次回起動時に表示されます。",
+			"button": "オンボーディングをリセット"
+		},
+		"resetData": {
+			"title": "すべてのデータをリセット",
+			"description": "開発データベースからすべてのワークスペース、セッション、メッセージ、リポジトリを削除します。ファイルシステム上の成果物（ワークツリー、貼り付けキャッシュ）も削除されます。",
+			"dataDir": "データディレクトリ:",
+			"button": "すべての開発データをリセット",
+			"resetting": "リセット中...",
+			"confirmTitle": "リセットの確認",
+			"confirmDescription": "これにより、開発データベースから<strong>すべてのワークスペース、セッション、リポジトリ</strong>が完全に削除されます。この操作は取り消せません。あとで Conductor から再インポートできます。",
+			"confirmLabel": "すべて削除",
+			"confirmLabelBusy": "リセット中..."
+		}
+	},
+	"plain": {
+		"connectAnother": "別のワークスペースを接続",
+		"workspaceFallback": "Plain ワークスペース",
+		"disconnect": "切断",
+		"disconnecting": "切断中…",
+		"threadsHint": "オープンなスレッド（ToDo とスヌーズ）はフィードに表示されます。",
+		"disconnectError": "Plain を切断できませんでした。",
+		"disconnectFailed": "Plain の切断に失敗しました"
+	},
+	"mobileCompanion": {
+		"title": "モバイルコンパニオン",
+		"description": "プライベートリンクを介して、スマートフォンのブラウザから Grex を操作できます。有効にするとローカルサーバーと Cloudflare トンネルが起動します。インストールするアプリはありません。",
+		"starting": "起動中…",
+		"enableAria": "モバイルコンパニオンを有効化",
+		"permanentUrl": {
+			"title": "永続的な URL",
+			"stable": "スマートフォンは、デスクトップの再起動後も維持される固定アドレスに接続します。",
+			"signedIn": "永続的な remote-*.grex.ai アドレスを割り当てれば、再スキャンの必要がなくなります。",
+			"signedOut": "クイックリンクは再起動すると変わります。永続的なアドレスを取得するには Cloudflare にサインインしてください。",
+			"forget": "削除",
+			"forgetting": "削除中…",
+			"allocate": "永続的な URL を割り当て",
+			"allocating": "割り当て中…",
+			"signIn": "Cloudflare にサインイン",
+			"signingIn": "ブラウザを待機中…",
+			"address": "永続アドレス:"
+		},
+		"pair": {
+			"title": "スマートフォンをペアリング",
+			"ready": "QR コードを生成し、スマートフォンのカメラで読み取ってください。",
+			"waiting": "公開 URL が起動するのを待っています…",
+			"button": "スマートフォンをペアリング",
+			"generating": "生成中…",
+			"scanHint": "スマートフォンのカメラで読み取ってください。コードには使い捨てのデバイストークンが含まれています。一度ペアリングすれば、スマートフォンは自動的に再接続します。",
+			"copied": "コピーしました"
+		},
+		"devices": {
+			"title": "ペアリング済みデバイス",
+			"empty": "まだスマートフォンがペアリングされていません。",
+			"revoke": "取り消し",
+			"label": "スマートフォン · {{date}}",
+			"neverConnected": "未接続",
+			"lastSeenRecently": "最近接続",
+			"lastSeen": "最終接続 {{time}}"
+		}
+	},
+	"repositoryPreferences": {
+		"title": "設定",
+		"description": "Grex のアクションや新しいチャットで使用される、リポジトリレベルの組み込みプロンプト。",
+		"preview": "プレビュー",
+		"save": "保存",
+		"saving": "保存中...",
+		"placeholderGeneral": "このリポジトリで作業するすべてのエージェント向けのカスタム指示を追加します。",
+		"placeholderDefault": "ここに設定を追加してください。エージェントには、デフォルトの指示よりもこれらの指示を優先するよう伝えられます。",
+		"promptTitle": "{{label}}のプロンプト",
+		"promptPreviewFallback": "プロンプトのプレビュー",
+		"labels": {
+			"createPr": "PR 作成の設定",
+			"review": "レビューの設定",
+			"fixErrors": "エラー修正の設定",
+			"resolveConflicts": "競合解決の設定",
+			"branchRename": "ブランチ名変更の設定",
+			"general": "一般設定"
+		},
+		"descriptions": {
+			"createPr": "「PR を作成」ボタンをクリックしたときにエージェントへ送られるカスタム指示を追加します。",
+			"review": "インスペクターで「レビュー」をクリックしたときにエージェントへ送られるカスタム指示を追加します。",
+			"fixErrors": "「エラーを修正」ボタンをクリックしたときにエージェントへ送られるカスタム指示を追加します。",
+			"resolveConflicts": "「競合を解決」ボタンをクリックしたときにエージェントへ送られるカスタム指示を追加します。",
+			"branchRename": "Grex が新しいチャット向けに最初のブランチ名変更の提案を生成するときに使用するカスタム指示を追加します。",
+			"general": "新しいチャットを開始するたびにエージェントへ送られるカスタム指示を追加します。"
+		}
+	},
+	"repositorySettings": {
+		"remoteFallback": "リポジトリ",
+		"remoteOrigin": {
+			"title": "リモートのオリジン",
+			"description": "どこにプッシュ、プルし、PR を作成しますか？",
+			"empty": "リモートが見つかりません",
+			"orphanedNotice_other": "{{count}} 件のワークスペースが、このリモートに存在しないブランチを対象にしています。ヘッダーのブランチ選択ツールから更新してください。"
+		},
+		"branchFrom": {
+			"title": "新しいワークスペースの分岐元",
+			"description": "各ワークスペースはコードベースの独立したコピーです。"
+		},
+		"forge": {
+			"notConnected": "{{provider}} は未接続です",
+			"connectCta": "{{provider}} アカウントを接続して、このリポジトリで {{provider}} ワークフローを有効にします。",
+			"connect": "接続",
+			"connecting": "接続中"
+		},
+		"branchPrefix": {
+			"title": "ブランチのプレフィックス",
+			"description": "このリポジトリで新しいワークスペースを作成する際にブランチ名へ追加されるプレフィックス。",
+			"username": "ユーザー名",
+			"custom": "カスタム",
+			"none": "なし",
+			"customPlaceholder": "例: feat/",
+			"customAria": "カスタムブランチプレフィックス",
+			"preview": "プレビュー:",
+			"connectAccount": "（アカウントを接続）"
+		},
+		"delete": {
+			"title": "リポジトリを削除",
+			"description": "このリポジトリと、そのすべてのワークスペース、セッション、メッセージを完全に削除します。",
+			"button": "リポジトリを削除",
+			"confirmTitle": "{{name}} を削除しますか？",
+			"confirmDescription": "これにより、<strong>{{name}}</strong> に関連するすべてのワークスペース、セッション、メッセージが完全に削除されます。この操作は取り消せません。",
+			"confirmLabel": "削除",
+			"deleting": "削除中..."
+		},
+		"scripts": {
+			"title": "スクリプト",
+			"description": "ワークスペースのセットアップ、実行、アーカイブ時に実行されるコマンド。",
+			"lockedMessage": "このワークスペースの grex.json で設定されています。そちらで編集してください",
+			"setup": {
+				"label": "セットアップスクリプト",
+				"description": "任意のワークスペースの「セットアップ」タブから利用できます",
+				"placeholder": "例: npm install",
+				"autoRun": "自動実行",
+				"autoRunTooltip": "デフォルトでオン。ワークスペースが作成されるとすぐにセットアップが自動実行されます。オフにすると「セットアップ」タブから手動で実行できます。",
+				"autoRunAria": "ワークスペース作成時にセットアップスクリプトを自動実行"
+			},
+			"archive": {
+				"label": "アーカイブスクリプト",
+				"description": "ワークスペースがアーカイブされたときに実行されます",
+				"placeholder": "例: docker compose down"
+			},
+			"run": {
+				"title": "実行スクリプト",
+				"description": "各エントリはインスペクターの「実行」ドロップダウンに表示されます。",
+				"lockedEmpty": "このワークスペースの grex.json で設定されています。そちらで編集してください。",
+				"emptyTitle": "実行スクリプトはまだありません",
+				"emptyDescription": "1つ追加して、開発サーバー、テストランナー、バックグラウンドタスクなどのコマンドを公開しましょう。",
+				"addScript": "スクリプトを追加",
+				"defaultName": "デフォルト",
+				"scriptN": "スクリプト {{index}}",
+				"unnamed": "（名前なし）",
+				"noCommand": "（コマンドなし）",
+				"empty": "（空）",
+				"exclusive": "排他的",
+				"exclusiveTooltip": "このスクリプトを一度に1つのワークスペースだけが実行できるようにします。新しい実行を開始すると、このリポジトリ内の他の実行が停止されます。スクリプトが固定ポートを使用する場合に便利です。",
+				"exclusiveAria": "新しい実行を開始するときにこのリポジトリ内の他の実行を停止",
+				"scriptName": "スクリプト名",
+				"command": "コマンド",
+				"commandPlaceholder": "例: npm run dev",
+				"commandAria": "{{name}} のコマンド",
+				"stopCommand": "停止コマンド",
+				"stopCommandTooltip": "「停止」をクリックしたときに実行される任意のクリーンアップコマンド。外部リソースを管理するスクリプト（docker compose down、supabase stop）に便利です。メインコマンドと同じ環境変数と作業ディレクトリを使用します。",
+				"stopCommandPlaceholder": "例: docker compose down",
+				"stopCommandAria": "{{name}} の停止コマンド",
+				"scriptFallback": "スクリプト",
+				"collapseAria": "{{name}} を折りたたむ",
+				"expandAria": "{{name}} を展開",
+				"rowFallback": "スクリプト",
+				"doneEditing": "編集を完了",
+				"edit": "編集",
+				"stopEditing": "編集を停止",
+				"deleteScript": "スクリプトを削除",
+				"clickAgainConfirm": "もう一度クリックして確認",
+				"confirmDeleteAria": "{{name}} の削除を確認",
+				"deleteScriptAria": "スクリプト {{name}} を削除",
+				"managedByProject": "grex.json で管理されています。追加や変更はファイルを編集してください"
+			}
+		}
+	},
+	"conductorImport": {
+		"title": "Conductor からインポート",
+		"repositoryFallback": "リポジトリ",
+		"selectWorkspaces": "インポートするワークスペースを選択",
+		"importLocal": "ローカルの Conductor インストールからワークスペースをインポート",
+		"searchWorkspaces": "ワークスペースを検索",
+		"searchRepositories": "リポジトリを検索",
+		"importing_other": "{{count}} 件のワークスペースをインポート中",
+		"settingUp": "リポジトリをセットアップしてデータをコピーしています...",
+		"selectAll": "すべて選択",
+		"deselectAll": "すべて選択解除",
+		"noWorkspaces": "ワークスペースが見つかりません",
+		"noRepositories": "Conductor のリポジトリが見つかりません",
+		"noMatches": "一致するものがありません",
+		"importButton_other": "{{count}} 件のワークスペースをインポート",
+		"importFailed": "インポートに失敗しました",
+		"importPartial": "{{imported}} 件インポート、{{failed}} 件失敗: {{error}}",
+		"importSuccess_other": "{{count}} 件のワークスペースを正常にインポートしました",
+		"status": {
+			"archived": "アーカイブ済み",
+			"done": "完了",
+			"inProgress": "進行中"
+		},
+		"alreadyImported": "インポート済み",
+		"allImported": "すべてインポート済み",
+		"importedCount": "{{imported}}/{{total}} 件インポート済み",
+		"workspaceCount_other": "{{count}} 件のワークスペース",
+		"selectWorkspace": "{{name}} を選択",
+		"sessionCount_other": "{{count}} 件のセッション"
+	}
+}

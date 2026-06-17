@@ -18,6 +18,7 @@ import {
 	useRef,
 	useState,
 } from "react";
+import { useTranslation } from "react-i18next";
 import { TrafficLightSpacer } from "@/components/chrome/traffic-light-spacer";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -217,6 +218,7 @@ export const WorkspacesSidebar = memo(function WorkspacesSidebar({
 	markingUnreadWorkspaceId?: string | null;
 	restoringWorkspaceId?: string | null;
 }) {
+	const { t } = useTranslation("navigation");
 	const [isAddRepositoryMenuOpen, setIsAddRepositoryMenuOpen] = useState(false);
 	const [isSidebarViewPopoverOpen, setIsSidebarViewPopoverOpen] =
 		useState(false);
@@ -629,7 +631,7 @@ export const WorkspacesSidebar = memo(function WorkspacesSidebar({
 			groupId: ARCHIVED_SECTION_ID,
 			group: {
 				id: ARCHIVED_SECTION_ID,
-				label: "Archived",
+				label: t("sections.archived"),
 				tone: "backlog" as WorkspaceGroup["tone"],
 				rows: archivedRows,
 			},
@@ -661,6 +663,7 @@ export const WorkspacesSidebar = memo(function WorkspacesSidebar({
 		activeRepoDragId,
 		repoDropBeforeId,
 		sidebarGrouping,
+		t,
 	]);
 
 	// ── Virtualizer ───────────────────────────────────────────────────
@@ -932,7 +935,9 @@ export const WorkspacesSidebar = memo(function WorkspacesSidebar({
 									<TooltipTrigger asChild>
 										<Button
 											type="button"
-											aria-label={`New workspace in ${item.group.label}`}
+											aria-label={t("actions.newWorkspaceInGroup", {
+												group: item.group.label,
+											})}
 											variant="ghost"
 											size="icon-xs"
 											className="size-5 shrink-0 text-muted-foreground opacity-0 transition-opacity hover:text-foreground group-hover/trigger:opacity-100 focus-visible:opacity-100"
@@ -949,7 +954,9 @@ export const WorkspacesSidebar = memo(function WorkspacesSidebar({
 										sideOffset={4}
 										className="flex h-[24px] items-center rounded-md px-2 text-small leading-none"
 									>
-										New workspace in {item.group.label}
+										{t("actions.newWorkspaceInGroup", {
+											group: item.group.label,
+										})}
 									</TooltipContent>
 								</Tooltip>
 							) : null}
@@ -1040,11 +1047,14 @@ export const WorkspacesSidebar = memo(function WorkspacesSidebar({
 								<TooltipContent side="left" sideOffset={6}>
 									{`${
 										item.stackMeta.role === "tip"
-											? "Stack tip"
+											? t("stack.tip")
 											: item.stackMeta.role === "root"
-												? "Stack base"
-												: "Stack"
-									} · ${item.stackMeta.depth + 1} of ${item.stackMeta.stackSize}`}
+												? t("stack.base")
+												: t("stack.node")
+									} · ${t("stack.depth", {
+										current: item.stackMeta.depth + 1,
+										total: item.stackMeta.stackSize,
+									})}`}
 								</TooltipContent>
 							</Tooltip>
 						</>
@@ -1123,6 +1133,7 @@ export const WorkspacesSidebar = memo(function WorkspacesSidebar({
 			markingUnreadWorkspaceId,
 			restoringWorkspaceId,
 			creatingWorkspaceRepoId,
+			t,
 		],
 	);
 
@@ -1149,7 +1160,7 @@ export const WorkspacesSidebar = memo(function WorkspacesSidebar({
 
 			<div className="mt-1 flex items-center justify-between px-3">
 				<h2 className="text-title font-medium text-muted-foreground">
-					Workspaces
+					{t("sidebar.title")}
 				</h2>
 
 				<div className="flex items-center gap-1 text-muted-foreground">
@@ -1175,7 +1186,7 @@ export const WorkspacesSidebar = memo(function WorkspacesSidebar({
 								<DropdownMenuTrigger asChild>
 									<Button
 										type="button"
-										aria-label="Add repository"
+										aria-label={t("actions.addRepository")}
 										variant="ghost"
 										size="icon-xs"
 										disabled={
@@ -1204,7 +1215,7 @@ export const WorkspacesSidebar = memo(function WorkspacesSidebar({
 								sideOffset={4}
 								className="flex h-[24px] items-center gap-2 rounded-md px-2 text-small leading-none"
 							>
-								<span>Add repository</span>
+								<span>{t("actions.addRepository")}</span>
 								{addRepositoryShortcut ? (
 									<InlineShortcutDisplay
 										hotkey={addRepositoryShortcut}
@@ -1220,7 +1231,7 @@ export const WorkspacesSidebar = memo(function WorkspacesSidebar({
 								}}
 							>
 								<Folder strokeWidth={2} />
-								<span>Open project</span>
+								<span>{t("actions.openProject")}</span>
 							</DropdownMenuItem>
 							<DropdownMenuItem
 								onSelect={() => {
@@ -1228,7 +1239,7 @@ export const WorkspacesSidebar = memo(function WorkspacesSidebar({
 								}}
 							>
 								<Globe strokeWidth={2} />
-								<span>Clone from URL</span>
+								<span>{t("actions.cloneFromUrl")}</span>
 							</DropdownMenuItem>
 						</DropdownMenuContent>
 					</DropdownMenu>
@@ -1237,7 +1248,7 @@ export const WorkspacesSidebar = memo(function WorkspacesSidebar({
 						<TooltipTrigger asChild>
 							<Button
 								type="button"
-								aria-label="New workspace"
+								aria-label={t("actions.newWorkspace")}
 								variant="ghost"
 								size="icon-xs"
 								disabled={
@@ -1266,7 +1277,7 @@ export const WorkspacesSidebar = memo(function WorkspacesSidebar({
 							sideOffset={4}
 							className="flex h-[24px] items-center gap-2 rounded-md px-2 text-small leading-none"
 						>
-							<span>Create new workspace</span>
+							<span>{t("actions.createNewWorkspace")}</span>
 							{newWorkspaceShortcut ? (
 								<InlineShortcutDisplay
 									hotkey={newWorkspaceShortcut}

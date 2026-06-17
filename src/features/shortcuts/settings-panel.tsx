@@ -1,5 +1,6 @@
 import { CircleAlert, RotateCcw, Search } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
 	ContextMenu,
 	ContextMenuContent,
@@ -23,6 +24,8 @@ import {
 	findShortcutConflict,
 	getShortcut,
 	getShortcutConflicts,
+	getShortcutDescription,
+	getShortcutTitle,
 	SHORTCUT_DEFINITIONS,
 	updateShortcutOverride,
 } from "./registry";
@@ -75,6 +78,7 @@ export function ShortcutsSettingsPanel({
 	overrides,
 	onChange,
 }: ShortcutsSettingsPanelProps) {
+	const { t } = useTranslation("shortcuts");
 	const [query, setQuery] = useState("");
 	const [recordingId, setRecordingId] = useState<ShortcutId | null>(null);
 	const [shakeId, setShakeId] = useState<ShortcutId | null>(null);
@@ -85,11 +89,14 @@ export function ShortcutsSettingsPanel({
 			SHORTCUT_DEFINITIONS.filter((definition) => {
 				if (!normalizedQuery) return true;
 				const hotkey = getShortcut(overrides, definition.id) ?? "";
-				return `${definition.title} ${definition.description ?? ""} ${definition.group} ${hotkey}`
+				const title = getShortcutTitle(definition);
+				const description = getShortcutDescription(definition) ?? "";
+				const group = t(`groups.${definition.group}`);
+				return `${title} ${description} ${group} ${hotkey}`
 					.toLowerCase()
 					.includes(normalizedQuery);
 			}),
-		[normalizedQuery, overrides],
+		[normalizedQuery, overrides, t],
 	);
 	const pinnedDefinitions = useMemo(
 		() =>
@@ -143,7 +150,7 @@ export function ShortcutsSettingsPanel({
 					<Input
 						value={query}
 						onChange={(event) => setQuery(event.target.value)}
-						placeholder="Search shortcuts"
+						placeholder={t("search.placeholder")}
 						className="h-9 rounded-lg border-border/50 bg-muted/20 pl-8 text-ui"
 					/>
 				</div>
@@ -151,7 +158,7 @@ export function ShortcutsSettingsPanel({
 
 			<section className="pb-1">
 				<div className="pb-1 text-small font-medium tracking-normal text-muted-foreground">
-					Global
+					{t("section.global")}
 				</div>
 				{pinnedDefinitions.map((definition, index) =>
 					renderShortcutRow(definition, index === pinnedDefinitions.length - 1),
@@ -167,7 +174,7 @@ export function ShortcutsSettingsPanel({
 				return (
 					<section key={group} className="pt-3 pb-1">
 						<div className="pb-1 text-small font-medium tracking-normal text-muted-foreground">
-							{group}
+							{t(`groups.${group}`)}
 						</div>
 						{definitions.map((definition, index) =>
 							renderShortcutRow(definition, index === definitions.length - 1),
@@ -204,6 +211,7 @@ function ShortcutRow({
 	onRecordingChange,
 	isLastInGroup,
 }: ShortcutRowProps) {
+	const { t } = useTranslation("shortcuts");
 	const shortcutButtonRef = useRef<HTMLButtonElement | null>(null);
 	const hasConflict = conflicts.length > 0;
 	const isCustomized = Object.hasOwn(overrides, definition.id);
@@ -307,11 +315,11 @@ function ShortcutRow({
 					>
 						<div className="min-w-0">
 							<div className="truncate text-ui font-medium leading-snug text-foreground">
-								{definition.title}
+								{getShortcutTitle(definition)}
 							</div>
-							{definition.description ? (
+							{getShortcutDescription(definition) ? (
 								<div className="mt-1 text-mini text-muted-foreground">
-									{definition.description}
+									{getShortcutDescription(definition)}
 								</div>
 							) : null}
 						</div>
@@ -322,7 +330,7 @@ function ShortcutRow({
 									<TooltipTrigger asChild>
 										<button
 											type="button"
-											aria-label="Shortcut conflict"
+											aria-label={t("row.conflictAria")}
 											className="cursor-default text-destructive"
 										>
 											<CircleAlert className="size-4" strokeWidth={2.2} />
@@ -332,10 +340,11 @@ function ShortcutRow({
 										side="top"
 										className="max-w-xs whitespace-normal text-mini leading-snug"
 									>
-										Already used by{" "}
-										{conflicts
-											.map((conflict) => `"${conflict.title}"`)
-											.join(", ")}
+										{t("row.conflictUsedBy", {
+											names: conflicts
+												.map((conflict) => `"${getShortcutTitle(conflict)}"`)
+												.join(", "),
+										})}
 									</TooltipContent>
 								</Tooltip>
 							) : null}
@@ -344,7 +353,7 @@ function ShortcutRow({
 									<TooltipTrigger asChild>
 										<button
 											type="button"
-											aria-label="Reset to default"
+											aria-label={t("row.resetAria")}
 											className="inline-flex size-[18px] cursor-interactive items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-accent hover:text-foreground focus:outline-none focus-visible:ring-1 focus-visible:ring-border"
 											onClick={handleReset}
 										>
@@ -352,7 +361,7 @@ function ShortcutRow({
 										</button>
 									</TooltipTrigger>
 									<TooltipContent side="top" className="text-mini leading-snug">
-										Reset to default
+										{t("row.resetTooltip")}
 									</TooltipContent>
 								</Tooltip>
 							) : null}
@@ -390,10 +399,10 @@ function ShortcutRow({
 							onChange(updateShortcutOverride(overrides, definition.id, null))
 						}
 					>
-						Remove Shortcut
+						{t("menu.remove")}
 					</ContextMenuItem>
 					<ContextMenuItem className="px-2" onSelect={handleReset}>
-						Reset Shortcut to Default
+						{t("menu.resetDefault")}
 					</ContextMenuItem>
 				</ContextMenuContent>
 			</ContextMenu>

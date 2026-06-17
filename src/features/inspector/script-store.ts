@@ -6,6 +6,7 @@ import {
 	stopRepoScript,
 	writeRepoScriptStdin,
 } from "@/lib/api";
+import { i18n } from "@/lib/i18n";
 import { dedupUrlKey, extractLocalUrls } from "./detect-urls";
 
 export type ScriptStatus = "idle" | "running" | "exited";
@@ -49,9 +50,12 @@ type StatusListener = (
  */
 const MAX_CHUNK_BYTES = 2 * 1024 * 1024;
 
-/** Inserted once at the head of replay when earlier output was dropped. */
-export const TRUNCATION_NOTICE =
-	"\r\n\x1b[2m… earlier output truncated (buffer limit reached) …\x1b[0m\r\n";
+/** Inserted once at the head of replay when earlier output was dropped.
+ * Built per call so it reflects the active language; wraps the localized
+ * message in the dim-ANSI sequence xterm renders. */
+export function getTruncationNotice(): string {
+	return `\r\n\x1b[2m${i18n.t("inspector:terminal.truncationNotice")}\x1b[0m\r\n`;
+}
 
 export type ScriptEntry = {
 	chunks: string[];

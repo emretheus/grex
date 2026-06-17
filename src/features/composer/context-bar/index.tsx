@@ -23,6 +23,7 @@ import {
 	useRef,
 	useState,
 } from "react";
+import { useTranslation } from "react-i18next";
 import { WorkspaceAvatar } from "@/features/navigation/avatar";
 import { cn } from "@/lib/utils";
 
@@ -73,6 +74,7 @@ export function ContextBar({
 	disabled = false,
 	className,
 }: ContextBarProps) {
+	const { t } = useTranslation("composer");
 	const scrollRef = useRef<HTMLDivElement | null>(null);
 	const barRef = useRef<HTMLDivElement | null>(null);
 	const [hasOverflow, setHasOverflow] = useState(false);
@@ -229,7 +231,7 @@ export function ContextBar({
 					className="flex items-center border-b border-dashed border-border/55 px-4 pb-2 pt-0.5"
 				>
 					<span className="shrink-0 pr-2 font-mono text-micro uppercase tracking-[0.06em] text-muted-foreground">
-						context
+						{t("contextBar.label")}
 					</span>
 					<div
 						ref={scrollRef}
@@ -275,7 +277,7 @@ export function ContextBar({
 							className="pointer-events-none fixed z-[100] max-w-[420px] overflow-hidden truncate rounded-md bg-foreground/95 px-2 py-1 font-mono text-mini text-background shadow-lg"
 						>
 							<span className="mr-2 text-nano uppercase tracking-[0.06em] opacity-60">
-								path
+								{t("contextBar.pathLabel")}
 							</span>
 							{tooltip.path}
 						</div>
@@ -301,6 +303,7 @@ function Chip({
 	disabled: boolean;
 	onRemove: () => void;
 }): ReactNode {
+	const { t } = useTranslation("composer");
 	const displayName = directory.name?.trim() || basename(directory.path);
 	return (
 		<>
@@ -364,7 +367,7 @@ function Chip({
 				    position-stable — the X just appears / disappears. */}
 				<button
 					type="button"
-					aria-label={`Remove ${displayName}`}
+					aria-label={t("contextBar.removeAria", { displayName })}
 					tabIndex={-1}
 					disabled={disabled}
 					className={cn(

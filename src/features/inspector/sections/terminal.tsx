@@ -6,9 +6,9 @@ import {
 import {
 	attach,
 	detach,
+	getTruncationNotice,
 	resize,
 	type TerminalInstance,
-	TRUNCATION_NOTICE,
 	writeStdin,
 } from "../terminal-store";
 
@@ -92,7 +92,7 @@ export function TerminalInstancePanel({
 				// Snapshot to avoid re-writing chunks that the live listener already painted.
 				const snapshot = existing.chunks.slice();
 				t.clear();
-				if (existing.truncated) t.write(TRUNCATION_NOTICE);
+				if (existing.truncated) t.write(getTruncationNotice());
 				for (const chunk of snapshot) t.write(chunk);
 			}
 			// Auto-focus on first mount if this panel is the active one.

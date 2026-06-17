@@ -1,0 +1,67 @@
+{
+	"common": {
+		"disconnect": "接続を解除",
+		"disconnecting": "接続を解除しています…",
+		"nothingToFilter": "フィルターする項目がありません。",
+		"countSelected_other": "{{count}} 件選択中",
+		"assignedFeedHint": "自分に割り当てられた課題のみがフィードに表示されます。"
+	},
+	"scope": {
+		"assignedToMe": "自分に割り当て"
+	},
+	"jira": {
+		"connectAnother": "別のサイトを接続",
+		"siteFallback": "Jira サイト",
+		"updateFailed": "Jira の更新に失敗しました",
+		"updateError": "Jira のスコープを保存できませんでした。",
+		"disconnectFailed": "Jira の接続解除に失敗しました",
+		"disconnectError": "Jira の接続を解除できませんでした。",
+		"scopeAll": "すべてのプロジェクト",
+		"projectsLabel": "プロジェクト",
+		"allProjects": "すべてのプロジェクト"
+	},
+	"linear": {
+		"connectAnother": "別のワークスペースを接続",
+		"workspaceFallback": "Linear ワークスペース",
+		"updateFailed": "Linear の更新に失敗しました",
+		"updateError": "Linear のスコープを保存できませんでした。",
+		"disconnectFailed": "Linear の接続解除に失敗しました",
+		"disconnectError": "Linear の接続を解除できませんでした。",
+		"scopeAll": "すべての課題",
+		"teamsLabel": "チーム",
+		"allTeams": "すべてのチーム",
+		"projectsLabel": "プロジェクト",
+		"allProjects": "すべてのプロジェクト"
+	},
+	"trello": {
+		"connectAnother": "別のアカウントを接続",
+		"accountFallback": "Trello アカウント",
+		"updateFailed": "Trello の更新に失敗しました",
+		"updateError": "Trello のスコープを保存できませんでした。",
+		"disconnectFailed": "Trello の接続解除に失敗しました",
+		"disconnectError": "Trello の接続を解除できませんでした。",
+		"scopeMine": "自分のカード",
+		"scopeAll": "すべてのボード",
+		"boardsLabel": "ボード",
+		"allBoards": "すべてのボード",
+		"memberFeedHint": "自分がメンバーになっているカードのみがフィードに表示されます。"
+	},
+	"forgejo": {
+		"connectAnother": "別のインスタンスを接続",
+		"instanceFallback": "Forgejo インスタンス",
+		"updateFailed": "Forgejo の更新に失敗しました",
+		"updateError": "Forgejo のスコープを保存できませんでした。",
+		"disconnectFailed": "Forgejo の接続解除に失敗しました",
+		"disconnectError": "Forgejo の接続を解除できませんでした。",
+		"scopeMine": "自分の課題",
+		"scopeAll": "すべての課題",
+		"allIssuesHint": "トークンが読み取れるすべてのリポジトリの全課題。"
+	},
+	"featurebase": {
+		"connectAnother": "別のボードを接続",
+		"boardFallback": "Featurebase ボード",
+		"disconnectFailed": "Featurebase の接続解除に失敗しました",
+		"disconnectError": "Featurebase の接続を解除できませんでした。",
+		"readOnlyHint": "フィードバック投稿は読み取り専用です。このボードのすべての内容がフィードに表示されます。"
+	}
+}

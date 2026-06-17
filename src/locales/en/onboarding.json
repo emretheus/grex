@@ -1,0 +1,170 @@
+{
+	"region": {
+		"main": "Grex onboarding",
+		"dragRegion": "Grex onboarding drag region"
+	},
+	"intro": {
+		"logoAlt": "Grex",
+		"heading": "Hi, Grex!",
+		"tagline": "AI generates the code. Grex is where you orchestrate, review, and ship it.",
+		"explore": "Explore",
+		"previewLabel": "Grex preview"
+	},
+	"agents": {
+		"sectionLabel": "Agent login",
+		"heading": "Log in to your agents",
+		"description": "Grex uses your local Claude Code and Codex login sessions. You can log in now, or continue and log in later.",
+		"back": "Back",
+		"next": "Next",
+		"cursorKeyError": "Couldn't validate key: {{error}}"
+	},
+	"repositoryCli": {
+		"sectionLabel": "Repository CLI setup",
+		"heading": "Connect accounts",
+		"description": "Each repo uses one of your accounts. Add now or skip — existing logins are picked up automatically. All accounts live in your local gh/glab CLI.",
+		"back": "Back",
+		"next": "Next",
+		"checkingAccounts": "Checking for connected accounts…",
+		"noAccounts": "No accounts connected yet.",
+		"addingAccountWithLogin": "Adding @{{login}}…",
+		"addingAccountProvider": "Adding {{provider}} account…",
+		"connectedCount_one": "{{count}} connected",
+		"connectedCount_other": "{{count}} connected",
+		"moreAccounts_one": "{{count}} more account",
+		"moreAccounts_other": "{{count}} more accounts",
+		"connectedToast": "{{provider}} connected as @{{login}}",
+		"finishAuthToast": "Finish {{provider}} CLI auth, then click Set up again.",
+		"enterDomainError": "Enter a GitLab domain.",
+		"providerGitlabHost": "GitLab · {{host}}",
+		"gitlabDomainTitle": "GitLab domain",
+		"gitlabDomainHelp": "Use gitlab.com or your self-hosted GitLab domain.",
+		"gitlabDomainLabel": "GitLab domain",
+		"cancel": "Cancel",
+		"logIn": "Log in",
+		"startLoginFailed": "Unable to start login."
+	},
+	"skills": {
+		"sectionLabel": "MCP and skills setup",
+		"heading": "Power up Grex",
+		"description": "Grex is installing the CLI and skills in the background so it can split work, run agents, call tools, and carry context across your workspaces.",
+		"setupFailed": "Something went wrong — don't worry, Grex will work fine without it.",
+		"installing": "Installing",
+		"retry": "Retry",
+		"back": "Back",
+		"next": "Next",
+		"cli": {
+			"label": "Grex CLI",
+			"description": "Control Grex from your terminal: create workspaces, send prompts, inspect files, and script repeatable flows."
+		},
+		"grexSkills": {
+			"label": "Grex Skills (Beta)",
+			"description": "Install skills so Grex can help with more workflows across every workspace."
+		}
+	},
+	"repoImport": {
+		"sectionLabel": "Repository import",
+		"heading": "Bring in your first repositories",
+		"description": "Start with a local project, or pull a remote repository from GitHub. You can add more than one before entering Grex.",
+		"chooseLocalProject": "Choose local project",
+		"addingRepository": "Adding repository…",
+		"chooseLocalDescription": "Add a folder already on this machine.",
+		"addingLocalDescription": "Pick a folder, then we'll wire it up.",
+		"importFromGithub": "Import from GitHub",
+		"importFromGithubDescription": "Clone a remote project into Grex.",
+		"importedRepositories": "Imported repositories",
+		"emptyState": "Choose a local folder or import from GitHub to build your first queue.",
+		"removeRepository": "Remove {{name}}",
+		"back": "Back",
+		"ship": "Let's ship"
+	},
+	"setupItem": {
+		"defaultAction": "Set up"
+	},
+	"terminal": {
+		"close": "Close login terminal"
+	},
+	"errors": {
+		"addRepository": "Unable to add repository.",
+		"removeRepository": "Unable to remove repository."
+	},
+	"fallback": {
+		"localProject": "Local project",
+		"githubRepository": "GitHub repository"
+	},
+	"mockup": {
+		"workspacePreview": "Grex workspace preview",
+		"sidebar": {
+			"title": "Workspaces",
+			"addRepository": "Add repository",
+			"newWorkspace": "New workspace",
+			"openProject": "Open project",
+			"cloneFromUrl": "Clone from URL",
+			"groups": {
+				"done": "Done",
+				"review": "In review",
+				"progress": "In progress",
+				"backlog": "Backlog"
+			},
+			"workspaces": {
+				"release": "Release v1.2",
+				"settings": "Settings refresh",
+				"authPlan": "Auth feature plan",
+				"authDb": "User Auth - Database",
+				"authBe": "User Auth - Backend",
+				"authFe": "User Auth - Frontend",
+				"cleanup": "API cleanup"
+			},
+			"row": {
+				"interactionRequired": "Interaction required",
+				"unread": "Unread",
+				"deletePermanently": "Delete permanently"
+			}
+		},
+		"conversation": {
+			"sessions": {
+				"planSplit": "Plan workspace split",
+				"refineContracts": "Refine API contracts"
+			},
+			"sessionTab": {
+				"interactionRequired": "Interaction required",
+				"unread": "Unread session",
+				"newSession": "New session"
+			},
+			"userPrompt": "Split this feature into three workspaces — DB migration, backend handlers, and frontend wiring — so I can pair on each in parallel.",
+			"reasoning": "Planning the workspace split",
+			"assistantReply": "Spun up three workspaces — switch between them in the sidebar to keep each lane moving.",
+			"composerPlaceholder": "Ask to make changes, @mention files, run /commands",
+			"effortHigh": "High",
+			"plan": "Plan",
+			"working": "Working",
+			"planProgress": "Plan - {{completed}}/{{total}} done"
+		},
+		"inspector": {
+			"git": "Git",
+			"actions": "Actions",
+			"review": "Review",
+			"createPr": "Create PR",
+			"remote": "Remote",
+			"tabSetup": "Setup",
+			"tabRun": "Run",
+			"changes_one": "{{count}} change",
+			"changes_other": "{{count}} changes",
+			"branchUnpublished": "Branch unpublished",
+			"upToDate": "Up to date",
+			"commit": "Commit",
+			"push": "Push",
+			"waitingForReview": "Waiting for review",
+			"status": {
+				"passed": "Passed",
+				"running": "Running",
+				"failed": "Failed",
+				"pending": "Pending"
+			}
+		},
+		"header": {
+			"workspaceHeader": "Workspace header",
+			"composer": "Workspace composer",
+			"noBranch": "No branch"
+		}
+	}
+}

@@ -6,6 +6,7 @@ import {
 	Loader2,
 	X,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import type { ImportedRepository, OnboardingStep } from "../types";
 
@@ -34,9 +35,10 @@ export function RepoImportStep({
 	onBack: () => void;
 	onComplete: () => void;
 }) {
+	const { t } = useTranslation("onboarding");
 	return (
 		<section
-			aria-label="Repository import"
+			aria-label={t("repoImport.sectionLabel")}
 			aria-hidden={step !== "repoImport"}
 			className={`absolute left-[calc(30vw-260px)] top-20 z-30 w-[520px] transition-all duration-1000 ease-[cubic-bezier(.22,.82,.2,1)] ${
 				step === "repoImport"
@@ -49,11 +51,10 @@ export function RepoImportStep({
 			<div className="flex h-[660px] flex-col">
 				<div className="text-center">
 					<h2 className="text-3xl font-semibold tracking-normal text-foreground">
-						Bring in your first repositories
+						{t("repoImport.heading")}
 					</h2>
 					<p className="mx-auto mt-3 max-w-md text-body leading-6 text-muted-foreground">
-						Start with a local project, or pull a remote repository from GitHub.
-						You can add more than one before entering Grex.
+						{t("repoImport.description")}
 					</p>
 				</div>
 
@@ -74,13 +75,13 @@ export function RepoImportStep({
 						</div>
 						<div className="mt-4 text-body font-medium text-foreground">
 							{isAddingLocalRepository
-								? "Adding repository…"
-								: "Choose local project"}
+								? t("repoImport.addingRepository")
+								: t("repoImport.chooseLocalProject")}
 						</div>
 						<p className="mt-1 text-small leading-5 text-muted-foreground">
 							{isAddingLocalRepository
-								? "Pick a folder, then we'll wire it up."
-								: "Add a folder already on this machine."}
+								? t("repoImport.addingLocalDescription")
+								: t("repoImport.chooseLocalDescription")}
 						</p>
 					</button>
 					<button
@@ -93,10 +94,10 @@ export function RepoImportStep({
 							<Cloud className="size-5" />
 						</div>
 						<div className="mt-4 text-body font-medium text-foreground">
-							Import from GitHub
+							{t("repoImport.importFromGithub")}
 						</div>
 						<p className="mt-1 text-small leading-5 text-muted-foreground">
-							Clone a remote project into Grex.
+							{t("repoImport.importFromGithubDescription")}
 						</p>
 						{githubImportProgress !== null ? (
 							<div className="mt-4 h-1.5 w-full overflow-hidden rounded-full bg-muted">
@@ -120,7 +121,7 @@ export function RepoImportStep({
 
 				<div className="mt-7 min-h-0 flex-1">
 					<div className="mb-2 flex items-center justify-between text-small text-muted-foreground">
-						<span>Imported repositories</span>
+						<span>{t("repoImport.importedRepositories")}</span>
 						{importedRepositories.length > 0 ? (
 							<span>{importedRepositories.length}</span>
 						) : null}
@@ -148,7 +149,9 @@ export function RepoImportStep({
 										</div>
 										<button
 											type="button"
-											aria-label={`Remove ${repo.name}`}
+											aria-label={t("repoImport.removeRepository", {
+												name: repo.name,
+											})}
 											disabled={removingRepositoryIds.has(repo.id)}
 											onClick={() => {
 												onRemoveRepository(repo.id);
@@ -162,8 +165,7 @@ export function RepoImportStep({
 							</div>
 						) : (
 							<div className="flex h-full min-h-32 items-center justify-center text-center text-small leading-5 text-muted-foreground">
-								Choose a local folder or import from GitHub to build your first
-								queue.
+								{t("repoImport.emptyState")}
 							</div>
 						)}
 					</div>
@@ -178,7 +180,7 @@ export function RepoImportStep({
 						className="h-11 gap-2 px-4 text-title"
 					>
 						<ArrowLeft data-icon="inline-start" className="size-4" />
-						Back
+						{t("repoImport.back")}
 					</Button>
 					<Button
 						type="button"
@@ -186,7 +188,7 @@ export function RepoImportStep({
 						onClick={onComplete}
 						className="h-11 gap-2 px-4 text-title"
 					>
-						Let&apos;s ship
+						{t("repoImport.ship")}
 						<ArrowRight data-icon="inline-end" className="size-4" />
 					</Button>
 				</div>

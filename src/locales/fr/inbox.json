@@ -1,0 +1,314 @@
+{
+	"stateFilter": {
+		"all": "Tous",
+		"open": "Ouverts",
+		"closed": "Fermés",
+		"merged": "Fusionnés",
+		"answered": "Répondus",
+		"unanswered": "Sans réponse"
+	},
+	"comingSoon": {
+		"title": "Bientôt disponible",
+		"mobile": {
+			"line1": "Envoyez des tâches, des liens et des captures d'écran depuis votre téléphone.",
+			"line2": "Gardez synchronisés vos flux légers de revue et de tri.",
+			"line3": "Transmettez aux agents de bureau le contexte capturé sur mobile."
+		}
+	},
+	"search": {
+		"placeholder": "Rechercher",
+		"clear": "Effacer la recherche",
+		"forgeAriaLabel": "Rechercher des contextes {{provider}}",
+		"issuesAriaLabel": "Rechercher des tickets {{provider}}",
+		"slackAriaLabel": "Rechercher des messages Slack"
+	},
+	"filter": {
+		"byKind": "Filtrer par {{kind}}",
+		"sortBy": "Trier par {{sort}}"
+	},
+	"sort": {
+		"newest": "Plus récents",
+		"relevance": "Plus pertinents"
+	},
+	"loading": {
+		"items": "Chargement des éléments…",
+		"provider": "Chargement de {{provider}}…",
+		"slack": "Chargement de Slack…"
+	},
+	"error": {
+		"title": "Échec du chargement",
+		"fallback": "Impossible de charger les éléments de contexte.",
+		"providerFallback": "Impossible de charger les tickets {{provider}}.",
+		"slackFallback": "Impossible de charger la boîte de réception Slack.",
+		"tryAgain": "Réessayer"
+	},
+	"empty": {
+		"noMatches": "Aucun résultat",
+		"noMatchesProvider": "Rien dans {{provider}} ne correspond à \"{{query}}\".",
+		"noMatchesWorkspace": "Rien dans cet espace de travail ne correspond à \"{{query}}\".",
+		"noActivity": "Aucune nouvelle activité",
+		"slackActivitySubtitle": "Les mentions et les messages directs non lus apparaîtront ici.",
+		"refresh": "Actualiser",
+		"noItems": "Pas encore de {{plural}}",
+		"noItemsInRepo": "Aucun {{plural}} dans {{repo}}"
+	},
+	"configure": "Configurer",
+	"connectForge": {
+		"kindDisabledTitle": "Les {{plural}} sont désactivés",
+		"kindDisabledDescription": "Réactivez les {{lower}} dans les paramètres Contextes."
+	},
+	"card": {
+		"addToContext": "Ajouter au contexte",
+		"insertError": "Impossible d'insérer la carte de contexte"
+	},
+	"toast": {
+		"contextFetchFailed": "Échec de la récupération du contexte",
+		"providerFetchFailed": "Échec de la récupération depuis {{provider}}",
+		"slackFetchFailed": "Échec de la récupération depuis Slack",
+		"slackSearchFailed": "Échec de la recherche Slack",
+		"slackSearchFailedMessage": "Impossible de rechercher des messages Slack.",
+		"slackInboxFailedMessage": "Impossible de charger les éléments de la boîte de réception Slack."
+	},
+	"connect": {
+		"connecting": "Connexion…",
+		"connect": "Connecter",
+		"featurebase": {
+			"title": "Connecter Featurebase",
+			"description": "Collez votre clé d'API Featurebase et l'URL publique de vos retours. Stockée localement dans votre trousseau macOS.",
+			"apiKeyPlaceholder": "Votre clé d'API Featurebase",
+			"apiKeyLabel": "Clé d'API Featurebase",
+			"urlPlaceholder": "https://acme.featurebase.app",
+			"urlLabel": "URL des retours Featurebase",
+			"help": "Où trouver ces informations ?",
+			"failedTitle": "Échec de la connexion à Featurebase",
+			"failedMessage": "Impossible de connecter Featurebase."
+		},
+		"forgejo": {
+			"title": "Connecter Forgejo",
+			"description": "Collez l'URL de votre instance Forgejo et un jeton d'accès. Stockés localement dans votre trousseau macOS.",
+			"hostPlaceholder": "https://codeberg.org",
+			"hostLabel": "URL de l'instance Forgejo",
+			"tokenPlaceholder": "Jeton d'accès",
+			"tokenLabel": "Jeton d'accès Forgejo",
+			"help": "Créer un jeton d'accès",
+			"failedTitle": "Échec de la connexion à Forgejo",
+			"failedMessage": "Impossible de connecter Forgejo."
+		},
+		"jira": {
+			"title": "Connecter Jira",
+			"description": "Saisissez l'URL de votre site, votre e-mail et un jeton d'API. Stockés localement dans votre trousseau macOS.",
+			"sitePlaceholder": "https://votre-equipe.atlassian.net",
+			"siteLabel": "URL du site Jira",
+			"emailPlaceholder": "vous@exemple.com",
+			"emailLabel": "E-mail du compte Jira",
+			"tokenPlaceholder": "Jeton d'API",
+			"tokenLabel": "Jeton d'API Jira",
+			"help": "Créer un jeton d'API",
+			"failedTitle": "Échec de la connexion à Jira",
+			"failedMessage": "Impossible de connecter Jira."
+		},
+		"linear": {
+			"title": "Connecter Linear",
+			"description": "Collez une clé d'API personnelle. Elle est validée une fois puis stockée localement dans votre trousseau macOS.",
+			"apiKeyPlaceholder": "lin_api_…",
+			"apiKeyLabel": "Clé d'API personnelle Linear",
+			"help": "Créer une clé dans Linear",
+			"failedTitle": "Échec de la connexion à Linear",
+			"failedMessage": "Impossible de connecter Linear."
+		},
+		"trello": {
+			"title": "Connecter Trello",
+			"description": "Collez votre clé d'API et votre jeton Trello. Stockés localement dans votre trousseau macOS.",
+			"apiKeyPlaceholder": "Votre clé d'API Trello",
+			"apiKeyLabel": "Clé d'API Trello",
+			"tokenPlaceholder": "Jeton",
+			"tokenLabel": "Jeton Trello",
+			"help": "Obtenir votre clé d'API et votre jeton",
+			"failedTitle": "Échec de la connexion à Trello",
+			"failedMessage": "Impossible de connecter Trello."
+		},
+		"plain": {
+			"title": "Connecter Plain",
+			"description": "Collez une clé d'API Plain avec l'autorisation thread:read. Stockée localement dans votre trousseau macOS.",
+			"apiKeyPlaceholder": "Votre clé d'API Plain (plainApiKey_…)",
+			"apiKeyLabel": "Clé d'API Plain",
+			"help": "Où créer une clé d'API ?",
+			"failedTitle": "Échec de la connexion à Plain",
+			"failedMessage": "Impossible de connecter Plain."
+		},
+		"slack": {
+			"title": "Connecter un espace de travail Slack",
+			"description": "Se connecte à l'application de bureau Slack où vous êtes connecté. Tout reste local et sécurisé sur votre appareil.",
+			"descriptionUnsupported": "L'import depuis Slack pour ordinateur est disponible sur macOS. La prise en charge de Windows n'est pas encore en place.",
+			"readingSession": "Lecture de la session…",
+			"connect": "Connecter Slack",
+			"connectAnother": "Connecter un autre espace de travail",
+			"nothingTitle": "Rien à connecter",
+			"nothingMessage": "Aucun espace de travail Slack connecté n'a été trouvé dans votre application de bureau.",
+			"connectedWorkspace_one": "{{count}} espace de travail connecté",
+			"connectedWorkspace_other": "{{count}} espaces de travail connectés",
+			"alreadyConnected": "{{count}} déjà connectés",
+			"failedSummary": "{{count}} en échec : {{details}}",
+			"resultPartialTitle": "Connexion Slack : partielle",
+			"resultTitle": "Connexion Slack",
+			"readFailedTitle": "Échec de la connexion",
+			"readFailedMessage": "Impossible de lire la session Slack pour ordinateur."
+		}
+	},
+	"section": {
+		"linear": {
+			"emptyTitle": "Aucun ticket assigné",
+			"emptySubtitle": "Les tickets qui vous sont assignés dans Linear apparaîtront ici."
+		},
+		"jira": {
+			"emptyTitle": "Aucun ticket assigné",
+			"emptySubtitle": "Les tickets qui vous sont assignés dans Jira apparaîtront ici."
+		},
+		"trello": {
+			"emptyTitle": "Aucune carte",
+			"emptySubtitle": "Les cartes dont vous êtes membre dans Trello apparaîtront ici."
+		},
+		"forgejo": {
+			"emptyTitle": "Aucun ticket",
+			"emptySubtitle": "Les tickets qui vous sont assignés dans Forgejo apparaîtront ici."
+		},
+		"featurebase": {
+			"emptyTitle": "Aucune publication",
+			"emptySubtitle": "Les publications de retours de votre tableau Featurebase apparaîtront ici."
+		},
+		"plain": {
+			"emptyTitle": "Aucun fil de discussion",
+			"emptySubtitle": "Les fils d'assistance ouverts de Plain apparaîtront ici."
+		}
+	},
+	"slackCard": {
+		"ariaLabel": "{{author}} : {{snippet}}",
+		"dm": "MP",
+		"threadIn": "Fil dans",
+		"mentionIn": "Mention dans",
+		"mentionedYou": "{{author}} vous a mentionné",
+		"sentMessage": "{{author}} a envoyé un message",
+		"preparing": "Préparation du contexte Slack…",
+		"fetchingThread": "Récupération du fil",
+		"noAttachments": "Aucune pièce jointe à mettre en cache",
+		"cachingAttachments": "Mise en cache des pièces jointes {{current}}/{{total}}",
+		"threadInlined": "Fil intégré",
+		"threadInlinedImages_one": "Fil intégré · {{count}} image jointe",
+		"threadInlinedImages_other": "Fil intégré · {{count}} images jointes",
+		"threadInlinedPartial": "Fil intégré · {{attached}}/{{total}} images jointes (le reste est indisponible)",
+		"ready": "Contexte Slack prêt",
+		"prepareFailed": "Impossible de préparer le contexte Slack",
+		"prepareFallback": "Repli sur le contexte de résumé uniquement."
+	},
+	"slackSwitcher": {
+		"switch": "Changer d'espace de travail Slack",
+		"workspaceFallback": "Espace de travail",
+		"noWorkspaces": "Aucun espace de travail connecté",
+		"disconnect": "Déconnecter {{name}}",
+		"disconnectFailedTitle": "Échec de la déconnexion",
+		"disconnectFailedMessage": "Impossible de déconnecter l'espace de travail Slack."
+	},
+	"settings": {
+		"connectAccount": "Connecter un compte {{provider}}",
+		"connectAccountDescription": "Vous devez avoir au moins un compte {{provider}} avant que Contextes puisse récupérer {{kinds}}.",
+		"addAccount": "Ajouter un compte",
+		"itemsFallback": "éléments",
+		"repository": "Dépôt",
+		"repositoryDescription": "Choisissez le dépôt auquel s'appliquent ces paramètres Contextes.",
+		"issuesDescription": "Afficher les {{plural}} qui vous sont assignés ou que vous avez ouverts.",
+		"prsDescription": "Afficher les {{plural}} que vous avez ouverts ou qui vous sont assignés.",
+		"discussionsDescription": "Afficher les {{plural}} dans les dépôts auxquels vous avez accès.",
+		"scope": "Portée",
+		"scopeDescription": "Quelle relation de {{singular}} {{provider}} doit utiliser par défaut.",
+		"sort": "Trier",
+		"sortDescription": "Ordre par défaut avant l'application des filtres de la barre latérale.",
+		"labels": "Étiquettes",
+		"labelsDescription": "N'inclure que les {{plural}} portant les étiquettes de dépôt sélectionnées.",
+		"drafts": "Brouillons",
+		"draftsDescription": "Si les {{plural}} en brouillon apparaissent dans le flux.",
+		"addRepoFirst": "Ajoutez ou connectez un dépôt {{provider}} avant de configurer Contextes.",
+		"slackConnected": "Slack est connecté. Ouvrez la barre latérale Contexte pour parcourir votre flux.",
+		"slackConnectedCount": "{{count}} espaces de travail Slack connectés. Ouvrez la barre latérale Contexte pour parcourir votre flux.",
+		"scopeOptions": {
+			"all": "Tous",
+			"involves": "Me concernent",
+			"assigned": "Qui me sont assignés",
+			"mentioned": "Où je suis mentionné",
+			"created": "Créés par moi",
+			"reviewRequested": "Revue demandée",
+			"author": "Créés par moi",
+			"assignee": "Qui me sont assignés",
+			"mentions": "Où je suis mentionné",
+			"reviewedBy": "Revus par moi"
+		},
+		"sortOptions": {
+			"updated": "Récemment mis à jour",
+			"created": "Plus récents",
+			"comments": "Les plus commentés"
+		},
+		"draftOptions": {
+			"exclude": "Exclure les brouillons",
+			"include": "Inclure les brouillons",
+			"only": "Brouillons uniquement"
+		},
+		"controls": {
+			"searchScopes": "Rechercher des portées",
+			"noScopes": "Aucune portée trouvée.",
+			"removeOption": "Retirer {{label}}",
+			"loadingLabels": "Chargement des étiquettes",
+			"selectLabels": "Sélectionner des étiquettes",
+			"searchLabels": "Rechercher des étiquettes",
+			"loadingLabelsEmpty": "Chargement des étiquettes...",
+			"noLabels": "Aucune étiquette trouvée.",
+			"selectRepo": "Sélectionner un dépôt"
+		}
+	},
+	"triage": {
+		"customInstructions": "Instructions personnalisées",
+		"customInstructionsHint": "Indiquez à l'agent de tri sur quoi se concentrer, en langage clair.",
+		"customInstructionsPlaceholder": "p. ex.\n• Surveiller le canal Slack #incidents et les MP de mon chef d'équipe\n• Faire remonter chaque message Slack qui me @mentionne\n• Ignorer les notifications de bots et les résumés hebdomadaires",
+		"sources": "Sources",
+		"sourcesHint": "D'où Grex tire les candidats au tri. Récupération incrémentielle toutes les 5 minutes.",
+		"checkingHealth": "Vérification de l'état des sources…",
+		"loadingQueue": "Chargement de la file des candidats…",
+		"candidatesWaiting_one": "candidat en attente d'évaluation.",
+		"candidatesWaiting_other": "candidats en attente d'évaluation.",
+		"autoRun": "Exécution automatique",
+		"autoRunHeartbeat": "Battement de l'exécution automatique",
+		"autoRunOnLabel": "Activée",
+		"autoRunOnDescription": " — un cycle se déclenche juste après chaque récupération (toutes les 5 minutes). Les cycles qui se chevauchent sont ignorés.",
+		"autoRunOffLabel": "Désactivée",
+		"autoRunOffDescription": " — les cycles ne s'exécutent que lorsque vous appuyez sur Exécuter maintenant.",
+		"stopping": "Arrêt…",
+		"stop": "Arrêter",
+		"runNow": "Exécuter maintenant",
+		"smartTriage": "Tri intelligent",
+		"smartTriageDescription": "Le LLM local analyse vos sources activées et crée des espaces de travail préparés par IA pour les éléments exploitables.",
+		"showReasoning": "Afficher le raisonnement de l'agent",
+		"noTickYet": "Aucun cycle exécuté pour l'instant.",
+		"lastTickCreated_one": "Dernier cycle · {{when}} · {{count}} espace de travail créé",
+		"lastTickCreated_other": "Dernier cycle · {{when}} · {{count}} espaces de travail créés",
+		"lastTickNothing": "Dernier cycle · {{when}} · rien d'exploitable",
+		"lastTickStopped": "Dernier cycle · {{when}} · arrêté",
+		"lastTickFailed": "Dernier cycle · {{when}} · échoué",
+		"noMessage": "(aucun message)",
+		"batchLabel": "Lot {{index}} sur {{total}}",
+		"tickRunning": "Cycle en cours",
+		"tickStats": "{{elapsed}} · tour {{turns}} · {{tools}} appels d'outils",
+		"startedAt": "Démarré {{time}}",
+		"lastTool": " · dernier : {{tool}}",
+		"hide": "Masquer",
+		"show": "Afficher",
+		"toolCallList": "liste des appels d'outils",
+		"noToolCalls": "Aucun appel d'outil pour l'instant.",
+		"connect": "Connecter",
+		"status": {
+			"connected": "Connecté",
+			"installRequired": "Installation requise",
+			"signInRequired": "Connexion requise",
+			"notConfigured": "Non configuré",
+			"attention": "Attention",
+			"unknown": "Inconnu"
+		}
+	}
+}

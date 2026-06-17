@@ -6,6 +6,7 @@ import {
 	Info,
 	MessageSquareText,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import {
 	Tooltip,
@@ -80,6 +81,7 @@ export function SystemNotice({
 }
 
 function PromptSuggestion({ part }: { part: PromptSuggestionPart }) {
+	const { t } = useTranslation("panel");
 	return (
 		<Tooltip>
 			<TooltipTrigger asChild>
@@ -111,7 +113,7 @@ function PromptSuggestion({ part }: { part: PromptSuggestionPart }) {
 				sideOffset={4}
 				className="flex h-[22px] items-center rounded-md px-1.5 text-mini leading-none"
 			>
-				<span>Use this prompt</span>
+				<span>{t("systemMessage.useThisPrompt")}</span>
 			</TooltipContent>
 		</Tooltip>
 	);

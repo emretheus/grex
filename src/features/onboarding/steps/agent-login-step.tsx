@@ -1,5 +1,6 @@
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { useCallback, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import type { AgentLoginProvider } from "@/lib/api";
 import { AgentStatusAction } from "../components/agent-status-action";
@@ -22,6 +23,7 @@ export function AgentLoginStep({
 	onNext: () => void;
 	onRefreshLoginItems: () => void;
 }) {
+	const { t } = useTranslation("onboarding");
 	const [primedLoginProvider, setPrimedLoginProvider] =
 		useState<AgentLoginProvider | null>(null);
 	const [activeLoginProvider, setActiveLoginProvider] =
@@ -69,7 +71,7 @@ export function AgentLoginStep({
 
 	return (
 		<section
-			aria-label="Agent login"
+			aria-label={t("agents.sectionLabel")}
 			aria-hidden={step !== "agents"}
 			className={`absolute inset-x-0 top-[calc(50vh-64px)] z-20 flex origin-top flex-col items-center px-8 pb-10 pt-6 transition-transform duration-1000 ease-[cubic-bezier(.22,.82,.2,1)] ${
 				step === "corner"
@@ -88,11 +90,10 @@ export function AgentLoginStep({
 					}`}
 				>
 					<h2 className="text-2xl font-semibold tracking-normal text-foreground">
-						Log in to your agents
+						{t("agents.heading")}
 					</h2>
 					<p className="mt-2 max-w-xl text-body leading-6 text-muted-foreground">
-						Grex uses your local Claude Code and Codex login sessions. You can
-						log in now, or continue and log in later.
+						{t("agents.description")}
 					</p>
 
 					{/* Compact rows (h-12) so all four tiles + Back/Next stay inside
@@ -102,7 +103,7 @@ export function AgentLoginStep({
 							({ icon: Icon, provider, label, description, status }) => {
 								const subLabel =
 									provider === "cursor" && cursorKeyError
-										? `Couldn't validate key: ${cursorKeyError}`
+										? t("agents.cursorKeyError", { error: cursorKeyError })
 										: description;
 								const subLabelTone =
 									provider === "cursor" && cursorKeyError
@@ -161,7 +162,7 @@ export function AgentLoginStep({
 							className="h-10 gap-2 px-4 text-title"
 						>
 							<ArrowLeft data-icon="inline-start" className="size-4" />
-							Back
+							{t("agents.back")}
 						</Button>
 						<Button
 							type="button"
@@ -169,7 +170,7 @@ export function AgentLoginStep({
 							onClick={onNext}
 							className="h-10 gap-2 px-4 text-title"
 						>
-							Next
+							{t("agents.next")}
 							<ArrowRight data-icon="inline-end" className="size-4" />
 						</Button>
 					</div>

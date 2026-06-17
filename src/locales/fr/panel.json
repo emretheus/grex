@@ -1,0 +1,53 @@
+{
+	"header": {
+		"workspaceHeader": "En-tête de l'espace de travail",
+		"loading": "Chargement",
+		"sessions": "Sessions",
+		"contextPreview": "Aperçu du contexte",
+		"closeContextPreview": "Fermer l'aperçu du contexte",
+		"noSessions": "Aucune session",
+		"newSession": "Nouvelle session",
+		"sessionHistory": "Historique des sessions",
+		"noHiddenSessions": "Aucune session masquée",
+		"renameSession": "Renommer la session",
+		"closeSession": "Fermer la session",
+		"restoreSession": "Restaurer la session",
+		"deleteSessionPermanently": "Supprimer définitivement la session",
+		"untitled": "Sans titre",
+		"renameBranch": "Renommer la branche",
+		"copyBranchName": "Copier le nom de la branche",
+		"noBranch": "Aucune branche",
+		"baseBranch": "Branche de base {{remote}}/{{branch}}",
+		"stackedOn": "Empilée sur {{label}}",
+		"interactionRequired": "Interaction requise",
+		"unreadSession": "Session non lue"
+	},
+	"emptyState": {
+		"creatingWorkspace": "Création de l'espace de travail",
+		"nothingHereYet": "Rien ici pour l'instant",
+		"noSessionSelected": "Aucune session sélectionnée",
+		"preparingWorkspace": "Grex prépare encore cet espace de travail. La messagerie se débloquera automatiquement une fois la configuration terminée.",
+		"newSessionIn": "Nouvelle session dans",
+		"newSession": "Nouvelle session",
+		"chooseSession": "Choisissez une session dans l'en-tête pour examiner sa chronologie.",
+		"scriptActions": {
+			"setup": {
+				"title": "Créer un script de configuration",
+				"description": "Installe les dépendances après la création d'un espace de travail."
+			},
+			"run": {
+				"title": "Créer des actions d'exécution",
+				"description": "Commandes nommées que vous choisirez dans le menu Exécuter de l'Inspecteur."
+			},
+			"archive": {
+				"title": "Créer un script d'archivage",
+				"description": "Nettoyage léger ou transmission avant l'archivage."
+			}
+		},
+		"tipsLabel": "Astuces :",
+		"tipsBody": "Configurer ces scripts améliore votre cycle de développement."
+	},
+	"systemMessage": {
+		"useThisPrompt": "Utiliser ce prompt"
+	}
+}

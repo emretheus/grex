@@ -1,5 +1,6 @@
 import { GitBranch, LoaderCircle } from "lucide-react";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
 	CommandEmpty,
 	CommandInput,
@@ -72,6 +73,7 @@ export function BranchPickerPopover({
 	 *  when the trigger is wrapped in a Tooltip — otherwise focus return reopens it. */
 	onCloseAutoFocus?: (event: Event) => void;
 }) {
+	const { t } = useTranslation("components");
 	const [open, setOpen] = useState(false);
 	const close = () => setOpen(false);
 
@@ -95,7 +97,7 @@ export function BranchPickerPopover({
 			>
 				<style>{scrollbarStyle}</style>
 				<div className="branch-picker">
-					<CommandInput placeholder="Search branches..." />
+					<CommandInput placeholder={t("branchPicker.searchPlaceholder")} />
 					<CommandList className="max-h-52 px-1" style={{ marginRight: -3 }}>
 						{loading && names.length === 0 ? (
 							<div className="flex items-center justify-center gap-2 py-5 text-small text-muted-foreground">
@@ -103,10 +105,10 @@ export function BranchPickerPopover({
 									className="size-3.5 animate-spin"
 									strokeWidth={2}
 								/>
-								Loading branches...
+								{t("branchPicker.loading")}
 							</div>
 						) : null}
-						<CommandEmpty>No branches found</CommandEmpty>
+						<CommandEmpty>{t("branchPicker.empty")}</CommandEmpty>
 						{names.map((name) => (
 							<CommandItem
 								key={name}

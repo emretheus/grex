@@ -1,0 +1,68 @@
+{
+	"common": {
+		"disconnect": "Disconnect",
+		"disconnecting": "Disconnecting…",
+		"nothingToFilter": "Nothing to filter.",
+		"countSelected_one": "{{count}} selected",
+		"countSelected_other": "{{count}} selected",
+		"assignedFeedHint": "Only issues assigned to you appear in the feed."
+	},
+	"scope": {
+		"assignedToMe": "Assigned to me"
+	},
+	"jira": {
+		"connectAnother": "Connect another site",
+		"siteFallback": "Jira site",
+		"updateFailed": "Jira update failed",
+		"updateError": "Couldn't save Jira scope.",
+		"disconnectFailed": "Jira disconnect failed",
+		"disconnectError": "Couldn't disconnect Jira.",
+		"scopeAll": "All projects",
+		"projectsLabel": "Projects",
+		"allProjects": "All projects"
+	},
+	"linear": {
+		"connectAnother": "Connect another workspace",
+		"workspaceFallback": "Linear workspace",
+		"updateFailed": "Linear update failed",
+		"updateError": "Couldn't save Linear scope.",
+		"disconnectFailed": "Linear disconnect failed",
+		"disconnectError": "Couldn't disconnect Linear.",
+		"scopeAll": "All issues",
+		"teamsLabel": "Teams",
+		"allTeams": "All teams",
+		"projectsLabel": "Projects",
+		"allProjects": "All projects"
+	},
+	"trello": {
+		"connectAnother": "Connect another account",
+		"accountFallback": "Trello account",
+		"updateFailed": "Trello update failed",
+		"updateError": "Couldn't save Trello scope.",
+		"disconnectFailed": "Trello disconnect failed",
+		"disconnectError": "Couldn't disconnect Trello.",
+		"scopeMine": "My cards",
+		"scopeAll": "All boards",
+		"boardsLabel": "Boards",
+		"allBoards": "All boards",
+		"memberFeedHint": "Only cards you're a member of appear in the feed."
+	},
+	"forgejo": {
+		"connectAnother": "Connect another instance",
+		"instanceFallback": "Forgejo instance",
+		"updateFailed": "Forgejo update failed",
+		"updateError": "Couldn't save Forgejo scope.",
+		"disconnectFailed": "Forgejo disconnect failed",
+		"disconnectError": "Couldn't disconnect Forgejo.",
+		"scopeMine": "My issues",
+		"scopeAll": "All issues",
+		"allIssuesHint": "Every issue across repositories your token can read."
+	},
+	"featurebase": {
+		"connectAnother": "Connect another board",
+		"boardFallback": "Featurebase board",
+		"disconnectFailed": "Featurebase disconnect failed",
+		"disconnectError": "Couldn't disconnect Featurebase.",
+		"readOnlyHint": "Feedback posts are read-only; everything from this board appears in the feed."
+	}
+}

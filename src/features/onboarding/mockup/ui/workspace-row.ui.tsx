@@ -7,6 +7,7 @@ import {
 	Trash2,
 } from "lucide-react";
 import type { ReactNode } from "react";
+import { useTranslation } from "react-i18next";
 import { GrexThinkingIndicator } from "@/components/grex-thinking-indicator";
 import { Button } from "@/components/ui/button";
 import { HyperText } from "@/components/ui/hyper-text";
@@ -91,10 +92,11 @@ export function WorkspaceRowUI({
 	hasTwoActions = false,
 	isBusy = false,
 }: WorkspaceRowUIProps) {
+	const { t } = useTranslation("onboarding");
 	const statusDotLabel = isInteractionRequired
-		? "Interaction required"
+		? t("mockup.sidebar.row.interactionRequired")
 		: hasUnread
-			? "Unread"
+			? t("mockup.sidebar.row.unread")
 			: null;
 	const statusDotClassName = isInteractionRequired
 		? "bg-yellow-500"
@@ -193,6 +195,7 @@ export function WorkspaceRowHoverActionsUI({
 	onPrimaryAction: () => void;
 	onDelete?: () => void;
 }) {
+	const { t } = useTranslation("onboarding");
 	const primaryIcon = isBusy ? (
 		<LoaderCircle className="size-3.5 animate-spin" strokeWidth={2.1} />
 	) : isRestoreAction ? (
@@ -242,7 +245,7 @@ export function WorkspaceRowHoverActionsUI({
 				<Tooltip>
 					<TooltipTrigger asChild>
 						<Button
-							aria-label="Delete permanently"
+							aria-label={t("mockup.sidebar.row.deletePermanently")}
 							disabled={disabled || isBusy}
 							onClick={(event) => {
 								event.stopPropagation();

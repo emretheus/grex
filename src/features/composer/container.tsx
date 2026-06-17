@@ -3,6 +3,7 @@ import { open as openDirectoryDialog } from "@tauri-apps/plugin-dialog";
 import type { SerializedEditorState } from "lexical";
 import { CircleAlert, TimerReset } from "lucide-react";
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { ActionRow, ActionRowButton } from "@/components/action-row";
 import { ShimmerText } from "@/components/ui/shimmer-text";
@@ -89,59 +90,64 @@ const EMPTY_SELECTED_CONTEXT_SESSION_IDS: readonly string[] = [];
 
 /**
  * Host-app slash commands. Prepended to the agent-supplied list so they
- * always appear at the top of the popup.
+ * always appear at the top of the popup. `descriptionKey` holds an i18n key
+ * (composer namespace) that gets resolved via `t()` at render time, so the
+ * popup copy follows live language switches; ids / providers stay verbatim.
  */
-const ADD_DIR_COMMAND: SlashCommandEntry = {
+type BuiltinClientCommand = Omit<SlashCommandEntry, "description"> & {
+	descriptionKey: string;
+};
+
+const ADD_DIR_COMMAND: BuiltinClientCommand = {
 	name: "add-dir",
-	description: "Link extra directories to this workspace",
+	descriptionKey: "slashCommands.addDir",
 	source: "client-action",
 };
 
-const PROMPT_COMMAND: SlashCommandEntry = {
+const PROMPT_COMMAND: BuiltinClientCommand = {
 	name: "prompt",
-	description: "Insert a saved prompt from your Library",
+	descriptionKey: "slashCommands.prompt",
 	source: "client-action",
 };
 
-const CODEX_COMPACT_COMMAND: SlashCommandEntry = {
+const CODEX_COMPACT_COMMAND: BuiltinClientCommand = {
 	name: "compact",
-	description: "Compact this Codex thread's context",
+	descriptionKey: "slashCommands.codexCompact",
 	source: "builtin",
 	providers: ["codex"],
 };
 
-const OPENCODE_COMPACT_COMMAND: SlashCommandEntry = {
+const OPENCODE_COMPACT_COMMAND: BuiltinClientCommand = {
 	name: "compact",
-	description: "Compact this conversation's context",
+	descriptionKey: "slashCommands.opencodeCompact",
 	source: "builtin",
 	providers: ["opencode"],
 };
 
-const CODEX_GOAL_COMMAND: SlashCommandEntry = {
+const CODEX_GOAL_COMMAND: BuiltinClientCommand = {
 	name: "goal",
-	description:
-		"Set a persistent goal Codex pursues turn-after-turn until done or paused",
+	descriptionKey: "slashCommands.codexGoal",
 	argumentHint: "<objective>",
 	source: "builtin",
 	providers: ["codex"],
 };
 
-const CLAUDE_GOAL_COMMAND: SlashCommandEntry = {
+const CLAUDE_GOAL_COMMAND: BuiltinClientCommand = {
 	name: "goal",
-	description: "Set a completion condition for Claude to work toward",
+	descriptionKey: "slashCommands.claudeGoal",
 	argumentHint: "<condition>",
 	source: "builtin",
 	providers: ["claude"],
 };
 
-const CLAUDE_WORKFLOWS_COMMAND: SlashCommandEntry = {
+const CLAUDE_WORKFLOWS_COMMAND: BuiltinClientCommand = {
 	name: "workflows",
-	description: "View this conversation's workflow runs",
+	descriptionKey: "slashCommands.workflows",
 	source: "client-action",
 	providers: ["claude"],
 };
 
-const BUILTIN_CLIENT_COMMANDS: readonly SlashCommandEntry[] = [
+const BUILTIN_CLIENT_COMMANDS: readonly BuiltinClientCommand[] = [
 	ADD_DIR_COMMAND,
 	PROMPT_COMMAND,
 	CODEX_COMPACT_COMMAND,
@@ -329,6 +335,7 @@ export const WorkspaceComposerContainer = memo(
 		focusScope = "workspace-composer",
 		terminalModeAvailable = true,
 	}: WorkspaceComposerContainerProps) {
+		const { t } = useTranslation("composer");
 		const queryClient = useQueryClient();
 		const { settings, updateSettings } = useSettings();
 		// Per-session input recall list. Resolved lazily from the live
@@ -441,7 +448,7 @@ export const WorkspaceComposerContainer = memo(
 				toast.error(
 					error instanceof Error
 						? error.message
-						: "Failed to update linked directories",
+						: t("toast.updateLinkedDirectoriesFailed"),
 				);
 			},
 		});
@@ -495,7 +502,7 @@ export const WorkspaceComposerContainer = memo(
 						toast.error(
 							error instanceof Error
 								? error.message
-								: "Could not open directory picker",
+								: t("toast.openDirectoryPickerFailed"),
 						);
 						return;
 					}
@@ -516,6 +523,7 @@ export const WorkspaceComposerContainer = memo(
 				linkedDirectoriesController,
 				linkedDirectories,
 				commitLinkedDirectories,
+				t,
 			],
 		);
 
@@ -783,6 +791,11 @@ export const WorkspaceComposerContainer = memo(
 			const builtinCommands = BUILTIN_CLIENT_COMMANDS.filter(
 				(command) =>
 					!command.providers || command.providers.includes(slashProvider),
+			).map(
+				({ descriptionKey, ...command }): SlashCommandEntry => ({
+					...command,
+					description: t(descriptionKey),
+				}),
 			);
 			const builtinNames = new Set(
 				builtinCommands.map((command) => command.name),
@@ -793,7 +806,7 @@ export const WorkspaceComposerContainer = memo(
 					(command) => !builtinNames.has(command.name),
 				),
 			];
-		}, [agentSlashCommands, slashProvider]);
+		}, [agentSlashCommands, slashProvider, t]);
 		// Pending only (`isPending`) covers the very first fetch with no data
 		// yet; once we have data, `isFetching` covers background refetches but
 		// users don't need a spinner for those — the cached list is fine.
@@ -1150,8 +1163,7 @@ export const WorkspaceComposerContainer = memo(
 			[onChangeFastMode, composerContextKey],
 		);
 
-		const autoCloseHelpText =
-			"When enabled, action sessions will close automatically when finished.";
+		const autoCloseHelpText = t("autoClose.help");
 
 		// Start/Dismiss quick actions for un-engaged triage workspaces. Dismiss reuses the sidebar controller's archive path.
 		const [triageGraduating, setTriageGraduating] = useState(false);
@@ -1169,8 +1181,8 @@ export const WorkspaceComposerContainer = memo(
 
 		const handleTriageStart = useCallback(() => {
 			setTriageGraduating(true);
-			handleComposerSubmitInner("Go ahead.", [], [], []);
-		}, [handleComposerSubmitInner]);
+			handleComposerSubmitInner(t("triage.go"), [], [], []);
+		}, [handleComposerSubmitInner, t]);
 
 		const handleTriageDismiss = useCallback(() => {
 			if (!displayedWorkspaceId || triageDismissing) return;
@@ -1220,7 +1232,7 @@ export const WorkspaceComposerContainer = memo(
 									durationMs={1900}
 									className="truncate text-small font-medium tracking-[0.02em] text-muted-foreground"
 								>
-									Working...
+									{t("working")}
 								</ShimmerText>
 							) : (
 								<>
@@ -1239,7 +1251,9 @@ export const WorkspaceComposerContainer = memo(
 							<ActionRowButton
 								active={autoCloseEnabled}
 								aria-label={
-									autoCloseEnabled ? "Disable Auto Close" : "Enable Auto Close"
+									autoCloseEnabled
+										? t("autoClose.disableAria")
+										: t("autoClose.enableAria")
 								}
 								disabled={composerUnavailable}
 								onClick={() => {
@@ -1251,7 +1265,7 @@ export const WorkspaceComposerContainer = memo(
 									strokeWidth={1.8}
 								/>
 								<span className="inline-flex items-center">
-									{autoCloseEnabled ? "Auto Close On" : "Enable Auto Close"}
+									{autoCloseEnabled ? t("autoClose.on") : t("autoClose.enable")}
 								</span>
 							</ActionRowButton>
 						}

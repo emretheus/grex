@@ -1,0 +1,126 @@
+{
+	"states": {
+		"commitAndPush": {
+			"idle": "Valider et pousser",
+			"busy": "Validation...",
+			"done": "Poussé",
+			"disabled": "Valider et pousser"
+		},
+		"push": {
+			"idle": "Pousser",
+			"busy": "Envoi...",
+			"done": "Poussé",
+			"disabled": "Pousser"
+		},
+		"fix": {
+			"idle": "Corriger l'IC",
+			"busy": "Correction de l'IC...",
+			"done": "IC corrigée",
+			"disabled": "Corriger l'IC"
+		},
+		"resolveConflicts": {
+			"idle": "Résoudre les conflits",
+			"busy": "Résolution...",
+			"done": "Résolus",
+			"disabled": "Résoudre les conflits"
+		},
+		"checksRunning": {
+			"idle": "Vérifications en cours",
+			"busy": "Fusion...",
+			"done": "Fusionné",
+			"disabled": "Vérifications en cours"
+		},
+		"mergeBlocked": {
+			"idle": "Fusion bloquée",
+			"busy": "Fusion...",
+			"done": "Fusionné",
+			"disabled": "Fusion bloquée"
+		},
+		"merge": {
+			"idle": "Fusionner",
+			"busy": "Fusion...",
+			"done": "Fusionné",
+			"disabled": "Fusionner"
+		},
+		"merged": "Fusionné",
+		"closed": "Fermé"
+	},
+	"createPr": {
+		"busy": "Création de la {{changeRequestName}}...",
+		"done": "{{changeRequestName}} créée",
+		"idle": "Créer la {{changeRequestName}}"
+	},
+	"openPr": {
+		"busy": "Ouverture de la {{changeRequestName}}...",
+		"done": "Ouverte",
+		"idle": "Ouvrir la {{changeRequestName}}"
+	},
+	"menu": {
+		"commitAndPushManually": "Valider et pousser manuellement",
+		"pushManually": "Pousser manuellement",
+		"fixManually": "Corriger l'IC manuellement",
+		"createDraftPr": "Créer un brouillon de {{changeRequestName}}",
+		"createPrManually": "Créer la {{changeRequestName}} manuellement"
+	},
+	"options": {
+		"commitAndPush": "Options de validation et d'envoi",
+		"push": "Options d'envoi",
+		"fix": "Options de correction de l'IC",
+		"resolveConflicts": "Options de résolution des conflits",
+		"checksRunning": "Options des vérifications en cours",
+		"mergeBlocked": "Options de fusion bloquée",
+		"merge": "Options de fusion",
+		"openPr": "Options d'ouverture de la {{changeRequestName}}",
+		"merged": "Options de fusionné",
+		"closed": "Options de fermé",
+		"createPr": "Options de création de la {{changeRequestName}}"
+	},
+	"splitButton": {
+		"defaultLabel": "Valider",
+		"commitAria": "Valider les modifications actuelles",
+		"moreActionsAria": "Autres actions de la section Git"
+	},
+	"mergeBlockedReason": {
+		"behindShort": "En retard sur la base",
+		"blockedShort": "Fusion bloquée",
+		"draftShort": "PR en brouillon",
+		"unstableShort": "Instable",
+		"behindDetail": "Cette branche est en retard sur la branche de base. Essayer quand même ?",
+		"blockedDetail": "La protection de branche bloque cette fusion. Il manque probablement une revue, une conversation non résolue ou une vérification requise. Essayer quand même ?",
+		"draftDetail": "Cette pull request est encore un brouillon. Essayer quand même ?",
+		"unstableDetail": "Des vérifications non obligatoires échouent. Essayer quand même ?"
+	},
+	"confirm": {
+		"mergeAnyway": "Fusionner quand même",
+		"tryAnyway": "Essayer quand même",
+		"beforeChecksTitle": "Fusionner avant la fin des vérifications ?",
+		"beforeChecksDescription": "Les vérifications GitHub ne sont pas encore passées. Fusionner quand même en les ignorant ?",
+		"blockedMergeTitle": "Tenter la fusion bloquée ?"
+	},
+	"failureTitle": {
+		"createPr": "Échec de la création de la {{changeRequestName}}",
+		"commitAndPush": "Échec de la validation et de l'envoi",
+		"push": "Échec de l'envoi",
+		"fix": "Échec de la correction de l'IC",
+		"resolveConflicts": "Échec de la résolution des conflits",
+		"merge": "Échec de la fusion",
+		"openPr": "Échec de l'ouverture de la {{changeRequestName}}",
+		"closed": "Échec de la fermeture de la {{changeRequestName}}",
+		"generic": "Échec de l'action"
+	},
+	"toast": {
+		"mergeBlockedTitle": "Fusion bloquée",
+		"conflictMessage": "La {{changeRequestName}} présente des conflits de fusion et ne peut pas encore être fusionnée.",
+		"mergeabilityComputing": "La fusionnabilité est en cours de calcul. Veuillez patienter et réessayer.",
+		"pushFailedFallback": "Impossible de pousser la branche.",
+		"promptNotDeliveredTitle": "Message non transmis",
+		"openChatFallback": "Impossible d'ouvrir une session de discussion.",
+		"reviewFailedTitle": "Échec de la revue",
+		"reviewFallback": "Impossible de démarrer la revue.",
+		"reconnectMessage": "Reconnectez votre compte {{providerName}} et réessayez.",
+		"notConnectedTitle": "{{providerName}} non connecté",
+		"startActionFallback": "Impossible de démarrer l'action.",
+		"completeActionFallback": "Impossible de terminer l'action.",
+		"verifyActionFallback": "Impossible de vérifier le résultat de l'action."
+	}
+}

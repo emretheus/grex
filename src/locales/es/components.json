@@ -1,0 +1,81 @@
+{
+	"ai": {
+		"reasoning": {
+			"thinking": "Pensando…",
+			"thinkingStatic": "Pensando",
+			"thoughtForSeconds_one": "Pensó durante {{count}} s",
+			"thoughtForSeconds_other": "Pensó durante {{count}} s"
+		},
+		"openIn": {
+			"trigger": "Abrir en el chat",
+			"open": "Abrir",
+			"chatgpt": "Abrir en ChatGPT",
+			"claude": "Abrir en Claude",
+			"t3": "Abrir en T3 Chat",
+			"scira": "Abrir en Scira",
+			"v0": "Abrir en v0",
+			"cursor": "Abrir en Cursor",
+			"github": "Abrir en GitHub"
+		}
+	},
+	"inlineBadge": {
+		"removeItem": "Eliminar elemento",
+		"unableToPreview": "No se puede previsualizar"
+	},
+	"branchPicker": {
+		"searchPlaceholder": "Buscar ramas…",
+		"loading": "Cargando ramas…",
+		"empty": "No se encontraron ramas"
+	},
+	"appendContext": {
+		"errorTitle": "No se pudo añadir el contexto",
+		"errorFallback": "No se pudo añadir el contexto.",
+		"ariaLabel": "Añadir {{subject}} al editor"
+	},
+	"quitConfirm": {
+		"title": "¿Salir de Grex?",
+		"description_one": "Hay {{count}} tarea en curso. Si sales ahora, se cancelará.",
+		"description_other": "Hay {{count}} tareas en curso. Si sales ahora, se cancelarán.",
+		"confirm": "Salir de todos modos"
+	},
+	"forgeConnect": {
+		"github": "GitHub",
+		"gitlab": "GitLab",
+		"forge": "Forge",
+		"connect": "Conectar {{provider}}",
+		"startError": "No se pudo iniciar el inicio de sesión.",
+		"connectedAs": "{{provider}} conectado como @{{login}}",
+		"connected": "{{provider}} conectado"
+	},
+	"larkConnect": {
+		"install": "Instalar lark-cli",
+		"signIn": "Iniciar sesión",
+		"connectWithSuffix": "Conectar Lark — {{suffix}}",
+		"connect": "Conectar Lark",
+		"connected": "Lark conectado",
+		"startError": "No se pudo iniciar lark-cli."
+	},
+	"conductor": {
+		"importFailed": "La importación falló. Inténtalo de nuevo.",
+		"welcome": "Te damos la bienvenida a Grex",
+		"workspacesReady_one": "{{count}} espacio de trabajo listo",
+		"workspacesReady_other": "{{count}} espacios de trabajo listos",
+		"getStarted": "Empezar",
+		"overflowMore": "+{{count}} más",
+		"imported": "importados",
+		"importWorkspaces_one": "Importar {{count}} espacio de trabajo",
+		"importWorkspaces_other": "Importar {{count}} espacios de trabajo",
+		"importEmpty": "Importar espacios de trabajo",
+		"skipForNow": "Omitir por ahora",
+		"aboutImporting": "Acerca de la importación",
+		"aboutImportingTooltip": "No te preocupes: solo leemos tus datos de Conductor para importarlos aquí. Tus datos de Conductor no se modificarán de ninguna manera.",
+		"importing": "Importando…"
+	},
+	"ui": {
+		"commandDialogTitle": "Paleta de comandos",
+		"commandDialogDescription": "Busca un comando para ejecutar…",
+		"sidebarTitle": "Barra lateral",
+		"sidebarDescription": "Muestra la barra lateral móvil.",
+		"toggleSidebar": "Alternar barra lateral"
+	}
+}

@@ -1,0 +1,170 @@
+{
+	"region": {
+		"main": "Prise en main de Grex",
+		"dragRegion": "Zone de déplacement de la prise en main de Grex"
+	},
+	"intro": {
+		"logoAlt": "Grex",
+		"heading": "Bonjour, Grex !",
+		"tagline": "L'IA génère le code. Grex, c'est là que vous l'orchestrez, le relisez et le livrez.",
+		"explore": "Explorer",
+		"previewLabel": "Aperçu de Grex"
+	},
+	"agents": {
+		"sectionLabel": "Connexion aux agents",
+		"heading": "Connectez-vous à vos agents",
+		"description": "Grex utilise vos sessions de connexion locales Claude Code et Codex. Vous pouvez vous connecter maintenant, ou continuer et vous connecter plus tard.",
+		"back": "Retour",
+		"next": "Suivant",
+		"cursorKeyError": "Impossible de valider la clé : {{error}}"
+	},
+	"repositoryCli": {
+		"sectionLabel": "Configuration de la CLI du dépôt",
+		"heading": "Connecter les comptes",
+		"description": "Chaque dépôt utilise l'un de vos comptes. Ajoutez-le maintenant ou passez cette étape : les connexions existantes sont détectées automatiquement. Tous les comptes vivent dans votre CLI locale gh/glab.",
+		"back": "Retour",
+		"next": "Suivant",
+		"checkingAccounts": "Recherche des comptes connectés…",
+		"noAccounts": "Aucun compte connecté pour l'instant.",
+		"addingAccountWithLogin": "Ajout de @{{login}}…",
+		"addingAccountProvider": "Ajout du compte {{provider}}…",
+		"connectedCount_one": "{{count}} connecté",
+		"connectedCount_other": "{{count}} connectés",
+		"moreAccounts_one": "{{count}} compte de plus",
+		"moreAccounts_other": "{{count}} comptes de plus",
+		"connectedToast": "{{provider}} connecté en tant que @{{login}}",
+		"finishAuthToast": "Terminez l'authentification de la CLI {{provider}}, puis cliquez de nouveau sur Configurer.",
+		"enterDomainError": "Saisissez un domaine GitLab.",
+		"providerGitlabHost": "GitLab · {{host}}",
+		"gitlabDomainTitle": "Domaine GitLab",
+		"gitlabDomainHelp": "Utilisez gitlab.com ou votre domaine GitLab auto-hébergé.",
+		"gitlabDomainLabel": "Domaine GitLab",
+		"cancel": "Annuler",
+		"logIn": "Se connecter",
+		"startLoginFailed": "Impossible de démarrer la connexion."
+	},
+	"skills": {
+		"sectionLabel": "Configuration de MCP et des skills",
+		"heading": "Boostez Grex",
+		"description": "Grex installe la CLI et les skills en arrière-plan afin de pouvoir répartir le travail, exécuter des agents, appeler des outils et conserver le contexte entre vos espaces de travail.",
+		"setupFailed": "Une erreur s'est produite — pas d'inquiétude, Grex fonctionnera très bien sans.",
+		"installing": "Installation",
+		"retry": "Réessayer",
+		"back": "Retour",
+		"next": "Suivant",
+		"cli": {
+			"label": "CLI Grex",
+			"description": "Pilotez Grex depuis votre terminal : créez des espaces de travail, envoyez des prompts, inspectez des fichiers et scriptez des flux réutilisables."
+		},
+		"grexSkills": {
+			"label": "Skills Grex (Bêta)",
+			"description": "Installez des skills pour que Grex vous aide sur davantage de flux de travail, dans tous vos espaces."
+		}
+	},
+	"repoImport": {
+		"sectionLabel": "Importation de dépôts",
+		"heading": "Importez vos premiers dépôts",
+		"description": "Commencez par un projet local, ou récupérez un dépôt distant depuis GitHub. Vous pouvez en ajouter plusieurs avant d'entrer dans Grex.",
+		"chooseLocalProject": "Choisir un projet local",
+		"addingRepository": "Ajout du dépôt…",
+		"chooseLocalDescription": "Ajoutez un dossier déjà présent sur cette machine.",
+		"addingLocalDescription": "Choisissez un dossier, et nous nous occupons de tout configurer.",
+		"importFromGithub": "Importer depuis GitHub",
+		"importFromGithubDescription": "Clonez un projet distant dans Grex.",
+		"importedRepositories": "Dépôts importés",
+		"emptyState": "Choisissez un dossier local ou importez depuis GitHub pour constituer votre première file.",
+		"removeRepository": "Retirer {{name}}",
+		"back": "Retour",
+		"ship": "C'est parti"
+	},
+	"setupItem": {
+		"defaultAction": "Configurer"
+	},
+	"terminal": {
+		"close": "Fermer le terminal de connexion"
+	},
+	"errors": {
+		"addRepository": "Impossible d'ajouter le dépôt.",
+		"removeRepository": "Impossible de retirer le dépôt."
+	},
+	"fallback": {
+		"localProject": "Projet local",
+		"githubRepository": "Dépôt GitHub"
+	},
+	"mockup": {
+		"workspacePreview": "Aperçu de l'espace de travail Grex",
+		"sidebar": {
+			"title": "Espaces de travail",
+			"addRepository": "Ajouter un dépôt",
+			"newWorkspace": "Nouvel espace de travail",
+			"openProject": "Ouvrir un projet",
+			"cloneFromUrl": "Cloner depuis une URL",
+			"groups": {
+				"done": "Terminé",
+				"review": "En relecture",
+				"progress": "En cours",
+				"backlog": "À faire"
+			},
+			"workspaces": {
+				"release": "Version v1.2",
+				"settings": "Refonte des paramètres",
+				"authPlan": "Plan de la fonctionnalité d'authentification",
+				"authDb": "Authentification utilisateur - Base de données",
+				"authBe": "Authentification utilisateur - Backend",
+				"authFe": "Authentification utilisateur - Frontend",
+				"cleanup": "Nettoyage de l'API"
+			},
+			"row": {
+				"interactionRequired": "Interaction requise",
+				"unread": "Non lu",
+				"deletePermanently": "Supprimer définitivement"
+			}
+		},
+		"conversation": {
+			"sessions": {
+				"planSplit": "Planifier la division de l'espace de travail",
+				"refineContracts": "Affiner les contrats de l'API"
+			},
+			"sessionTab": {
+				"interactionRequired": "Interaction requise",
+				"unread": "Session non lue",
+				"newSession": "Nouvelle session"
+			},
+			"userPrompt": "Divise cette fonctionnalité en trois espaces de travail — migration de la BDD, gestionnaires du backend et câblage du frontend — pour que je puisse travailler sur chacun en parallèle.",
+			"reasoning": "Planification de la division de l'espace de travail",
+			"assistantReply": "Trois espaces de travail créés — passez de l'un à l'autre dans la barre latérale pour faire avancer chaque chantier.",
+			"composerPlaceholder": "Demandez des modifications, @mentionnez des fichiers, lancez des /commands",
+			"effortHigh": "Élevé",
+			"plan": "Plan",
+			"working": "En cours",
+			"planProgress": "Plan - {{completed}}/{{total}} terminés"
+		},
+		"inspector": {
+			"git": "Git",
+			"actions": "Actions",
+			"review": "Relecture",
+			"createPr": "Créer une PR",
+			"remote": "Distant",
+			"tabSetup": "Configuration",
+			"tabRun": "Exécuter",
+			"changes_one": "{{count}} modification",
+			"changes_other": "{{count}} modifications",
+			"branchUnpublished": "Branche non publiée",
+			"upToDate": "À jour",
+			"commit": "Commit",
+			"push": "Push",
+			"waitingForReview": "En attente de relecture",
+			"status": {
+				"passed": "Réussi",
+				"running": "En cours",
+				"failed": "Échoué",
+				"pending": "En attente"
+			}
+		},
+		"header": {
+			"workspaceHeader": "En-tête de l'espace de travail",
+			"composer": "Éditeur de l'espace de travail",
+			"noBranch": "Aucune branche"
+		}
+	}
+}

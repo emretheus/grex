@@ -1,5 +1,6 @@
 import { LoaderCircle } from "lucide-react";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { GithubBrandIcon, GitlabBrandIcon } from "@/components/brand-icon";
 import { ForgeConnectDialog } from "@/components/forge-connect-dialog";
 import { Button } from "@/components/ui/button";
@@ -26,6 +27,7 @@ export function ForgeCliTrigger({
 	connecting?: boolean;
 	onConnectingChange?: (connecting: boolean) => void;
 }) {
+	const { t } = useTranslation("inspector");
 	const [open, setOpen] = useState(false);
 
 	const host =
@@ -62,7 +64,9 @@ export function ForgeCliTrigger({
 								) : (
 									<GithubBrandIcon size={12} className="self-center" />
 								)}
-								{connecting ? "Connecting" : detection.labels.connectAction}
+								{connecting
+									? t("forge.connecting")
+									: detection.labels.connectAction}
 							</Button>
 						</TooltipTrigger>
 						<TooltipContent
@@ -96,12 +100,13 @@ function ForgeDetectionTooltipBody({
 }: {
 	detection: ForgeDetection;
 }) {
+	const { t } = useTranslation("inspector");
 	const providerName = detection.labels.providerName;
-	const host = detection.host ?? "this host";
+	const host = detection.host ?? t("forge.thisHost");
 	return (
 		<div className="space-y-1.5">
 			<div className="text-mini font-medium leading-snug">
-				Detected {providerName} at {host}
+				{t("forge.detected", { provider: providerName, host })}
 			</div>
 			<div className="space-y-0.5 text-micro leading-snug opacity-90">
 				{FORGE_AUTH_TOOLTIP_LINES.map((line) => (
@@ -110,7 +115,7 @@ function ForgeDetectionTooltipBody({
 			</div>
 			{detection.detectionSignals.length > 0 && (
 				<div className="space-y-0.5 border-t border-background/20 pt-1.5 text-micro leading-snug opacity-90">
-					<div className="font-medium">Why we think so:</div>
+					<div className="font-medium">{t("forge.whyWeThinkSo")}</div>
 					<ul className="list-disc space-y-0.5 pl-3.5">
 						{detection.detectionSignals.map((signal) => (
 							<li key={`${signal.layer}:${signal.detail}`}>{signal.detail}</li>

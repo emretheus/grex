@@ -1,6 +1,7 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { CircleCheck, Play, RotateCcw, Settings2, Square } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
 	type TerminalHandle,
 	TerminalOutput,
@@ -14,11 +15,11 @@ import {
 	attach,
 	detach,
 	getScriptState,
+	getTruncationNotice,
 	resizeScript,
 	type ScriptStatus,
 	startScript,
 	stopScript,
-	TRUNCATION_NOTICE,
 	writeStdin,
 } from "../script-store";
 
@@ -43,6 +44,7 @@ export function SetupTab({
 	isActive,
 	onOpenSettings,
 }: SetupTabProps) {
+	const { t } = useTranslation("inspector");
 	const termRef = useRef<TerminalHandle | null>(null);
 	const [status, setStatus] = useState<ScriptStatus>("idle");
 	const [hasRun, setHasRun] = useState(false);
@@ -79,7 +81,7 @@ export function SetupTab({
 						const t = termRef.current;
 						if (!entry || !t) return;
 						t.clear();
-						if (entry.truncated) t.write(TRUNCATION_NOTICE);
+						if (entry.truncated) t.write(getTruncationNotice());
 						for (const chunk of entry.chunks) t.write(chunk);
 					});
 				}
@@ -102,7 +104,7 @@ export function SetupTab({
 				const t = termRef.current;
 				if (!t) return;
 				t.clear();
-				if (existing.truncated) t.write(TRUNCATION_NOTICE);
+				if (existing.truncated) t.write(getTruncationNotice());
 				for (const chunk of existing.chunks) t.write(chunk);
 			};
 			// Terminal already mounted → replay now; otherwise wait one frame
@@ -197,7 +199,7 @@ export function SetupTab({
 								) : (
 									<RotateCcw className="size-3" strokeWidth={2} />
 								)}
-								{status === "running" ? "Stop" : "Rerun setup"}
+								{status === "running" ? t("setup.stop") : t("setup.rerunSetup")}
 							</Button>
 						</div>
 					)}
@@ -205,10 +207,10 @@ export function SetupTab({
 			) : !hasScript ? (
 				<div className="flex h-full flex-col items-center justify-center gap-3 px-6 text-center">
 					<p className="text-ui font-medium text-muted-foreground">
-						No setup script configured
+						{t("setup.noScriptConfigured")}
 					</p>
 					<p className="text-small text-muted-foreground/70">
-						Add a setup script in repository settings to run it here.
+						{t("setup.noScriptHint")}
 					</p>
 					<Button
 						variant="outline"
@@ -217,18 +219,18 @@ export function SetupTab({
 						onClick={onOpenSettings}
 					>
 						<Settings2 className="size-3.5" strokeWidth={1.8} />
-						Open settings
+						{t("setup.openSettings")}
 					</Button>
 				</div>
 			) : setupCompletedAt ? (
 				<div className="flex h-full flex-col items-center justify-center gap-3 px-6 text-center">
 					<CircleCheck
-						aria-label="Setup completed"
+						aria-label={t("setup.completedLabel")}
 						className="size-8 text-[var(--workspace-pr-open-accent)]"
 						strokeWidth={1.75}
 					/>
 					<p className="text-ui font-medium text-muted-foreground">
-						Setup completed
+						{t("setup.completed")}
 					</p>
 					<Button
 						variant="outline"
@@ -237,16 +239,14 @@ export function SetupTab({
 						onClick={handleRun}
 					>
 						<RotateCcw className="size-3" strokeWidth={2} />
-						Rerun setup
+						{t("setup.rerunSetup")}
 					</Button>
 				</div>
 			) : (
 				<div className="flex h-full flex-col items-center justify-center gap-3 px-6 text-center">
-					<p className="text-ui text-muted-foreground">
-						No setup script output
-					</p>
+					<p className="text-ui text-muted-foreground">{t("setup.noOutput")}</p>
 					<p className="text-small text-muted-foreground/70">
-						Setup script output will appear here after running setup.
+						{t("setup.noOutputHint")}
 					</p>
 					<Button
 						variant="outline"
@@ -255,7 +255,7 @@ export function SetupTab({
 						onClick={handleRun}
 					>
 						<Play className="size-3" strokeWidth={2} />
-						Run setup
+						{t("setup.runSetup")}
 					</Button>
 				</div>
 			)}

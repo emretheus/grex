@@ -1,4 +1,5 @@
 import { useQueryClient } from "@tanstack/react-query";
+import type { TFunction } from "i18next";
 import {
 	Box,
 	CheckCircle2,
@@ -7,6 +8,7 @@ import {
 	Trash2,
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
 	ProviderBrandIcon,
 	type ProviderBrandIconKey,
@@ -46,14 +48,15 @@ type Draft = {
 
 const AGENT_PROXY_MODES: Array<{
 	value: AgentProxySettings["mode"];
-	label: string;
+	labelKey: string;
 }> = [
-	{ value: "none", label: "Not set" },
-	{ value: "system", label: "System proxy" },
-	{ value: "custom", label: "Custom proxy" },
+	{ value: "none", labelKey: "proxy.modes.none" },
+	{ value: "system", labelKey: "proxy.modes.system" },
+	{ value: "custom", labelKey: "proxy.modes.custom" },
 ];
 
 export function AgentProxyPanel() {
+	const { t } = useTranslation("providers");
 	const { settings, updateSettings } = useSettings();
 	const value = settings.agentProxy;
 	const selected =
@@ -72,8 +75,8 @@ export function AgentProxyPanel() {
 
 	return (
 		<SettingsRow
-			title="Proxy"
-			description="Routes all provider traffic — Claude Code, Codex, OpenCode, Cursor, and Gemini."
+			title={t("proxy.title")}
+			description={t("proxy.description")}
 			align="start"
 			className="gap-8"
 		>
@@ -84,7 +87,7 @@ export function AgentProxyPanel() {
 							"flex h-8 cursor-pointer items-center justify-between rounded-lg border border-border/50 bg-muted/30 px-3 text-[13px] text-foreground hover:bg-muted/50",
 						)}
 					>
-						<span>{selected.label}</span>
+						<span>{t(selected.labelKey)}</span>
 						<ChevronDown className="size-3 opacity-40" />
 					</DropdownMenuTrigger>
 					<DropdownMenuContent align="end" sideOffset={4} className="w-40">
@@ -94,7 +97,7 @@ export function AgentProxyPanel() {
 								onClick={() => updateProxy({ mode: option.value })}
 								className="justify-between gap-2"
 							>
-								<span>{option.label}</span>
+								<span>{t(option.labelKey)}</span>
 								<CheckCircle2
 									className={cn(
 										"size-3.5 shrink-0 text-emerald-500",
@@ -118,11 +121,15 @@ export function AgentProxyPanel() {
 }
 
 export function ClaudeCustomProvidersPanel() {
+	const { t } = useTranslation("providers");
 	const queryClient = useQueryClient();
 	const { settings, updateSettings } = useSettings();
 	const value = settings.claudeCustomProviders;
 	const builtinProviderApiKeys = value.builtinProviderApiKeys ?? {};
-	const configuredItems = useMemo(() => getConfiguredItems(value), [value]);
+	const configuredItems = useMemo(
+		() => getConfiguredItems(value, t),
+		[value, t],
+	);
 	const initialKind = configuredItems[0]?.kind ?? "minimax";
 	const [kind, setKind] = useState<ProviderKind>(initialKind);
 	const [draft, setDraft] = useState<Draft>(() =>
@@ -213,7 +220,9 @@ export function ClaudeCustomProvidersPanel() {
 									apiKey: event.target.value,
 								}))
 							}
-							placeholder={`${builtinProvider.label} API key`}
+							placeholder={t("claudeCustom.apiKeyPlaceholder", {
+								provider: builtinProvider.label,
+							})}
 							className="h-8 min-w-0 flex-1 border-border/50 bg-muted/20 text-ui"
 						/>
 						{!draft.apiKey && (
@@ -221,10 +230,12 @@ export function ClaudeCustomProvidersPanel() {
 								type="button"
 								variant="outline"
 								size="sm"
-								aria-label={`Get ${builtinProvider.label} API key`}
+								aria-label={t("claudeCustom.getApiKeyAria", {
+									provider: builtinProvider.label,
+								})}
 								onClick={() => void openUrl(builtinProvider.apiKeyUrl)}
 							>
-								Get your API key
+								{t("actions.getApiKey")}
 								<SquareArrowOutUpRight className="size-3.5" />
 							</Button>
 						)}
@@ -240,7 +251,7 @@ export function ClaudeCustomProvidersPanel() {
 									baseUrl: event.target.value,
 								}))
 							}
-							placeholder="Base URL"
+							placeholder={t("claudeCustom.baseUrlPlaceholder")}
 							className="h-8 border-border/50 bg-muted/20 text-ui"
 						/>
 						<Input
@@ -253,7 +264,7 @@ export function ClaudeCustomProvidersPanel() {
 									apiKey: event.target.value,
 								}))
 							}
-							placeholder="API key"
+							placeholder={t("claudeCustom.apiKeyPlaceholderPlain")}
 							className="h-8 border-border/50 bg-muted/20 text-ui"
 						/>
 						<Textarea
@@ -290,6 +301,7 @@ function ProviderPicker({
 	configuredKinds: Set<ProviderKind>;
 	onChange: (kind: ProviderKind) => void;
 }) {
+	const { t } = useTranslation("providers");
 	const builtinProvider =
 		kind === "custom" ? null : findBuiltinClaudeProvider(kind);
 
@@ -306,7 +318,9 @@ function ProviderPicker({
 					) : (
 						<Box className="size-4 text-muted-foreground" />
 					)}
-					<span className="truncate">{builtinProvider?.label ?? "Custom"}</span>
+					<span className="truncate">
+						{builtinProvider?.label ?? t("claudeCustom.customLabel")}
+					</span>
 				</span>
 				<ChevronDown className="size-3 shrink-0 opacity-40" />
 			</DropdownMenuTrigger>
@@ -332,7 +346,7 @@ function ProviderPicker({
 				>
 					<span className="flex items-center gap-2">
 						<Box className="size-4 text-muted-foreground" />
-						Custom
+						{t("claudeCustom.customLabel")}
 					</span>
 					{configuredKinds.has("custom") ? (
 						<CheckCircle2 className="size-3.5 text-emerald-500" />
@@ -350,10 +364,11 @@ function ConfiguredProvidersList({
 	items: ConfiguredItem[];
 	onRemove: (kind: ProviderKind) => void;
 }) {
+	const { t } = useTranslation("providers");
 	if (items.length === 0) {
 		return (
 			<div className="pt-1 text-small text-muted-foreground">
-				No third-party providers configured.
+				{t("claudeCustom.noneConfigured")}
 			</div>
 		);
 	}
@@ -384,7 +399,7 @@ function ConfiguredProvidersList({
 						type="button"
 						variant="ghost"
 						size="icon-xs"
-						aria-label={`Remove ${item.label}`}
+						aria-label={t("claudeCustom.removeAria", { label: item.label })}
 						onClick={() => onRemove(item.kind)}
 						className="text-muted-foreground hover:text-destructive"
 					>
@@ -405,6 +420,7 @@ type ConfiguredItem = {
 
 function getConfiguredItems(
 	value: ClaudeCustomProviderSettings,
+	t: TFunction,
 ): ConfiguredItem[] {
 	const items: ConfiguredItem[] = [];
 	const keys = value.builtinProviderApiKeys ?? {};
@@ -421,7 +437,7 @@ function getConfiguredItems(
 	if (isCustomConfigured(value)) {
 		items.push({
 			kind: "custom",
-			label: "Custom",
+			label: t("claudeCustom.customLabel"),
 			keyPreview: maskSecret(value.customApiKey),
 		});
 	}

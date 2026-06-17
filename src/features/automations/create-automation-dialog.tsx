@@ -1,5 +1,6 @@
 import { ChevronDown } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import {
@@ -37,6 +38,7 @@ function TargetSelect({
 	disabled?: boolean;
 	className?: string;
 }) {
+	const { t } = useTranslation("automations");
 	const active = options.find((option) => option.value === value);
 	return (
 		<DropdownMenu>
@@ -63,7 +65,7 @@ function TargetSelect({
 			>
 				{options.length === 0 ? (
 					<div className="px-2 py-1.5 text-mini text-muted-foreground">
-						Nothing available
+						{t("target.nothingAvailable")}
 					</div>
 				) : (
 					<DropdownMenuRadioGroup value={value ?? ""} onValueChange={onChange}>
@@ -86,6 +88,7 @@ export function CreateAutomationDialog({
 	open: boolean;
 	onOpenChange: (open: boolean) => void;
 }) {
+	const { t } = useTranslation(["automations", "common"]);
 	const [title, setTitle] = useState("");
 	const [prompt, setPrompt] = useState("");
 	const [runsIn, setRunsIn] = useState<AutomationRunsIn>("chat");
@@ -136,30 +139,30 @@ export function CreateAutomationDialog({
 				className="gap-0 p-0 sm:max-w-[560px]"
 				showCloseButton={false}
 			>
-				<DialogTitle className="sr-only">Create automation</DialogTitle>
+				<DialogTitle className="sr-only">{t("create.dialogTitle")}</DialogTitle>
 				<div className="px-5 pt-5">
 					<input
 						value={title}
 						onChange={(event) => setTitle(event.target.value)}
-						placeholder="Automation title"
-						aria-label="Automation title"
+						placeholder={t("create.titlePlaceholder")}
+						aria-label={t("detail.titleAria")}
 						className="w-full bg-transparent text-title font-semibold text-foreground outline-none placeholder:text-muted-foreground/60"
 					/>
 					<Textarea
 						value={prompt}
 						onChange={(event) => setPrompt(event.target.value)}
-						placeholder="Add prompt e.g. look for crashes in $sentry"
-						aria-label="Automation prompt"
+						placeholder={t("create.promptPlaceholder")}
+						aria-label={t("detail.promptAria")}
 						className="mt-2 min-h-28 resize-none border-0 px-0 py-0 text-body shadow-none focus-visible:ring-0 dark:bg-transparent"
 					/>
 				</div>
 				<div className="flex flex-wrap items-center gap-1.5 border-t border-border px-5 py-3">
 					<TargetSelect
-						label="Target"
+						label={t("target.target")}
 						value={runsIn}
 						options={[
-							{ value: "chat", label: "Chat" },
-							{ value: "workspace", label: "Workspace" },
+							{ value: "chat", label: t("target.chat") },
+							{ value: "workspace", label: t("target.workspace") },
 						]}
 						onChange={(value) => {
 							setRunsIn(value === "workspace" ? "workspace" : "chat");
@@ -167,7 +170,7 @@ export function CreateAutomationDialog({
 						}}
 					/>
 					<TargetSelect
-						label="Select workspace"
+						label={t("target.selectWorkspace")}
 						value={workspaceId}
 						options={workspaces.map((workspace) => ({
 							value: workspace.id,
@@ -180,7 +183,7 @@ export function CreateAutomationDialog({
 					/>
 					{runsIn === "chat" ? (
 						<TargetSelect
-							label="Select chat"
+							label={t("target.selectChat")}
 							value={sessionId}
 							disabled={workspaceId === null}
 							options={sessions.map((session) => ({
@@ -198,7 +201,7 @@ export function CreateAutomationDialog({
 							size="sm"
 							onClick={() => onOpenChange(false)}
 						>
-							Cancel
+							{t("common:actions.cancel")}
 						</Button>
 						<Button
 							type="button"
@@ -206,7 +209,7 @@ export function CreateAutomationDialog({
 							disabled={!valid || create.isPending}
 							onClick={submit}
 						>
-							Create
+							{t("create.submit")}
 						</Button>
 					</div>
 				</div>

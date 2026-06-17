@@ -1,0 +1,81 @@
+{
+	"quickPanel": {
+		"panelLabel": "快速面板",
+		"newWorkspace": "新建工作区",
+		"openInGrex": "在 Grex 中打开"
+	},
+	"quickSwitch": {
+		"switchWorkspace": "快速切换工作区",
+		"thinking": "思考中…"
+	},
+	"workspaceStart": {
+		"chatHeading": "我们要做些什么？",
+		"buildHeadingPrefix": "我们要在",
+		"buildHeadingIn": "中构建什么",
+		"buildHeadingSuffix": "？",
+		"repositoryPlaceholder": "某个仓库",
+		"repositoryShort": "仓库",
+		"switchRepository": "切换仓库",
+		"closeSourcePreview": "关闭来源预览",
+		"workLocally": "本地工作",
+		"justChat": "仅聊天",
+		"newWorktree": "新建工作树",
+		"selectWhereToRun": "选择任务的运行位置",
+		"addRepository": "添加仓库…",
+		"reuse": "复用",
+		"branchOff": "分支创建",
+		"reuseDescription": "直接检出所选分支。",
+		"branchOffDescription": "从所选基底分叉出一个新分支。",
+		"reuseTooltip": "直接检出所选分支。",
+		"branchOffTooltip": "从所选基底分叉出一个新分支",
+		"switchBranch": "切换分支",
+		"branchToReuse": "要复用的分支",
+		"baseToForkOff": "分叉的基底",
+		"createCheckoutNewBranch": "创建并检出新分支…",
+		"contexts": "上下文",
+		"backToInspector": "返回检查器",
+		"createBranchDialog": {
+			"title": "创建并检出分支",
+			"branchNameLabel": "分支名称",
+			"branchNamePlaceholder": "feature/awesome",
+			"submit": "创建并检出"
+		},
+		"branchValidation": {
+			"empty": "分支名称不能为空。",
+			"endsWithSlash": "分支名称不能以“/”结尾。",
+			"startInvalid": "分支名称不能以“/”、“.”或“-”开头。",
+			"doubleDot": "分支名称不能包含“..”。",
+			"whitespace": "分支名称不能包含空白字符。",
+			"invalidCharacter": "分支名称包含无效字符。",
+			"endsWithLock": "分支名称不能以“.lock”结尾。",
+			"atBrace": "分支名称不能包含“@{”。",
+			"alreadyExists": "名为“{{name}}”的分支已存在。"
+		}
+	},
+	"updater": {
+		"update": "更新",
+		"updateGrexAria": "将 Grex 更新到 {{version}}",
+		"installFailed": "安装失败",
+		"installFailedDescription": "无法安装已下载的更新。",
+		"changeLog": "更新日志",
+		"updateReady": "更新已就绪，可安装",
+		"updateDownloaded": "Grex {{version}} 已下载完成。",
+		"updateAndRestart": "更新并重启",
+		"viewChangeLog": "查看更新日志"
+	},
+	"announcements": {
+		"newInVersion": "v{{version}} 新增内容",
+		"expand": "展开版本公告",
+		"collapse": "收起版本公告",
+		"dismiss": "关闭版本公告",
+		"changelogs": "更新日志"
+	},
+	"terminal": {
+		"starting": "正在启动 {{agent}}…",
+		"agentFallback": "终端",
+		"preparingWorkspace": "正在准备工作区…",
+		"truncationNotice": "… 较早的输出已被截断（已达到缓冲区上限）…",
+		"processExited": "[进程已退出，退出码 {{code}}]",
+		"failedToStart": "无法启动终端：{{error}}"
+	}
+}

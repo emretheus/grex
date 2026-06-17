@@ -12,6 +12,7 @@ import {
 	Rows3,
 } from "lucide-react";
 import { useCallback, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import {
 	CommandEmpty,
@@ -37,7 +38,8 @@ import { WorkspaceAvatar } from "./avatar";
 
 interface SidebarSortOption {
 	value: SidebarSort;
-	label: string;
+	/** Translation key under the `navigation` namespace (`viewPopover.sort.*`). */
+	labelKey: string;
 	icon: LucideIcon;
 }
 
@@ -61,24 +63,41 @@ interface SidebarViewPopoverProps {
 }
 
 const SIDEBAR_SORT_OPTIONS: SidebarSortOption[] = [
-	{ value: "custom", label: "Draggable order", icon: GripVertical },
-	{ value: "repoName", label: "Repository name", icon: ArrowDownAZ },
-	{ value: "updatedAt", label: "Last updated", icon: Clock3 },
-	{ value: "createdAt", label: "Created time", icon: Calendar },
+	{
+		value: "custom",
+		labelKey: "viewPopover.sort.draggableOrder",
+		icon: GripVertical,
+	},
+	{
+		value: "repoName",
+		labelKey: "viewPopover.sort.repositoryName",
+		icon: ArrowDownAZ,
+	},
+	{
+		value: "updatedAt",
+		labelKey: "viewPopover.sort.lastUpdated",
+		icon: Clock3,
+	},
+	{
+		value: "createdAt",
+		labelKey: "viewPopover.sort.createdTime",
+		icon: Calendar,
+	},
 ];
 
 function repoFilterLabel(
 	repositories: RepositoryCreateOption[],
 	selectedRepoIds: string[],
+	t: (key: string, options?: Record<string, unknown>) => string,
 ) {
-	if (selectedRepoIds.length === 0) return "All repositories";
+	if (selectedRepoIds.length === 0) return t("viewPopover.allRepositories");
 	if (selectedRepoIds.length === 1) {
 		return (
 			repositories.find((repo) => repo.id === selectedRepoIds[0])?.name ??
-			"1 selected"
+			t("viewPopover.selectedCount", { count: 1 })
 		);
 	}
-	return `${selectedRepoIds.length} selected`;
+	return t("viewPopover.selectedCount", { count: selectedRepoIds.length });
 }
 
 function SidebarRepoFilterPicker({
@@ -86,6 +105,7 @@ function SidebarRepoFilterPicker({
 	selectedRepoIds,
 	onRepoFilterChange,
 }: SidebarRepoFilterPickerProps) {
+	const { t } = useTranslation("navigation");
 	const sortedRepositories = useMemo(
 		() =>
 			[...repositories].sort((left, right) =>
@@ -97,7 +117,7 @@ function SidebarRepoFilterPicker({
 		() => new Set(selectedRepoIds),
 		[selectedRepoIds],
 	);
-	const label = repoFilterLabel(sortedRepositories, selectedRepoIds);
+	const label = repoFilterLabel(sortedRepositories, selectedRepoIds, t);
 
 	const toggleRepository = useCallback(
 		(repoId: string) => {
@@ -130,16 +150,16 @@ function SidebarRepoFilterPicker({
 				className="w-(--radix-popover-trigger-width)"
 				commandClassName="max-h-[320px]"
 			>
-				<CommandInput placeholder="Search repositories" />
+				<CommandInput placeholder={t("viewPopover.searchRepositories")} />
 				<CommandList>
-					<CommandEmpty>No repositories found.</CommandEmpty>
+					<CommandEmpty>{t("viewPopover.noRepositoriesFound")}</CommandEmpty>
 					<CommandItem
 						value="all repositories"
 						data-checked={selectedRepoIds.length === 0}
 						onSelect={() => onRepoFilterChange?.([])}
 					>
 						<Folder className="size-4 shrink-0 text-muted-foreground" />
-						<span className="truncate">All repositories</span>
+						<span className="truncate">{t("viewPopover.allRepositories")}</span>
 					</CommandItem>
 					{sortedRepositories.map((repo) => {
 						const checked = selectedRepoIdSet.has(repo.id);
@@ -178,6 +198,7 @@ export function SidebarViewPopover({
 	onRepoFilterChange,
 	onSortChange,
 }: SidebarViewPopoverProps) {
+	const { t } = useTranslation("navigation");
 	return (
 		<Popover open={open} onOpenChange={onOpenChange}>
 			<Tooltip>
@@ -185,7 +206,7 @@ export function SidebarViewPopover({
 					<PopoverTrigger asChild>
 						<Button
 							type="button"
-							aria-label="Filter and sort sidebar"
+							aria-label={t("viewPopover.filterAndSortAria")}
 							variant="ghost"
 							size="icon-xs"
 							className="text-muted-foreground"
@@ -199,7 +220,7 @@ export function SidebarViewPopover({
 					sideOffset={4}
 					className="flex h-[24px] items-center gap-2 rounded-md px-2 text-small leading-none"
 				>
-					<span>Filter and sort</span>
+					<span>{t("viewPopover.filterAndSort")}</span>
 					{shortcut ? (
 						<InlineShortcutDisplay
 							hotkey={shortcut}
@@ -211,7 +232,7 @@ export function SidebarViewPopover({
 			<PopoverContent align="start" className="w-[260px] gap-2 p-2">
 				<div className="grid gap-1 px-1">
 					<div className="text-mini font-medium text-muted-foreground">
-						Repository
+						{t("viewPopover.repository")}
 					</div>
 					<SidebarRepoFilterPicker
 						repositories={repositories}
@@ -221,12 +242,20 @@ export function SidebarViewPopover({
 				</div>
 				<div className="h-px bg-border/60" />
 				<div className="px-1 text-mini font-medium text-muted-foreground">
-					Group by
+					{t("viewPopover.groupBy")}
 				</div>
 				<div className="grid gap-0.5">
 					{[
-						{ value: "status", label: "Status", icon: Rows3 },
-						{ value: "repo", label: "Repository", icon: FolderGit2 },
+						{
+							value: "status",
+							label: t("viewPopover.status"),
+							icon: Rows3,
+						},
+						{
+							value: "repo",
+							label: t("viewPopover.repository"),
+							icon: FolderGit2,
+						},
 					].map((option) => {
 						const Icon = option.icon;
 						const checked = grouping === option.value;
@@ -252,7 +281,7 @@ export function SidebarViewPopover({
 				</div>
 				<div className="h-px bg-border/60" />
 				<div className="px-1 text-mini font-medium text-muted-foreground">
-					Sort by
+					{t("viewPopover.sortBy")}
 				</div>
 				<div className="grid gap-0.5">
 					{SIDEBAR_SORT_OPTIONS.map((option) => {
@@ -268,7 +297,9 @@ export function SidebarViewPopover({
 								onClick={() => onSortChange?.(option.value)}
 							>
 								<Icon className="size-3.5 shrink-0 text-muted-foreground" />
-								<span className="min-w-0 flex-1 truncate">{option.label}</span>
+								<span className="min-w-0 flex-1 truncate">
+									{t(option.labelKey)}
+								</span>
 								{checked ? (
 									<Check className="size-3.5" strokeWidth={2.2} />
 								) : null}

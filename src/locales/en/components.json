@@ -1,0 +1,81 @@
+{
+	"ai": {
+		"reasoning": {
+			"thinking": "Thinking...",
+			"thinkingStatic": "Thinking",
+			"thoughtForSeconds_one": "Thought for {{count}}s",
+			"thoughtForSeconds_other": "Thought for {{count}}s"
+		},
+		"openIn": {
+			"trigger": "Open in chat",
+			"open": "Open",
+			"chatgpt": "Open in ChatGPT",
+			"claude": "Open in Claude",
+			"t3": "Open in T3 Chat",
+			"scira": "Open in Scira",
+			"v0": "Open in v0",
+			"cursor": "Open in Cursor",
+			"github": "Open in GitHub"
+		}
+	},
+	"inlineBadge": {
+		"removeItem": "Remove item",
+		"unableToPreview": "Unable to preview"
+	},
+	"branchPicker": {
+		"searchPlaceholder": "Search branches…",
+		"loading": "Loading branches…",
+		"empty": "No branches found"
+	},
+	"appendContext": {
+		"errorTitle": "Couldn't append context",
+		"errorFallback": "Unable to append context.",
+		"ariaLabel": "Append {{subject}} to composer"
+	},
+	"quitConfirm": {
+		"title": "Quit Grex?",
+		"description_one": "There is {{count}} task in progress. Quitting now will cancel it.",
+		"description_other": "There are {{count}} tasks in progress. Quitting now will cancel them.",
+		"confirm": "Quit anyway"
+	},
+	"forgeConnect": {
+		"github": "GitHub",
+		"gitlab": "GitLab",
+		"forge": "Forge",
+		"connect": "Connect {{provider}}",
+		"startError": "Unable to start login.",
+		"connectedAs": "{{provider}} connected as @{{login}}",
+		"connected": "{{provider}} connected"
+	},
+	"larkConnect": {
+		"install": "Install lark-cli",
+		"signIn": "Sign in",
+		"connectWithSuffix": "Connect Lark — {{suffix}}",
+		"connect": "Connect Lark",
+		"connected": "Lark connected",
+		"startError": "Unable to start lark-cli."
+	},
+	"conductor": {
+		"importFailed": "Import failed. Try again.",
+		"welcome": "Welcome to Grex",
+		"workspacesReady_one": "{{count}} workspace ready",
+		"workspacesReady_other": "{{count}} workspaces ready",
+		"getStarted": "Get started",
+		"overflowMore": "+{{count}} more",
+		"imported": "imported",
+		"importWorkspaces_one": "Import {{count}} workspace",
+		"importWorkspaces_other": "Import {{count}} workspaces",
+		"importEmpty": "Import workspaces",
+		"skipForNow": "Skip for now",
+		"aboutImporting": "About importing",
+		"aboutImportingTooltip": "Don't worry — we only read your Conductor data to import it here. Your Conductor data won't be modified in any way.",
+		"importing": "Importing…"
+	},
+	"ui": {
+		"commandDialogTitle": "Command Palette",
+		"commandDialogDescription": "Search for a command to run…",
+		"sidebarTitle": "Sidebar",
+		"sidebarDescription": "Displays the mobile sidebar.",
+		"toggleSidebar": "Toggle Sidebar"
+	}
+}

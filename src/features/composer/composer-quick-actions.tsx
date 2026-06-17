@@ -1,5 +1,6 @@
 import { ListTree } from "lucide-react";
 import type { ComponentType } from "react";
+import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
 
 export type ComposerQuickAction = {
@@ -11,12 +12,17 @@ export type ComposerQuickAction = {
 	icon?: ComponentType<{ className?: string; strokeWidth?: number }>;
 };
 
+/** Internal shape: `labelKey` is an i18n key (composer namespace) resolved via
+ *  `t()` at render so the tag label follows live language switches. `id` and
+ *  `prompt` stay verbatim — the prompt is sent to the agent unchanged. */
+type QuickActionDef = Omit<ComposerQuickAction, "label"> & { labelKey: string };
+
 // Default quick actions. Each tag fires a preset prompt on click — for now
 // just Restack, which kicks off the stacked-PR restack skill.
-const DEFAULT_QUICK_ACTIONS: ComposerQuickAction[] = [
+const DEFAULT_QUICK_ACTIONS: QuickActionDef[] = [
 	{
 		id: "restack",
-		label: "Restack",
+		labelKey: "quickActions.restack",
 		prompt: "/grex-cli restack",
 		icon: ListTree,
 	},
@@ -35,14 +41,21 @@ type ComposerQuickActionsProps = {
  * gets pushed up instead of overlapping them.
  */
 export function ComposerQuickActions({
-	actions = DEFAULT_QUICK_ACTIONS,
+	actions,
 	onAction,
 	disabled,
 }: ComposerQuickActionsProps) {
-	if (actions.length === 0) return null;
+	const { t } = useTranslation("composer");
+	const resolvedActions: ComposerQuickAction[] =
+		actions ??
+		DEFAULT_QUICK_ACTIONS.map(({ labelKey, ...action }) => ({
+			...action,
+			label: t(labelKey),
+		}));
+	if (resolvedActions.length === 0) return null;
 	return (
 		<div className="pointer-events-auto mb-1.5 flex w-full flex-wrap items-center justify-start gap-1.5 self-stretch pl-1">
-			{actions.map((action) => {
+			{resolvedActions.map((action) => {
 				const Icon = action.icon;
 				return (
 					<button

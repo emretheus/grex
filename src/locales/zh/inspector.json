@@ -1,0 +1,186 @@
+{
+	"git": {
+		"title": "Git",
+		"sectionLabel": "检查器板块 Git",
+		"changesPanelLabel": "更改面板主体",
+		"browseFiles": "浏览文件",
+		"browseFilesTitle": "浏览此工作区中的所有文件",
+		"openPullRequest": "打开拉取请求",
+		"openMergeRequest": "打开合并请求",
+		"continue": "继续",
+		"continueWorkspace": "继续工作区",
+		"empty": "此分支上暂无更改。",
+		"groups": {
+			"stagedChanges": "已暂存的更改",
+			"changes": "更改",
+			"remote": "远程"
+		},
+		"switchingTargetBranch": "正在切换目标分支…",
+		"viewToggle": {
+			"switchToListView": "切换到列表视图",
+			"switchToTreeView": "切换到树状视图"
+		},
+		"row": {
+			"stageAll": "暂存所有更改",
+			"unstageAll": "取消暂存所有更改",
+			"stageFile": "暂存文件",
+			"unstageFile": "取消暂存文件",
+			"openInEditor": "在编辑器中打开",
+			"discardFileChanges": "放弃文件更改"
+		},
+		"contextMenu": {
+			"revealInFinder": "在访达中显示",
+			"copyPath": "复制路径",
+			"copyRelativePath": "复制相对路径",
+			"copyRemoteFileUrl": "复制远程文件 URL"
+		},
+		"toast": {
+			"pathCopied": "已复制路径",
+			"relativePathCopied": "已复制相对路径",
+			"remoteFileUrlCopied": "已复制远程文件 URL",
+			"copyPathFailed": "复制路径失败",
+			"copyRelativePathFailed": "复制相对路径失败",
+			"copyRemoteFileUrlFailed": "复制远程文件 URL 失败",
+			"revealFailed": "在访达中显示失败",
+			"noEditorTitle": "无编辑器",
+			"noEditorMessage": "打开文件前请先选择默认编辑器。",
+			"openEditorFailed": "打开 {{editor}} 失败",
+			"continuedTitle": "已继续",
+			"continuedMessage": "工作区已移至 {{branch}}。"
+		},
+		"mutationError": {
+			"stageFileFailed": "暂存文件失败。",
+			"unstageFileFailed": "取消暂存文件失败。",
+			"stageFilesFailed": "暂存文件失败。",
+			"unstageFilesFailed": "取消暂存文件失败。",
+			"discardChangesFailed": "放弃更改失败。",
+			"continueWorkspaceFailed": "继续工作区失败。",
+			"stageFileTitle": "无法暂存文件",
+			"unstageFileTitle": "无法取消暂存文件",
+			"stageFilesTitle": "无法暂存文件",
+			"unstageFilesTitle": "无法取消暂存文件",
+			"discardChangesTitle": "无法放弃更改",
+			"continueWorkspaceTitle": "无法继续工作区"
+		}
+	},
+	"forge": {
+		"connecting": "正在连接",
+		"detected": "在 {{host}} 检测到 {{provider}}",
+		"thisHost": "此主机",
+		"whyWeThinkSo": "判断依据："
+	},
+	"actions": {
+		"title": "操作",
+		"sectionLabel": "检查器板块 操作",
+		"toggle": "切换检查器操作板块",
+		"panelLabel": "操作面板主体",
+		"groups": {
+			"helpers": "辅助",
+			"git": "Git",
+			"review": "审查",
+			"deployments": "部署",
+			"checks": "检查"
+		},
+		"reviewChanges": "审查更改",
+		"reviewing": "正在审查",
+		"reviewAction": "审查",
+		"skipped": "已跳过",
+		"openItem": "打开 {{name}}",
+		"insertCheckError": "无法插入检查",
+		"loading": {
+			"pushing": "正在推送",
+			"pulling": "正在拉取",
+			"resolving": "正在解决",
+			"committing": "正在提交",
+			"loading": "正在加载"
+		},
+		"status": {
+			"passed": "已通过",
+			"skipped": "已跳过",
+			"running": "运行中",
+			"failed": "已失败",
+			"pending": "待处理"
+		},
+		"button": {
+			"commitAndPush": "提交并推送",
+			"push": "推送",
+			"resolve": "解决",
+			"pull": "拉取"
+		},
+		"git": {
+			"noUncommittedChanges": "没有未提交的更改",
+			"uncommittedChanges_other": "{{count}} 项未提交的更改",
+			"branchNotPublished": "分支未发布到远程",
+			"commitsAheadOfRemote_other": "领先 {{ref}} {{count}} 个提交",
+			"branchFullyPushed": "分支已完全推送",
+			"mergeConflictsDetected": "检测到合并冲突",
+			"commitsBehindTarget_other": "落后 {{target}} {{count}} 个提交",
+			"upToDate": "已与 {{target}} 同步",
+			"syncUnavailable": "同步状态不可用",
+			"targetBranch": "目标分支",
+			"upstream": "上游"
+		},
+		"review": {
+			"authRequired": "需要 {{provider}} CLI 身份验证",
+			"approved": "审查已批准",
+			"changeRequestClosed": "{{changeRequest}} 已关闭",
+			"changesRequested": "已请求更改",
+			"waitingForReview": "等待 {{changeRequest}} 审查",
+			"mergeConflictsDetected": "检测到合并冲突"
+		},
+		"sync": {
+			"pulledLatest": "已从 {{target}} 拉取最新内容",
+			"alreadyUpToDate": "已与 {{target}} 保持同步",
+			"pullFailed": "无法拉取目标更新。"
+		}
+	},
+	"tabs": {
+		"sectionLabel": "检查器板块 标签页",
+		"bodyLabel": "检查器标签页主体",
+		"toggle": "切换检查器标签页板块",
+		"setup": "设置",
+		"run": "运行",
+		"terminal": "终端",
+		"terminalNumbered": "终端 {{number}}",
+		"newTerminal": "新建终端",
+		"closeTerminal": "关闭终端",
+		"closeNamed": "关闭 {{name}}",
+		"enableHoverZoom": "启用悬停缩放",
+		"disableHoverZoom": "禁用悬停缩放",
+		"switchRunAction": "切换运行操作",
+		"create": "创建"
+	},
+	"setup": {
+		"noScriptConfigured": "未配置设置脚本",
+		"noScriptHint": "在仓库设置中添加设置脚本，即可在此处运行。",
+		"openSettings": "打开设置",
+		"completed": "设置已完成",
+		"completedLabel": "设置已完成",
+		"noOutput": "无设置脚本输出",
+		"noOutputHint": "运行设置后，设置脚本的输出将显示在此处。",
+		"runSetup": "运行设置",
+		"rerunSetup": "重新运行设置",
+		"stop": "停止"
+	},
+	"run": {
+		"open": "打开",
+		"openWithPort": "打开:{{port}}",
+		"openNoUrl": "打开开发服务器（尚未检测到 URL）",
+		"openAtUrl": "在 {{url}} 打开开发服务器",
+		"openWithCount_other": "打开开发服务器（检测到 {{count}} 个 URL）",
+		"addRunScript": "添加运行脚本",
+		"addRunScriptHint": "运行测试或开发服务器，以在此工作区中测试更改。",
+		"defaultActionName": "默认",
+		"noOutputFor": "无输出：",
+		"noOutputHint": "运行后，运行脚本的输出将显示在此处。",
+		"run": "运行",
+		"rerun": "重新运行",
+		"stop": "停止",
+		"forceStop": "强制停止",
+		"runStopCommand": "运行停止命令：{{command}}",
+		"skipCleanup": "跳过清理并强制终止"
+	},
+	"terminal": {
+		"truncationNotice": "… 较早的输出已被截断（已达到缓冲区上限）…"
+	}
+}

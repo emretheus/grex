@@ -1,0 +1,447 @@
+{
+	"appearance": {
+		"chatFontSize": {
+			"aria": "Chat font size",
+			"description": "Size used for chat message bodies",
+			"title": "Chat font size"
+		},
+		"codeFont": {
+			"aria": "Code font family",
+			"title": "Code font"
+		},
+		"colorTheme": {
+			"description": "Choose an accent palette",
+			"title": "Color Theme"
+		},
+		"pointerCursors": {
+			"description": "Change the cursor to a pointer when hovering over interactive elements",
+			"title": "Use pointer cursors"
+		},
+		"terminalFont": {
+			"aria": "Terminal font family",
+			"title": "Terminal font"
+		},
+		"theme": {
+			"dark": "Dark",
+			"description": "Use light, dark, or match your system",
+			"light": "Light",
+			"system": "System",
+			"title": "Theme"
+		},
+		"uiFont": {
+			"aria": "UI font family",
+			"title": "UI font"
+		}
+	},
+	"language": {
+		"aria": "Display language",
+		"description": "Choose the display language for the app",
+		"title": "Language"
+	},
+	"nav": {
+		"settings": "Settings",
+		"repositories": "Repositories",
+		"repositoryFallback": "Repository",
+		"sections": {
+			"general": "General",
+			"appearance": "Appearance",
+			"model": "Models",
+			"providers": "Providers",
+			"shortcuts": "Shortcuts",
+			"import": "Import",
+			"account": "Accounts",
+			"inbox": "Contexts",
+			"experimental": "Experimental",
+			"developer": "Developer"
+		},
+		"captions": {
+			"account": "Synced with your local gh / glab CLI.",
+			"inbox": "Pick which items each connected account contributes to Contexts."
+		}
+	},
+	"general": {
+		"notifications": {
+			"title": "Desktop Notifications",
+			"description": "Show system notifications when sessions complete or need input"
+		},
+		"notificationSound": {
+			"title": "Notification sound",
+			"description": "Play a sound when a desktop notification fires",
+			"aria": "Notification sound",
+			"testAria": "Test notification sound"
+		},
+		"terminalHoverExpansion": {
+			"title": "Expand terminals on hover",
+			"description": "Enlarge inspector terminals when the cursor rests over them."
+		},
+		"terminalMode": {
+			"title": "Terminal Mode",
+			"description": "Adds a composer toggle that opens your prompt in the agent's terminal UI instead of a chat session. Claude and Codex only."
+		},
+		"alwaysShowContextUsage": {
+			"title": "Always show context usage",
+			"description": "By default, context usage is only shown when more than 70% is used."
+		},
+		"usageStats": {
+			"title": "Usage Stats",
+			"description": "Show account rate limits beside the composer."
+		},
+		"autoArchiveOnMerge": {
+			"title": "Auto-archive on merge",
+			"description": "When a workspace's linked PR/MR is merged, archive the workspace automatically."
+		},
+		"followUpBehavior": {
+			"title": "Follow-up behavior",
+			"description": "Queue follow-ups while the agent runs or steer the current run.",
+			"pressToInvert": "Press {{shortcut}} to do the opposite for one message.",
+			"queue": "Queue",
+			"steer": "Steer"
+		},
+		"claudeThinking": {
+			"title": "Claude Code Thinking Display",
+			"description": "Controls how Claude Code returns thinking content.",
+			"summarized": "Summarized",
+			"omitted": "Omitted",
+			"tooltip": {
+				"summarizedLabel": "Summarized",
+				"summarizedBody": "thinking blocks contain summarized text.",
+				"omittedLabel": "Omitted",
+				"omittedBody": "thinking blocks are empty. The server skips streaming thinking tokens, so the final text streams sooner. Reduces latency, not cost."
+			}
+		}
+	},
+	"model": {
+		"default": {
+			"title": "Default model",
+			"description": "Model for new chats"
+		},
+		"review": {
+			"title": "Review model",
+			"description": "Model for code review"
+		},
+		"action": {
+			"title": "Action model",
+			"description": "Model for PRs/MRs and commit-and-push"
+		},
+		"fastMode": "Fast mode",
+		"fastModeAria": "{{prefix}} fast mode",
+		"selectModel": "Select model",
+		"effort": {
+			"low": "Low",
+			"medium": "Medium",
+			"high": "High",
+			"xhigh": "Extra High"
+		}
+	},
+	"archiveCleanup": {
+		"title": "Clean up archived workspaces",
+		"descriptionEmpty": "No archived workspaces.",
+		"description_one": "Permanently delete the {{count}} archived workspace, including its sessions and chat history.",
+		"description_other": "Permanently delete all {{count}} archived workspaces, including their sessions and chat history.",
+		"button": "Clean up",
+		"buttonBusy": "Cleaning up",
+		"confirmTitle": "Clean up archived workspaces?",
+		"confirmDescription_one": "This will permanently delete the {{count}} archived workspace, including its sessions and chat history. This cannot be undone.",
+		"confirmDescription_other": "This will permanently delete all {{count}} archived workspaces, including their sessions and chat history. This cannot be undone.",
+		"confirmLabel": "Delete All",
+		"toast": {
+			"nothing": "No archived workspaces to clean up",
+			"cleaned_one": "Cleaned up {{count}} archived workspace",
+			"cleaned_other": "Cleaned up {{count}} archived workspaces",
+			"partial_one": "Cleaned up {{deleted}}, but {{count}} workspace could not be deleted",
+			"partial_other": "Cleaned up {{deleted}}, but {{count}} workspaces could not be deleted",
+			"failedTitle": "Archive cleanup failed"
+		}
+	},
+	"appUpdates": {
+		"title": "App Updates",
+		"loadingStatus": "Loading updater status…",
+		"status": {
+			"notConfigured": "Updater is not configured in this build.",
+			"checking": "Checking GitHub releases in the background.",
+			"downloadingVersion": "Downloading {{version}} in the background.",
+			"downloading": "Downloading an update in the background.",
+			"downloadedVersion": "{{version}} has been downloaded and is ready to install.",
+			"downloaded": "The latest update has been downloaded and is ready to install.",
+			"error": "The last update check failed.",
+			"disabledWaiting": "Automatic update checks are waiting for updater configuration.",
+			"disabled": "Automatic update checks are disabled.",
+			"idle": "Checks GitHub releases, downloads updates quietly, then prompts when ready."
+		},
+		"versionNotice": "Current {{current}} · Available {{available}}",
+		"check": {
+			"downloading": "Downloading",
+			"installing": "Installing",
+			"checking": "Checking",
+			"checkNow": "Check now"
+		},
+		"updateAndRestart": "Update and restart",
+		"changeLog": "Change log",
+		"toast": {
+			"upToDate": "Grex is up to date",
+			"checkFailed": "Update check failed",
+			"checkFailedFallback": "Unable to check for updates.",
+			"installFailed": "Install failed",
+			"installFailedFallback": "Unable to install the downloaded update."
+		}
+	},
+	"components": {
+		"title": "Grex Components",
+		"loadingStatus": "Loading components status…",
+		"summary": {
+			"upToDate": "Grex CLI and skills are up to date with {{version}}.",
+			"healthy": "Grex CLI and skills look healthy.",
+			"needsAttention": "One or more components need attention."
+		},
+		"cliLabel": "Grex CLI",
+		"skillsLabel": "Grex Skills",
+		"recheck": "Re-check now",
+		"recheckBusy": "Checking",
+		"cli": {
+			"installedAt": "Installed at {{path}}.",
+			"installed": "Installed.",
+			"stale": "An older copy exists at the install path.",
+			"missing": "Not installed on this machine.",
+			"unavailable": "Status unavailable."
+		},
+		"skills": {
+			"installedFor": "Installed for {{targets}}.",
+			"installed": "Installed.",
+			"signInPrompt": "Sign in to Claude Code or Codex, then re-check.",
+			"join": " and "
+		},
+		"toast": {
+			"readFailed": "Unable to read Grex components status",
+			"upToDate": "Grex components are up to date",
+			"recheckFailed": "Re-check failed",
+			"cliInstallFailed": "CLI install failed",
+			"skillsInstallFailed": "Skills install failed"
+		}
+	},
+	"account": {
+		"errorAria": "Account list error",
+		"loading": "Loading accounts…",
+		"empty": "No accounts connected yet."
+	},
+	"devTools": {
+		"showOnboarding": {
+			"title": "Show Onboarding Again",
+			"description": "Mark onboarding as incomplete so it appears the next time Grex starts.",
+			"notice": "Onboarding will be shown on the next launch.",
+			"button": "Reset Onboarding"
+		},
+		"resetData": {
+			"title": "Reset All Data",
+			"description": "Delete all workspaces, sessions, messages, and repositories from the development database. Filesystem artefacts (worktrees, paste-cache) will also be removed.",
+			"dataDir": "Data directory:",
+			"button": "Reset All Dev Data",
+			"resetting": "Resetting...",
+			"confirmTitle": "Confirm Reset",
+			"confirmDescription": "This will permanently delete <strong>all workspaces, sessions, and repositories</strong> from the development database. This action cannot be undone. You can re-import from Conductor afterwards.",
+			"confirmLabel": "Delete Everything",
+			"confirmLabelBusy": "Resetting..."
+		}
+	},
+	"plain": {
+		"connectAnother": "Connect another workspace",
+		"workspaceFallback": "Plain workspace",
+		"disconnect": "Disconnect",
+		"disconnecting": "Disconnecting…",
+		"threadsHint": "Open threads (Todo and Snoozed) appear in the feed.",
+		"disconnectError": "Couldn't disconnect Plain.",
+		"disconnectFailed": "Plain disconnect failed"
+	},
+	"mobileCompanion": {
+		"title": "Mobile companion",
+		"description": "Drive Grex from your phone's browser over a private link. Enabling starts a local server and a Cloudflare tunnel — no app to install.",
+		"starting": "Starting…",
+		"enableAria": "Enable mobile companion",
+		"permanentUrl": {
+			"title": "Permanent URL",
+			"stable": "Your phone connects at a fixed address that survives desktop restarts.",
+			"signedIn": "Allocate a permanent remote-*.grex.ai address so you never have to re-scan.",
+			"signedOut": "The quick link changes when you restart. Sign in to Cloudflare for a permanent address.",
+			"forget": "Forget",
+			"forgetting": "Forgetting…",
+			"allocate": "Allocate permanent URL",
+			"allocating": "Allocating…",
+			"signIn": "Sign in to Cloudflare",
+			"signingIn": "Waiting for browser…",
+			"address": "Permanent address:"
+		},
+		"pair": {
+			"title": "Pair a phone",
+			"ready": "Generate a QR code, then scan it with your phone's camera.",
+			"waiting": "Waiting for the public URL to come up…",
+			"button": "Pair phone",
+			"generating": "Generating…",
+			"scanHint": "Scan with your phone's camera. The code carries a one-time device token — pair once and the phone reconnects on its own.",
+			"copied": "Copied"
+		},
+		"devices": {
+			"title": "Paired devices",
+			"empty": "No phones paired yet.",
+			"revoke": "Revoke",
+			"label": "Phone · {{date}}",
+			"neverConnected": "Never connected",
+			"lastSeenRecently": "Last seen recently",
+			"lastSeen": "Last seen {{time}}"
+		}
+	},
+	"repositoryPreferences": {
+		"title": "Preferences",
+		"description": "Repo-level built-in prompts used by Grex actions and new chats.",
+		"preview": "Preview",
+		"save": "Save",
+		"saving": "Saving...",
+		"placeholderGeneral": "Add custom instructions for all agents working in this repo.",
+		"placeholderDefault": "Add your preferences here. The agent will be told to prioritize these instructions over its default instructions.",
+		"promptTitle": "{{label}} prompt",
+		"promptPreviewFallback": "Prompt preview",
+		"labels": {
+			"createPr": "Create PR preferences",
+			"review": "Review preferences",
+			"fixErrors": "Fix errors preferences",
+			"resolveConflicts": "Resolve conflicts preferences",
+			"branchRename": "Branch rename preferences",
+			"general": "General preferences"
+		},
+		"descriptions": {
+			"createPr": "Add custom instructions sent to the agent when you click the Create PR button.",
+			"review": "Add custom instructions sent to the agent when you click Review in the inspector.",
+			"fixErrors": "Add custom instructions sent to the agent when you click the Fix errors button.",
+			"resolveConflicts": "Add custom instructions sent to the agent when you click the Resolve conflicts button.",
+			"branchRename": "Add custom instructions used when Grex generates the first branch rename suggestion for a new chat.",
+			"general": "Add custom instructions sent to the agent at the start of every new chat."
+		}
+	},
+	"repositorySettings": {
+		"remoteFallback": "Repository",
+		"remoteOrigin": {
+			"title": "Remote origin",
+			"description": "Where should we push, pull, and create PRs?",
+			"empty": "No remotes found",
+			"orphanedNotice_one": "{{count}} workspace targets a branch not on this remote. Update it via the header branch picker.",
+			"orphanedNotice_other": "{{count}} workspaces target a branch not on this remote. Update them via the header branch picker."
+		},
+		"branchFrom": {
+			"title": "Branch new workspaces from",
+			"description": "Each workspace is an isolated copy of your codebase."
+		},
+		"forge": {
+			"notConnected": "{{provider}} not connected",
+			"connectCta": "Connect a {{provider}} account to enable the {{provider}} workflow for this repo.",
+			"connect": "Connect",
+			"connecting": "Connecting"
+		},
+		"branchPrefix": {
+			"title": "Branch prefix",
+			"description": "Prefix added to branch names when creating new workspaces in this repo.",
+			"username": "Username",
+			"custom": "Custom",
+			"none": "None",
+			"customPlaceholder": "e.g. feat/",
+			"customAria": "Custom branch prefix",
+			"preview": "Preview:",
+			"connectAccount": "(connect an account)"
+		},
+		"delete": {
+			"title": "Delete Repository",
+			"description": "Permanently remove this repository and all its workspaces, sessions, and messages.",
+			"button": "Delete Repository",
+			"confirmTitle": "Delete {{name}}?",
+			"confirmDescription": "This will permanently delete all workspaces, sessions, and messages associated with <strong>{{name}}</strong>. This cannot be undone.",
+			"confirmLabel": "Delete",
+			"deleting": "Deleting..."
+		},
+		"scripts": {
+			"title": "Scripts",
+			"description": "Commands that run when workspaces are set up, run, or archived.",
+			"lockedMessage": "Set by this workspace's grex.json — edit it there",
+			"setup": {
+				"label": "Setup script",
+				"description": "Available from the Setup tab in any workspace",
+				"placeholder": "e.g., npm install",
+				"autoRun": "Auto-run",
+				"autoRunTooltip": "On by default — setup runs automatically as soon as a workspace is created. Turn off to run it manually from the Setup tab.",
+				"autoRunAria": "Auto-run setup script on workspace creation"
+			},
+			"archive": {
+				"label": "Archive script",
+				"description": "Runs when a workspace is archived",
+				"placeholder": "e.g., docker compose down"
+			},
+			"run": {
+				"title": "Run scripts",
+				"description": "Each entry appears in the Inspector's Run dropdown.",
+				"lockedEmpty": "Set by this workspace's grex.json — edit it there.",
+				"emptyTitle": "No run scripts yet",
+				"emptyDescription": "Add one to expose a command — like a dev server, test runner, or background task.",
+				"addScript": "Add script",
+				"defaultName": "Default",
+				"scriptN": "Script {{index}}",
+				"unnamed": "(unnamed)",
+				"noCommand": "(no command)",
+				"empty": "(empty)",
+				"exclusive": "Exclusive",
+				"exclusiveTooltip": "Only let one workspace run this script at a time. Starting a new run stops any other run in this repository — useful when the script binds a fixed port.",
+				"exclusiveAria": "Stop other runs in this repository when starting a new run",
+				"scriptName": "Script name",
+				"command": "Command",
+				"commandPlaceholder": "e.g., npm run dev",
+				"commandAria": "{{name}} command",
+				"stopCommand": "Stop command",
+				"stopCommandTooltip": "Optional cleanup command run when you click Stop. Useful for scripts that manage external resources (docker compose down, supabase stop). Same env + cwd as the main command.",
+				"stopCommandPlaceholder": "e.g., docker compose down",
+				"stopCommandAria": "{{name}} stop command",
+				"scriptFallback": "Script",
+				"collapseAria": "Collapse {{name}}",
+				"expandAria": "Expand {{name}}",
+				"rowFallback": "script",
+				"doneEditing": "Done editing",
+				"edit": "Edit",
+				"stopEditing": "Stop editing",
+				"deleteScript": "Delete script",
+				"clickAgainConfirm": "Click again to confirm",
+				"confirmDeleteAria": "Confirm delete {{name}}",
+				"deleteScriptAria": "Delete script {{name}}",
+				"managedByProject": "Managed by grex.json — edit the file to add or change"
+			}
+		}
+	},
+	"conductorImport": {
+		"title": "Import from Conductor",
+		"repositoryFallback": "Repository",
+		"selectWorkspaces": "Select workspaces to import",
+		"importLocal": "Import workspaces from a local Conductor installation",
+		"searchWorkspaces": "Search workspaces",
+		"searchRepositories": "Search repositories",
+		"importing_one": "Importing {{count}} workspace",
+		"importing_other": "Importing {{count}} workspaces",
+		"settingUp": "Setting up repositories and copying data...",
+		"selectAll": "Select all",
+		"deselectAll": "Deselect all",
+		"noWorkspaces": "No workspaces found",
+		"noRepositories": "No Conductor repositories found",
+		"noMatches": "No matches",
+		"importButton_one": "Import {{count}} workspace",
+		"importButton_other": "Import {{count}} workspaces",
+		"importFailed": "Import failed",
+		"importPartial": "{{imported}} imported, {{failed}} failed: {{error}}",
+		"importSuccess_one": "Successfully imported {{count}} workspace",
+		"importSuccess_other": "Successfully imported {{count}} workspaces",
+		"status": {
+			"archived": "Archived",
+			"done": "Done",
+			"inProgress": "In progress"
+		},
+		"alreadyImported": "Already imported",
+		"allImported": "All imported",
+		"importedCount": "{{imported}}/{{total}} imported",
+		"workspaceCount_one": "{{count}} workspace",
+		"workspaceCount_other": "{{count}} workspaces",
+		"selectWorkspace": "Select {{name}}",
+		"sessionCount_one": "{{count}} session",
+		"sessionCount_other": "{{count}} sessions"
+	}
+}

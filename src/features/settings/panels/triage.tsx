@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import type { ComponentType } from "react";
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
 	GithubBrandIcon,
 	GitlabBrandIcon,
@@ -55,6 +56,7 @@ import {
 	triggerTriageTickNow,
 	updateTriageConfig,
 } from "@/lib/api";
+import { i18n } from "@/lib/i18n";
 import { grexQueryKeys } from "@/lib/query-client";
 import { cn } from "@/lib/utils";
 import { publishShellEvent } from "@/shell/event-bus";
@@ -112,6 +114,7 @@ function useTickingNow(): number {
 }
 
 export function TriagePanel() {
+	const { t } = useTranslation("inbox");
 	const queryClient = useQueryClient();
 	const now = useTickingNow();
 	const llmStatus = useQuery({
@@ -206,8 +209,8 @@ export function TriagePanel() {
 			{triageOn ? (
 				<div className="flex w-full flex-col gap-3">
 					<Field
-						label="Custom instructions"
-						hint="Tell the triage agent what to focus on, in plain language."
+						label={t("triage.customInstructions")}
+						hint={t("triage.customInstructionsHint")}
 					>
 						<Textarea
 							value={draft.systemPrompt}
@@ -215,24 +218,18 @@ export function TriagePanel() {
 								setDraft({ ...draft, systemPrompt: e.target.value })
 							}
 							onBlur={() => save.mutate(draft)}
-							placeholder={`e.g.
-• Watch Slack #incidents and DMs from my team lead
-• Surface every Slack message that @-mentions me
-• Skip bot notifications and weekly digests`}
+							placeholder={t("triage.customInstructionsPlaceholder")}
 							className="min-h-[96px] placeholder:text-ui"
 						/>
 					</Field>
 
-					<Field
-						label="Sources"
-						hint="Where Grex pulls triage candidates from. Incremental fetch every 5 minutes."
-					>
+					<Field label={t("triage.sources")} hint={t("triage.sourcesHint")}>
 						<div className="flex flex-col divide-y divide-border/40 rounded-md border border-border/60 bg-background/30">
 							{sourceHealth.data?.map((row) => (
 								<SourceRow key={row.source} row={row} />
 							)) ?? (
 								<div className="px-3 py-2.5 text-mini text-muted-foreground">
-									Checking source health…
+									{t("triage.checkingHealth")}
 								</div>
 							)}
 						</div>
@@ -240,14 +237,15 @@ export function TriagePanel() {
 
 					<div className="text-mini text-muted-foreground">
 						{pendingCount.isLoading ? (
-							"Loading candidate queue…"
+							t("triage.loadingQueue")
 						) : (
 							<span>
 								<span className="font-medium text-foreground">
 									{pendingCount.data ?? 0}
 								</span>{" "}
-								candidate{pendingCount.data === 1 ? "" : "s"} waiting to be
-								judged.
+								{t("triage.candidatesWaiting", {
+									count: pendingCount.data ?? 0,
+								})}
 							</span>
 						)}
 					</div>
@@ -259,11 +257,11 @@ export function TriagePanel() {
 								<Tooltip>
 									<TooltipTrigger asChild>
 										<div className="flex items-center gap-1.5 text-mini text-muted-foreground">
-											<span>Auto-run</span>
+											<span>{t("triage.autoRun")}</span>
 											<Switch
 												checked={draft.autoRun}
 												onCheckedChange={(v) => commit({ autoRun: v })}
-												aria-label="Auto-run heartbeat"
+												aria-label={t("triage.autoRunHeartbeat")}
 											/>
 										</div>
 									</TooltipTrigger>
@@ -272,13 +270,16 @@ export function TriagePanel() {
 										className="max-w-[260px] flex-col items-start space-y-1.5 text-[11px] leading-5"
 									>
 										<p>
-											<span className="font-semibold">On</span> — a tick fires
-											right after each fetch (every 5 minutes). Overlapping
-											ticks are skipped.
+											<span className="font-semibold">
+												{t("triage.autoRunOnLabel")}
+											</span>
+											{t("triage.autoRunOnDescription")}
 										</p>
 										<p>
-											<span className="font-semibold">Off</span> — ticks only
-											run when you press Run now.
+											<span className="font-semibold">
+												{t("triage.autoRunOffLabel")}
+											</span>
+											{t("triage.autoRunOffDescription")}
 										</p>
 									</TooltipContent>
 								</Tooltip>
@@ -291,7 +292,7 @@ export function TriagePanel() {
 									onClick={() => stop.mutate()}
 								>
 									<Square className="size-3.5 fill-current" />
-									{stop.isPending ? "Stopping…" : "Stop"}
+									{stop.isPending ? t("triage.stopping") : t("triage.stop")}
 								</Button>
 							) : (
 								<Button
@@ -301,7 +302,7 @@ export function TriagePanel() {
 									onClick={() => trigger.mutate()}
 								>
 									<Play className="size-3.5" />
-									Run now
+									{t("triage.runNow")}
 								</Button>
 							)}
 						</div>
@@ -325,16 +326,16 @@ function HeaderBar({
 	disabled?: boolean;
 	onChange?: (v: boolean) => void;
 }) {
+	const { t } = useTranslation("inbox");
 	return (
 		<div className="flex items-start justify-between gap-3">
 			<div className="min-w-0 flex-1">
 				<div className="flex flex-wrap items-center gap-1.5 text-[13px] font-medium leading-snug text-foreground">
-					<span className="min-w-0">Smart triage</span>
+					<span className="min-w-0">{t("triage.smartTriage")}</span>
 					<SettingsReleaseBadge marker={{ kind: "feature" }} />
 				</div>
 				<p className="mt-1 text-[12px] leading-snug text-muted-foreground">
-					The local LLM scans your enabled sources and creates AI-prepared
-					workspaces for actionable items.
+					{t("triage.smartTriageDescription")}
 				</p>
 			</div>
 			<Switch
@@ -368,12 +369,13 @@ function Field({
 
 // HoverCard (not Tooltip) so users can scroll long markdown summaries.
 function SummaryPopover({ text }: { text: string }) {
+	const { t } = useTranslation("inbox");
 	return (
 		<HoverCard openDelay={120} closeDelay={120}>
 			<HoverCardTrigger asChild>
 				<button
 					type="button"
-					aria-label="Show agent reasoning"
+					aria-label={t("triage.showReasoning")}
 					className="inline-flex shrink-0 cursor-pointer text-muted-foreground/60 hover:text-foreground"
 				>
 					<MessageSquareQuote className="size-3" />
@@ -408,10 +410,11 @@ function OutcomeLine({
 	last: LastTickOutcome | null;
 	now: number;
 }) {
+	const { t } = useTranslation("inbox");
 	if (!last) {
 		return (
 			<div className="min-w-0 flex-1 truncate text-mini text-muted-foreground">
-				No tick run yet.
+				{t("triage.noTickYet")}
 			</div>
 		);
 	}
@@ -423,8 +426,7 @@ function OutcomeLine({
 			<div className="flex min-w-0 flex-1 items-center gap-1.5 text-mini text-foreground">
 				<CheckCircle2 className="size-3.5 shrink-0 text-emerald-600 dark:text-emerald-400" />
 				<span className="truncate">
-					Last tick · {when} · created {o.count} workspace
-					{o.count === 1 ? "" : "s"}
+					{t("triage.lastTickCreated", { when, count: o.count })}
 				</span>
 				{summary ? <SummaryPopover text={summary} /> : null}
 			</div>
@@ -435,7 +437,7 @@ function OutcomeLine({
 			<div className="flex min-w-0 flex-1 items-center gap-1.5 text-mini text-muted-foreground">
 				<MinusCircle className="size-3.5 shrink-0" />
 				<span className="truncate">
-					Last tick · {when} · nothing actionable
+					{t("triage.lastTickNothing", { when })}
 				</span>
 				{summary ? <SummaryPopover text={summary} /> : null}
 			</div>
@@ -446,7 +448,9 @@ function OutcomeLine({
 		return (
 			<div className="flex min-w-0 flex-1 items-center gap-1.5 text-mini text-muted-foreground">
 				<CircleStop className="size-3.5 shrink-0" />
-				<span className="truncate">Last tick · {when} · stopped</span>
+				<span className="truncate">
+					{t("triage.lastTickStopped", { when })}
+				</span>
 				{summary ? <SummaryPopover text={summary} /> : null}
 			</div>
 		);
@@ -455,8 +459,8 @@ function OutcomeLine({
 	return (
 		<div className="flex min-w-0 flex-1 items-center gap-1.5 text-mini text-destructive">
 			<XCircle className="size-3.5 shrink-0" />
-			<span className="truncate">Last tick · {when} · failed</span>
-			<SummaryPopover text={summary || o.message || "(no message)"} />
+			<span className="truncate">{t("triage.lastTickFailed", { when })}</span>
+			<SummaryPopover text={summary || o.message || t("triage.noMessage")} />
 		</div>
 	);
 }
@@ -468,6 +472,7 @@ function ActiveStatusCard({
 	status: TriageActiveStatus;
 	now: number;
 }) {
+	const { t } = useTranslation("inbox");
 	const [expanded, setExpanded] = useState(false);
 
 	const calls = useMemo(
@@ -477,26 +482,34 @@ function ActiveStatusCard({
 
 	const batchLabel =
 		status.batchIndex > 0 && status.batchTotal > 0
-			? `Batch ${status.batchIndex} of ${status.batchTotal}`
+			? t("triage.batchLabel", {
+					index: status.batchIndex,
+					total: status.batchTotal,
+				})
 			: null;
 	return (
 		<div className="rounded-lg border border-border/60 bg-card/40 p-3">
 			<div className="flex items-center gap-2">
 				<span className="inline-block size-2 animate-pulse rounded-full bg-chart-2" />
-				<span className="text-ui font-medium">Tick running</span>
+				<span className="text-ui font-medium">{t("triage.tickRunning")}</span>
 				{batchLabel ? (
 					<span className="rounded-md bg-accent/40 px-1.5 py-0.5 text-mini font-medium text-foreground">
 						{batchLabel}
 					</span>
 				) : null}
 				<span className="text-mini text-muted-foreground">
-					{formatElapsed(status.startedAt, now)} · turn {status.turnCount} ·{" "}
-					{status.toolCount} tool calls
+					{t("triage.tickStats", {
+						elapsed: formatElapsed(status.startedAt, now),
+						turns: status.turnCount,
+						tools: status.toolCount,
+					})}
 				</span>
 			</div>
 			<div className="mt-1 text-mini text-muted-foreground">
-				Started {formatTime(status.startedAt)}
-				{status.lastToolName ? ` · last: ${status.lastToolName}` : ""}
+				{t("triage.startedAt", { time: formatTime(status.startedAt) })}
+				{status.lastToolName
+					? t("triage.lastTool", { tool: status.lastToolName })
+					: ""}
 			</div>
 			<button
 				type="button"
@@ -508,13 +521,14 @@ function ActiveStatusCard({
 				) : (
 					<ChevronRight className="size-3.5" />
 				)}
-				{expanded ? "Hide" : "Show"} tool call list
+				{expanded ? t("triage.hide") : t("triage.show")}{" "}
+				{t("triage.toolCallList")}
 			</button>
 			{expanded ? (
 				<ol className="mt-2 max-h-[280px] space-y-0.5 overflow-y-auto rounded border border-border/40 bg-background/40 p-2">
 					{calls.length === 0 ? (
 						<li className="text-mini text-muted-foreground">
-							No tool calls yet.
+							{t("triage.noToolCalls")}
 						</li>
 					) : (
 						calls.map((c, idx) => (
@@ -550,37 +564,37 @@ function stateBadge(state: TriageSourceHealthState): {
 	switch (state) {
 		case "ok":
 			return {
-				label: "Connected",
+				label: i18n.t("inbox:triage.status.connected"),
 				tone: "text-emerald-600 dark:text-emerald-400",
 				Icon: CheckCircle2,
 			};
 		case "notInstalled":
 			return {
-				label: "Install required",
+				label: i18n.t("inbox:triage.status.installRequired"),
 				tone: "text-amber-600 dark:text-amber-400",
 				Icon: Download,
 			};
 		case "notAuthed":
 			return {
-				label: "Sign-in required",
+				label: i18n.t("inbox:triage.status.signInRequired"),
 				tone: "text-amber-600 dark:text-amber-400",
 				Icon: KeyRound,
 			};
 		case "notConfigured":
 			return {
-				label: "Not configured",
+				label: i18n.t("inbox:triage.status.notConfigured"),
 				tone: "text-muted-foreground",
 				Icon: SettingsIcon,
 			};
 		case "degraded":
 			return {
-				label: "Attention",
+				label: i18n.t("inbox:triage.status.attention"),
 				tone: "text-amber-600 dark:text-amber-400",
 				Icon: AlertTriangle,
 			};
 		default:
 			return {
-				label: "Unknown",
+				label: i18n.t("inbox:triage.status.unknown"),
 				tone: "text-muted-foreground",
 				Icon: AlertTriangle,
 			};
@@ -588,6 +602,7 @@ function stateBadge(state: TriageSourceHealthState): {
 }
 
 function SourceRow({ row }: { row: TriageSourceHealth }) {
+	const { t } = useTranslation("inbox");
 	const Icon = SOURCE_ICONS[row.source] ?? AlertTriangle;
 	const { label, tone, Icon: StateIcon } = stateBadge(row.state);
 	// Lark = in-app terminal; Slack = jump to Contexts panel; gh/glab need no CTA.
@@ -611,7 +626,7 @@ function SourceRow({ row }: { row: TriageSourceHealth }) {
 						size="sm"
 						onClick={() => setDialogOpen(true)}
 					>
-						Connect
+						{t("triage.connect")}
 					</Button>
 				) : null}
 				{slackNeedsConnect ? (
@@ -627,7 +642,7 @@ function SourceRow({ row }: { row: TriageSourceHealth }) {
 							})
 						}
 					>
-						Connect
+						{t("triage.connect")}
 					</Button>
 				) : null}
 				{showBadge ? (

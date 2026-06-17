@@ -1,0 +1,190 @@
+{
+	"git": {
+		"title": "Git",
+		"sectionLabel": "Inspektorbereich Git",
+		"changesPanelLabel": "Inhalt des Änderungsbereichs",
+		"browseFiles": "Dateien durchsuchen",
+		"browseFilesTitle": "Alle Dateien in diesem Arbeitsbereich durchsuchen",
+		"openPullRequest": "Pull Request öffnen",
+		"openMergeRequest": "Merge Request öffnen",
+		"continue": "Fortsetzen",
+		"continueWorkspace": "Arbeitsbereich fortsetzen",
+		"empty": "Noch keine Änderungen in diesem Branch.",
+		"groups": {
+			"stagedChanges": "Bereitgestellte Änderungen",
+			"changes": "Änderungen",
+			"remote": "Remote"
+		},
+		"switchingTargetBranch": "Ziel-Branch wird gewechselt…",
+		"viewToggle": {
+			"switchToListView": "Zur Listenansicht wechseln",
+			"switchToTreeView": "Zur Baumansicht wechseln"
+		},
+		"row": {
+			"stageAll": "Alle Änderungen bereitstellen",
+			"unstageAll": "Bereitstellung aller Änderungen aufheben",
+			"stageFile": "Datei bereitstellen",
+			"unstageFile": "Bereitstellung der Datei aufheben",
+			"openInEditor": "Im Editor öffnen",
+			"discardFileChanges": "Dateiänderungen verwerfen"
+		},
+		"contextMenu": {
+			"revealInFinder": "Im Finder anzeigen",
+			"copyPath": "Pfad kopieren",
+			"copyRelativePath": "Relativen Pfad kopieren",
+			"copyRemoteFileUrl": "Remote-Datei-URL kopieren"
+		},
+		"toast": {
+			"pathCopied": "Pfad kopiert",
+			"relativePathCopied": "Relativer Pfad kopiert",
+			"remoteFileUrlCopied": "Remote-Datei-URL kopiert",
+			"copyPathFailed": "Pfad konnte nicht kopiert werden",
+			"copyRelativePathFailed": "Relativer Pfad konnte nicht kopiert werden",
+			"copyRemoteFileUrlFailed": "Remote-datei-url konnte nicht kopiert werden",
+			"revealFailed": "Anzeige im Finder fehlgeschlagen",
+			"noEditorTitle": "Kein Editor",
+			"noEditorMessage": "Wähle einen Standardeditor, bevor du Dateien öffnest.",
+			"openEditorFailed": "{{editor}} konnte nicht geöffnet werden",
+			"continuedTitle": "Fortgesetzt",
+			"continuedMessage": "Arbeitsbereich nach {{branch}} verschoben."
+		},
+		"mutationError": {
+			"stageFileFailed": "Datei konnte nicht bereitgestellt werden.",
+			"unstageFileFailed": "Bereitstellung der Datei konnte nicht aufgehoben werden.",
+			"stageFilesFailed": "Dateien konnten nicht bereitgestellt werden.",
+			"unstageFilesFailed": "Bereitstellung der Dateien konnte nicht aufgehoben werden.",
+			"discardChangesFailed": "Änderungen konnten nicht verworfen werden.",
+			"continueWorkspaceFailed": "Arbeitsbereich konnte nicht fortgesetzt werden.",
+			"stageFileTitle": "Datei kann nicht bereitgestellt werden",
+			"unstageFileTitle": "Bereitstellung der Datei kann nicht aufgehoben werden",
+			"stageFilesTitle": "Dateien können nicht bereitgestellt werden",
+			"unstageFilesTitle": "Bereitstellung der Dateien kann nicht aufgehoben werden",
+			"discardChangesTitle": "Änderungen können nicht verworfen werden",
+			"continueWorkspaceTitle": "Arbeitsbereich kann nicht fortgesetzt werden"
+		}
+	},
+	"forge": {
+		"connecting": "Verbindung wird hergestellt",
+		"detected": "{{provider}} auf {{host}} erkannt",
+		"thisHost": "diesem Host",
+		"whyWeThinkSo": "Warum wir das annehmen:"
+	},
+	"actions": {
+		"title": "Aktionen",
+		"sectionLabel": "Inspektorbereich Aktionen",
+		"toggle": "Inspektor-Aktionsbereich umschalten",
+		"panelLabel": "Inhalt des Aktionsbereichs",
+		"groups": {
+			"helpers": "Helfer",
+			"git": "Git",
+			"review": "Überprüfung",
+			"deployments": "Deployments",
+			"checks": "Prüfungen"
+		},
+		"reviewChanges": "Änderungen überprüfen",
+		"reviewing": "Wird überprüft",
+		"reviewAction": "Überprüfen",
+		"skipped": "übersprungen",
+		"openItem": "{{name}} öffnen",
+		"insertCheckError": "Prüfung konnte nicht eingefügt werden",
+		"loading": {
+			"pushing": "Wird gepusht",
+			"pulling": "Wird gepullt",
+			"resolving": "Wird aufgelöst",
+			"committing": "Wird committet",
+			"loading": "Wird geladen"
+		},
+		"status": {
+			"passed": "Bestanden",
+			"skipped": "Übersprungen",
+			"running": "Läuft",
+			"failed": "Fehlgeschlagen",
+			"pending": "Ausstehend"
+		},
+		"button": {
+			"commitAndPush": "Committen und pushen",
+			"push": "Pushen",
+			"resolve": "Auflösen",
+			"pull": "Pullen"
+		},
+		"git": {
+			"noUncommittedChanges": "Keine nicht committeten Änderungen",
+			"uncommittedChanges_one": "{{count}} nicht committete Änderung",
+			"uncommittedChanges_other": "{{count}} nicht committete Änderungen",
+			"branchNotPublished": "Branch nicht im Remote veröffentlicht",
+			"commitsAheadOfRemote_one": "{{count}} Commit vor {{ref}}",
+			"commitsAheadOfRemote_other": "{{count}} Commits vor {{ref}}",
+			"branchFullyPushed": "Branch vollständig gepusht",
+			"mergeConflictsDetected": "Merge-Konflikte erkannt",
+			"commitsBehindTarget_one": "{{count}} Commit hinter {{target}}",
+			"commitsBehindTarget_other": "{{count}} Commits hinter {{target}}",
+			"upToDate": "Aktuell mit {{target}}",
+			"syncUnavailable": "Synchronisierungsstatus nicht verfügbar",
+			"targetBranch": "Ziel-Branch",
+			"upstream": "Upstream"
+		},
+		"review": {
+			"authRequired": "{{provider}}-CLI-Authentifizierung erforderlich",
+			"approved": "Überprüfung genehmigt",
+			"changeRequestClosed": "{{changeRequest}} geschlossen",
+			"changesRequested": "Änderungen angefordert",
+			"waitingForReview": "Warten auf {{changeRequest}}-Überprüfung",
+			"mergeConflictsDetected": "Merge-Konflikte erkannt"
+		},
+		"sync": {
+			"pulledLatest": "Neueste Änderungen von {{target}} gepullt",
+			"alreadyUpToDate": "Bereits aktuell mit {{target}}",
+			"pullFailed": "Ziel-Updates konnten nicht gepullt werden."
+		}
+	},
+	"tabs": {
+		"sectionLabel": "Inspektorbereich Tabs",
+		"bodyLabel": "Inhalt der Inspektor-Tabs",
+		"toggle": "Inspektor-Tab-Bereich umschalten",
+		"setup": "Einrichtung",
+		"run": "Ausführen",
+		"terminal": "Terminal",
+		"terminalNumbered": "Terminal {{number}}",
+		"newTerminal": "Neues Terminal",
+		"closeTerminal": "Terminal schließen",
+		"closeNamed": "{{name}} schließen",
+		"enableHoverZoom": "Hover-Zoom aktivieren",
+		"disableHoverZoom": "Hover-Zoom deaktivieren",
+		"switchRunAction": "Ausführungsaktion wechseln",
+		"create": "Erstellen"
+	},
+	"setup": {
+		"noScriptConfigured": "Kein Einrichtungsskript konfiguriert",
+		"noScriptHint": "Füge in den Repository-Einstellungen ein Einrichtungsskript hinzu, um es hier auszuführen.",
+		"openSettings": "Einstellungen öffnen",
+		"completed": "Einrichtung abgeschlossen",
+		"completedLabel": "Einrichtung abgeschlossen",
+		"noOutput": "Keine Ausgabe des Einrichtungsskripts",
+		"noOutputHint": "Die Ausgabe des Einrichtungsskripts erscheint hier nach Ausführung der Einrichtung.",
+		"runSetup": "Einrichtung ausführen",
+		"rerunSetup": "Einrichtung erneut ausführen",
+		"stop": "Stoppen"
+	},
+	"run": {
+		"open": "Öffnen",
+		"openWithPort": "Öffnen:{{port}}",
+		"openNoUrl": "Dev-Server öffnen (noch keine URL erkannt)",
+		"openAtUrl": "Dev-Server unter {{url}} öffnen",
+		"openWithCount_one": "Dev-Server öffnen ({{count}} URL erkannt)",
+		"openWithCount_other": "Dev-Server öffnen ({{count}} URLs erkannt)",
+		"addRunScript": "Ausführungsskript hinzufügen",
+		"addRunScriptHint": "Führe Tests oder einen Entwicklungsserver aus, um Änderungen in diesem Arbeitsbereich zu testen.",
+		"defaultActionName": "Standard",
+		"noOutputFor": "Keine Ausgabe für",
+		"noOutputHint": "Die Ausgabe des Ausführungsskripts erscheint hier nach der Ausführung.",
+		"run": "Ausführen",
+		"rerun": "Erneut ausführen",
+		"stop": "Stoppen",
+		"forceStop": "Stopp erzwingen",
+		"runStopCommand": "Stopp-Befehl ausführen: {{command}}",
+		"skipCleanup": "Bereinigung überspringen und Beenden erzwingen"
+	},
+	"terminal": {
+		"truncationNotice": "… frühere Ausgabe abgeschnitten (Pufferlimit erreicht) …"
+	}
+}

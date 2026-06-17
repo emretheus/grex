@@ -1,6 +1,7 @@
 import { CircleAlertIcon } from "lucide-react";
 import { useCallback } from "react";
 import { toast } from "sonner";
+import { i18n } from "@/lib/i18n";
 import type { WorkspaceToastOptions } from "@/lib/workspace-toast-context";
 
 /**
@@ -15,13 +16,15 @@ export function useWorkspaceToast() {
 	return useCallback(
 		(
 			description: string,
-			title = "Action failed",
+			title?: string,
 			variant: "default" | "destructive" = "destructive",
 			opts?: {
 				action?: WorkspaceToastOptions["action"];
 				persistent?: boolean;
 			},
 		) => {
+			// Resolve at fire time so the toast reflects the current language.
+			const resolvedTitle = title ?? i18n.t("toast.actionFailed");
 			const id = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 			const action = opts?.action
 				? {
@@ -34,7 +37,7 @@ export function useWorkspaceToast() {
 				: undefined;
 			const cancel = opts?.action
 				? {
-						label: "Dismiss",
+						label: i18n.t("actions.dismiss"),
 						onClick: () => {
 							toast.dismiss(id);
 						},
@@ -55,14 +58,14 @@ export function useWorkspaceToast() {
 				const titleNode = (
 					<span className="inline-flex items-center gap-1.5">
 						<CircleAlertIcon className="size-3.5 shrink-0" />
-						<span>{title}</span>
+						<span>{resolvedTitle}</span>
 					</span>
 				);
 				toast.error(titleNode, toastOptions);
 				return;
 			}
 
-			toast(title, toastOptions);
+			toast(resolvedTitle, toastOptions);
 		},
 		[],
 	);

@@ -1,0 +1,47 @@
+{
+	"actions": {
+		"openExternally": "在外部打开",
+		"addToContext": "添加到上下文",
+		"addToContextError": "无法插入上下文卡片",
+		"copyMarkdown": "复制 Markdown",
+		"copied": "已复制",
+		"refresh": "刷新",
+		"refreshing": "正在刷新…"
+	},
+	"kind": {
+		"issue": "议题",
+		"pullRequest": "拉取请求",
+		"discussion": "讨论",
+		"mergeRequest": "合并请求",
+		"post": "帖子",
+		"card": "卡片",
+		"thread": "会话"
+	},
+	"body": {
+		"noDescription": "未提供描述。"
+	},
+	"meta": {
+		"updated": "更新于 {{time}}",
+		"priority": "优先级：{{priority}}"
+	},
+	"relativeTime": {
+		"minutes_other": "{{count}} 分钟前",
+		"hours_other": "{{count}} 小时前",
+		"days_other": "{{count}} 天前"
+	},
+	"startWorkspace": {
+		"tooltip": "新建工作区",
+		"fromIssue": "从议题新建工作区",
+		"fromPost": "从帖子新建工作区",
+		"fromCard": "从卡片新建工作区",
+		"fromThread": "从会话新建工作区"
+	},
+	"slack": {
+		"invalidReference": "无效的 Slack 项目引用。",
+		"threadBadge": "会话",
+		"openInSlack": "在 Slack 中打开",
+		"loadError": "无法加载 Slack 会话。",
+		"noMessages": "没有可显示的消息。",
+		"emptyMessage": "（空消息）"
+	}
+}

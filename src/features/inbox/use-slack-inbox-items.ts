@@ -1,5 +1,6 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useEffect, useMemo, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import {
 	type SlackInboxItem,
 	type SlackInboxPage,
@@ -56,6 +57,7 @@ export function useSlackInboxItems(
 		staleTime: STALE_MS,
 	});
 
+	const { t } = useTranslation("inbox");
 	const pushToast = useWorkspaceToast();
 	const lastErrorRef = useRef<unknown>(null);
 	useEffect(() => {
@@ -68,9 +70,9 @@ export function useSlackInboxItems(
 		const message =
 			query.error instanceof Error
 				? query.error.message
-				: "Couldn't load Slack inbox items.";
-		pushToast(message, "Slack fetch failed", "destructive");
-	}, [query.error, pushToast]);
+				: t("toast.slackInboxFailedMessage");
+		pushToast(message, t("toast.slackFetchFailed"), "destructive");
+	}, [query.error, pushToast, t]);
 
 	const items = useMemo<SlackInboxItem[]>(
 		() => (query.data?.pages ?? []).flatMap((p) => p.items),

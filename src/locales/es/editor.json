@@ -1,0 +1,101 @@
+{
+	"surface": {
+		"ariaLabel": "Superficie del editor del espacio de trabajo",
+		"canvasAriaLabel": "Lienzo del editor",
+		"closeDiff": "Cerrar vista de diferencias",
+		"closeEditor": "Cerrar vista del editor"
+	},
+	"breadcrumb": {
+		"revealInExplorer": "Mostrar en el explorador",
+		"copyAbsolutePath": "Copiar ruta absoluta"
+	},
+	"tabs": {
+		"openFilesAriaLabel": "Archivos abiertos",
+		"closeFileAriaLabel": "Cerrar {{name}}",
+		"modifiedAriaLabel": "Modificado",
+		"openFileAriaLabel": "Abrir archivo",
+		"close": "Cerrar",
+		"closeOthers": "Cerrar los demás",
+		"closeAll": "Cerrar todo"
+	},
+	"contextMenu": {
+		"copyPath": "Copiar ruta",
+		"copyRelativePath": "Copiar ruta relativa",
+		"revealInFinder": "Mostrar en Finder",
+		"openWith": "Abrir con",
+		"addToChat": "Añadir al chat"
+	},
+	"search": {
+		"placeholder": "Buscar archivos",
+		"loading": "Cargando archivos",
+		"empty": "No se encontraron archivos"
+	},
+	"toolbar": {
+		"toggleExplorerAriaLabel": "Alternar el explorador de archivos",
+		"toggleExplorerTitle": "Explorador de archivos",
+		"viewModeAriaLabel": "Modo de vista de Markdown",
+		"source": "Fuente",
+		"preview": "Vista previa",
+		"edit": "Editar",
+		"diff": "Diferencias",
+		"addFileToChatAriaLabel": "Añadir este archivo al chat",
+		"addFileToChatTitle": "Añadir archivo al chat",
+		"viewOptionsAriaLabel": "Opciones de vista del editor",
+		"viewOptionsTitle": "Opciones de vista",
+		"close": "Cerrar"
+	},
+	"viewOptions": {
+		"goToLine": "Ir a la línea…",
+		"wordWrap": "Ajuste de línea",
+		"minimap": "Minimapa",
+		"stickyScroll": "Desplazamiento fijo",
+		"renderWhitespace": "Mostrar espacios en blanco",
+		"sideBySideDiff": "Diferencias en paralelo"
+	},
+	"preview": {
+		"ariaLabel": "Vista previa de Markdown"
+	},
+	"landing": {
+		"ariaLabel": "Explorador de archivos",
+		"title": "Archivos",
+		"closeAriaLabel": "Cerrar el explorador de archivos",
+		"close": "Cerrar",
+		"heading": "Explora tu base de código",
+		"pickFile": "Elige un archivo del árbol de la izquierda para abrirlo en el editor.",
+		"openWorkspace": "Abre un espacio de trabajo para explorar sus archivos."
+	},
+	"explorer": {
+		"ariaLabel": "Explorador de archivos",
+		"refreshAriaLabel": "Actualizar el árbol de archivos",
+		"refreshTitle": "Actualizar",
+		"resizeAriaLabel": "Redimensionar el explorador de archivos",
+		"heading": "Explorador",
+		"loading": "Cargando…",
+		"loadError": "No se pudo cargar — reintentar",
+		"empty": "vacío"
+	},
+	"image": {
+		"ariaLabel": "Vista previa de imagen",
+		"previewAlt": "Vista previa de {{path}}",
+		"deleted": "Esta imagen se eliminó en este cambio.",
+		"loadError": "No se pudo cargar esta imagen desde el disco.",
+		"status": {
+			"added": "Añadida",
+			"modified": "Modificada",
+			"deleted": "Eliminada"
+		}
+	},
+	"errors": {
+		"loadFile": "No se pudo cargar el archivo seleccionado.",
+		"loadFileTitle": "Error al abrir el archivo",
+		"startEditor": "No se pudo iniciar el editor.",
+		"startEditorTitle": "Error al iniciar el editor",
+		"startReview": "No se pudo iniciar la superficie de revisión.",
+		"startReviewTitle": "Error en la superficie de revisión",
+		"listFiles": "No se pudieron listar los archivos del espacio de trabajo.",
+		"openFile": "No se pudo abrir el archivo seleccionado.",
+		"openFileTitle": "Error al abrir el archivo",
+		"saveFile": "No se pudo guardar el archivo seleccionado.",
+		"saveFileTitle": "Error al guardar"
+	}
+}
