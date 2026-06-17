@@ -23,6 +23,12 @@ export type ColorTheme =
  */
 export type FollowUpBehavior = "steer" | "queue";
 
+/** Controls how usage stats percentages are displayed.
+ *  - `left`: show remaining percentage (e.g., "80% left").
+ *  - `used`: show consumed percentage (e.g., "20% used").
+ */
+export type UsageStatsDisplayMode = "left" | "used";
+
 /** Controls how Claude Code returns thinking content.
  *  - `summarized`: thinking blocks contain summarized thinking text.
  *  - `omitted`: server skips streaming thinking tokens; the final text
@@ -327,6 +333,8 @@ export type AppSettings = {
 	 *  `CONTEXT_USAGE_AUTO_REVEAL_THRESHOLD`. */
 	alwaysShowContextUsage: boolean;
 	showUsageStats: boolean;
+	/** Whether to show remaining percentage ("left") or consumed percentage ("used"). */
+	usageStatsDisplayMode: UsageStatsDisplayMode;
 	/** Opt-in: when the workspace's linked PR/MR transitions to merged,
 	 *  attempt to archive the workspace automatically. One-shot — runs
 	 *  exactly once at the merged-edge; skipped if the workspace has an
@@ -436,6 +444,7 @@ export const DEFAULT_SETTINGS: AppSettings = {
 	claudeThinkingDisplay: "summarized",
 	alwaysShowContextUsage: true,
 	showUsageStats: true,
+	usageStatsDisplayMode: "left",
 	autoArchiveOnMerge: false,
 	onboardingCompleted: false,
 	shortcuts: {},
@@ -621,6 +630,7 @@ const SETTINGS_KEY_MAP: Record<
 	claudeThinkingDisplay: "app.claude_thinking_display",
 	alwaysShowContextUsage: "app.always_show_context_usage",
 	showUsageStats: "app.show_usage_stats",
+	usageStatsDisplayMode: "app.usage_stats_display_mode",
 	autoArchiveOnMerge: "app.auto_archive_on_merge",
 	onboardingCompleted: "app.onboarding_completed",
 	shortcuts: "app.shortcuts",
@@ -1379,6 +1389,12 @@ export async function loadSettings(): Promise<AppSettings> {
 				raw[SETTINGS_KEY_MAP.showUsageStats] !== undefined
 					? raw[SETTINGS_KEY_MAP.showUsageStats] === "true"
 					: DEFAULT_SETTINGS.showUsageStats,
+			usageStatsDisplayMode: (() => {
+				const v = raw[SETTINGS_KEY_MAP.usageStatsDisplayMode];
+				return v === "used" || v === "left"
+					? v
+					: DEFAULT_SETTINGS.usageStatsDisplayMode;
+			})(),
 			autoArchiveOnMerge:
 				raw[SETTINGS_KEY_MAP.autoArchiveOnMerge] !== undefined
 					? raw[SETTINGS_KEY_MAP.autoArchiveOnMerge] === "true"

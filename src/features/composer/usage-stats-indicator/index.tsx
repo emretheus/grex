@@ -6,6 +6,13 @@ import {
 	HoverCardContent,
 	HoverCardTrigger,
 } from "@/components/ui/hover-card";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipProvider,
+	TooltipTrigger,
+} from "@/components/ui/tooltip";
 import {
 	claudeRateLimitsQueryOptions,
 	codexRateLimitsQueryOptions,
@@ -31,7 +38,7 @@ const HOVER_OPEN_DELAY_MS = 180;
 const HOVER_CLOSE_DELAY_MS = 80;
 
 export function UsageStatsIndicator({ agentType, disabled, className }: Props) {
-	const { settings } = useSettings();
+	const { settings, updateSettings } = useSettings();
 	const [open, setOpen] = useState(false);
 	const queryClient = useQueryClient();
 	const show =
@@ -108,28 +115,98 @@ export function UsageStatsIndicator({ agentType, disabled, className }: Props) {
 			<HoverCardContent side="top" align="end" className="w-[280px]">
 				<div className="flex flex-col gap-3 px-1 py-1">
 					<div className="flex items-center justify-between">
-						<div className="text-body font-semibold text-foreground">
-							Usage Stats
+						<div className="flex items-center gap-2">
+							<span
+								className="text-muted-foreground"
+								aria-label={agentType === "claude" ? "Claude" : "Codex"}
+							>
+								{agentType === "claude" ? (
+									<ClaudeIcon className="size-[13px]" />
+								) : (
+									<OpenAIIcon className="size-[13px]" />
+								)}
+							</span>
+							<TooltipProvider delayDuration={300}>
+								<Tooltip>
+									<TooltipTrigger asChild>
+										<div className="text-body font-semibold text-foreground cursor-help">
+											Usage Stats
+										</div>
+									</TooltipTrigger>
+									<TooltipContent
+										side="top"
+										align="start"
+										className="max-w-[200px] bg-popover text-popover-foreground border border-border"
+									>
+										<p>API rate limit usage statistics</p>
+									</TooltipContent>
+								</Tooltip>
+							</TooltipProvider>
 						</div>
-						<span
-							className="text-muted-foreground"
-							aria-label={agentType === "claude" ? "Claude" : "Codex"}
-						>
-							{agentType === "claude" ? (
-								<ClaudeIcon className="size-[13px]" />
-							) : (
-								<OpenAIIcon className="size-[13px]" />
-							)}
-						</span>
+						<div className="flex items-center gap-3">
+							<TooltipProvider delayDuration={300}>
+								<Tooltip>
+									<TooltipTrigger asChild>
+										<div className="cursor-help">
+											<ToggleGroup
+												type="single"
+												value={settings.usageStatsDisplayMode}
+												className="rounded-md bg-muted p-0.5"
+												onValueChange={(value: string) => {
+													if (value)
+														updateSettings({
+															usageStatsDisplayMode: value as "left" | "used",
+														});
+												}}
+											>
+												<ToggleGroupItem
+													value="left"
+													className="h-5 rounded-sm px-1.5 text-nano font-medium data-[state=off]:text-muted-foreground data-[state=on]:bg-background data-[state=on]:text-foreground data-[state=on]:shadow-sm"
+												>
+													Leftover
+												</ToggleGroupItem>
+												<ToggleGroupItem
+													value="used"
+													className="h-5 rounded-sm px-1.5 text-nano font-medium data-[state=off]:text-muted-foreground data-[state=on]:bg-background data-[state=on]:text-foreground data-[state=on]:shadow-sm"
+												>
+													Used
+												</ToggleGroupItem>
+											</ToggleGroup>
+										</div>
+									</TooltipTrigger>
+									<TooltipContent
+										side="top"
+										align="end"
+										className="max-w-[220px] bg-popover text-popover-foreground border border-border"
+									>
+										<p>
+											Toggle between remaining (Leftover) or consumed (Used)
+											percentage display
+										</p>
+									</TooltipContent>
+								</Tooltip>
+							</TooltipProvider>
+						</div>
 					</div>
 					{stats.primary || stats.secondary || stats.extraWindows.length > 0 ? (
 						<div className="flex flex-col gap-2.5">
-							{stats.primary ? <LimitRow window={stats.primary} /> : null}
-							{stats.secondary ? <LimitRow window={stats.secondary} /> : null}
+							{stats.primary ? (
+								<LimitRow
+									window={stats.primary}
+									displayMode={settings.usageStatsDisplayMode}
+								/>
+							) : null}
+							{stats.secondary ? (
+								<LimitRow
+									window={stats.secondary}
+									displayMode={settings.usageStatsDisplayMode}
+								/>
+							) : null}
 							{stats.extraWindows.map((entry) => (
 								<LimitRow
 									key={entry.id}
 									window={{ ...entry.window, label: entry.title }}
+									displayMode={settings.usageStatsDisplayMode}
 								/>
 							))}
 						</div>
