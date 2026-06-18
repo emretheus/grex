@@ -1,3 +1,4 @@
+import { i18n } from "@/lib/i18n";
 import type {
 	ShortcutDefinition,
 	ShortcutId,
@@ -5,10 +6,13 @@ import type {
 	ShortcutScope,
 } from "./types";
 
+// `title` / `description` hold translation KEYS (under the `shortcuts`
+// namespace), not display text. Resolve them with `getShortcutTitle` /
+// `getShortcutDescription` at render so callers stay decoupled from i18n.
 export const SHORTCUT_DEFINITIONS: ShortcutDefinition[] = [
 	{
 		id: "workspace.previous",
-		title: "Previous workspace",
+		title: "definitions.workspace.previous.title",
 		group: "Navigation",
 		defaultHotkey: "Mod+Alt+ArrowUp",
 		scopes: ["app"],
@@ -16,7 +20,7 @@ export const SHORTCUT_DEFINITIONS: ShortcutDefinition[] = [
 	},
 	{
 		id: "workspace.next",
-		title: "Next workspace",
+		title: "definitions.workspace.next.title",
 		group: "Navigation",
 		defaultHotkey: "Mod+Alt+ArrowDown",
 		scopes: ["app"],
@@ -24,7 +28,7 @@ export const SHORTCUT_DEFINITIONS: ShortcutDefinition[] = [
 	},
 	{
 		id: "workspace.quickSwitchNext",
-		title: "Quick switch workspace",
+		title: "definitions.workspace.quickSwitchNext.title",
 		group: "Navigation",
 		defaultHotkey: "Control+Tab",
 		scopes: ["app"],
@@ -32,7 +36,7 @@ export const SHORTCUT_DEFINITIONS: ShortcutDefinition[] = [
 	},
 	{
 		id: "workspace.quickSwitchPrevious",
-		title: "Quick switch workspace (reverse)",
+		title: "definitions.workspace.quickSwitchPrevious.title",
 		group: "Navigation",
 		defaultHotkey: "Control+Shift+Tab",
 		scopes: ["app"],
@@ -40,7 +44,7 @@ export const SHORTCUT_DEFINITIONS: ShortcutDefinition[] = [
 	},
 	{
 		id: "session.previous",
-		title: "Previous session",
+		title: "definitions.session.previous.title",
 		group: "Navigation",
 		defaultHotkey: "Mod+Alt+ArrowLeft",
 		scopes: ["chat"],
@@ -48,7 +52,7 @@ export const SHORTCUT_DEFINITIONS: ShortcutDefinition[] = [
 	},
 	{
 		id: "session.next",
-		title: "Next session",
+		title: "definitions.session.next.title",
 		group: "Navigation",
 		defaultHotkey: "Mod+Alt+ArrowRight",
 		scopes: ["chat"],
@@ -56,7 +60,7 @@ export const SHORTCUT_DEFINITIONS: ShortcutDefinition[] = [
 	},
 	{
 		id: "session.new",
-		title: "New session",
+		title: "definitions.session.new.title",
 		group: "Session",
 		defaultHotkey: "Mod+T",
 		scopes: ["chat"],
@@ -64,7 +68,7 @@ export const SHORTCUT_DEFINITIONS: ShortcutDefinition[] = [
 	},
 	{
 		id: "session.close",
-		title: "Close current session",
+		title: "definitions.session.close.title",
 		group: "Session",
 		defaultHotkey: "Mod+W",
 		scopes: ["chat"],
@@ -72,7 +76,7 @@ export const SHORTCUT_DEFINITIONS: ShortcutDefinition[] = [
 	},
 	{
 		id: "session.reopenClosed",
-		title: "Reopen closed session",
+		title: "definitions.session.reopenClosed.title",
 		group: "Session",
 		defaultHotkey: "Mod+Shift+R",
 		scopes: ["app"],
@@ -80,7 +84,7 @@ export const SHORTCUT_DEFINITIONS: ShortcutDefinition[] = [
 	},
 	{
 		id: "window.close",
-		title: "Close window",
+		title: "definitions.window.close.title",
 		group: "System",
 		defaultHotkey: "Mod+Shift+W",
 		scopes: ["app"],
@@ -88,7 +92,7 @@ export const SHORTCUT_DEFINITIONS: ShortcutDefinition[] = [
 	},
 	{
 		id: "workspace.copyPath",
-		title: "Copy workspace path",
+		title: "definitions.workspace.copyPath.title",
 		group: "Workspace",
 		// Unbound by default — Mod+Shift+C is reserved for the composer
 		// context panel. Users can rebind from settings if they want.
@@ -98,7 +102,7 @@ export const SHORTCUT_DEFINITIONS: ShortcutDefinition[] = [
 	},
 	{
 		id: "workspace.openInEditor",
-		title: "Open repository in default app",
+		title: "definitions.workspace.openInEditor.title",
 		group: "Workspace",
 		defaultHotkey: "Mod+O",
 		scopes: ["app"],
@@ -106,7 +110,7 @@ export const SHORTCUT_DEFINITIONS: ShortcutDefinition[] = [
 	},
 	{
 		id: "workspace.new",
-		title: "Open Start Page",
+		title: "definitions.workspace.new.title",
 		group: "Workspace",
 		defaultHotkey: "Mod+N",
 		scopes: ["app"],
@@ -114,7 +118,7 @@ export const SHORTCUT_DEFINITIONS: ShortcutDefinition[] = [
 	},
 	{
 		id: "workspace.justChat",
-		title: "Open Start Page (Just chat)",
+		title: "definitions.workspace.justChat.title",
 		group: "Workspace",
 		defaultHotkey: "Mod+Shift+N",
 		scopes: ["app"],
@@ -122,7 +126,7 @@ export const SHORTCUT_DEFINITIONS: ShortcutDefinition[] = [
 	},
 	{
 		id: "workspace.addRepository",
-		title: "Add repository",
+		title: "definitions.workspace.addRepository.title",
 		group: "Workspace",
 		// Unbound by default — Mod+Shift+N now opens the start composer in
 		// "Just chat" mode. Users can rebind from settings if they want.
@@ -132,7 +136,7 @@ export const SHORTCUT_DEFINITIONS: ShortcutDefinition[] = [
 	},
 	{
 		id: "workspace.filterSidebar",
-		title: "Filter and sort sidebar",
+		title: "definitions.workspace.filterSidebar.title",
 		group: "Workspace",
 		defaultHotkey: "Mod+Shift+F",
 		scopes: ["app"],
@@ -140,7 +144,7 @@ export const SHORTCUT_DEFINITIONS: ShortcutDefinition[] = [
 	},
 	{
 		id: "script.run",
-		title: "Run / stop script",
+		title: "definitions.script.run.title",
 		group: "Actions",
 		defaultHotkey: "Mod+R",
 		scopes: ["app"],
@@ -148,7 +152,7 @@ export const SHORTCUT_DEFINITIONS: ShortcutDefinition[] = [
 	},
 	{
 		id: "action.createPr",
-		title: "Create PR",
+		title: "definitions.action.createPr.title",
 		group: "Actions",
 		// Unbound by default — Mod+Shift+P is reserved for composer plan mode.
 		// Users can rebind from settings if they want.
@@ -158,7 +162,7 @@ export const SHORTCUT_DEFINITIONS: ShortcutDefinition[] = [
 	},
 	{
 		id: "action.commitAndPush",
-		title: "Commit and push",
+		title: "definitions.action.commitAndPush.title",
 		group: "Actions",
 		defaultHotkey: "Mod+Shift+Y",
 		scopes: ["app"],
@@ -166,7 +170,7 @@ export const SHORTCUT_DEFINITIONS: ShortcutDefinition[] = [
 	},
 	{
 		id: "action.pullLatest",
-		title: "Pull latest from main",
+		title: "definitions.action.pullLatest.title",
 		group: "Actions",
 		defaultHotkey: "Mod+Shift+L",
 		scopes: ["app"],
@@ -174,7 +178,7 @@ export const SHORTCUT_DEFINITIONS: ShortcutDefinition[] = [
 	},
 	{
 		id: "action.mergePr",
-		title: "Merge PR",
+		title: "definitions.action.mergePr.title",
 		group: "Actions",
 		defaultHotkey: "Mod+Shift+M",
 		scopes: ["app"],
@@ -182,7 +186,7 @@ export const SHORTCUT_DEFINITIONS: ShortcutDefinition[] = [
 	},
 	{
 		id: "action.fixErrors",
-		title: "Fix errors",
+		title: "definitions.action.fixErrors.title",
 		group: "Actions",
 		defaultHotkey: "Mod+Shift+X",
 		scopes: ["app"],
@@ -190,7 +194,7 @@ export const SHORTCUT_DEFINITIONS: ShortcutDefinition[] = [
 	},
 	{
 		id: "action.openPullRequest",
-		title: "Open PR in browser",
+		title: "definitions.action.openPullRequest.title",
 		group: "Actions",
 		defaultHotkey: "Mod+Shift+G",
 		scopes: ["app"],
@@ -198,7 +202,7 @@ export const SHORTCUT_DEFINITIONS: ShortcutDefinition[] = [
 	},
 	{
 		id: "settings.open",
-		title: "Open settings",
+		title: "definitions.settings.open.title",
 		group: "System",
 		defaultHotkey: "Mod+,",
 		scopes: ["app"],
@@ -206,7 +210,7 @@ export const SHORTCUT_DEFINITIONS: ShortcutDefinition[] = [
 	},
 	{
 		id: "library.open",
-		title: "Open Library",
+		title: "definitions.library.open.title",
 		group: "System",
 		defaultHotkey: "Mod+Shift+B",
 		scopes: ["app"],
@@ -214,8 +218,8 @@ export const SHORTCUT_DEFINITIONS: ShortcutDefinition[] = [
 	},
 	{
 		id: "global.hotkey",
-		title: "Global hotkey",
-		description: "Show/hide Grex from anywhere.",
+		title: "definitions.global.hotkey.title",
+		description: "definitions.global.hotkey.description",
 		group: "System",
 		defaultHotkey: null,
 		scopes: ["app"],
@@ -225,8 +229,8 @@ export const SHORTCUT_DEFINITIONS: ShortcutDefinition[] = [
 		// OS-level hotkey registered by the Rust backend. The default below
 		// MUST stay in sync with `default_hotkey` in src-tauri/src/global_hotkey.rs.
 		id: "quickPanel.hotkey",
-		title: "Quick panel hotkey",
-		description: "Open the quick task panel from anywhere.",
+		title: "definitions.quickPanel.hotkey.title",
+		description: "definitions.quickPanel.hotkey.description",
 		group: "System",
 		defaultHotkey: "Shift+Alt+Space",
 		scopes: ["app"],
@@ -234,7 +238,7 @@ export const SHORTCUT_DEFINITIONS: ShortcutDefinition[] = [
 	},
 	{
 		id: "theme.toggle",
-		title: "Toggle theme (dark/light)",
+		title: "definitions.theme.toggle.title",
 		group: "System",
 		defaultHotkey: "Mod+Alt+T",
 		scopes: ["app"],
@@ -242,7 +246,7 @@ export const SHORTCUT_DEFINITIONS: ShortcutDefinition[] = [
 	},
 	{
 		id: "window.miniMode.toggle",
-		title: "Toggle mini mode",
+		title: "definitions.window.miniMode.toggle.title",
 		group: "System",
 		defaultHotkey: "Mod+Control+M",
 		scopes: ["app"],
@@ -250,7 +254,7 @@ export const SHORTCUT_DEFINITIONS: ShortcutDefinition[] = [
 	},
 	{
 		id: "sidebar.left.toggle",
-		title: "Toggle left sidebar",
+		title: "definitions.sidebar.left.toggle.title",
 		group: "System",
 		defaultHotkey: "Mod+B",
 		scopes: ["app"],
@@ -258,7 +262,7 @@ export const SHORTCUT_DEFINITIONS: ShortcutDefinition[] = [
 	},
 	{
 		id: "sidebar.right.toggle",
-		title: "Toggle right sidebar",
+		title: "definitions.sidebar.right.toggle.title",
 		group: "System",
 		defaultHotkey: "Mod+Alt+B",
 		scopes: ["app"],
@@ -266,7 +270,7 @@ export const SHORTCUT_DEFINITIONS: ShortcutDefinition[] = [
 	},
 	{
 		id: "zen.toggle",
-		title: "Toggle zen mode",
+		title: "definitions.zen.toggle.title",
 		group: "System",
 		defaultHotkey: "Mod+.",
 		scopes: ["app"],
@@ -274,7 +278,7 @@ export const SHORTCUT_DEFINITIONS: ShortcutDefinition[] = [
 	},
 	{
 		id: "zoom.in",
-		title: "Zoom in",
+		title: "definitions.zoom.in.title",
 		group: "System",
 		defaultHotkey: "Mod+=",
 		scopes: ["app"],
@@ -282,7 +286,7 @@ export const SHORTCUT_DEFINITIONS: ShortcutDefinition[] = [
 	},
 	{
 		id: "zoom.out",
-		title: "Zoom out",
+		title: "definitions.zoom.out.title",
 		group: "System",
 		defaultHotkey: "Mod+-",
 		scopes: ["app"],
@@ -290,7 +294,7 @@ export const SHORTCUT_DEFINITIONS: ShortcutDefinition[] = [
 	},
 	{
 		id: "zoom.reset",
-		title: "Reset zoom",
+		title: "definitions.zoom.reset.title",
 		group: "System",
 		defaultHotkey: "Mod+0",
 		scopes: ["app"],
@@ -298,7 +302,7 @@ export const SHORTCUT_DEFINITIONS: ShortcutDefinition[] = [
 	},
 	{
 		id: "composer.focus",
-		title: "Focus chat input",
+		title: "definitions.composer.focus.title",
 		group: "Composer",
 		defaultHotkey: "Mod+L",
 		// App-scoped so the user can pop focus back to the composer from
@@ -309,7 +313,7 @@ export const SHORTCUT_DEFINITIONS: ShortcutDefinition[] = [
 	},
 	{
 		id: "composer.togglePlanMode",
-		title: "Toggle plan mode",
+		title: "definitions.composer.togglePlanMode.title",
 		group: "Composer",
 		defaultHotkey: "Mod+Shift+P",
 		// workspace-composer only: plan mode is a per-session concept with
@@ -319,7 +323,7 @@ export const SHORTCUT_DEFINITIONS: ShortcutDefinition[] = [
 	},
 	{
 		id: "composer.toggleTerminalMode",
-		title: "Toggle terminal mode",
+		title: "definitions.composer.toggleTerminalMode.title",
 		group: "Composer",
 		defaultHotkey: "Mod+Shift+T",
 		// App-scoped — handled in the global shortcut table, not composer-local.
@@ -328,7 +332,7 @@ export const SHORTCUT_DEFINITIONS: ShortcutDefinition[] = [
 	},
 	{
 		id: "startSurface.cycleRepository",
-		title: "Switch repository",
+		title: "definitions.startSurface.cycleRepository.title",
 		group: "Start surface",
 		defaultHotkey: "Shift+Tab",
 		// start-composer only: cycles through repositories in the start
@@ -338,7 +342,7 @@ export const SHORTCUT_DEFINITIONS: ShortcutDefinition[] = [
 	},
 	{
 		id: "composer.toggleContextPanel",
-		title: "Toggle context panel",
+		title: "definitions.composer.toggleContextPanel.title",
 		group: "Composer",
 		defaultHotkey: "Mod+Shift+C",
 		scopes: ["app"],
@@ -346,7 +350,7 @@ export const SHORTCUT_DEFINITIONS: ShortcutDefinition[] = [
 	},
 	{
 		id: "composer.openModelPicker",
-		title: "Open model picker",
+		title: "definitions.composer.openModelPicker.title",
 		group: "Composer",
 		defaultHotkey: "Alt+P",
 		scopes: ["composer"],
@@ -354,7 +358,7 @@ export const SHORTCUT_DEFINITIONS: ShortcutDefinition[] = [
 	},
 	{
 		id: "composer.toggleFollowUpBehavior",
-		title: "Send with opposite follow-up behavior",
+		title: "definitions.composer.toggleFollowUpBehavior.title",
 		group: "Composer",
 		defaultHotkey: "Mod+Enter",
 		scopes: ["composer"],
@@ -362,7 +366,7 @@ export const SHORTCUT_DEFINITIONS: ShortcutDefinition[] = [
 	},
 	{
 		id: "editor.edit",
-		title: "Toggle diff and edit",
+		title: "definitions.editor.edit.title",
 		group: "Editor",
 		defaultHotkey: "Mod+E",
 		scopes: ["editor"],
@@ -370,7 +374,7 @@ export const SHORTCUT_DEFINITIONS: ShortcutDefinition[] = [
 	},
 	{
 		id: "editor.new",
-		title: "Open file",
+		title: "definitions.editor.new.title",
 		group: "Editor",
 		defaultHotkey: "Mod+T",
 		scopes: ["editor"],
@@ -378,7 +382,7 @@ export const SHORTCUT_DEFINITIONS: ShortcutDefinition[] = [
 	},
 	{
 		id: "editor.close",
-		title: "Close current file",
+		title: "definitions.editor.close.title",
 		group: "Editor",
 		defaultHotkey: "Mod+W",
 		scopes: ["editor"],
@@ -386,7 +390,7 @@ export const SHORTCUT_DEFINITIONS: ShortcutDefinition[] = [
 	},
 	{
 		id: "editor.toggleExplorer",
-		title: "Toggle file explorer",
+		title: "definitions.editor.toggleExplorer.title",
 		group: "Editor",
 		defaultHotkey: "Mod+Shift+E",
 		scopes: ["editor"],
@@ -394,7 +398,7 @@ export const SHORTCUT_DEFINITIONS: ShortcutDefinition[] = [
 	},
 	{
 		id: "terminal.new",
-		title: "New terminal",
+		title: "definitions.terminal.new.title",
 		group: "Terminal",
 		defaultHotkey: "Mod+T",
 		scopes: ["terminal"],
@@ -402,7 +406,7 @@ export const SHORTCUT_DEFINITIONS: ShortcutDefinition[] = [
 	},
 	{
 		id: "terminal.close",
-		title: "Close current terminal",
+		title: "definitions.terminal.close.title",
 		group: "Terminal",
 		defaultHotkey: "Mod+W",
 		scopes: ["terminal"],
@@ -410,7 +414,7 @@ export const SHORTCUT_DEFINITIONS: ShortcutDefinition[] = [
 	},
 	{
 		id: "terminal.previous",
-		title: "Previous terminal",
+		title: "definitions.terminal.previous.title",
 		group: "Terminal",
 		defaultHotkey: "Mod+Alt+ArrowLeft",
 		scopes: ["terminal"],
@@ -418,7 +422,7 @@ export const SHORTCUT_DEFINITIONS: ShortcutDefinition[] = [
 	},
 	{
 		id: "terminal.next",
-		title: "Next terminal",
+		title: "definitions.terminal.next.title",
 		group: "Terminal",
 		defaultHotkey: "Mod+Alt+ArrowRight",
 		scopes: ["terminal"],
@@ -426,7 +430,7 @@ export const SHORTCUT_DEFINITIONS: ShortcutDefinition[] = [
 	},
 	{
 		id: "inspector.focusTerminal",
-		title: "Focus terminal",
+		title: "definitions.inspector.focusTerminal.title",
 		group: "Terminal",
 		defaultHotkey: "Mod+Shift+J",
 		scopes: ["app"],
@@ -434,7 +438,7 @@ export const SHORTCUT_DEFINITIONS: ShortcutDefinition[] = [
 	},
 	{
 		id: "inspector.toggleScripts",
-		title: "Toggle scripts panel",
+		title: "definitions.inspector.toggleScripts.title",
 		group: "Workspace",
 		defaultHotkey: "Mod+J",
 		scopes: ["app"],
@@ -445,6 +449,23 @@ export const SHORTCUT_DEFINITIONS: ShortcutDefinition[] = [
 export const SHORTCUT_DEFINITION_BY_ID = new Map(
 	SHORTCUT_DEFINITIONS.map((definition) => [definition.id, definition]),
 );
+
+// Resolve a definition's localized display title. `definition.title` holds a
+// translation key under the `shortcuts` namespace; this returns the current
+// language's string via the shared i18n instance.
+export function getShortcutTitle(definition: ShortcutDefinition): string {
+	return i18n.t(definition.title, { ns: "shortcuts" });
+}
+
+// Resolve a definition's localized description, or `undefined` when the
+// definition has none.
+export function getShortcutDescription(
+	definition: ShortcutDefinition,
+): string | undefined {
+	return definition.description
+		? i18n.t(definition.description, { ns: "shortcuts" })
+		: undefined;
+}
 
 export function getShortcut(
 	overrides: ShortcutMap,

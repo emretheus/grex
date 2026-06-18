@@ -1,0 +1,135 @@
+{
+	"aria": {
+		"composer": "Arbeitsbereich-Editor",
+		"input": "Arbeitsbereich-Eingabe"
+	},
+	"placeholder": {
+		"default": "Änderungen anfordern, Dateien mit @ erwähnen, /Befehle ausführen",
+		"plan": "Beschreibe, was geändert werden soll, und klicke dann auf „Änderungen anfordern“"
+	},
+	"hint": {
+		"terminalDirective": "Senden, um im Terminal-Modus zu starten",
+		"toFocus": "zum Fokussieren"
+	},
+	"model": {
+		"loading": "Modelle werden geladen…",
+		"select": "Modell auswählen",
+		"addCustom": "Benutzerdefiniertes Modell hinzufügen..."
+	},
+	"fastMode": {
+		"label": "Schnellmodus",
+		"labelOn": "Schnellmodus (an)",
+		"aria": "Schnellmodus"
+	},
+	"effort": {
+		"label": "Aufwand",
+		"extraHigh": "Sehr hoch"
+	},
+	"permission": {
+		"plan": "Plan",
+		"auto": "Auto",
+		"planAria": "Plan-Modus",
+		"autoAria": "Auto-Modus",
+		"planTooltip": "Plan · schreibgeschützt",
+		"autoTooltip": "Auto · voller Zugriff"
+	},
+	"terminalMode": {
+		"label": "Terminal-Modus",
+		"aria": "Terminal-Modus"
+	},
+	"addContext": "Kontext hinzufügen",
+	"actions": {
+		"requestChanges": "Änderungen anfordern",
+		"implement": "Umsetzen",
+		"stop": "Stopp",
+		"steer": "Lenken",
+		"send": "Senden",
+		"startOptions": "Startoptionen"
+	},
+	"startSubmit": {
+		"newWorkspace": "Neuer Arbeitsbereich",
+		"saveForLater": "Für später speichern",
+		"startNow": "Jetzt starten"
+	},
+	"slashCommands": {
+		"addDir": "Zusätzliche Verzeichnisse mit diesem Arbeitsbereich verknüpfen",
+		"prompt": "Einen gespeicherten Prompt aus deiner Bibliothek einfügen",
+		"codexCompact": "Kontext dieses Codex-Threads komprimieren",
+		"opencodeCompact": "Kontext dieser Unterhaltung komprimieren",
+		"codexGoal": "Ein dauerhaftes Ziel festlegen, das Codex Runde für Runde verfolgt, bis es erreicht oder pausiert ist",
+		"claudeGoal": "Eine Abschlussbedingung festlegen, auf die Claude hinarbeiten soll",
+		"workflows": "Workflow-Durchläufe dieser Unterhaltung anzeigen"
+	},
+	"autoClose": {
+		"help": "Wenn aktiviert, werden Aktionssitzungen nach Abschluss automatisch geschlossen.",
+		"enableAria": "Automatisches Schließen aktivieren",
+		"disableAria": "Automatisches Schließen deaktivieren",
+		"enable": "Automatisches Schließen aktivieren",
+		"on": "Automatisches Schließen an"
+	},
+	"planImplementPrompt": "Setze den Plan um.",
+	"triage": {
+		"go": "Leg los.",
+		"prompt": "Die KI hat diese Aufgabe vorgeschlagen – starte, um sie anzugehen, oder verwirf sie.",
+		"dismiss": "Verwerfen",
+		"dismissAria": "Diesen Triage-Vorschlag verwerfen",
+		"start": "Starten",
+		"startAria": "Mit der Arbeit an diesem Triage-Vorschlag beginnen"
+	},
+	"usageStats": {
+		"title": "Nutzungsstatistik",
+		"aria": "Nutzungsstatistik"
+	},
+	"working": "Wird bearbeitet...",
+	"toast": {
+		"updateLinkedDirectoriesFailed": "Verknüpfte Verzeichnisse konnten nicht aktualisiert werden",
+		"openDirectoryPickerFailed": "Verzeichnisauswahl konnte nicht geöffnet werden"
+	},
+	"goalReplace": {
+		"title": "Ziel ersetzen?",
+		"currentLabel": "Aktuell:",
+		"newLabel": "Neu:",
+		"replaceLabel": "Aktuelles Ziel ersetzen",
+		"replaceDescription": "Das neue Ziel festlegen und jetzt starten",
+		"keepDescription": "Aktuelles Ziel beibehalten"
+	},
+	"contextBar": {
+		"label": "Kontext",
+		"pathLabel": "Pfad",
+		"removeAria": "{{displayName}} entfernen"
+	},
+	"queue": {
+		"editAria": "Im Editor bearbeiten",
+		"edit": "Bearbeiten",
+		"steerAria": "Jetzt lenken",
+		"steer": "Lenken",
+		"removeAria": "Aus der Warteschlange entfernen"
+	},
+	"workflow": {
+		"status": {
+			"running": "läuft",
+			"done": "fertig",
+			"failed": "fehlgeschlagen",
+			"stopped": "gestoppt"
+		},
+		"agentCount_one": "{{count}} Agent",
+		"agentCount_other": "{{count}} Agenten",
+		"toolCount_one": "{{count}} Werkzeug",
+		"toolCount_other": "{{count}} Werkzeuge",
+		"tokens": "{{tokens}} Tokens",
+		"title": "Workflows",
+		"runFallback": "Workflow",
+		"agentFallback": "Agent",
+		"closeAria": "Workflows schließen",
+		"emptyRuns": "Noch keine Workflows in dieser Unterhaltung. Sie erscheinen hier, wenn der Agent einen dynamischen Workflow ausführt.",
+		"emptyAgents": "Noch keine Agenten gemeldet.",
+		"agentUnavailable": "Agent nicht verfügbar.",
+		"noResultPreview": "Keine Ergebnisvorschau."
+	},
+	"contextUsage": {
+		"loadingDetails": "Kontextdetails werden geladen…"
+	},
+	"quickActions": {
+		"restack": "Neu stapeln"
+	}
+}

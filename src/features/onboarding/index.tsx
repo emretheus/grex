@@ -1,5 +1,6 @@
 import { open } from "@tauri-apps/plugin-dialog";
 import { useCallback, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { TrafficLightSpacer } from "@/components/chrome/traffic-light-spacer";
 import { ConductorOnboarding } from "@/components/conductor-onboarding";
 import { CloneFromUrlDialog } from "@/features/navigation/clone-from-url-dialog";
@@ -39,6 +40,7 @@ function queueWindowMode(run: () => Promise<unknown>): Promise<unknown> {
 }
 
 export function AppOnboarding({ onComplete }: AppOnboardingProps) {
+	const { t } = useTranslation("onboarding");
 	const [step, setStep] = useState<OnboardingStep>("intro");
 	const [loginItems, setLoginItems] = useState(() => buildAgentLoginItems());
 	const [isRoutingImport, setIsRoutingImport] = useState(false);
@@ -189,12 +191,12 @@ export function AppOnboarding({ onComplete }: AppOnboardingProps) {
 			});
 		} catch (error) {
 			setRepoImportError(
-				describeUnknownError(error, "Unable to add repository."),
+				describeUnknownError(error, t("errors.addRepository")),
 			);
 		} finally {
 			setIsAddingLocalRepository(false);
 		}
-	}, [isAddingLocalRepository, rememberImportedRepository]);
+	}, [isAddingLocalRepository, rememberImportedRepository, t]);
 
 	const openCloneDialog = useCallback(() => {
 		setCloneDialogOpen(true);
@@ -237,26 +239,29 @@ export function AppOnboarding({ onComplete }: AppOnboardingProps) {
 		[rememberImportedRepository],
 	);
 
-	const removeImportedRepository = useCallback(async (repoId: string) => {
-		setRepoImportError(null);
-		setRemovingRepositoryIds((current) => new Set(current).add(repoId));
-		try {
-			await deleteRepository(repoId);
-			setImportedRepositories((current) =>
-				current.filter((repo) => repo.id !== repoId),
-			);
-		} catch (error) {
-			setRepoImportError(
-				describeUnknownError(error, "Unable to remove repository."),
-			);
-		} finally {
-			setRemovingRepositoryIds((current) => {
-				const next = new Set(current);
-				next.delete(repoId);
-				return next;
-			});
-		}
-	}, []);
+	const removeImportedRepository = useCallback(
+		async (repoId: string) => {
+			setRepoImportError(null);
+			setRemovingRepositoryIds((current) => new Set(current).add(repoId));
+			try {
+				await deleteRepository(repoId);
+				setImportedRepositories((current) =>
+					current.filter((repo) => repo.id !== repoId),
+				);
+			} catch (error) {
+				setRepoImportError(
+					describeUnknownError(error, t("errors.removeRepository")),
+				);
+			} finally {
+				setRemovingRepositoryIds((current) => {
+					const next = new Set(current);
+					next.delete(repoId);
+					return next;
+				});
+			}
+		},
+		[t],
+	);
 
 	const completeOnboarding = useCallback(() => {
 		setStep("completeTransition");
@@ -274,11 +279,11 @@ export function AppOnboarding({ onComplete }: AppOnboardingProps) {
 
 	return (
 		<main
-			aria-label="Grex onboarding"
+			aria-label={t("region.main")}
 			className="relative h-dvh overflow-hidden bg-background font-sans text-foreground antialiased"
 		>
 			<div
-				aria-label="Grex onboarding drag region"
+				aria-label={t("region.dragRegion")}
 				className="absolute inset-x-0 top-0 z-20 flex h-11 items-center"
 			>
 				<TrafficLightSpacer side="left" width={94} />

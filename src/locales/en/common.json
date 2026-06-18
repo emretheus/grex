@@ -1,0 +1,21 @@
+{
+	"actions": {
+		"save": "Save",
+		"cancel": "Cancel",
+		"dismiss": "Dismiss",
+		"retry": "Retry",
+		"close": "Close",
+		"confirm": "Confirm",
+		"delete": "Delete",
+		"remove": "Remove",
+		"edit": "Edit",
+		"copy": "Copy",
+		"done": "Done"
+	},
+	"state": {
+		"loading": "Loading…"
+	},
+	"toast": {
+		"actionFailed": "Action failed"
+	}
+}

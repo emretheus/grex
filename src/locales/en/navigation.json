@@ -1,0 +1,104 @@
+{
+	"sidebar": {
+		"title": "Workspaces"
+	},
+	"actions": {
+		"addRepository": "Add repository",
+		"openProject": "Open project",
+		"cloneFromUrl": "Clone from URL",
+		"newWorkspace": "New workspace",
+		"createNewWorkspace": "Create new workspace",
+		"newWorkspaceInGroup": "New workspace in {{group}}"
+	},
+	"sections": {
+		"archived": "Archived"
+	},
+	"row": {
+		"restoreWorkspace": "Restore workspace",
+		"confirmArchiveWorkspace": "Confirm archive workspace",
+		"archiveWorkspace": "Archive workspace",
+		"interactionRequired": "Interaction required",
+		"aiProposal": "AI proposal — open to review",
+		"unread": "Unread",
+		"deletePermanently": "Delete permanently",
+		"contextMenu": {
+			"pin": "Pin",
+			"unpin": "Unpin",
+			"setStatus": "Set status",
+			"markAsUnread": "Mark as unread",
+			"openInFinder": "Open in Finder",
+			"moveIntoNewWorktree": "Move into a new worktree",
+			"restore": "Restore",
+			"archive": "Archive"
+		}
+	},
+	"stack": {
+		"tip": "Stack tip",
+		"base": "Stack base",
+		"node": "Stack",
+		"depth": "{{current}} of {{total}}"
+	},
+	"status": {
+		"backlog": "Backlog",
+		"inProgress": "In progress",
+		"inReview": "In review",
+		"done": "Done",
+		"canceled": "Canceled"
+	},
+	"hoverCard": {
+		"uncommittedChanges_one": "{{count}} uncommitted change",
+		"uncommittedChanges_other": "{{count}} uncommitted changes",
+		"commitsBehind_one": "{{count}} commit behind {{targetLabel}}",
+		"commitsBehind_other": "{{count}} commits behind {{targetLabel}}",
+		"unpushedCommits_one": "{{count}} unpushed commit",
+		"unpushedCommits_other": "{{count}} unpushed commits",
+		"upToDateClean": "Branch up to date with {{targetLabel}} · no uncommitted changes",
+		"upToDate": "Branch up to date with {{targetLabel}}",
+		"runningFor": "Running for {{elapsed}}",
+		"thinking": "Thinking…",
+		"lastActivityCreated": "{{lastActivityLabel}} · created {{createdAt}}",
+		"lastActivity": {
+			"lastMessage": "Last message",
+			"lastChanged": "Last changed",
+			"created": "Created"
+		},
+		"sessionCount_one": "{{count}} session",
+		"sessionCount_other": "{{count}} sessions"
+	},
+	"cloneDialog": {
+		"title": "Clone from URL",
+		"gitUrl": "Git URL",
+		"cloneLocation": "Clone location",
+		"browse": "Browse…",
+		"folderPickerError": "Unable to open the folder picker.",
+		"cloneError": "Unable to clone repository.",
+		"submit": "Clone repository",
+		"cloning": "Cloning…"
+	},
+	"moveToWorktreeDialog": {
+		"title": "Move into a new worktree",
+		"description": "<bold>{{name}}</bold> will continue in a fresh worktree on a new auto-named branch.",
+		"localUntouched": "Your local repository stays exactly as it is — branch and files untouched.",
+		"changesCarriedOver": "Tracked + untracked changes are carried over into the new worktree.",
+		"submit": "Move into worktree",
+		"moving": "Moving…"
+	},
+	"viewPopover": {
+		"filterAndSortAria": "Filter and sort sidebar",
+		"filterAndSort": "Filter and sort",
+		"repository": "Repository",
+		"allRepositories": "All repositories",
+		"noRepositoriesFound": "No repositories found.",
+		"searchRepositories": "Search repositories",
+		"groupBy": "Group by",
+		"status": "Status",
+		"sortBy": "Sort by",
+		"selectedCount": "{{count}} selected",
+		"sort": {
+			"draggableOrder": "Draggable order",
+			"repositoryName": "Repository name",
+			"lastUpdated": "Last updated",
+			"createdTime": "Created time"
+		}
+	}
+}

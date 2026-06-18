@@ -1,6 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
 import { LoaderCircle, SquareArrowOutUpRight } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { pickDefaultCursorModelIds } from "@/features/settings/panels/cursor-models";
@@ -22,6 +23,7 @@ export function CursorApiKeyAction({
 	onSaved?: () => void;
 	onError?: (message: string | null) => void;
 }) {
+	const { t } = useTranslation("providers");
 	const { settings, updateSettings } = useSettings();
 	const cursor = settings.cursorProvider;
 	const [draft, setDraft] = useState(cursor.apiKey);
@@ -99,7 +101,7 @@ export function CursorApiKeyAction({
 				value={draft}
 				onBlur={commit}
 				onChange={(event) => setDraft(event.target.value)}
-				placeholder="API key"
+				placeholder={t("cursorKey.apiKeyPlaceholder")}
 				disabled={isValidating}
 				className="h-8 w-[180px] border-border/50 bg-muted/20 text-small"
 			/>
@@ -108,21 +110,21 @@ export function CursorApiKeyAction({
 					type="button"
 					variant="outline"
 					size="sm"
-					aria-label="Validating API key"
+					aria-label={t("cursorKey.validatingAria")}
 					disabled
 				>
 					<LoaderCircle className="size-3.5 animate-spin" />
-					Validating…
+					{t("cursorKey.validating")}
 				</Button>
 			) : !draft ? (
 				<Button
 					type="button"
 					variant="outline"
 					size="sm"
-					aria-label="Get Cursor API key"
+					aria-label={t("cursorKey.getApiKeyAria")}
 					onClick={() => void openUrl(CURSOR_DASHBOARD_URL)}
 				>
-					Get your API key
+					{t("actions.getApiKey")}
 					<SquareArrowOutUpRight className="size-3.5" />
 				</Button>
 			) : null}

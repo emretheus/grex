@@ -1,0 +1,134 @@
+{
+	"title": "自动化",
+	"create": {
+		"viaChat": "通过聊天创建",
+		"manually": "手动创建",
+		"moreOptions": "更多创建选项",
+		"dialogTitle": "创建自动化",
+		"titlePlaceholder": "自动化标题",
+		"promptPlaceholder": "添加提示词，例如：在 $sentry 中查找崩溃",
+		"submit": "创建"
+	},
+	"list": {
+		"currentHeading": "当前",
+		"loadError": "无法加载自动化。",
+		"empty": "暂无自动化。安排一个定期提示词，它将自动运行。",
+		"createButton": "创建自动化"
+	},
+	"row": {
+		"runNow": "立即运行",
+		"edit": "编辑自动化",
+		"moreActions": "更多操作",
+		"resume": "恢复",
+		"pause": "暂停"
+	},
+	"detail": {
+		"breadcrumb": "自动化",
+		"resumeAria": "恢复自动化",
+		"pauseAria": "暂停自动化",
+		"deleteAria": "删除自动化",
+		"runNow": "立即运行",
+		"titleAria": "自动化标题",
+		"promptAria": "自动化提示词",
+		"promptPlaceholder": "添加提示词，例如：在 $sentry 中查找崩溃",
+		"sections": {
+			"status": "状态",
+			"details": "详情"
+		},
+		"fields": {
+			"status": "状态",
+			"nextRun": "下次运行",
+			"lastRan": "上次运行",
+			"runsIn": "运行于",
+			"chat": "聊天",
+			"workspace": "工作区",
+			"interval": "间隔"
+		},
+		"never": "从未",
+		"runsInChat": "聊天",
+		"runsInWorkspace": "工作区",
+		"unknownWorkspace": "未知工作区",
+		"unknownChat": "未知聊天",
+		"none": "—"
+	},
+	"target": {
+		"target": "目标",
+		"selectWorkspace": "选择工作区",
+		"selectChat": "选择聊天",
+		"nothingAvailable": "无可用项",
+		"chat": "聊天",
+		"workspace": "工作区"
+	},
+	"interval": {
+		"amountAria": "间隔数量",
+		"hourly": "每小时",
+		"dailyAt": "每天于",
+		"weeklyOn": "每周于",
+		"every": "每",
+		"at": "于",
+		"dailyTimeAria": "每天运行时间",
+		"weeklyTimeAria": "每周运行时间",
+		"unit": {
+			"minutes": "分钟",
+			"hours": "小时"
+		}
+	},
+	"weekday": {
+		"sunday": "星期日",
+		"monday": "星期一",
+		"tuesday": "星期二",
+		"wednesday": "星期三",
+		"thursday": "星期四",
+		"friday": "星期五",
+		"saturday": "星期六"
+	},
+	"month": {
+		"jan": "1月",
+		"feb": "2月",
+		"mar": "3月",
+		"apr": "4月",
+		"may": "5月",
+		"jun": "6月",
+		"jul": "7月",
+		"aug": "8月",
+		"sep": "9月",
+		"oct": "10月",
+		"nov": "11月",
+		"dec": "12月"
+	},
+	"schedule": {
+		"hourly": "每小时",
+		"daily": "每天",
+		"weekly": "每周",
+		"dailyAt": "每天于 {{time}}",
+		"weeklyAt": "每周{{weekday}} {{time}}",
+		"everyMinutes": "每 {{amount}} 分钟",
+		"everyHours": "每 {{amount}} 小时"
+	},
+	"status": {
+		"active": "活动",
+		"paused": "已暂停"
+	},
+	"runTime": {
+		"today": "今天 {{clock}}",
+		"yesterday": "昨天 {{clock}}",
+		"date": "{{month}}{{day}}日 {{clock}}",
+		"meridiem": {
+			"am": "上午",
+			"pm": "下午"
+		}
+	},
+	"confirmDelete": {
+		"title": "删除自动化？",
+		"description": "“{{title}}”将停止运行并被移除。此操作无法撤销。"
+	},
+	"toast": {
+		"started": "自动化已启动",
+		"runningInChat": "正在其聊天中运行。",
+		"createFailed": "无法创建自动化",
+		"updateFailed": "无法更新自动化",
+		"deleteFailed": "无法删除自动化",
+		"statusFailed": "无法更改自动化状态",
+		"runFailed": "无法运行自动化"
+	}
+}

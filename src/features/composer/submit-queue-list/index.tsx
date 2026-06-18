@@ -2,6 +2,7 @@
 
 import { Clock, CornerDownLeft, Pencil, Trash2 } from "lucide-react";
 import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { ActionRow } from "@/components/action-row";
 import { FileMentionBadge } from "@/components/file-mention-badge";
 import { Button } from "@/components/ui/button";
@@ -69,6 +70,7 @@ function QueueRow({
 	onEdit?: () => void;
 	disabled?: boolean;
 }) {
+	const { t } = useTranslation("composer");
 	const { prompt, imagePaths, filePaths, customTags } = item.payload;
 	// Reuse the chat-bubble splitter so attachment chips render the
 	// same way here as in the sent message — pasted tags included.
@@ -136,7 +138,7 @@ function QueueRow({
 						{onEdit ? (
 							<Button
 								type="button"
-								aria-label="Edit in composer"
+								aria-label={t("queue.editAria")}
 								variant="ghost"
 								size="sm"
 								disabled={disabled}
@@ -144,12 +146,12 @@ function QueueRow({
 								className="h-7 gap-1 rounded-md px-2 text-small font-medium text-muted-foreground hover:text-foreground"
 							>
 								<Pencil className="size-[13px] shrink-0" strokeWidth={1.8} />
-								<span>Edit</span>
+								<span>{t("queue.edit")}</span>
 							</Button>
 						) : null}
 						<Button
 							type="button"
-							aria-label="Steer now"
+							aria-label={t("queue.steerAria")}
 							variant="ghost"
 							size="sm"
 							disabled={disabled}
@@ -160,12 +162,12 @@ function QueueRow({
 								className="size-[13px] shrink-0"
 								strokeWidth={1.8}
 							/>
-							<span>Steer</span>
+							<span>{t("queue.steer")}</span>
 						</Button>
 					</div>
 					<Button
 						type="button"
-						aria-label="Remove from queue"
+						aria-label={t("queue.removeAria")}
 						variant="ghost"
 						size="icon-xs"
 						disabled={disabled}

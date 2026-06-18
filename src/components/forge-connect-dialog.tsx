@@ -42,6 +42,7 @@ import {
 	type WorkspaceDetail,
 	writeForgeCliAuthTerminalStdin,
 } from "@/lib/api";
+import { i18n } from "@/lib/i18n";
 import { grexQueryKeys } from "@/lib/query-client";
 import { cn } from "@/lib/utils";
 
@@ -118,9 +119,9 @@ async function detectLoginAfterClose(
 }
 
 function providerLabel(provider: ForgeProvider): string {
-	if (provider === "github") return "GitHub";
-	if (provider === "gitlab") return "GitLab";
-	return "Forge";
+	if (provider === "github") return i18n.t("components:forgeConnect.github");
+	if (provider === "gitlab") return i18n.t("components:forgeConnect.gitlab");
+	return i18n.t("components:forgeConnect.forge");
 }
 
 function providerIcon(provider: ForgeProvider) {
@@ -355,7 +356,9 @@ export function ForgeConnectDialog({
 		).catch((error) => {
 			if (cancelled) return;
 			const message =
-				error instanceof Error ? error.message : "Unable to start login.";
+				error instanceof Error
+					? error.message
+					: i18n.t("components:forgeConnect.startError");
 			termRef.current?.write(`\r\n${message}\r\n`);
 		});
 
@@ -395,12 +398,18 @@ export function ForgeConnectDialog({
 				className="w-[640px] max-w-[calc(100vw-4rem)] gap-0 overflow-hidden p-0 sm:max-w-[640px]"
 			>
 				<DialogTitle className="sr-only">
-					Connect {providerLabel(provider)}
+					{i18n.t("components:forgeConnect.connect", {
+						provider: providerLabel(provider),
+					})}
 				</DialogTitle>
 				<header className="flex h-10 items-center gap-2 border-b border-border/55 px-3">
 					<div className="flex items-center gap-1.5 text-small font-medium text-foreground">
 						{providerIcon(provider)}
-						<span>Connect {providerLabel(provider)}</span>
+						<span>
+							{i18n.t("components:forgeConnect.connect", {
+								provider: providerLabel(provider),
+							})}
+						</span>
 						{provider === "gitlab" ? (
 							<span className="ml-1 text-muted-foreground/80">· {host}</span>
 						) : null}
@@ -411,7 +420,7 @@ export function ForgeConnectDialog({
 							variant="ghost"
 							size="sm"
 							onClick={() => handleOpenChange(false)}
-							aria-label="Close"
+							aria-label={i18n.t("common:actions.close")}
 							className={cn(
 								"gap-1.5 px-2 text-muted-foreground hover:text-foreground",
 							)}
@@ -440,5 +449,7 @@ export function ForgeConnectDialog({
 
 function connectedToastMessage(provider: ForgeProvider, login: string): string {
 	const label = providerLabel(provider);
-	return login ? `${label} connected as @${login}` : `${label} connected`;
+	return login
+		? i18n.t("components:forgeConnect.connectedAs", { provider: label, login })
+		: i18n.t("components:forgeConnect.connected", { provider: label });
 }

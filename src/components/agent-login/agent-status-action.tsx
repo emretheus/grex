@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import type { AgentLoginProvider } from "@/lib/api";
 import { cn } from "@/lib/utils";
@@ -18,6 +19,7 @@ export function AgentStatusAction({
 	onPrimeLogin?: (provider: AgentLoginProvider) => void;
 	onStartLogin?: (provider: AgentLoginProvider) => void;
 }) {
+	const { t } = useTranslation("providers");
 	if (status === "checking") {
 		return <ConnectingStatus />;
 	}
@@ -35,7 +37,7 @@ export function AgentStatusAction({
 				waiting &&
 					"bg-muted-foreground/70 text-background hover:bg-primary hover:text-primary-foreground",
 			)}
-			title={waiting ? "Restart setup" : undefined}
+			title={waiting ? t("agentStatus.restartSetup") : undefined}
 			onMouseEnter={() => {
 				onPrimeLogin?.(provider);
 			}}
@@ -48,11 +50,13 @@ export function AgentStatusAction({
 		>
 			{waiting ? (
 				<>
-					<span className="group-hover:hidden">Waiting...</span>
-					<span className="hidden group-hover:inline">Restart</span>
+					<span className="group-hover:hidden">{t("agentStatus.waiting")}</span>
+					<span className="hidden group-hover:inline">
+						{t("agentStatus.restart")}
+					</span>
 				</>
 			) : (
-				"Log in"
+				t("agentStatus.logIn")
 			)}
 		</Button>
 	);

@@ -1,5 +1,6 @@
 import { ChevronDown, LogIn } from "lucide-react";
 import { type ReactNode, useCallback, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { AgentLoginDialog } from "@/components/agent-login/agent-login-dialog";
 import type { ClaudeIcon } from "@/components/icons";
 import { Button } from "@/components/ui/button";
@@ -31,6 +32,7 @@ export function ProviderRow({
 	defaultOpen?: boolean;
 	children?: ReactNode;
 }) {
+	const { t } = useTranslation("providers");
 	const [open, setOpen] = useState(defaultOpen);
 	const [loginOpen, setLoginOpen] = useState(false);
 	const hasChildren = Boolean(children);
@@ -61,7 +63,7 @@ export function ProviderRow({
 					}}
 				>
 					<LogIn className="size-3.5" />
-					Log in
+					{t("actions.logIn")}
 				</Button>
 			) : null}
 		</>
@@ -76,7 +78,7 @@ export function ProviderRow({
 				</span>
 				{version ? (
 					<span className="shrink-0 font-mono text-mini leading-none text-muted-foreground/70">
-						v{version}
+						{t("row.version", { version })}
 					</span>
 				) : null}
 			</div>
@@ -176,19 +178,21 @@ export function ProviderConfigRow({
 }
 
 function StatusBadge() {
+	const { t } = useTranslation("providers");
 	return (
 		<span className="flex shrink-0 items-center gap-1.5 rounded-full bg-emerald-500/10 px-2 py-0.5 text-mini font-medium text-emerald-500">
 			<span className="size-1.5 rounded-full bg-emerald-500" />
-			Ready
+			{t("status.ready")}
 		</span>
 	);
 }
 
 function ConnectingBadge() {
+	const { t } = useTranslation("providers");
 	return (
 		<span className="flex shrink-0 items-center gap-1.5 rounded-full bg-muted px-2 py-0.5 text-mini font-medium text-muted-foreground">
 			<span className="size-1.5 animate-pulse rounded-full bg-muted-foreground/60" />
-			Connecting
+			{t("status.connecting")}
 		</span>
 	);
 }

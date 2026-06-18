@@ -1,0 +1,135 @@
+{
+	"aria": {
+		"composer": "Workspace composer",
+		"input": "Workspace input"
+	},
+	"placeholder": {
+		"default": "Ask to make changes, @mention files, run /commands",
+		"plan": "Describe what to change, then click Request Changes"
+	},
+	"hint": {
+		"terminalDirective": "Send to start in Terminal mode",
+		"toFocus": "to focus"
+	},
+	"model": {
+		"loading": "Loading models…",
+		"select": "Select model",
+		"addCustom": "Add custom model..."
+	},
+	"fastMode": {
+		"label": "Fast mode",
+		"labelOn": "Fast mode (on)",
+		"aria": "Fast mode"
+	},
+	"effort": {
+		"label": "Effort",
+		"extraHigh": "Extra High"
+	},
+	"permission": {
+		"plan": "Plan",
+		"auto": "Auto",
+		"planAria": "Plan mode",
+		"autoAria": "Auto mode",
+		"planTooltip": "Plan · read-only",
+		"autoTooltip": "Auto · full access"
+	},
+	"terminalMode": {
+		"label": "Terminal mode",
+		"aria": "Terminal mode"
+	},
+	"addContext": "Add context",
+	"actions": {
+		"requestChanges": "Request Changes",
+		"implement": "Implement",
+		"stop": "Stop",
+		"steer": "Steer",
+		"send": "Send",
+		"startOptions": "Start options"
+	},
+	"startSubmit": {
+		"newWorkspace": "New Workspace",
+		"saveForLater": "Save for later",
+		"startNow": "Start now"
+	},
+	"slashCommands": {
+		"addDir": "Link extra directories to this workspace",
+		"prompt": "Insert a saved prompt from your Library",
+		"codexCompact": "Compact this Codex thread's context",
+		"opencodeCompact": "Compact this conversation's context",
+		"codexGoal": "Set a persistent goal Codex pursues turn-after-turn until done or paused",
+		"claudeGoal": "Set a completion condition for Claude to work toward",
+		"workflows": "View this conversation's workflow runs"
+	},
+	"autoClose": {
+		"help": "When enabled, action sessions will close automatically when finished.",
+		"enableAria": "Enable Auto Close",
+		"disableAria": "Disable Auto Close",
+		"enable": "Enable Auto Close",
+		"on": "Auto Close On"
+	},
+	"planImplementPrompt": "Go ahead with the plan.",
+	"triage": {
+		"go": "Go ahead.",
+		"prompt": "AI proposed this task — start to engage or dismiss.",
+		"dismiss": "Dismiss",
+		"dismissAria": "Dismiss this triage proposal",
+		"start": "Start",
+		"startAria": "Start working on this triage proposal"
+	},
+	"usageStats": {
+		"title": "Usage Stats",
+		"aria": "Usage Stats"
+	},
+	"working": "Working...",
+	"toast": {
+		"updateLinkedDirectoriesFailed": "Failed to update linked directories",
+		"openDirectoryPickerFailed": "Could not open directory picker"
+	},
+	"goalReplace": {
+		"title": "Replace goal?",
+		"currentLabel": "Current:",
+		"newLabel": "New:",
+		"replaceLabel": "Replace current goal",
+		"replaceDescription": "Set the new objective and start it now",
+		"keepDescription": "Keep the current goal"
+	},
+	"contextBar": {
+		"label": "context",
+		"pathLabel": "path",
+		"removeAria": "Remove {{displayName}}"
+	},
+	"queue": {
+		"editAria": "Edit in composer",
+		"edit": "Edit",
+		"steerAria": "Steer now",
+		"steer": "Steer",
+		"removeAria": "Remove from queue"
+	},
+	"workflow": {
+		"status": {
+			"running": "running",
+			"done": "done",
+			"failed": "failed",
+			"stopped": "stopped"
+		},
+		"agentCount_one": "{{count}} agent",
+		"agentCount_other": "{{count}} agents",
+		"toolCount_one": "{{count}} tool",
+		"toolCount_other": "{{count}} tools",
+		"tokens": "{{tokens}} tokens",
+		"title": "Workflows",
+		"runFallback": "Workflow",
+		"agentFallback": "Agent",
+		"closeAria": "Close workflows",
+		"emptyRuns": "No workflows in this conversation yet. They appear here when the agent runs a dynamic workflow.",
+		"emptyAgents": "No agents reported yet.",
+		"agentUnavailable": "Agent unavailable.",
+		"noResultPreview": "No result preview."
+	},
+	"contextUsage": {
+		"loadingDetails": "Loading context details…"
+	},
+	"quickActions": {
+		"restack": "Restack"
+	}
+}

@@ -1,4 +1,5 @@
 import { memo } from "react";
+import { useTranslation } from "react-i18next";
 import {
 	AppendContextButton,
 	type AppendContextRequestPayload,
@@ -30,6 +31,7 @@ export const SourceCard = memo(function SourceCard({
 	selected?: boolean;
 	appendContextTarget?: ComposerInsertTarget;
 }) {
+	const { t } = useTranslation("inbox");
 	return (
 		<article
 			aria-label={card.title}
@@ -85,11 +87,11 @@ export const SourceCard = memo(function SourceCard({
 					<span className="absolute right-1 bottom-0.5 z-10 inline-flex">
 						<AppendContextButton
 							subjectLabel={card.title}
-							ariaLabel="Add to context"
+							ariaLabel={t("card.addToContext")}
 							getPayload={() =>
 								buildCardContextPayload(card, appendContextTarget)
 							}
-							errorTitle="Couldn't insert context card"
+							errorTitle={t("card.insertError")}
 							className={cn(
 								"flex size-7.5 cursor-interactive items-center justify-center rounded-md",
 								"border-0 bg-transparent text-muted-foreground opacity-0 shadow-none",
@@ -102,7 +104,7 @@ export const SourceCard = memo(function SourceCard({
 						/>
 					</span>
 				</TooltipTrigger>
-				<TooltipContent side="top">Add to context</TooltipContent>
+				<TooltipContent side="top">{t("card.addToContext")}</TooltipContent>
 			</Tooltip>
 		</article>
 	);

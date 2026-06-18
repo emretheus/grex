@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { requestQuit } from "@/lib/api";
 import { listen } from "@/lib/ipc";
@@ -9,6 +10,7 @@ export function QuitConfirmDialog({
 }: {
 	sessionRunStates: ReadonlyMap<string, SessionRunState>;
 }) {
+	const { t } = useTranslation("components");
 	const [open, setOpen] = useState(false);
 	const runningRef = useRef(sessionRunStates);
 	runningRef.current = sessionRunStates;
@@ -51,13 +53,9 @@ export function QuitConfirmDialog({
 		<ConfirmDialog
 			open={open}
 			onOpenChange={setOpen}
-			title="Quit Grex?"
-			description={
-				count === 1
-					? "There is 1 task in progress. Quitting now will cancel it."
-					: `There are ${count} tasks in progress. Quitting now will cancel them.`
-			}
-			confirmLabel="Quit anyway"
+			title={t("quitConfirm.title")}
+			description={t("quitConfirm.description", { count })}
+			confirmLabel={t("quitConfirm.confirm")}
 			onConfirm={() => void handleQuit(true)}
 		/>
 	);

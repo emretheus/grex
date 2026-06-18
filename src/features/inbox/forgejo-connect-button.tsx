@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { ExternalLink, Loader2 } from "lucide-react";
 import { type FormEvent, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { ForgejoBrandIcon } from "@/components/brand-icon";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -33,6 +34,7 @@ export function ForgejoConnectState({
 	onConnected?: (connection: ForgejoConnection) => void;
 	className?: string;
 }) {
+	const { t } = useTranslation("inbox");
 	const [host, setHost] = useState("");
 	const [token, setToken] = useState("");
 	const connectMutation = useForgejoConnectMutation({ onConnected });
@@ -55,11 +57,10 @@ export function ForgejoConnectState({
 			<ForgejoBrandIcon className="text-muted-foreground/80" size={28} />
 			<div className="space-y-1">
 				<div className="text-ui font-medium text-foreground">
-					Connect Forgejo
+					{t("connect.forgejo.title")}
 				</div>
 				<div className="text-pretty text-small leading-5 text-muted-foreground">
-					Paste your Forgejo instance URL and an access token. Stored locally in
-					your macOS Keychain.
+					{t("connect.forgejo.description")}
 				</div>
 			</div>
 			<form
@@ -70,8 +71,8 @@ export function ForgejoConnectState({
 					type="text"
 					autoComplete="off"
 					spellCheck={false}
-					placeholder="https://codeberg.org"
-					aria-label="Forgejo instance URL"
+					placeholder={t("connect.forgejo.hostPlaceholder")}
+					aria-label={t("connect.forgejo.hostLabel")}
 					value={host}
 					onChange={(event) => setHost(event.target.value)}
 					disabled={connectMutation.isPending}
@@ -81,8 +82,8 @@ export function ForgejoConnectState({
 					type="password"
 					autoComplete="off"
 					spellCheck={false}
-					placeholder="Access token"
-					aria-label="Forgejo access token"
+					placeholder={t("connect.forgejo.tokenPlaceholder")}
+					aria-label={t("connect.forgejo.tokenLabel")}
 					value={token}
 					onChange={(event) => setToken(event.target.value)}
 					disabled={connectMutation.isPending}
@@ -98,10 +99,10 @@ export function ForgejoConnectState({
 					{connectMutation.isPending ? (
 						<>
 							<Loader2 className="size-3.5 animate-spin" strokeWidth={2} />
-							Connecting…
+							{t("connect.connecting")}
 						</>
 					) : (
-						"Connect"
+						t("connect.connect")
 					)}
 				</Button>
 			</form>
@@ -110,7 +111,7 @@ export function ForgejoConnectState({
 				onClick={() => void openUrl(FORGEJO_API_KEY_URL)}
 				className="inline-flex cursor-interactive items-center gap-1 text-mini text-muted-foreground/80 transition-colors hover:text-foreground"
 			>
-				Create an access token
+				{t("connect.forgejo.help")}
 				<ExternalLink className="size-3" strokeWidth={1.8} />
 			</button>
 		</div>
@@ -124,6 +125,7 @@ export function ForgejoConnectState({
 export function useForgejoConnectMutation(opts?: {
 	onConnected?: (connection: ForgejoConnection) => void;
 }) {
+	const { t } = useTranslation("inbox");
 	const pushToast = useWorkspaceToast();
 	const queryClient = useQueryClient();
 	return useMutation({
@@ -142,8 +144,10 @@ export function useForgejoConnectMutation(opts?: {
 		},
 		onError: (error) => {
 			const message =
-				error instanceof Error ? error.message : "Couldn't connect Forgejo.";
-			pushToast(message, "Forgejo connect failed", "destructive");
+				error instanceof Error
+					? error.message
+					: t("connect.forgejo.failedMessage");
+			pushToast(message, t("connect.forgejo.failedTitle"), "destructive");
 		},
 	});
 }

@@ -1,0 +1,53 @@
+{
+	"header": {
+		"workspaceHeader": "工作区标题栏",
+		"loading": "加载中",
+		"sessions": "会话",
+		"contextPreview": "上下文预览",
+		"closeContextPreview": "关闭上下文预览",
+		"noSessions": "暂无会话",
+		"newSession": "新建会话",
+		"sessionHistory": "会话历史",
+		"noHiddenSessions": "暂无隐藏会话",
+		"renameSession": "重命名会话",
+		"closeSession": "关闭会话",
+		"restoreSession": "恢复会话",
+		"deleteSessionPermanently": "永久删除会话",
+		"untitled": "无标题",
+		"renameBranch": "重命名分支",
+		"copyBranchName": "复制分支名称",
+		"noBranch": "无分支",
+		"baseBranch": "基础分支 {{remote}}/{{branch}}",
+		"stackedOn": "堆叠于 {{label}}",
+		"interactionRequired": "需要交互",
+		"unreadSession": "未读会话"
+	},
+	"emptyState": {
+		"creatingWorkspace": "正在创建工作区",
+		"nothingHereYet": "这里还没有内容",
+		"noSessionSelected": "未选择会话",
+		"preparingWorkspace": "Grex 仍在准备此工作区。设置完成后将自动解锁消息功能。",
+		"newSessionIn": "新建会话于",
+		"newSession": "新建会话",
+		"chooseSession": "从标题栏选择一个会话以查看其时间线。",
+		"scriptActions": {
+			"setup": {
+				"title": "创建设置脚本",
+				"description": "在创建工作区后引导安装依赖项。"
+			},
+			"run": {
+				"title": "创建运行操作",
+				"description": "你可在检查器的运行下拉菜单中选择的命名命令。"
+			},
+			"archive": {
+				"title": "创建归档脚本",
+				"description": "在归档前进行轻量清理或交接。"
+			}
+		},
+		"tipsLabel": "提示：",
+		"tipsBody": "配置这些脚本可提升你的开发流程。"
+	},
+	"systemMessage": {
+		"useThisPrompt": "使用此提示词"
+	}
+}

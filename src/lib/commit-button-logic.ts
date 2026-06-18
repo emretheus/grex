@@ -2,6 +2,7 @@ import type {
 	CommitButtonState,
 	WorkspaceCommitButtonMode,
 } from "@/features/commit/button";
+import { i18n } from "@/lib/i18n";
 import type {
 	ChangeRequestInfo,
 	ForgeActionStatus,
@@ -94,26 +95,26 @@ export function hasBlockedMergeState(
 export function mergeBlockedShortLabel(reason: MergeBlockedReason): string {
 	switch (reason) {
 		case "BEHIND":
-			return "Behind Base";
+			return i18n.t("commit:mergeBlockedReason.behindShort");
 		case "BLOCKED":
-			return "Merge Blocked";
+			return i18n.t("commit:mergeBlockedReason.blockedShort");
 		case "DRAFT":
-			return "Draft PR";
+			return i18n.t("commit:mergeBlockedReason.draftShort");
 		case "UNSTABLE":
-			return "Unstable";
+			return i18n.t("commit:mergeBlockedReason.unstableShort");
 	}
 }
 
 export function mergeBlockedDetailText(reason: MergeBlockedReason): string {
 	switch (reason) {
 		case "BEHIND":
-			return "This branch is behind the base branch. Try anyway?";
+			return i18n.t("commit:mergeBlockedReason.behindDetail");
 		case "BLOCKED":
-			return "Branch protection is blocking this merge. Likely a missing review, unresolved conversation, or required check. Try anyway?";
+			return i18n.t("commit:mergeBlockedReason.blockedDetail");
 		case "DRAFT":
-			return "This pull request is still a draft. Try anyway?";
+			return i18n.t("commit:mergeBlockedReason.draftDetail");
 		case "UNSTABLE":
-			return "Non-required checks are failing. Try anyway?";
+			return i18n.t("commit:mergeBlockedReason.unstableDetail");
 	}
 }
 

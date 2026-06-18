@@ -1,6 +1,7 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { ChevronDown, Eye } from "lucide-react";
 import { Suspense, useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { LazyStreamdown } from "@/components/streamdown-loader";
 import { Button } from "@/components/ui/button";
 import {
@@ -17,8 +18,6 @@ import {
 } from "@/lib/api";
 import { grexQueryKeys } from "@/lib/query-client";
 import {
-	REPO_PREFERENCE_DESCRIPTIONS,
-	REPO_PREFERENCE_LABELS,
 	type RepoPreferenceKey,
 	resolveRepoPreferencePreview,
 } from "@/lib/repo-preferences-prompts";
@@ -33,6 +32,7 @@ const PREFERENCE_KEYS: RepoPreferenceKey[] = [
 ];
 
 export function RepositoryPreferencesSection({ repoId }: { repoId: string }) {
+	const { t } = useTranslation("settings");
 	const queryClient = useQueryClient();
 	const preferencesQuery = useQuery({
 		queryKey: grexQueryKeys.repoPreferences(repoId),
@@ -60,10 +60,10 @@ export function RepositoryPreferencesSection({ repoId }: { repoId: string }) {
 		<>
 			<div className="py-5">
 				<div className="text-ui font-medium leading-snug text-foreground">
-					Preferences
+					{t("repositoryPreferences.title")}
 				</div>
 				<div className="mt-1 text-small leading-snug text-muted-foreground">
-					Repo-level built-in prompts used by Grex actions and new chats.
+					{t("repositoryPreferences.description")}
 				</div>
 				<div className="mt-4 divide-y divide-app-border/20">
 					{PREFERENCE_KEYS.map((key) => {
@@ -83,10 +83,10 @@ export function RepositoryPreferencesSection({ repoId }: { repoId: string }) {
 										>
 											<div>
 												<div className="text-ui font-medium text-app-foreground">
-													{REPO_PREFERENCE_LABELS[key]}
+													{t(`repositoryPreferences.labels.${key}`)}
 												</div>
 												<div className="mt-1 text-small leading-snug text-muted-foreground">
-													{REPO_PREFERENCE_DESCRIPTIONS[key]}
+													{t(`repositoryPreferences.descriptions.${key}`)}
 												</div>
 											</div>
 											<ChevronDown
@@ -102,8 +102,8 @@ export function RepositoryPreferencesSection({ repoId }: { repoId: string }) {
 											className="min-h-[140px] resize-y bg-app-base/30 font-mono text-small placeholder:text-small"
 											placeholder={
 												key === "general"
-													? "Add custom instructions for all agents working in this repo."
-													: "Add your preferences here. The agent will be told to prioritize these instructions over its default instructions."
+													? t("repositoryPreferences.placeholderGeneral")
+													: t("repositoryPreferences.placeholderDefault")
 											}
 											value={value}
 											onChange={(event) =>
@@ -120,7 +120,7 @@ export function RepositoryPreferencesSection({ repoId }: { repoId: string }) {
 												onClick={() => setPreviewKey(key)}
 											>
 												<Eye className="size-3.5" strokeWidth={1.8} />
-												<span>Preview</span>
+												<span>{t("repositoryPreferences.preview")}</span>
 											</button>
 											<Button
 												size="sm"
@@ -139,7 +139,9 @@ export function RepositoryPreferencesSection({ repoId }: { repoId: string }) {
 														.finally(() => setSavingKey(null));
 												}}
 											>
-												{savingKey === key ? "Saving..." : "Save"}
+												{savingKey === key
+													? t("repositoryPreferences.saving")
+													: t("repositoryPreferences.save")}
 											</Button>
 										</div>
 									</CollapsibleContent>
@@ -158,8 +160,10 @@ export function RepositoryPreferencesSection({ repoId }: { repoId: string }) {
 					<div className="px-6 pt-4">
 						<DialogTitle className="text-heading font-semibold text-foreground">
 							{previewKey
-								? `${REPO_PREFERENCE_LABELS[previewKey]} prompt`
-								: "Prompt preview"}
+								? t("repositoryPreferences.promptTitle", {
+										label: t(`repositoryPreferences.labels.${previewKey}`),
+									})
+								: t("repositoryPreferences.promptPreviewFallback")}
 						</DialogTitle>
 					</div>
 					<div className="max-h-[78vh] overflow-y-auto px-6 pb-5 pt-1">

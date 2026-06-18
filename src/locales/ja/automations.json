@@ -1,0 +1,134 @@
+{
+	"title": "オートメーション",
+	"create": {
+		"viaChat": "チャットから作成",
+		"manually": "手動で作成",
+		"moreOptions": "その他の作成オプション",
+		"dialogTitle": "オートメーションを作成",
+		"titlePlaceholder": "オートメーションのタイトル",
+		"promptPlaceholder": "プロンプトを追加（例：$sentry でクラッシュを探す）",
+		"submit": "作成"
+	},
+	"list": {
+		"currentHeading": "現在",
+		"loadError": "オートメーションを読み込めませんでした。",
+		"empty": "オートメーションはまだありません。定期的なプロンプトをスケジュールすると、自動的に実行されます。",
+		"createButton": "オートメーションを作成"
+	},
+	"row": {
+		"runNow": "今すぐ実行",
+		"edit": "オートメーションを編集",
+		"moreActions": "その他の操作",
+		"resume": "再開",
+		"pause": "一時停止"
+	},
+	"detail": {
+		"breadcrumb": "オートメーション",
+		"resumeAria": "オートメーションを再開",
+		"pauseAria": "オートメーションを一時停止",
+		"deleteAria": "オートメーションを削除",
+		"runNow": "今すぐ実行",
+		"titleAria": "オートメーションのタイトル",
+		"promptAria": "オートメーションのプロンプト",
+		"promptPlaceholder": "プロンプトを追加（例：$sentry でクラッシュを探す）",
+		"sections": {
+			"status": "ステータス",
+			"details": "詳細"
+		},
+		"fields": {
+			"status": "ステータス",
+			"nextRun": "次回実行",
+			"lastRan": "前回実行",
+			"runsIn": "実行先",
+			"chat": "チャット",
+			"workspace": "ワークスペース",
+			"interval": "間隔"
+		},
+		"never": "なし",
+		"runsInChat": "チャット",
+		"runsInWorkspace": "ワークスペース",
+		"unknownWorkspace": "不明なワークスペース",
+		"unknownChat": "不明なチャット",
+		"none": "—"
+	},
+	"target": {
+		"target": "ターゲット",
+		"selectWorkspace": "ワークスペースを選択",
+		"selectChat": "チャットを選択",
+		"nothingAvailable": "利用可能な項目がありません",
+		"chat": "チャット",
+		"workspace": "ワークスペース"
+	},
+	"interval": {
+		"amountAria": "間隔の値",
+		"hourly": "毎時",
+		"dailyAt": "毎日",
+		"weeklyOn": "毎週",
+		"every": "間隔",
+		"at": "",
+		"dailyTimeAria": "毎日の実行時刻",
+		"weeklyTimeAria": "毎週の実行時刻",
+		"unit": {
+			"minutes": "分",
+			"hours": "時間"
+		}
+	},
+	"weekday": {
+		"sunday": "日曜日",
+		"monday": "月曜日",
+		"tuesday": "火曜日",
+		"wednesday": "水曜日",
+		"thursday": "木曜日",
+		"friday": "金曜日",
+		"saturday": "土曜日"
+	},
+	"month": {
+		"jan": "1月",
+		"feb": "2月",
+		"mar": "3月",
+		"apr": "4月",
+		"may": "5月",
+		"jun": "6月",
+		"jul": "7月",
+		"aug": "8月",
+		"sep": "9月",
+		"oct": "10月",
+		"nov": "11月",
+		"dec": "12月"
+	},
+	"schedule": {
+		"hourly": "毎時",
+		"daily": "毎日",
+		"weekly": "毎週",
+		"dailyAt": "毎日 {{time}}",
+		"weeklyAt": "毎週{{weekday}} {{time}}",
+		"everyMinutes": "{{amount}}分ごと",
+		"everyHours": "{{amount}}時間ごと"
+	},
+	"status": {
+		"active": "アクティブ",
+		"paused": "一時停止中"
+	},
+	"runTime": {
+		"today": "今日 {{clock}}",
+		"yesterday": "昨日 {{clock}}",
+		"date": "{{month}}{{day}}日 {{clock}}",
+		"meridiem": {
+			"am": "午前",
+			"pm": "午後"
+		}
+	},
+	"confirmDelete": {
+		"title": "オートメーションを削除しますか？",
+		"description": "「{{title}}」は実行を停止し、削除されます。この操作は元に戻せません。"
+	},
+	"toast": {
+		"started": "オートメーションを開始しました",
+		"runningInChat": "チャット内で実行中です。",
+		"createFailed": "オートメーションを作成できませんでした",
+		"updateFailed": "オートメーションを更新できませんでした",
+		"deleteFailed": "オートメーションを削除できませんでした",
+		"statusFailed": "オートメーションのステータスを変更できませんでした",
+		"runFailed": "オートメーションを実行できませんでした"
+	}
+}

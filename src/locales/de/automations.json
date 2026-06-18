@@ -1,0 +1,134 @@
+{
+	"title": "Automatisierungen",
+	"create": {
+		"viaChat": "Per Chat erstellen",
+		"manually": "Manuell erstellen",
+		"moreOptions": "Weitere Erstellungsoptionen",
+		"dialogTitle": "Automatisierung erstellen",
+		"titlePlaceholder": "Titel der Automatisierung",
+		"promptPlaceholder": "Prompt hinzufügen, z. B. nach Abstürzen in $sentry suchen",
+		"submit": "Erstellen"
+	},
+	"list": {
+		"currentHeading": "Aktuell",
+		"loadError": "Automatisierungen konnten nicht geladen werden.",
+		"empty": "Noch keine Automatisierungen. Planen Sie einen wiederkehrenden Prompt und er läuft von selbst.",
+		"createButton": "Automatisierung erstellen"
+	},
+	"row": {
+		"runNow": "Jetzt ausführen",
+		"edit": "Automatisierung bearbeiten",
+		"moreActions": "Weitere Aktionen",
+		"resume": "Fortsetzen",
+		"pause": "Pausieren"
+	},
+	"detail": {
+		"breadcrumb": "Automatisierungen",
+		"resumeAria": "Automatisierung fortsetzen",
+		"pauseAria": "Automatisierung pausieren",
+		"deleteAria": "Automatisierung löschen",
+		"runNow": "Jetzt ausführen",
+		"titleAria": "Titel der Automatisierung",
+		"promptAria": "Prompt der Automatisierung",
+		"promptPlaceholder": "Prompt hinzufügen, z. B. nach Abstürzen in $sentry suchen",
+		"sections": {
+			"status": "Status",
+			"details": "Details"
+		},
+		"fields": {
+			"status": "Status",
+			"nextRun": "Nächster Lauf",
+			"lastRan": "Letzter Lauf",
+			"runsIn": "Läuft in",
+			"chat": "Chat",
+			"workspace": "Arbeitsbereich",
+			"interval": "Intervall"
+		},
+		"never": "Nie",
+		"runsInChat": "Chat",
+		"runsInWorkspace": "Arbeitsbereich",
+		"unknownWorkspace": "Unbekannter Arbeitsbereich",
+		"unknownChat": "Unbekannter Chat",
+		"none": "—"
+	},
+	"target": {
+		"target": "Ziel",
+		"selectWorkspace": "Arbeitsbereich auswählen",
+		"selectChat": "Chat auswählen",
+		"nothingAvailable": "Nichts verfügbar",
+		"chat": "Chat",
+		"workspace": "Arbeitsbereich"
+	},
+	"interval": {
+		"amountAria": "Intervallwert",
+		"hourly": "Stündlich",
+		"dailyAt": "Täglich um",
+		"weeklyOn": "Wöchentlich am",
+		"every": "Alle",
+		"at": "um",
+		"dailyTimeAria": "Tägliche Ausführungszeit",
+		"weeklyTimeAria": "Wöchentliche Ausführungszeit",
+		"unit": {
+			"minutes": "Minuten",
+			"hours": "Stunden"
+		}
+	},
+	"weekday": {
+		"sunday": "Sonntag",
+		"monday": "Montag",
+		"tuesday": "Dienstag",
+		"wednesday": "Mittwoch",
+		"thursday": "Donnerstag",
+		"friday": "Freitag",
+		"saturday": "Samstag"
+	},
+	"month": {
+		"jan": "Jan.",
+		"feb": "Feb.",
+		"mar": "März",
+		"apr": "Apr.",
+		"may": "Mai",
+		"jun": "Juni",
+		"jul": "Juli",
+		"aug": "Aug.",
+		"sep": "Sep.",
+		"oct": "Okt.",
+		"nov": "Nov.",
+		"dec": "Dez."
+	},
+	"schedule": {
+		"hourly": "Stündlich",
+		"daily": "Täglich",
+		"weekly": "Wöchentlich",
+		"dailyAt": "Täglich um {{time}}",
+		"weeklyAt": "Wöchentlich am {{weekday}} um {{time}}",
+		"everyMinutes": "Alle {{amount}} Min.",
+		"everyHours": "Alle {{amount}} Std."
+	},
+	"status": {
+		"active": "Aktiv",
+		"paused": "Pausiert"
+	},
+	"runTime": {
+		"today": "Heute um {{clock}}",
+		"yesterday": "Gestern um {{clock}}",
+		"date": "{{day}}. {{month}} um {{clock}}",
+		"meridiem": {
+			"am": "AM",
+			"pm": "PM"
+		}
+	},
+	"confirmDelete": {
+		"title": "Automatisierung löschen?",
+		"description": "„{{title}}“ wird nicht mehr ausgeführt und entfernt. Dies kann nicht rückgängig gemacht werden."
+	},
+	"toast": {
+		"started": "Automatisierung gestartet",
+		"runningInChat": "Läuft in ihrem Chat.",
+		"createFailed": "Automatisierung konnte nicht erstellt werden",
+		"updateFailed": "Automatisierung konnte nicht aktualisiert werden",
+		"deleteFailed": "Automatisierung konnte nicht gelöscht werden",
+		"statusFailed": "Status der Automatisierung konnte nicht geändert werden",
+		"runFailed": "Automatisierung konnte nicht ausgeführt werden"
+	}
+}

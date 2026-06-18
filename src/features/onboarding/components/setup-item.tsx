@@ -1,5 +1,6 @@
 import { Loader2 } from "lucide-react";
 import type { ReactNode } from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { ReadyStatus } from "./ready-status";
 
@@ -7,7 +8,7 @@ export function SetupItem({
 	icon,
 	label,
 	description,
-	actionLabel = "Set up",
+	actionLabel,
 	onAction,
 	disabled = false,
 	busy = false,
@@ -24,6 +25,8 @@ export function SetupItem({
 	ready?: boolean;
 	error?: ReactNode;
 }) {
+	const { t } = useTranslation("onboarding");
+	const resolvedActionLabel = actionLabel ?? t("setupItem.defaultAction");
 	const hasError = Boolean(error);
 	return (
 		<div
@@ -63,7 +66,7 @@ export function SetupItem({
 					disabled={disabled || busy}
 				>
 					{busy ? <Loader2 className="size-3 animate-spin" /> : null}
-					{actionLabel}
+					{resolvedActionLabel}
 				</Button>
 			)}
 		</div>

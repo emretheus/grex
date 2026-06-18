@@ -1,5 +1,6 @@
 import { CheckCircle2, Loader2, RefreshCw, XCircle } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
@@ -9,6 +10,7 @@ import {
 	installGrexSkills,
 	recheckGrexComponents,
 } from "@/lib/api";
+import { i18n } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 import { SettingsRow } from "../components/settings-row";
 
@@ -26,6 +28,7 @@ import { SettingsRow } from "../components/settings-row";
  * this panel is purely a presentation layer over the IPC snapshot.
  */
 export function ComponentsPanel() {
+	const { t } = useTranslation("settings");
 	const [snapshot, setSnapshot] = useState<GrexComponentsUpdateCheck | null>(
 		null,
 	);
@@ -41,11 +44,11 @@ export function ComponentsPanel() {
 			// Reading the snapshot is a pure DB read; a failure here means
 			// something is genuinely wrong with the install. Surface it
 			// instead of swallowing.
-			toast.error("Unable to read Grex components status", {
+			toast.error(t("components.toast.readFailed"), {
 				description: error instanceof Error ? error.message : String(error),
 			});
 		}
-	}, []);
+	}, [t]);
 
 	useEffect(() => {
 		void refresh();
@@ -57,16 +60,16 @@ export function ComponentsPanel() {
 			const next = await recheckGrexComponents();
 			setSnapshot(next);
 			if (!next.cliError && !next.skillsError) {
-				toast.success("Grex components are up to date");
+				toast.success(t("components.toast.upToDate"));
 			}
 		} catch (error) {
-			toast.error("Re-check failed", {
+			toast.error(t("components.toast.recheckFailed"), {
 				description: error instanceof Error ? error.message : String(error),
 			});
 		} finally {
 			setRechecking(false);
 		}
-	}, []);
+	}, [t]);
 
 	const handleRetryCli = useCallback(async () => {
 		setRetryingCli(true);
@@ -74,7 +77,7 @@ export function ComponentsPanel() {
 			await installCli();
 			await refresh();
 		} catch (error) {
-			toast.error("CLI install failed", {
+			toast.error(t("components.toast.cliInstallFailed"), {
 				description: error instanceof Error ? error.message : String(error),
 			});
 			// Refresh anyway so any partial state is reflected.
@@ -82,7 +85,7 @@ export function ComponentsPanel() {
 		} finally {
 			setRetryingCli(false);
 		}
-	}, [refresh]);
+	}, [refresh, t]);
 
 	const handleRetrySkills = useCallback(async () => {
 		setRetryingSkills(true);
@@ -90,14 +93,14 @@ export function ComponentsPanel() {
 			await installGrexSkills();
 			await refresh();
 		} catch (error) {
-			toast.error("Skills install failed", {
+			toast.error(t("components.toast.skillsInstallFailed"), {
 				description: error instanceof Error ? error.message : String(error),
 			});
 			await refresh();
 		} finally {
 			setRetryingSkills(false);
 		}
-	}, [refresh]);
+	}, [refresh, t]);
 
 	const cliOk = snapshot?.cli.installState === "managed" && !snapshot.cliError;
 	const skillsOk = !!snapshot?.skills.installed && !snapshot?.skillsError;
@@ -105,28 +108,30 @@ export function ComponentsPanel() {
 	const skillsBusy = rechecking || retryingSkills;
 
 	const summary = (() => {
-		if (!snapshot) return "Loading components status…";
+		if (!snapshot) return t("components.loadingStatus");
 		if (cliOk && skillsOk) {
 			const checked = snapshot.lastCheckedVersion;
 			if (checked === snapshot.currentVersion) {
-				return `Grex CLI and skills are up to date with ${snapshot.currentVersion}.`;
+				return t("components.summary.upToDate", {
+					version: snapshot.currentVersion,
+				});
 			}
-			return "Grex CLI and skills look healthy.";
+			return t("components.summary.healthy");
 		}
-		return "One or more components need attention.";
+		return t("components.summary.needsAttention");
 	})();
 
 	return (
 		<SettingsRow
 			align="start"
-			title="Grex Components"
+			title={t("components.title")}
 			description={
 				<>
 					<div>{summary}</div>
 					{snapshot ? (
 						<div className="mt-3 grid gap-2">
 							<ComponentLine
-								label="Grex CLI"
+								label={t("components.cliLabel")}
 								ok={cliOk}
 								busy={cliBusy}
 								onRetry={handleRetryCli}
@@ -134,7 +139,7 @@ export function ComponentsPanel() {
 								state={describeCliState(snapshot)}
 							/>
 							<ComponentLine
-								label="Grex Skills"
+								label={t("components.skillsLabel")}
 								ok={skillsOk}
 								busy={skillsBusy}
 								onRetry={handleRetrySkills}
@@ -157,7 +162,7 @@ export function ComponentsPanel() {
 				) : (
 					<RefreshCw className="size-3.5" />
 				)}
-				{rechecking ? "Checking" : "Re-check now"}
+				{rechecking ? t("components.recheckBusy") : t("components.recheck")}
 			</Button>
 		</SettingsRow>
 	);
@@ -202,7 +207,7 @@ function ComponentLine({
 					onClick={onRetry}
 					className="h-7 shrink-0 px-2 text-mini"
 				>
-					Retry
+					{i18n.t("common:actions.retry")}
 				</Button>
 			) : null}
 		</div>
@@ -213,25 +218,31 @@ function describeCliState(snapshot: GrexComponentsUpdateCheck): string {
 	switch (snapshot.cli.installState) {
 		case "managed":
 			return snapshot.cli.installPath
-				? `Installed at ${snapshot.cli.installPath}.`
-				: "Installed.";
+				? i18n.t("settings:components.cli.installedAt", {
+						path: snapshot.cli.installPath,
+					})
+				: i18n.t("settings:components.cli.installed");
 		case "stale":
-			return "An older copy exists at the install path.";
+			return i18n.t("settings:components.cli.stale");
 		case "missing":
-			return "Not installed on this machine.";
+			return i18n.t("settings:components.cli.missing");
 		default:
-			return "Status unavailable.";
+			return i18n.t("settings:components.cli.unavailable");
 	}
 }
 
 function describeSkillsState(snapshot: GrexComponentsUpdateCheck): string {
 	if (snapshot.skills.installed) {
+		// Provider identifiers ("Claude Code", "Codex") are product names —
+		// kept verbatim; only the surrounding sentence is localized.
 		const parts: string[] = [];
 		if (snapshot.skills.claude) parts.push("Claude Code");
 		if (snapshot.skills.codex) parts.push("Codex");
 		return parts.length > 0
-			? `Installed for ${parts.join(" and ")}.`
-			: "Installed.";
+			? i18n.t("settings:components.skills.installedFor", {
+					targets: parts.join(i18n.t("settings:components.skills.join")),
+				})
+			: i18n.t("settings:components.skills.installed");
 	}
-	return "Sign in to Claude Code or Codex, then re-check.";
+	return i18n.t("settings:components.skills.signInPrompt");
 }

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Trans, useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import {
 	Dialog,
@@ -22,6 +23,7 @@ export function MoveToWorktreeDialog({
 	workspaceTitle,
 	onConfirm,
 }: MoveToWorktreeDialogProps) {
+	const { t } = useTranslation(["navigation", "common"]);
 	const [submitting, setSubmitting] = useState(false);
 
 	useEffect(() => {
@@ -44,24 +46,22 @@ export function MoveToWorktreeDialog({
 		<Dialog open={open} onOpenChange={onOpenChange}>
 			<DialogContent className="gap-3 sm:max-w-md">
 				<DialogHeader>
-					<DialogTitle>Move into a new worktree</DialogTitle>
+					<DialogTitle>{t("moveToWorktreeDialog.title")}</DialogTitle>
 				</DialogHeader>
 				<div className="flex flex-col gap-2 text-ui leading-snug text-muted-foreground">
 					<p>
-						<span className="font-medium text-foreground">
-							{workspaceTitle}
-						</span>{" "}
-						will continue in a fresh worktree on a new auto-named branch.
+						<Trans
+							t={t}
+							i18nKey="moveToWorktreeDialog.description"
+							values={{ name: workspaceTitle }}
+							components={{
+								bold: <span className="font-medium text-foreground" />,
+							}}
+						/>
 					</p>
 					<ul className="list-disc space-y-0.5 pl-4">
-						<li>
-							Your local repository stays exactly as it is — branch and files
-							untouched.
-						</li>
-						<li>
-							Tracked + untracked changes are carried over into the new
-							worktree.
-						</li>
+						<li>{t("moveToWorktreeDialog.localUntouched")}</li>
+						<li>{t("moveToWorktreeDialog.changesCarriedOver")}</li>
 					</ul>
 				</div>
 				<div className="flex justify-end gap-2">
@@ -72,7 +72,7 @@ export function MoveToWorktreeDialog({
 						disabled={submitting}
 						onClick={() => onOpenChange(false)}
 					>
-						Cancel
+						{t("common:actions.cancel")}
 					</Button>
 					<Button
 						type="button"
@@ -80,7 +80,9 @@ export function MoveToWorktreeDialog({
 						disabled={submitting}
 						onClick={handleConfirm}
 					>
-						{submitting ? "Moving…" : "Move into worktree"}
+						{submitting
+							? t("moveToWorktreeDialog.moving")
+							: t("moveToWorktreeDialog.submit")}
 					</Button>
 				</div>
 			</DialogContent>

@@ -1,4 +1,5 @@
 import { useIsMutating } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import { plainListInboxItems, plainSearchIssues } from "@/lib/api";
 import type { ComposerInsertTarget } from "@/lib/composer-insert";
 import { grexQueryKeys } from "@/lib/query-client";
@@ -23,6 +24,7 @@ export function PlainInboxSection({
 	appendContextTarget?: ComposerInsertTarget;
 	horizontalPaddingClass: string;
 }) {
+	const { t } = useTranslation("inbox");
 	const connectionsQuery = usePlainConnections();
 	const connections = connectionsQuery.data ?? [];
 	const displayNames = new Map(
@@ -44,8 +46,8 @@ export function PlainInboxSection({
 			searchKey={grexQueryKeys.plainSearch}
 			listFn={plainListInboxItems}
 			searchFn={plainSearchIssues}
-			emptyTitle="No threads"
-			emptySubtitle="Open support threads from Plain will appear here."
+			emptyTitle={t("section.plain.emptyTitle")}
+			emptySubtitle={t("section.plain.emptySubtitle")}
 			onOpenCard={onOpenCard}
 			selectedCardId={selectedCardId}
 			appendContextTarget={appendContextTarget}

@@ -1,0 +1,447 @@
+{
+	"appearance": {
+		"chatFontSize": {
+			"aria": "Chat-Schriftgröße",
+			"description": "Größe für den Text von Chat-Nachrichten",
+			"title": "Chat-Schriftgröße"
+		},
+		"codeFont": {
+			"aria": "Code-Schriftart",
+			"title": "Code-Schriftart"
+		},
+		"colorTheme": {
+			"description": "Wähle eine Akzentpalette",
+			"title": "Farbschema"
+		},
+		"pointerCursors": {
+			"description": "Ändert den Cursor zu einem Zeiger über interaktiven Elementen",
+			"title": "Zeiger-Cursor verwenden"
+		},
+		"terminalFont": {
+			"aria": "Terminal-Schriftart",
+			"title": "Terminal-Schriftart"
+		},
+		"theme": {
+			"dark": "Dunkel",
+			"description": "Hell, dunkel oder dem System folgen",
+			"light": "Hell",
+			"system": "System",
+			"title": "Design"
+		},
+		"uiFont": {
+			"aria": "UI-Schriftart",
+			"title": "UI-Schriftart"
+		}
+	},
+	"language": {
+		"aria": "Anzeigesprache",
+		"description": "Wähle die Anzeigesprache der App",
+		"title": "Sprache"
+	},
+	"nav": {
+		"settings": "Einstellungen",
+		"repositories": "Repositorys",
+		"repositoryFallback": "Repository",
+		"sections": {
+			"general": "Allgemein",
+			"appearance": "Darstellung",
+			"model": "Modelle",
+			"providers": "Anbieter",
+			"shortcuts": "Tastenkürzel",
+			"import": "Import",
+			"account": "Konten",
+			"inbox": "Kontexte",
+			"experimental": "Experimentell",
+			"developer": "Entwickler"
+		},
+		"captions": {
+			"account": "Mit deiner lokalen gh-/glab-CLI synchronisiert.",
+			"inbox": "Lege fest, welche Elemente jedes verbundene Konto zu Kontexten beiträgt."
+		}
+	},
+	"general": {
+		"notifications": {
+			"title": "Desktop-Benachrichtigungen",
+			"description": "Systembenachrichtigungen anzeigen, wenn Sitzungen abgeschlossen sind oder eine Eingabe benötigen"
+		},
+		"notificationSound": {
+			"title": "Benachrichtigungston",
+			"description": "Einen Ton abspielen, wenn eine Desktop-Benachrichtigung ausgelöst wird",
+			"aria": "Benachrichtigungston",
+			"testAria": "Benachrichtigungston testen"
+		},
+		"terminalHoverExpansion": {
+			"title": "Terminals beim Überfahren vergrößern",
+			"description": "Vergrößert Inspector-Terminals, wenn der Cursor darüber verweilt."
+		},
+		"terminalMode": {
+			"title": "Terminal-Modus",
+			"description": "Fügt einen Umschalter im Editor hinzu, der deinen Prompt in der Terminal-Oberfläche des Agents statt in einer Chat-Sitzung öffnet. Nur für Claude und Codex."
+		},
+		"alwaysShowContextUsage": {
+			"title": "Kontextnutzung immer anzeigen",
+			"description": "Standardmäßig wird die Kontextnutzung nur angezeigt, wenn mehr als 70 % genutzt werden."
+		},
+		"usageStats": {
+			"title": "Nutzungsstatistiken",
+			"description": "Zeigt die Kontolimits neben dem Editor an."
+		},
+		"autoArchiveOnMerge": {
+			"title": "Beim Mergen automatisch archivieren",
+			"description": "Wenn der verknüpfte PR/MR eines Arbeitsbereichs gemergt wird, wird der Arbeitsbereich automatisch archiviert."
+		},
+		"followUpBehavior": {
+			"title": "Verhalten bei Folgenachrichten",
+			"description": "Folgenachrichten in die Warteschlange stellen, während der Agent läuft, oder den aktuellen Lauf steuern.",
+			"pressToInvert": "Drücke {{shortcut}}, um für eine einzelne Nachricht das Gegenteil zu tun.",
+			"queue": "Warteschlange",
+			"steer": "Steuern"
+		},
+		"claudeThinking": {
+			"title": "Anzeige des Claude-Code-Denkens",
+			"description": "Steuert, wie Claude Code Denkinhalte zurückgibt.",
+			"summarized": "Zusammengefasst",
+			"omitted": "Weggelassen",
+			"tooltip": {
+				"summarizedLabel": "Zusammengefasst",
+				"summarizedBody": "Denkblöcke enthalten zusammengefassten Text.",
+				"omittedLabel": "Weggelassen",
+				"omittedBody": "Denkblöcke sind leer. Der Server überspringt das Streamen von Denk-Tokens, sodass der endgültige Text früher gestreamt wird. Reduziert die Latenz, nicht die Kosten."
+			}
+		}
+	},
+	"model": {
+		"default": {
+			"title": "Standardmodell",
+			"description": "Modell für neue Chats"
+		},
+		"review": {
+			"title": "Review-Modell",
+			"description": "Modell für die Code-Review"
+		},
+		"action": {
+			"title": "Aktionsmodell",
+			"description": "Modell für PRs/MRs sowie Commit-and-Push"
+		},
+		"fastMode": "Schnellmodus",
+		"fastModeAria": "{{prefix}} Schnellmodus",
+		"selectModel": "Modell auswählen",
+		"effort": {
+			"low": "Niedrig",
+			"medium": "Mittel",
+			"high": "Hoch",
+			"xhigh": "Sehr hoch"
+		}
+	},
+	"archiveCleanup": {
+		"title": "Archivierte Arbeitsbereiche bereinigen",
+		"descriptionEmpty": "Keine archivierten Arbeitsbereiche.",
+		"description_one": "Den {{count}} archivierten Arbeitsbereich einschließlich seiner Sitzungen und seines Chatverlaufs dauerhaft löschen.",
+		"description_other": "Alle {{count}} archivierten Arbeitsbereiche einschließlich ihrer Sitzungen und ihres Chatverlaufs dauerhaft löschen.",
+		"button": "Bereinigen",
+		"buttonBusy": "Wird bereinigt",
+		"confirmTitle": "Archivierte Arbeitsbereiche bereinigen?",
+		"confirmDescription_one": "Dadurch wird der {{count}} archivierte Arbeitsbereich einschließlich seiner Sitzungen und seines Chatverlaufs dauerhaft gelöscht. Dies kann nicht rückgängig gemacht werden.",
+		"confirmDescription_other": "Dadurch werden alle {{count}} archivierten Arbeitsbereiche einschließlich ihrer Sitzungen und ihres Chatverlaufs dauerhaft gelöscht. Dies kann nicht rückgängig gemacht werden.",
+		"confirmLabel": "Alle löschen",
+		"toast": {
+			"nothing": "Keine archivierten Arbeitsbereiche zum Bereinigen",
+			"cleaned_one": "{{count}} archivierten Arbeitsbereich bereinigt",
+			"cleaned_other": "{{count}} archivierte Arbeitsbereiche bereinigt",
+			"partial_one": "{{deleted}} bereinigt, aber {{count}} Arbeitsbereich konnte nicht gelöscht werden",
+			"partial_other": "{{deleted}} bereinigt, aber {{count}} Arbeitsbereiche konnten nicht gelöscht werden",
+			"failedTitle": "Archivbereinigung fehlgeschlagen"
+		}
+	},
+	"appUpdates": {
+		"title": "App-Updates",
+		"loadingStatus": "Updater-Status wird geladen…",
+		"status": {
+			"notConfigured": "Der Updater ist in diesem Build nicht konfiguriert.",
+			"checking": "GitHub-Releases werden im Hintergrund geprüft.",
+			"downloadingVersion": "{{version}} wird im Hintergrund heruntergeladen.",
+			"downloading": "Ein Update wird im Hintergrund heruntergeladen.",
+			"downloadedVersion": "{{version}} wurde heruntergeladen und ist installationsbereit.",
+			"downloaded": "Das neueste Update wurde heruntergeladen und ist installationsbereit.",
+			"error": "Die letzte Update-Prüfung ist fehlgeschlagen.",
+			"disabledWaiting": "Automatische Update-Prüfungen warten auf die Updater-Konfiguration.",
+			"disabled": "Automatische Update-Prüfungen sind deaktiviert.",
+			"idle": "Prüft GitHub-Releases, lädt Updates leise herunter und meldet sich, wenn sie bereit sind."
+		},
+		"versionNotice": "Aktuell {{current}} · Verfügbar {{available}}",
+		"check": {
+			"downloading": "Wird heruntergeladen",
+			"installing": "Wird installiert",
+			"checking": "Wird geprüft",
+			"checkNow": "Jetzt prüfen"
+		},
+		"updateAndRestart": "Aktualisieren und neu starten",
+		"changeLog": "Änderungsprotokoll",
+		"toast": {
+			"upToDate": "Grex ist auf dem neuesten Stand",
+			"checkFailed": "Update-Prüfung fehlgeschlagen",
+			"checkFailedFallback": "Updates konnten nicht geprüft werden.",
+			"installFailed": "Installation fehlgeschlagen",
+			"installFailedFallback": "Das heruntergeladene Update konnte nicht installiert werden."
+		}
+	},
+	"components": {
+		"title": "Grex-Komponenten",
+		"loadingStatus": "Komponentenstatus wird geladen…",
+		"summary": {
+			"upToDate": "Grex-CLI und -Skills sind auf dem Stand von {{version}}.",
+			"healthy": "Grex-CLI und -Skills sehen gesund aus.",
+			"needsAttention": "Eine oder mehrere Komponenten benötigen Aufmerksamkeit."
+		},
+		"cliLabel": "Grex-CLI",
+		"skillsLabel": "Grex-Skills",
+		"recheck": "Jetzt erneut prüfen",
+		"recheckBusy": "Wird geprüft",
+		"cli": {
+			"installedAt": "Installiert unter {{path}}.",
+			"installed": "Installiert.",
+			"stale": "Unter dem Installationspfad existiert eine ältere Kopie.",
+			"missing": "Nicht auf diesem Gerät installiert.",
+			"unavailable": "Status nicht verfügbar."
+		},
+		"skills": {
+			"installedFor": "Installiert für {{targets}}.",
+			"installed": "Installiert.",
+			"signInPrompt": "Melde dich bei Claude Code oder Codex an und prüfe dann erneut.",
+			"join": " und "
+		},
+		"toast": {
+			"readFailed": "Status der Grex-Komponenten konnte nicht gelesen werden",
+			"upToDate": "Die Grex-Komponenten sind auf dem neuesten Stand",
+			"recheckFailed": "Erneute Prüfung fehlgeschlagen",
+			"cliInstallFailed": "CLI-Installation fehlgeschlagen",
+			"skillsInstallFailed": "Skills-Installation fehlgeschlagen"
+		}
+	},
+	"account": {
+		"errorAria": "Fehler in der Kontenliste",
+		"loading": "Konten werden geladen…",
+		"empty": "Noch keine Konten verbunden."
+	},
+	"devTools": {
+		"showOnboarding": {
+			"title": "Onboarding erneut anzeigen",
+			"description": "Markiert das Onboarding als unvollständig, sodass es beim nächsten Start von Grex erscheint.",
+			"notice": "Das Onboarding wird beim nächsten Start angezeigt.",
+			"button": "Onboarding zurücksetzen"
+		},
+		"resetData": {
+			"title": "Alle Daten zurücksetzen",
+			"description": "Löscht alle Arbeitsbereiche, Sitzungen, Nachrichten und Repositorys aus der Entwicklungsdatenbank. Dateisystem-Artefakte (Worktrees, Paste-Cache) werden ebenfalls entfernt.",
+			"dataDir": "Datenverzeichnis:",
+			"button": "Alle Entwicklungsdaten zurücksetzen",
+			"resetting": "Wird zurückgesetzt...",
+			"confirmTitle": "Zurücksetzen bestätigen",
+			"confirmDescription": "Dadurch werden <strong>alle Arbeitsbereiche, Sitzungen und Repositorys</strong> dauerhaft aus der Entwicklungsdatenbank gelöscht. Diese Aktion kann nicht rückgängig gemacht werden. Du kannst anschließend erneut aus Conductor importieren.",
+			"confirmLabel": "Alles löschen",
+			"confirmLabelBusy": "Wird zurückgesetzt..."
+		}
+	},
+	"plain": {
+		"connectAnother": "Weiteren Arbeitsbereich verbinden",
+		"workspaceFallback": "Plain-Arbeitsbereich",
+		"disconnect": "Trennen",
+		"disconnecting": "Wird getrennt…",
+		"threadsHint": "Offene Threads (To-do und Zurückgestellt) erscheinen im Feed.",
+		"disconnectError": "Plain konnte nicht getrennt werden.",
+		"disconnectFailed": "Trennen von Plain fehlgeschlagen"
+	},
+	"mobileCompanion": {
+		"title": "Mobiler Begleiter",
+		"description": "Steuere Grex über einen privaten Link aus dem Browser deines Smartphones. Beim Aktivieren werden ein lokaler Server und ein Cloudflare-Tunnel gestartet – keine App zu installieren.",
+		"starting": "Wird gestartet…",
+		"enableAria": "Mobilen Begleiter aktivieren",
+		"permanentUrl": {
+			"title": "Dauerhafte URL",
+			"stable": "Dein Smartphone verbindet sich mit einer festen Adresse, die Neustarts des Desktops übersteht.",
+			"signedIn": "Weise eine dauerhafte remote-*.grex.ai-Adresse zu, damit du nie erneut scannen musst.",
+			"signedOut": "Der Schnelllink ändert sich beim Neustart. Melde dich bei Cloudflare an, um eine dauerhafte Adresse zu erhalten.",
+			"forget": "Vergessen",
+			"forgetting": "Wird vergessen…",
+			"allocate": "Dauerhafte URL zuweisen",
+			"allocating": "Wird zugewiesen…",
+			"signIn": "Bei Cloudflare anmelden",
+			"signingIn": "Warten auf Browser…",
+			"address": "Dauerhafte Adresse:"
+		},
+		"pair": {
+			"title": "Smartphone koppeln",
+			"ready": "Erzeuge einen QR-Code und scanne ihn dann mit der Kamera deines Smartphones.",
+			"waiting": "Warten, bis die öffentliche URL verfügbar ist…",
+			"button": "Smartphone koppeln",
+			"generating": "Wird erzeugt…",
+			"scanHint": "Scanne mit der Kamera deines Smartphones. Der Code enthält ein einmaliges Geräte-Token – einmal koppeln und das Smartphone verbindet sich von selbst wieder.",
+			"copied": "Kopiert"
+		},
+		"devices": {
+			"title": "Gekoppelte Geräte",
+			"empty": "Noch keine Smartphones gekoppelt.",
+			"revoke": "Widerrufen",
+			"label": "Smartphone · {{date}}",
+			"neverConnected": "Nie verbunden",
+			"lastSeenRecently": "Kürzlich gesehen",
+			"lastSeen": "Zuletzt gesehen {{time}}"
+		}
+	},
+	"repositoryPreferences": {
+		"title": "Einstellungen",
+		"description": "Repository-weite integrierte Prompts, die von Grex-Aktionen und neuen Chats verwendet werden.",
+		"preview": "Vorschau",
+		"save": "Speichern",
+		"saving": "Wird gespeichert...",
+		"placeholderGeneral": "Füge benutzerdefinierte Anweisungen für alle Agents hinzu, die in diesem Repository arbeiten.",
+		"placeholderDefault": "Füge hier deine Einstellungen hinzu. Dem Agent wird mitgeteilt, diese Anweisungen vor seinen Standardanweisungen zu priorisieren.",
+		"promptTitle": "Prompt „{{label}}“",
+		"promptPreviewFallback": "Prompt-Vorschau",
+		"labels": {
+			"createPr": "Einstellungen für PR erstellen",
+			"review": "Einstellungen für Review",
+			"fixErrors": "Einstellungen für Fehler beheben",
+			"resolveConflicts": "Einstellungen für Konflikte lösen",
+			"branchRename": "Einstellungen für Branch-Umbenennung",
+			"general": "Allgemeine Einstellungen"
+		},
+		"descriptions": {
+			"createPr": "Füge benutzerdefinierte Anweisungen hinzu, die an den Agent gesendet werden, wenn du auf die Schaltfläche „PR erstellen“ klickst.",
+			"review": "Füge benutzerdefinierte Anweisungen hinzu, die an den Agent gesendet werden, wenn du im Inspector auf „Review“ klickst.",
+			"fixErrors": "Füge benutzerdefinierte Anweisungen hinzu, die an den Agent gesendet werden, wenn du auf die Schaltfläche „Fehler beheben“ klickst.",
+			"resolveConflicts": "Füge benutzerdefinierte Anweisungen hinzu, die an den Agent gesendet werden, wenn du auf die Schaltfläche „Konflikte lösen“ klickst.",
+			"branchRename": "Füge benutzerdefinierte Anweisungen hinzu, die verwendet werden, wenn Grex den ersten Vorschlag zur Branch-Umbenennung für einen neuen Chat generiert.",
+			"general": "Füge benutzerdefinierte Anweisungen hinzu, die zu Beginn jedes neuen Chats an den Agent gesendet werden."
+		}
+	},
+	"repositorySettings": {
+		"remoteFallback": "Repository",
+		"remoteOrigin": {
+			"title": "Remote-Origin",
+			"description": "Wohin sollen wir pushen, pullen und PRs erstellen?",
+			"empty": "Keine Remotes gefunden",
+			"orphanedNotice_one": "{{count}} Arbeitsbereich zielt auf einen Branch, der nicht auf diesem Remote ist. Aktualisiere ihn über die Branch-Auswahl in der Kopfzeile.",
+			"orphanedNotice_other": "{{count}} Arbeitsbereiche zielen auf einen Branch, der nicht auf diesem Remote ist. Aktualisiere sie über die Branch-Auswahl in der Kopfzeile."
+		},
+		"branchFrom": {
+			"title": "Neue Arbeitsbereiche verzweigen von",
+			"description": "Jeder Arbeitsbereich ist eine isolierte Kopie deiner Codebasis."
+		},
+		"forge": {
+			"notConnected": "{{provider}} nicht verbunden",
+			"connectCta": "Verbinde ein {{provider}}-Konto, um den {{provider}}-Workflow für dieses Repository zu aktivieren.",
+			"connect": "Verbinden",
+			"connecting": "Wird verbunden"
+		},
+		"branchPrefix": {
+			"title": "Branch-Präfix",
+			"description": "Präfix, das beim Erstellen neuer Arbeitsbereiche in diesem Repository zu Branch-Namen hinzugefügt wird.",
+			"username": "Benutzername",
+			"custom": "Benutzerdefiniert",
+			"none": "Keines",
+			"customPlaceholder": "z. B. feat/",
+			"customAria": "Benutzerdefiniertes Branch-Präfix",
+			"preview": "Vorschau:",
+			"connectAccount": "(Konto verbinden)"
+		},
+		"delete": {
+			"title": "Repository löschen",
+			"description": "Entfernt dieses Repository und all seine Arbeitsbereiche, Sitzungen und Nachrichten dauerhaft.",
+			"button": "Repository löschen",
+			"confirmTitle": "{{name}} löschen?",
+			"confirmDescription": "Dadurch werden alle mit <strong>{{name}}</strong> verknüpften Arbeitsbereiche, Sitzungen und Nachrichten dauerhaft gelöscht. Dies kann nicht rückgängig gemacht werden.",
+			"confirmLabel": "Löschen",
+			"deleting": "Wird gelöscht..."
+		},
+		"scripts": {
+			"title": "Skripte",
+			"description": "Befehle, die ausgeführt werden, wenn Arbeitsbereiche eingerichtet, ausgeführt oder archiviert werden.",
+			"lockedMessage": "Festgelegt durch die grex.json dieses Arbeitsbereichs – bearbeite sie dort",
+			"setup": {
+				"label": "Setup-Skript",
+				"description": "Verfügbar über den Tab „Setup“ in jedem Arbeitsbereich",
+				"placeholder": "z. B. npm install",
+				"autoRun": "Automatisch ausführen",
+				"autoRunTooltip": "Standardmäßig aktiviert – das Setup läuft automatisch, sobald ein Arbeitsbereich erstellt wird. Deaktiviere es, um es manuell über den Tab „Setup“ auszuführen.",
+				"autoRunAria": "Setup-Skript bei Erstellung des Arbeitsbereichs automatisch ausführen"
+			},
+			"archive": {
+				"label": "Archivierungs-Skript",
+				"description": "Wird ausgeführt, wenn ein Arbeitsbereich archiviert wird",
+				"placeholder": "z. B. docker compose down"
+			},
+			"run": {
+				"title": "Ausführungs-Skripte",
+				"description": "Jeder Eintrag erscheint im Dropdown „Ausführen“ des Inspectors.",
+				"lockedEmpty": "Festgelegt durch die grex.json dieses Arbeitsbereichs – bearbeite sie dort.",
+				"emptyTitle": "Noch keine Ausführungs-Skripte",
+				"emptyDescription": "Füge eines hinzu, um einen Befehl bereitzustellen – etwa einen Dev-Server, einen Test-Runner oder eine Hintergrundaufgabe.",
+				"addScript": "Skript hinzufügen",
+				"defaultName": "Standard",
+				"scriptN": "Skript {{index}}",
+				"unnamed": "(unbenannt)",
+				"noCommand": "(kein Befehl)",
+				"empty": "(leer)",
+				"exclusive": "Exklusiv",
+				"exclusiveTooltip": "Lässt jeweils nur einen Arbeitsbereich dieses Skript ausführen. Das Starten eines neuen Laufs stoppt jeden anderen Lauf in diesem Repository – nützlich, wenn das Skript einen festen Port belegt.",
+				"exclusiveAria": "Andere Läufe in diesem Repository beim Start eines neuen Laufs stoppen",
+				"scriptName": "Skriptname",
+				"command": "Befehl",
+				"commandPlaceholder": "z. B. npm run dev",
+				"commandAria": "Befehl von {{name}}",
+				"stopCommand": "Stopp-Befehl",
+				"stopCommandTooltip": "Optionaler Bereinigungsbefehl, der beim Klick auf „Stopp“ ausgeführt wird. Nützlich für Skripte, die externe Ressourcen verwalten (docker compose down, supabase stop). Gleiche Umgebung und gleiches Arbeitsverzeichnis wie der Hauptbefehl.",
+				"stopCommandPlaceholder": "z. B. docker compose down",
+				"stopCommandAria": "Stopp-Befehl von {{name}}",
+				"scriptFallback": "Skript",
+				"collapseAria": "{{name}} einklappen",
+				"expandAria": "{{name}} ausklappen",
+				"rowFallback": "Skript",
+				"doneEditing": "Bearbeitung abschließen",
+				"edit": "Bearbeiten",
+				"stopEditing": "Bearbeitung beenden",
+				"deleteScript": "Skript löschen",
+				"clickAgainConfirm": "Zum Bestätigen erneut klicken",
+				"confirmDeleteAria": "Löschen von {{name}} bestätigen",
+				"deleteScriptAria": "Skript {{name}} löschen",
+				"managedByProject": "Verwaltet durch grex.json – bearbeite die Datei zum Hinzufügen oder Ändern"
+			}
+		}
+	},
+	"conductorImport": {
+		"title": "Aus Conductor importieren",
+		"repositoryFallback": "Repository",
+		"selectWorkspaces": "Zu importierende Arbeitsbereiche auswählen",
+		"importLocal": "Arbeitsbereiche aus einer lokalen Conductor-Installation importieren",
+		"searchWorkspaces": "Arbeitsbereiche suchen",
+		"searchRepositories": "Repositorys suchen",
+		"importing_one": "{{count}} Arbeitsbereich wird importiert",
+		"importing_other": "{{count}} Arbeitsbereiche werden importiert",
+		"settingUp": "Repositorys werden eingerichtet und Daten kopiert...",
+		"selectAll": "Alle auswählen",
+		"deselectAll": "Auswahl aufheben",
+		"noWorkspaces": "Keine Arbeitsbereiche gefunden",
+		"noRepositories": "Keine Conductor-Repositorys gefunden",
+		"noMatches": "Keine Treffer",
+		"importButton_one": "{{count}} Arbeitsbereich importieren",
+		"importButton_other": "{{count}} Arbeitsbereiche importieren",
+		"importFailed": "Import fehlgeschlagen",
+		"importPartial": "{{imported}} importiert, {{failed}} fehlgeschlagen: {{error}}",
+		"importSuccess_one": "{{count}} Arbeitsbereich erfolgreich importiert",
+		"importSuccess_other": "{{count}} Arbeitsbereiche erfolgreich importiert",
+		"status": {
+			"archived": "Archiviert",
+			"done": "Fertig",
+			"inProgress": "In Bearbeitung"
+		},
+		"alreadyImported": "Bereits importiert",
+		"allImported": "Alle importiert",
+		"importedCount": "{{imported}}/{{total}} importiert",
+		"workspaceCount_one": "{{count}} Arbeitsbereich",
+		"workspaceCount_other": "{{count}} Arbeitsbereiche",
+		"selectWorkspace": "{{name}} auswählen",
+		"sessionCount_one": "{{count}} Sitzung",
+		"sessionCount_other": "{{count}} Sitzungen"
+	}
+}

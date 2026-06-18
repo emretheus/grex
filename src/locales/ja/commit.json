@@ -1,0 +1,126 @@
+{
+	"states": {
+		"commitAndPush": {
+			"idle": "コミットしてプッシュ",
+			"busy": "コミット中…",
+			"done": "プッシュ済み",
+			"disabled": "コミットしてプッシュ"
+		},
+		"push": {
+			"idle": "プッシュ",
+			"busy": "プッシュ中…",
+			"done": "プッシュ済み",
+			"disabled": "プッシュ"
+		},
+		"fix": {
+			"idle": "CI を修正",
+			"busy": "CI を修正中…",
+			"done": "CI 修正済み",
+			"disabled": "CI を修正"
+		},
+		"resolveConflicts": {
+			"idle": "コンフリクトを解決",
+			"busy": "解決中…",
+			"done": "解決済み",
+			"disabled": "コンフリクトを解決"
+		},
+		"checksRunning": {
+			"idle": "チェック実行中",
+			"busy": "マージ中…",
+			"done": "マージ済み",
+			"disabled": "チェック実行中"
+		},
+		"mergeBlocked": {
+			"idle": "マージがブロック中",
+			"busy": "マージ中…",
+			"done": "マージ済み",
+			"disabled": "マージがブロック中"
+		},
+		"merge": {
+			"idle": "マージ",
+			"busy": "マージ中…",
+			"done": "マージ済み",
+			"disabled": "マージ"
+		},
+		"merged": "マージ済み",
+		"closed": "クローズ済み"
+	},
+	"createPr": {
+		"busy": "{{changeRequestName}}を作成中…",
+		"done": "{{changeRequestName}}を作成しました",
+		"idle": "{{changeRequestName}}を作成"
+	},
+	"openPr": {
+		"busy": "{{changeRequestName}}を開いています…",
+		"done": "再オープン済み",
+		"idle": "{{changeRequestName}}を開く"
+	},
+	"menu": {
+		"commitAndPushManually": "手動でコミットしてプッシュ",
+		"pushManually": "手動でプッシュ",
+		"fixManually": "手動で CI を修正",
+		"createDraftPr": "{{changeRequestName}}の下書きを作成",
+		"createPrManually": "手動で{{changeRequestName}}を作成"
+	},
+	"options": {
+		"commitAndPush": "コミットしてプッシュのオプション",
+		"push": "プッシュのオプション",
+		"fix": "CI 修正のオプション",
+		"resolveConflicts": "コンフリクト解決のオプション",
+		"checksRunning": "チェック実行中のオプション",
+		"mergeBlocked": "マージブロックのオプション",
+		"merge": "マージのオプション",
+		"openPr": "{{changeRequestName}}を開くオプション",
+		"merged": "マージ済みのオプション",
+		"closed": "クローズ済みのオプション",
+		"createPr": "{{changeRequestName}}作成のオプション"
+	},
+	"splitButton": {
+		"defaultLabel": "コミット",
+		"commitAria": "現在の変更をコミット",
+		"moreActionsAria": "Git セクションのその他の操作"
+	},
+	"mergeBlockedReason": {
+		"behindShort": "ベースより遅れています",
+		"blockedShort": "マージがブロック中",
+		"draftShort": "下書き PR",
+		"unstableShort": "不安定",
+		"behindDetail": "このブランチはベースブランチより遅れています。それでも実行しますか？",
+		"blockedDetail": "ブランチ保護がこのマージをブロックしています。レビュー不足、未解決の会話、または必須チェックが原因の可能性があります。それでも実行しますか？",
+		"draftDetail": "このプルリクエストはまだ下書きです。それでも実行しますか？",
+		"unstableDetail": "必須でないチェックが失敗しています。それでも実行しますか？"
+	},
+	"confirm": {
+		"mergeAnyway": "それでもマージ",
+		"tryAnyway": "それでも実行",
+		"beforeChecksTitle": "チェック完了前にマージしますか？",
+		"beforeChecksDescription": "GitHub のチェックがまだ通っていません。それでもチェックを無視してマージしますか？",
+		"blockedMergeTitle": "ブロックされたマージを実行しますか？"
+	},
+	"failureTitle": {
+		"createPr": "{{changeRequestName}}の作成に失敗しました",
+		"commitAndPush": "コミットとプッシュに失敗しました",
+		"push": "プッシュに失敗しました",
+		"fix": "CI の修正に失敗しました",
+		"resolveConflicts": "コンフリクトの解決に失敗しました",
+		"merge": "マージに失敗しました",
+		"openPr": "{{changeRequestName}}を開けませんでした",
+		"closed": "{{changeRequestName}}のクローズに失敗しました",
+		"generic": "操作に失敗しました"
+	},
+	"toast": {
+		"mergeBlockedTitle": "マージがブロックされました",
+		"conflictMessage": "{{changeRequestName}}にマージコンフリクトがあり、まだマージできません。",
+		"mergeabilityComputing": "マージ可否を計算中です。しばらく待ってから再試行してください。",
+		"pushFailedFallback": "ブランチをプッシュできませんでした。",
+		"promptNotDeliveredTitle": "プロンプトが送信されませんでした",
+		"openChatFallback": "チャットセッションを開けませんでした。",
+		"reviewFailedTitle": "レビューに失敗しました",
+		"reviewFallback": "レビューを開始できませんでした。",
+		"reconnectMessage": "{{providerName}}アカウントを再接続してからもう一度お試しください。",
+		"notConnectedTitle": "{{providerName}}が未接続です",
+		"startActionFallback": "操作を開始できませんでした。",
+		"completeActionFallback": "操作を完了できませんでした。",
+		"verifyActionFallback": "操作結果を確認できませんでした。"
+	}
+}

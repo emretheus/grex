@@ -9,6 +9,7 @@ import {
 	useRef,
 	useState,
 } from "react";
+import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import {
 	AccountHoverCardContent,
@@ -83,6 +84,7 @@ export function RepositoryCliStep({
 	onBack: () => void;
 	onNext: () => void;
 }) {
+	const { t } = useTranslation("onboarding");
 	const [github, setGithub] = useState<CliState>({
 		logins: [],
 		checking: true,
@@ -258,7 +260,9 @@ export function RepositoryCliStep({
 					// the user can retry from the same tab.
 					setAddingAccount(null);
 					toast(
-						`Finish ${provider === "gitlab" ? "GitLab" : "GitHub"} CLI auth, then click Set up again.`,
+						t("repositoryCli.finishAuthToast", {
+							provider: provider === "gitlab" ? "GitLab" : "GitHub",
+						}),
 					);
 					return;
 				}
@@ -269,7 +273,7 @@ export function RepositoryCliStep({
 			// add a visible delay before the spinner appears.
 			void tick();
 		},
-		[clearPoll, queryClient],
+		[clearPoll, queryClient, t],
 	);
 
 	// Clear pending the same React commit the new avatar lands. We
@@ -304,8 +308,13 @@ export function RepositoryCliStep({
 			})
 			.catch(() => {});
 		const label = pending.provider === "gitlab" ? "GitLab" : "GitHub";
-		toast.success(`${label} connected as @${pending.login}`);
-	}, [addingAccount, accountsQuery.data, resetFlowTo, queryClient]);
+		toast.success(
+			t("repositoryCli.connectedToast", {
+				provider: label,
+				login: pending.login,
+			}),
+		);
+	}, [addingAccount, accountsQuery.data, resetFlowTo, queryClient, t]);
 
 	// Fail-safe: if the profile fetch never lands (network error,
 	// stale cache, etc.) drop pending after 10s so the spinner can't
@@ -392,7 +401,7 @@ export function RepositoryCliStep({
 	const handleGitlabHostSubmit = useCallback(() => {
 		const host = normalizeGitlabHost(gitlabHost);
 		if (!host) {
-			toast.error("Enter a GitLab domain.");
+			toast.error(t("repositoryCli.enterDomainError"));
 			return;
 		}
 		setGitlabHost(host);
@@ -404,11 +413,11 @@ export function RepositoryCliStep({
 		setGitlabStatusHost(host);
 		clearPoll();
 		openTerminal("gitlab", host);
-	}, [clearPoll, gitlabHost, openTerminal]);
+	}, [clearPoll, gitlabHost, openTerminal, t]);
 
 	return (
 		<section
-			aria-label="Repository CLI setup"
+			aria-label={t("repositoryCli.sectionLabel")}
 			aria-hidden={step !== "corner"}
 			className={`absolute top-20 right-20 z-30 w-[560px] transition-all duration-1000 ease-[cubic-bezier(.22,.82,.2,1)] ${
 				step === "skills"
@@ -420,12 +429,10 @@ export function RepositoryCliStep({
 		>
 			<div className="flex flex-col items-start">
 				<h2 className="max-w-none text-4xl font-semibold leading-[1.02] tracking-normal text-foreground whitespace-nowrap">
-					Connect accounts
+					{t("repositoryCli.heading")}
 				</h2>
 				<p className="mt-4 max-w-md text-small leading-5 text-muted-foreground">
-					Each repo uses one of your accounts. Add now or skip — existing logins
-					are picked up automatically. All accounts live in your local gh/glab
-					CLI.
+					{t("repositoryCli.description")}
 				</p>
 
 				<div className="mt-7 grid w-full gap-3">
@@ -489,7 +496,7 @@ export function RepositoryCliStep({
 						className="h-9 gap-2 px-4 text-title"
 					>
 						<ArrowLeft data-icon="inline-start" className="size-4" />
-						Back
+						{t("repositoryCli.back")}
 					</Button>
 					<Button
 						type="button"
@@ -497,7 +504,7 @@ export function RepositoryCliStep({
 						onClick={onNext}
 						className="h-9 gap-2 px-4 text-title"
 					>
-						Next
+						{t("repositoryCli.next")}
 						<ArrowRight data-icon="inline-end" className="size-4" />
 					</Button>
 				</div>
@@ -536,6 +543,7 @@ function AccountListPanel({
 	onAddGithub: () => void;
 	onAddGitlab: () => void;
 }) {
+	const { t } = useTranslation("onboarding");
 	const accountByLogin = new Map<string, ForgeAccount>();
 	for (const account of accounts) {
 		accountByLogin.set(`${account.provider}::${account.login}`, account);
@@ -596,8 +604,8 @@ function AccountListPanel({
 				) : rows.length === 0 ? (
 					<div className="flex items-center justify-center px-2 py-4 text-small text-muted-foreground">
 						{loading
-							? "Checking for connected accounts…"
-							: "No accounts connected yet."}
+							? t("repositoryCli.checkingAccounts")
+							: t("repositoryCli.noAccounts")}
 					</div>
 				) : (
 					<ul className="divide-y divide-border/40">
@@ -761,10 +769,15 @@ function CompactAccountStack({
 	}>;
 	addingAccount: AddingAccount | null;
 }) {
+	const { t } = useTranslation("onboarding");
 	const addingLabel = addingAccount
 		? addingAccount.login
-			? `Adding @${addingAccount.login}…`
-			: `Adding ${addingAccount.provider === "gitlab" ? "GitLab" : "GitHub"} account…`
+			? t("repositoryCli.addingAccountWithLogin", {
+					login: addingAccount.login,
+				})
+			: t("repositoryCli.addingAccountProvider", {
+					provider: addingAccount.provider === "gitlab" ? "GitLab" : "GitHub",
+				})
 		: null;
 
 	if (rows.length === 0) {
@@ -783,7 +796,7 @@ function CompactAccountStack({
 					</>
 				) : (
 					<span className="text-small text-muted-foreground">
-						No accounts connected yet.
+						{t("repositoryCli.noAccounts")}
 					</span>
 				)}
 			</div>
@@ -808,14 +821,15 @@ function CompactAccountStack({
 					{overflow > 0 ? (
 						<div
 							className="flex size-7 items-center justify-center rounded-full border-2 border-card bg-muted text-micro font-semibold text-muted-foreground"
-							title={`${overflow} more account${overflow === 1 ? "" : "s"}`}
+							title={t("repositoryCli.moreAccounts", { count: overflow })}
 						>
 							+{overflow}
 						</div>
 					) : null}
 				</div>
 				<span className="truncate text-small text-muted-foreground">
-					{addingLabel ?? `${rows.length} connected`}
+					{addingLabel ??
+						t("repositoryCli.connectedCount", { count: rows.length })}
 				</span>
 			</div>
 		</div>
@@ -889,6 +903,7 @@ function AccountRow({
 		account: ForgeAccount | null;
 	};
 }) {
+	const { t } = useTranslation("onboarding");
 	const account = row.account;
 	const displayName = account?.name?.trim() || row.login;
 	const providerIcon =
@@ -919,7 +934,9 @@ function AccountRow({
 				<div className="mt-0.5 flex items-center gap-1 text-micro text-muted-foreground">
 					{providerIcon}
 					<span className="truncate">
-						{row.provider === "gitlab" ? `GitLab · ${row.host}` : "GitHub"}
+						{row.provider === "gitlab"
+							? t("repositoryCli.providerGitlabHost", { host: row.host })
+							: "GitHub"}
 					</span>
 				</div>
 			</div>
@@ -994,6 +1011,7 @@ function GitlabHostSlot({
 	onSubmit: () => void;
 	onClose: () => void;
 }) {
+	const { t } = useTranslation("onboarding");
 	const openDelay = active && !flowSettled ? "700ms" : "0ms";
 	return (
 		<div
@@ -1018,16 +1036,16 @@ function GitlabHostSlot({
 					<button
 						type="button"
 						onClick={onClose}
-						aria-label="Cancel"
+						aria-label={t("repositoryCli.cancel")}
 						className="absolute top-3 right-3 inline-flex size-6 cursor-interactive items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
 					>
 						<X className="size-3.5" strokeWidth={2.4} />
 					</button>
 					<div className="text-body font-medium text-foreground">
-						GitLab domain
+						{t("repositoryCli.gitlabDomainTitle")}
 					</div>
 					<p className="mt-1 text-small leading-5 text-muted-foreground">
-						Use gitlab.com or your self-hosted GitLab domain.
+						{t("repositoryCli.gitlabDomainHelp")}
 					</p>
 					<form
 						className="mt-4 flex items-center gap-2"
@@ -1040,12 +1058,12 @@ function GitlabHostSlot({
 							value={value}
 							onChange={(event) => onChange(event.target.value)}
 							placeholder={DEFAULT_GITLAB_HOST}
-							aria-label="GitLab domain"
+							aria-label={t("repositoryCli.gitlabDomainLabel")}
 							className="h-10"
 						/>
 						<Button type="submit" className="h-10 shrink-0 gap-2 px-3">
 							<LogIn className="size-4" />
-							Log in
+							{t("repositoryCli.logIn")}
 						</Button>
 					</form>
 				</div>
@@ -1067,6 +1085,7 @@ function ForgeCliTerminalPreview({
 	onError: (message: string) => void;
 	onClose: () => void;
 }) {
+	const { t } = useTranslation("onboarding");
 	const termRef = useRef<TerminalHandle | null>(null);
 	// Keep onExit/onError out of the spawn effect's deps — parent
 	// re-renders recreate them, and a re-run kills the just-started
@@ -1128,7 +1147,9 @@ function ForgeCliTerminalPreview({
 		).catch((error) => {
 			if (cancelled) return;
 			const message =
-				error instanceof Error ? error.message : "Unable to start login.";
+				error instanceof Error
+					? error.message
+					: t("repositoryCli.startLoginFailed");
 			termRef.current?.write(`\r\n${message}\r\n`);
 			onErrorRef.current(message);
 		});

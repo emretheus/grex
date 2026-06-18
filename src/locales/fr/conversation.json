@@ -1,0 +1,94 @@
+{
+	"collapse": {
+		"working": "En cours...",
+		"done": "Terminé",
+		"separator": ", ",
+		"activeSuffix": "{{clauses}}...",
+		"search": {
+			"onePattern": {
+				"lead": {
+					"active": "Recherche de '{{pattern}}'",
+					"done": "Recherche de '{{pattern}}'"
+				},
+				"cont": {
+					"active": "recherche de '{{pattern}}'",
+					"done": "recherche de '{{pattern}}'"
+				}
+			},
+			"onePatternRepeated": {
+				"lead": {
+					"active": "Recherche de '{{pattern}}' ({{count}}×)",
+					"done": "Recherche de '{{pattern}}' ({{count}}×)"
+				},
+				"cont": {
+					"active": "recherche de '{{pattern}}' ({{count}}×)",
+					"done": "recherche de '{{pattern}}' ({{count}}×)"
+				}
+			},
+			"manyPatterns": {
+				"lead": {
+					"active": "Recherche de {{count}} motifs",
+					"done": "{{count}} motifs recherchés"
+				},
+				"cont": {
+					"active": "recherche de {{count}} motifs",
+					"done": "{{count}} motifs recherchés"
+				}
+			},
+			"times": {
+				"lead": {
+					"active_one": "Recherche {{count}} fois",
+					"active_other": "Recherche {{count}} fois",
+					"done_one": "Recherché {{count}} fois",
+					"done_other": "Recherché {{count}} fois"
+				},
+				"cont": {
+					"active_one": "recherche {{count}} fois",
+					"active_other": "recherche {{count}} fois",
+					"done_one": "recherché {{count}} fois",
+					"done_other": "recherché {{count}} fois"
+				}
+			}
+		},
+		"read": {
+			"lead": {
+				"active_one": "Lecture de {{count}} fichier",
+				"active_other": "Lecture de {{count}} fichiers",
+				"done_one": "{{count}} fichier lu",
+				"done_other": "{{count}} fichiers lus"
+			},
+			"cont": {
+				"active_one": "lecture de {{count}} fichier",
+				"active_other": "lecture de {{count}} fichiers",
+				"done_one": "{{count}} fichier lu",
+				"done_other": "{{count}} fichiers lus"
+			}
+		},
+		"shell": {
+			"lead": {
+				"active_one": "Exécution de {{count}} commande en lecture seule",
+				"active_other": "Exécution de {{count}} commandes en lecture seule",
+				"done_one": "{{count}} commande en lecture seule exécutée",
+				"done_other": "{{count}} commandes en lecture seule exécutées"
+			},
+			"cont": {
+				"active_one": "exécution de {{count}} commande en lecture seule",
+				"active_other": "exécution de {{count}} commandes en lecture seule",
+				"done_one": "{{count}} commande en lecture seule exécutée",
+				"done_other": "{{count}} commandes en lecture seule exécutées"
+			}
+		}
+	},
+	"toast": {
+		"genericError": "Une erreur s'est produite. Veuillez réessayer.",
+		"genericErrorTitle": "Erreur"
+	},
+	"error": {
+		"userInputMissingIds": "Impossible d'afficher la demande de saisie utilisateur : userInputId ou modelId manquant.",
+		"deliverUserInputFailed": "Échec de la transmission de la réponse à la saisie utilisateur.",
+		"sendMessageFailed": "Échec de l'envoi du message."
+	},
+	"pending": {
+		"awaitingAnswer": "En attente de votre réponse."
+	}
+}

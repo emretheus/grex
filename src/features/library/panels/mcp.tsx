@@ -1,11 +1,13 @@
 import { useQuery } from "@tanstack/react-query";
 import { Plus, RefreshCw, Search } from "lucide-react";
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import type { McpServer } from "@/lib/api";
+import { i18n } from "@/lib/i18n";
 import { libraryMcpServersQueryOptions } from "@/lib/query-client";
 import { mcpAgentLabel } from "../mcp-agents";
 import { BrandIcon } from "../mcp-brand-icon";
@@ -38,8 +40,16 @@ function matches(query: string, ...fields: string[]): boolean {
 	return fields.some((f) => f.toLowerCase().includes(q));
 }
 
+/** Translated catalog description for a server, falling back to the English source. */
+function mcpDescription(entry: McpCatalogEntry): string {
+	return i18n.t(`library:catalog.mcp.${entry.key}`, {
+		defaultValue: entry.description,
+	});
+}
+
 /** Library → MCP Servers: a catalog of recommended servers + your own. */
 export function LibraryMcpPanel() {
+	const { t } = useTranslation("library");
 	const { data: servers = [] } = useQuery(libraryMcpServersQueryOptions());
 	const [editor, setEditor] = useState<EditorState | null>(null);
 	const [syncOpen, setSyncOpen] = useState(false);
@@ -59,7 +69,8 @@ export function LibraryMcpPanel() {
 	const recommended = useMemo(
 		() =>
 			MCP_CATALOG.filter(
-				(e) => !addedNames.has(e.key) && matches(search, e.name, e.description),
+				(e) =>
+					!addedNames.has(e.key) && matches(search, e.name, mcpDescription(e)),
 			),
 		[addedNames, search],
 	);
@@ -82,7 +93,7 @@ export function LibraryMcpPanel() {
 					<Input
 						value={search}
 						onChange={(e) => setSearch(e.target.value)}
-						placeholder="Search servers…"
+						placeholder={t("mcp.searchPlaceholder")}
 						className="pl-8"
 					/>
 				</div>
@@ -93,18 +104,18 @@ export function LibraryMcpPanel() {
 					onClick={() => setSyncOpen(true)}
 				>
 					<RefreshCw className="size-4" />
-					Sync
+					{t("mcp.sync")}
 				</Button>
 				<Button size="sm" onClick={() => setEditor({ server: null })}>
 					<Plus className="size-4" />
-					Custom MCP
+					{t("mcp.custom")}
 				</Button>
 			</div>
 
 			<ScrollArea className="min-h-0 flex-1">
 				<div className="space-y-5 px-6 pb-6">
 					{addedFiltered.length > 0 ? (
-						<Section title="Added">
+						<Section title={t("sectionTitles.added")}>
 							{addedFiltered.map((server) => (
 								<AddedCard
 									key={server.id}
@@ -116,7 +127,7 @@ export function LibraryMcpPanel() {
 					) : null}
 
 					{recommended.length > 0 ? (
-						<Section title="Recommended">
+						<Section title={t("sectionTitles.recommended")}>
 							{recommended.map((entry) => (
 								<CatalogCard
 									key={entry.key}
@@ -131,7 +142,7 @@ export function LibraryMcpPanel() {
 
 					{addedFiltered.length === 0 && recommended.length === 0 ? (
 						<p className="px-2 py-8 text-center text-small text-muted-foreground">
-							No servers match “{search}”. Use Custom MCP to add your own.
+							{t("mcp.noSearchMatch", { query: search })}
 						</p>
 					) : null}
 				</div>
@@ -183,7 +194,7 @@ function AddedCard({
 					</Badge>
 					{!server.enabled ? (
 						<Badge variant="outline" className="shrink-0 text-nano">
-							off
+							{i18n.t("library:mcp.off")}
 						</Badge>
 					) : null}
 				</div>
@@ -194,7 +205,9 @@ function AddedCard({
 				</span>
 				<div className="flex flex-wrap gap-1 pt-0.5">
 					{server.providers.length === 0 ? (
-						<span className="text-nano text-muted-foreground">not synced</span>
+						<span className="text-nano text-muted-foreground">
+							{i18n.t("library:mcp.notSynced")}
+						</span>
 					) : (
 						server.providers.map((p) => (
 							<Badge key={p} variant="outline" className="text-nano">
@@ -228,13 +241,13 @@ function CatalogCard({
 					</Badge>
 				</div>
 				<span className="line-clamp-2 text-small text-muted-foreground">
-					{entry.description}
+					{mcpDescription(entry)}
 				</span>
 			</div>
 			<Button
 				variant="ghost"
 				size="icon-xs"
-				aria-label={`Add ${entry.name}`}
+				aria-label={i18n.t("library:mcp.addAria", { name: entry.name })}
 				onClick={onAdd}
 			>
 				<Plus className="size-4" />

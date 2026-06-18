@@ -1,0 +1,310 @@
+{
+	"stateFilter": {
+		"all": "すべて",
+		"open": "オープン",
+		"closed": "クローズ済み",
+		"merged": "マージ済み",
+		"answered": "回答済み",
+		"unanswered": "未回答"
+	},
+	"comingSoon": {
+		"title": "近日公開",
+		"mobile": {
+			"line1": "スマートフォンからタスク、リンク、スクリーンショットを送信できます。",
+			"line2": "軽量なレビューとトリアージのフローを同期させましょう。",
+			"line3": "モバイルで取得したコンテキストをデスクトップのエージェントに引き継ぎます。"
+		}
+	},
+	"search": {
+		"placeholder": "検索",
+		"clear": "検索をクリア",
+		"forgeAriaLabel": "{{provider}} のコンテキストを検索",
+		"issuesAriaLabel": "{{provider}} の課題を検索",
+		"slackAriaLabel": "Slack のメッセージを検索"
+	},
+	"filter": {
+		"byKind": "{{kind}}で絞り込む",
+		"sortBy": "{{sort}}で並べ替え"
+	},
+	"sort": {
+		"newest": "最新",
+		"relevance": "関連度順"
+	},
+	"loading": {
+		"items": "項目を読み込んでいます…",
+		"provider": "{{provider}} を読み込んでいます…",
+		"slack": "Slack を読み込んでいます…"
+	},
+	"error": {
+		"title": "読み込めませんでした",
+		"fallback": "コンテキスト項目を読み込めませんでした。",
+		"providerFallback": "{{provider}} の課題を読み込めませんでした。",
+		"slackFallback": "Slack の受信箱を読み込めませんでした。",
+		"tryAgain": "再試行"
+	},
+	"empty": {
+		"noMatches": "一致する項目がありません",
+		"noMatchesProvider": "{{provider}} に「{{query}}」に一致するものはありません。",
+		"noMatchesWorkspace": "このワークスペースに「{{query}}」に一致するものはありません。",
+		"noActivity": "新しいアクティビティはありません",
+		"slackActivitySubtitle": "メンションと未読のダイレクトメッセージがここに表示されます。",
+		"refresh": "更新",
+		"noItems": "まだ{{plural}}はありません",
+		"noItemsInRepo": "{{repo}} に{{plural}}はありません"
+	},
+	"configure": "設定",
+	"connectForge": {
+		"kindDisabledTitle": "{{plural}}はオフです",
+		"kindDisabledDescription": "コンテキスト設定で{{lower}}を再度オンにしてください。"
+	},
+	"card": {
+		"addToContext": "コンテキストに追加",
+		"insertError": "コンテキストカードを挿入できませんでした"
+	},
+	"toast": {
+		"contextFetchFailed": "コンテキストの取得に失敗しました",
+		"providerFetchFailed": "{{provider}} の取得に失敗しました",
+		"slackFetchFailed": "Slack の取得に失敗しました",
+		"slackSearchFailed": "Slack の検索に失敗しました",
+		"slackSearchFailedMessage": "Slack のメッセージを検索できませんでした。",
+		"slackInboxFailedMessage": "Slack の受信箱の項目を読み込めませんでした。"
+	},
+	"connect": {
+		"connecting": "接続しています…",
+		"connect": "接続",
+		"featurebase": {
+			"title": "Featurebase を接続",
+			"description": "Featurebase の API キーと公開フィードバック URL を貼り付けてください。macOS のキーチェーンにローカル保存されます。",
+			"apiKeyPlaceholder": "Featurebase の API キー",
+			"apiKeyLabel": "Featurebase の API キー",
+			"urlPlaceholder": "https://acme.featurebase.app",
+			"urlLabel": "Featurebase のフィードバック URL",
+			"help": "これらはどこで確認できますか？",
+			"failedTitle": "Featurebase の接続に失敗しました",
+			"failedMessage": "Featurebase を接続できませんでした。"
+		},
+		"forgejo": {
+			"title": "Forgejo を接続",
+			"description": "Forgejo のインスタンス URL とアクセストークンを貼り付けてください。macOS のキーチェーンにローカル保存されます。",
+			"hostPlaceholder": "https://codeberg.org",
+			"hostLabel": "Forgejo のインスタンス URL",
+			"tokenPlaceholder": "アクセストークン",
+			"tokenLabel": "Forgejo のアクセストークン",
+			"help": "アクセストークンを作成",
+			"failedTitle": "Forgejo の接続に失敗しました",
+			"failedMessage": "Forgejo を接続できませんでした。"
+		},
+		"jira": {
+			"title": "Jira を接続",
+			"description": "サイト URL、メールアドレス、API トークンを入力してください。macOS のキーチェーンにローカル保存されます。",
+			"sitePlaceholder": "https://your-team.atlassian.net",
+			"siteLabel": "Jira のサイト URL",
+			"emailPlaceholder": "you@example.com",
+			"emailLabel": "Jira アカウントのメールアドレス",
+			"tokenPlaceholder": "API トークン",
+			"tokenLabel": "Jira の API トークン",
+			"help": "API トークンを作成",
+			"failedTitle": "Jira の接続に失敗しました",
+			"failedMessage": "Jira を接続できませんでした。"
+		},
+		"linear": {
+			"title": "Linear を接続",
+			"description": "個人用 API キーを貼り付けてください。一度検証され、macOS のキーチェーンにローカル保存されます。",
+			"apiKeyPlaceholder": "lin_api_…",
+			"apiKeyLabel": "Linear の個人用 API キー",
+			"help": "Linear でキーを作成",
+			"failedTitle": "Linear の接続に失敗しました",
+			"failedMessage": "Linear を接続できませんでした。"
+		},
+		"trello": {
+			"title": "Trello を接続",
+			"description": "Trello の API キーとトークンを貼り付けてください。macOS のキーチェーンにローカル保存されます。",
+			"apiKeyPlaceholder": "Trello の API キー",
+			"apiKeyLabel": "Trello の API キー",
+			"tokenPlaceholder": "トークン",
+			"tokenLabel": "Trello のトークン",
+			"help": "API キーとトークンを取得",
+			"failedTitle": "Trello の接続に失敗しました",
+			"failedMessage": "Trello を接続できませんでした。"
+		},
+		"plain": {
+			"title": "Plain を接続",
+			"description": "thread:read 権限を持つ Plain の API キーを貼り付けてください。macOS のキーチェーンにローカル保存されます。",
+			"apiKeyPlaceholder": "Plain の API キー（plainApiKey_…）",
+			"apiKeyLabel": "Plain の API キー",
+			"help": "API キーはどこで作成しますか？",
+			"failedTitle": "Plain の接続に失敗しました",
+			"failedMessage": "Plain を接続できませんでした。"
+		},
+		"slack": {
+			"title": "Slack ワークスペースを接続",
+			"description": "サインイン済みの Slack デスクトップアプリに接続します。すべてはお使いのデバイス上にローカルかつ安全に保存されます。",
+			"descriptionUnsupported": "Slack デスクトップからのインポートは macOS で利用できます。Windows のサポートはまだ対応していません。",
+			"readingSession": "セッションを読み取っています…",
+			"connect": "Slack を接続",
+			"connectAnother": "別のワークスペースを接続",
+			"nothingTitle": "接続するものがありません",
+			"nothingMessage": "デスクトップアプリにサインイン済みの Slack ワークスペースが見つかりませんでした。",
+			"connectedWorkspace_other": "{{count}} 件のワークスペースを接続しました",
+			"alreadyConnected": "{{count}} 件は接続済み",
+			"failedSummary": "{{count}} 件が失敗：{{details}}",
+			"resultPartialTitle": "Slack 接続：一部成功",
+			"resultTitle": "Slack 接続",
+			"readFailedTitle": "接続に失敗しました",
+			"readFailedMessage": "Slack デスクトップのセッションを読み取れませんでした。"
+		}
+	},
+	"section": {
+		"linear": {
+			"emptyTitle": "割り当てられた課題はありません",
+			"emptySubtitle": "Linear であなたに割り当てられた課題がここに表示されます。"
+		},
+		"jira": {
+			"emptyTitle": "割り当てられた課題はありません",
+			"emptySubtitle": "Jira であなたに割り当てられた課題がここに表示されます。"
+		},
+		"trello": {
+			"emptyTitle": "カードはありません",
+			"emptySubtitle": "Trello であなたがメンバーになっているカードがここに表示されます。"
+		},
+		"forgejo": {
+			"emptyTitle": "課題はありません",
+			"emptySubtitle": "Forgejo であなたに割り当てられた課題がここに表示されます。"
+		},
+		"featurebase": {
+			"emptyTitle": "投稿はありません",
+			"emptySubtitle": "Featurebase のボードからのフィードバック投稿がここに表示されます。"
+		},
+		"plain": {
+			"emptyTitle": "スレッドはありません",
+			"emptySubtitle": "Plain の未対応のサポートスレッドがここに表示されます。"
+		}
+	},
+	"slackCard": {
+		"ariaLabel": "{{author}}：{{snippet}}",
+		"dm": "DM",
+		"threadIn": "スレッド：",
+		"mentionIn": "メンション：",
+		"mentionedYou": "{{author}} があなたをメンションしました",
+		"sentMessage": "{{author}} がメッセージを送信しました",
+		"preparing": "Slack のコンテキストを準備しています…",
+		"fetchingThread": "スレッドを取得しています",
+		"noAttachments": "キャッシュする添付ファイルはありません",
+		"cachingAttachments": "添付ファイルをキャッシュしています {{current}}/{{total}}",
+		"threadInlined": "スレッドをインライン化しました",
+		"threadInlinedImages_other": "スレッドをインライン化しました · 画像 {{count}} 件を添付",
+		"threadInlinedPartial": "スレッドをインライン化しました · 画像 {{attached}}/{{total}} 件を添付（残りは利用できません）",
+		"ready": "Slack のコンテキストの準備が完了しました",
+		"prepareFailed": "Slack のコンテキストを準備できませんでした",
+		"prepareFallback": "要約のみのコンテキストにフォールバックします。"
+	},
+	"slackSwitcher": {
+		"switch": "Slack ワークスペースを切り替え",
+		"workspaceFallback": "ワークスペース",
+		"noWorkspaces": "接続済みのワークスペースはありません",
+		"disconnect": "{{name}} を切断",
+		"disconnectFailedTitle": "切断に失敗しました",
+		"disconnectFailedMessage": "Slack ワークスペースを切断できませんでした。"
+	},
+	"settings": {
+		"connectAccount": "{{provider}} アカウントを接続",
+		"connectAccountDescription": "コンテキストが{{kinds}}を取得するには、少なくとも 1 つの {{provider}} アカウントが必要です。",
+		"addAccount": "アカウントを追加",
+		"itemsFallback": "項目",
+		"repository": "リポジトリ",
+		"repositoryDescription": "これらのコンテキスト設定を適用するリポジトリを選択します。",
+		"issuesDescription": "あなたに割り当てられている、またはあなたが作成した{{plural}}を表示します。",
+		"prsDescription": "あなたが作成した、またはあなたに割り当てられている{{plural}}を表示します。",
+		"discussionsDescription": "アクセス権のあるリポジトリの{{plural}}を表示します。",
+		"scope": "範囲",
+		"scopeDescription": "{{provider}} がデフォルトで使用する{{singular}}の関係。",
+		"sort": "並べ替え",
+		"sortDescription": "サイドバーのフィルターを適用する前のデフォルトの並び順。",
+		"labels": "ラベル",
+		"labelsDescription": "選択したリポジトリラベルが付いた{{plural}}のみを含めます。",
+		"drafts": "下書き",
+		"draftsDescription": "下書きの{{plural}}をフィードに表示するかどうか。",
+		"addRepoFirst": "コンテキストを設定する前に、{{provider}} のリポジトリを追加または接続してください。",
+		"slackConnected": "Slack が接続されています。コンテキストのサイドバーを開いてフィードを閲覧してください。",
+		"slackConnectedCount": "{{count}} 件の Slack ワークスペースが接続されています。コンテキストのサイドバーを開いてフィードを閲覧してください。",
+		"scopeOptions": {
+			"all": "すべて",
+			"involves": "自分が関係",
+			"assigned": "自分に割り当て",
+			"mentioned": "自分にメンション",
+			"created": "自分が作成",
+			"reviewRequested": "レビュー依頼あり",
+			"author": "自分が作成",
+			"assignee": "自分に割り当て",
+			"mentions": "自分にメンション",
+			"reviewedBy": "自分がレビュー"
+		},
+		"sortOptions": {
+			"updated": "最近更新",
+			"created": "最新",
+			"comments": "コメントが多い順"
+		},
+		"draftOptions": {
+			"exclude": "下書きを除外",
+			"include": "下書きを含める",
+			"only": "下書きのみ"
+		},
+		"controls": {
+			"searchScopes": "範囲を検索",
+			"noScopes": "範囲が見つかりません。",
+			"removeOption": "{{label}} を削除",
+			"loadingLabels": "ラベルを読み込んでいます",
+			"selectLabels": "ラベルを選択",
+			"searchLabels": "ラベルを検索",
+			"loadingLabelsEmpty": "ラベルを読み込んでいます...",
+			"noLabels": "ラベルが見つかりません。",
+			"selectRepo": "リポジトリを選択"
+		}
+	},
+	"triage": {
+		"customInstructions": "カスタム指示",
+		"customInstructionsHint": "トリアージエージェントに注目すべき点を平易な言葉で伝えてください。",
+		"customInstructionsPlaceholder": "例\n• Slack の #incidents チャンネルとチームリーダーからの DM を監視する\n• 自分を @メンションするすべての Slack メッセージを表示する\n• ボットの通知や週次ダイジェストはスキップする",
+		"sources": "ソース",
+		"sourcesHint": "Grex がトリアージ候補を取得する場所。5 分ごとに増分取得します。",
+		"checkingHealth": "ソースの状態を確認しています…",
+		"loadingQueue": "候補キューを読み込んでいます…",
+		"candidatesWaiting_other": "件の候補が判定待ちです。",
+		"autoRun": "自動実行",
+		"autoRunHeartbeat": "自動実行のハートビート",
+		"autoRunOnLabel": "オン",
+		"autoRunOnDescription": " — 取得のたびに（5 分ごとに）直後にティックが実行されます。重複するティックはスキップされます。",
+		"autoRunOffLabel": "オフ",
+		"autoRunOffDescription": " — ティックは「今すぐ実行」を押したときのみ実行されます。",
+		"stopping": "停止しています…",
+		"stop": "停止",
+		"runNow": "今すぐ実行",
+		"smartTriage": "スマートトリアージ",
+		"smartTriageDescription": "ローカル LLM が有効なソースをスキャンし、対応可能な項目のために AI が準備したワークスペースを作成します。",
+		"showReasoning": "エージェントの推論を表示",
+		"noTickYet": "まだティックは実行されていません。",
+		"lastTickCreated_other": "前回のティック · {{when}} · {{count}} 件のワークスペースを作成",
+		"lastTickNothing": "前回のティック · {{when}} · 対応可能な項目なし",
+		"lastTickStopped": "前回のティック · {{when}} · 停止",
+		"lastTickFailed": "前回のティック · {{when}} · 失敗",
+		"noMessage": "（メッセージなし）",
+		"batchLabel": "バッチ {{index}}/{{total}}",
+		"tickRunning": "ティック実行中",
+		"tickStats": "{{elapsed}} · ターン {{turns}} · ツール呼び出し {{tools}} 回",
+		"startedAt": "開始 {{time}}",
+		"lastTool": " · 最新：{{tool}}",
+		"hide": "非表示",
+		"show": "表示",
+		"toolCallList": "ツール呼び出し一覧",
+		"noToolCalls": "ツール呼び出しはまだありません。",
+		"connect": "接続",
+		"status": {
+			"connected": "接続済み",
+			"installRequired": "インストールが必要",
+			"signInRequired": "サインインが必要",
+			"notConfigured": "未設定",
+			"attention": "要確認",
+			"unknown": "不明"
+		}
+	}
+}

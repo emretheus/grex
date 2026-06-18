@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Loader2, Plus } from "lucide-react";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { FeaturebaseConnectState } from "@/features/inbox/featurebase-connect-button";
 import { useFeaturebaseConnections } from "@/features/inbox/use-featurebase-connection";
@@ -15,6 +16,7 @@ import { useWorkspaceToast } from "@/lib/workspace-toast-context";
  *  board picker. A "Connect another board" affordance reuses
  *  `FeaturebaseConnectState`. */
 export function FeaturebaseSettingsPanel() {
+	const { t } = useTranslation("integrations");
 	const connectionsQuery = useFeaturebaseConnections();
 	const connections = connectionsQuery.data ?? [];
 	const [showConnectAnother, setShowConnectAnother] = useState(false);
@@ -55,7 +57,7 @@ export function FeaturebaseSettingsPanel() {
 					onClick={() => setShowConnectAnother(true)}
 				>
 					<Plus className="size-3.5" strokeWidth={2} />
-					Connect another board
+					{t("featurebase.connectAnother")}
 				</Button>
 			)}
 		</div>
@@ -67,6 +69,7 @@ function FeaturebaseConnectionCard({
 }: {
 	connection: FeaturebaseConnection;
 }) {
+	const { t } = useTranslation("integrations");
 	const pushToast = useWorkspaceToast();
 	const queryClient = useQueryClient();
 
@@ -81,8 +84,8 @@ function FeaturebaseConnectionCard({
 			const message =
 				error instanceof Error
 					? error.message
-					: "Couldn't disconnect Featurebase.";
-			pushToast(message, "Featurebase disconnect failed", "destructive");
+					: t("featurebase.disconnectError");
+			pushToast(message, t("featurebase.disconnectFailed"), "destructive");
 		},
 	});
 
@@ -93,11 +96,10 @@ function FeaturebaseConnectionCard({
 			<div className="flex items-start justify-between gap-3">
 				<div className="min-w-0">
 					<div className="truncate text-ui font-medium text-foreground">
-						{org || "Featurebase board"}
+						{org || t("featurebase.boardFallback")}
 					</div>
 					<p className="text-mini text-muted-foreground/65">
-						Feedback posts are read-only; everything from this board appears in
-						the feed.
+						{t("featurebase.readOnlyHint")}
 					</p>
 				</div>
 				<Button
@@ -108,7 +110,9 @@ function FeaturebaseConnectionCard({
 					onClick={() => disconnectMutation.mutate()}
 					disabled={disconnectMutation.isPending}
 				>
-					{disconnectMutation.isPending ? "Disconnecting…" : "Disconnect"}
+					{disconnectMutation.isPending
+						? t("common.disconnecting")
+						: t("common.disconnect")}
 				</Button>
 			</div>
 		</div>

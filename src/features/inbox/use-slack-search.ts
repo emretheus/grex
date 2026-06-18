@@ -1,5 +1,6 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useEffect, useMemo, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import {
 	type SlackInboxItem,
 	type SlackInboxPage,
@@ -57,6 +58,7 @@ export function useSlackSearch(
 	});
 
 	const pushToast = useWorkspaceToast();
+	const { t } = useTranslation("inbox");
 	const lastErrorRef = useRef<unknown>(null);
 	useEffect(() => {
 		if (!result.error) {
@@ -68,9 +70,9 @@ export function useSlackSearch(
 		const message =
 			result.error instanceof Error
 				? result.error.message
-				: "Couldn't search Slack messages.";
-		pushToast(message, "Slack search failed", "destructive");
-	}, [result.error, pushToast]);
+				: t("toast.slackSearchFailedMessage");
+		pushToast(message, t("toast.slackSearchFailed"), "destructive");
+	}, [result.error, pushToast, t]);
 
 	const items = useMemo<SlackInboxItem[]>(
 		() => (result.data?.pages ?? []).flatMap((p) => p.items),

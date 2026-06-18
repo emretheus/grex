@@ -1,0 +1,310 @@
+{
+	"stateFilter": {
+		"all": "全部",
+		"open": "未关闭",
+		"closed": "已关闭",
+		"merged": "已合并",
+		"answered": "已回答",
+		"unanswered": "未回答"
+	},
+	"comingSoon": {
+		"title": "即将推出",
+		"mobile": {
+			"line1": "从手机发送任务、链接和截图。",
+			"line2": "让轻量的审查和分流流程保持同步。",
+			"line3": "把在手机上捕获的上下文移交给桌面智能体。"
+		}
+	},
+	"search": {
+		"placeholder": "搜索",
+		"clear": "清除搜索",
+		"forgeAriaLabel": "搜索 {{provider}} 上下文",
+		"issuesAriaLabel": "搜索 {{provider}} 问题",
+		"slackAriaLabel": "搜索 Slack 消息"
+	},
+	"filter": {
+		"byKind": "按 {{kind}} 筛选",
+		"sortBy": "按{{sort}}排序"
+	},
+	"sort": {
+		"newest": "最新",
+		"relevance": "最相关"
+	},
+	"loading": {
+		"items": "正在加载项目…",
+		"provider": "正在加载 {{provider}}…",
+		"slack": "正在加载 Slack…"
+	},
+	"error": {
+		"title": "无法加载",
+		"fallback": "无法加载上下文项目。",
+		"providerFallback": "无法加载 {{provider}} 问题。",
+		"slackFallback": "无法加载 Slack 收件箱。",
+		"tryAgain": "重试"
+	},
+	"empty": {
+		"noMatches": "无匹配项",
+		"noMatchesProvider": "{{provider}} 中没有与“{{query}}”匹配的内容。",
+		"noMatchesWorkspace": "此工作区中没有与“{{query}}”匹配的内容。",
+		"noActivity": "暂无新动态",
+		"slackActivitySubtitle": "提及和未读私信将显示在此处。",
+		"refresh": "刷新",
+		"noItems": "暂无{{plural}}",
+		"noItemsInRepo": "{{repo}} 中没有{{plural}}"
+	},
+	"configure": "配置",
+	"connectForge": {
+		"kindDisabledTitle": "{{plural}}已关闭",
+		"kindDisabledDescription": "在上下文设置中重新开启{{lower}}。"
+	},
+	"card": {
+		"addToContext": "添加到上下文",
+		"insertError": "无法插入上下文卡片"
+	},
+	"toast": {
+		"contextFetchFailed": "上下文获取失败",
+		"providerFetchFailed": "{{provider}} 获取失败",
+		"slackFetchFailed": "Slack 获取失败",
+		"slackSearchFailed": "Slack 搜索失败",
+		"slackSearchFailedMessage": "无法搜索 Slack 消息。",
+		"slackInboxFailedMessage": "无法加载 Slack 收件箱项目。"
+	},
+	"connect": {
+		"connecting": "正在连接…",
+		"connect": "连接",
+		"featurebase": {
+			"title": "连接 Featurebase",
+			"description": "粘贴你的 Featurebase API 密钥和公开反馈 URL。将本地保存在你的 macOS 钥匙串中。",
+			"apiKeyPlaceholder": "你的 Featurebase API 密钥",
+			"apiKeyLabel": "Featurebase API 密钥",
+			"urlPlaceholder": "https://acme.featurebase.app",
+			"urlLabel": "Featurebase 反馈 URL",
+			"help": "在哪里能找到这些？",
+			"failedTitle": "连接 Featurebase 失败",
+			"failedMessage": "无法连接 Featurebase。"
+		},
+		"forgejo": {
+			"title": "连接 Forgejo",
+			"description": "粘贴你的 Forgejo 实例 URL 和访问令牌。将本地保存在你的 macOS 钥匙串中。",
+			"hostPlaceholder": "https://codeberg.org",
+			"hostLabel": "Forgejo 实例 URL",
+			"tokenPlaceholder": "访问令牌",
+			"tokenLabel": "Forgejo 访问令牌",
+			"help": "创建访问令牌",
+			"failedTitle": "连接 Forgejo 失败",
+			"failedMessage": "无法连接 Forgejo。"
+		},
+		"jira": {
+			"title": "连接 Jira",
+			"description": "输入你的站点 URL、电子邮件和 API 令牌。将本地保存在你的 macOS 钥匙串中。",
+			"sitePlaceholder": "https://your-team.atlassian.net",
+			"siteLabel": "Jira 站点 URL",
+			"emailPlaceholder": "you@example.com",
+			"emailLabel": "Jira 账户电子邮件",
+			"tokenPlaceholder": "API 令牌",
+			"tokenLabel": "Jira API 令牌",
+			"help": "创建 API 令牌",
+			"failedTitle": "连接 Jira 失败",
+			"failedMessage": "无法连接 Jira。"
+		},
+		"linear": {
+			"title": "连接 Linear",
+			"description": "粘贴个人 API 密钥。它会被验证一次，然后本地保存在你的 macOS 钥匙串中。",
+			"apiKeyPlaceholder": "lin_api_…",
+			"apiKeyLabel": "Linear 个人 API 密钥",
+			"help": "在 Linear 中创建密钥",
+			"failedTitle": "连接 Linear 失败",
+			"failedMessage": "无法连接 Linear。"
+		},
+		"trello": {
+			"title": "连接 Trello",
+			"description": "粘贴你的 Trello API 密钥和令牌。将本地保存在你的 macOS 钥匙串中。",
+			"apiKeyPlaceholder": "你的 Trello API 密钥",
+			"apiKeyLabel": "Trello API 密钥",
+			"tokenPlaceholder": "令牌",
+			"tokenLabel": "Trello 令牌",
+			"help": "获取你的 API 密钥和令牌",
+			"failedTitle": "连接 Trello 失败",
+			"failedMessage": "无法连接 Trello。"
+		},
+		"plain": {
+			"title": "连接 Plain",
+			"description": "粘贴一个具有 thread:read 权限的 Plain API 密钥。将本地保存在你的 macOS 钥匙串中。",
+			"apiKeyPlaceholder": "你的 Plain API 密钥（plainApiKey_…）",
+			"apiKeyLabel": "Plain API 密钥",
+			"help": "在哪里创建 API 密钥？",
+			"failedTitle": "连接 Plain 失败",
+			"failedMessage": "无法连接 Plain。"
+		},
+		"slack": {
+			"title": "连接 Slack 工作区",
+			"description": "连接到你已登录的 Slack 桌面应用。所有内容都保存在你的设备本地且安全。",
+			"descriptionUnsupported": "从 Slack 桌面应用导入仅在 macOS 上可用。Windows 支持尚未接入。",
+			"readingSession": "正在读取会话…",
+			"connect": "连接 Slack",
+			"connectAnother": "连接其他工作区",
+			"nothingTitle": "无可连接项",
+			"nothingMessage": "在你的桌面应用中未找到已登录的 Slack 工作区。",
+			"connectedWorkspace_other": "已连接 {{count}} 个工作区",
+			"alreadyConnected": "{{count}} 个已连接",
+			"failedSummary": "{{count}} 个失败：{{details}}",
+			"resultPartialTitle": "Slack 连接：部分成功",
+			"resultTitle": "Slack 连接",
+			"readFailedTitle": "连接失败",
+			"readFailedMessage": "无法读取 Slack 桌面会话。"
+		}
+	},
+	"section": {
+		"linear": {
+			"emptyTitle": "暂无分配给你的问题",
+			"emptySubtitle": "在 Linear 中分配给你的问题将显示在此处。"
+		},
+		"jira": {
+			"emptyTitle": "暂无分配给你的问题",
+			"emptySubtitle": "在 Jira 中分配给你的问题将显示在此处。"
+		},
+		"trello": {
+			"emptyTitle": "暂无卡片",
+			"emptySubtitle": "你在 Trello 中作为成员的卡片将显示在此处。"
+		},
+		"forgejo": {
+			"emptyTitle": "暂无问题",
+			"emptySubtitle": "在 Forgejo 中分配给你的问题将显示在此处。"
+		},
+		"featurebase": {
+			"emptyTitle": "暂无帖子",
+			"emptySubtitle": "你的 Featurebase 看板中的反馈帖子将显示在此处。"
+		},
+		"plain": {
+			"emptyTitle": "暂无会话",
+			"emptySubtitle": "来自 Plain 的未结支持会话将显示在此处。"
+		}
+	},
+	"slackCard": {
+		"ariaLabel": "{{author}}：{{snippet}}",
+		"dm": "私信",
+		"threadIn": "会话所在频道",
+		"mentionIn": "提及所在频道",
+		"mentionedYou": "{{author}} 提及了你",
+		"sentMessage": "{{author}} 发送了一条消息",
+		"preparing": "正在准备 Slack 上下文…",
+		"fetchingThread": "正在获取会话",
+		"noAttachments": "没有可缓存的附件",
+		"cachingAttachments": "正在缓存附件 {{current}}/{{total}}",
+		"threadInlined": "会话已内联",
+		"threadInlinedImages_other": "会话已内联 · 已附加 {{count}} 张图片",
+		"threadInlinedPartial": "会话已内联 · 已附加 {{attached}}/{{total}} 张图片（其余不可用）",
+		"ready": "Slack 上下文已就绪",
+		"prepareFailed": "无法准备 Slack 上下文",
+		"prepareFallback": "回退到仅摘要的上下文。"
+	},
+	"slackSwitcher": {
+		"switch": "切换 Slack 工作区",
+		"workspaceFallback": "工作区",
+		"noWorkspaces": "没有已连接的工作区",
+		"disconnect": "断开 {{name}}",
+		"disconnectFailedTitle": "断开连接失败",
+		"disconnectFailedMessage": "无法断开 Slack 工作区。"
+	},
+	"settings": {
+		"connectAccount": "连接一个 {{provider}} 账户",
+		"connectAccountDescription": "在“上下文”能够拉取{{kinds}}之前，你至少需要一个 {{provider}} 账户。",
+		"addAccount": "添加账户",
+		"itemsFallback": "项目",
+		"repository": "仓库",
+		"repositoryDescription": "选择这些上下文设置适用的仓库。",
+		"issuesDescription": "显示分配给你或由你创建的{{plural}}。",
+		"prsDescription": "显示由你创建或分配给你的{{plural}}。",
+		"discussionsDescription": "显示你有权访问的仓库中的{{plural}}。",
+		"scope": "范围",
+		"scopeDescription": "{{provider}} 默认应使用哪种{{singular}}关系。",
+		"sort": "排序",
+		"sortDescription": "在应用任何侧边栏筛选之前的默认排序。",
+		"labels": "标签",
+		"labelsDescription": "仅包含带有所选仓库标签的{{plural}}。",
+		"drafts": "草稿",
+		"draftsDescription": "草稿{{plural}}是否显示在动态中。",
+		"addRepoFirst": "在配置“上下文”之前，请先添加或连接一个 {{provider}} 仓库。",
+		"slackConnected": "Slack 已连接。打开“上下文”侧边栏以浏览你的动态。",
+		"slackConnectedCount": "已连接 {{count}} 个 Slack 工作区。打开“上下文”侧边栏以浏览你的动态。",
+		"scopeOptions": {
+			"all": "全部",
+			"involves": "与我相关",
+			"assigned": "分配给我",
+			"mentioned": "提及我",
+			"created": "由我创建",
+			"reviewRequested": "请求我审查",
+			"author": "由我创建",
+			"assignee": "分配给我",
+			"mentions": "提及我",
+			"reviewedBy": "由我审查"
+		},
+		"sortOptions": {
+			"updated": "最近更新",
+			"created": "最新",
+			"comments": "评论最多"
+		},
+		"draftOptions": {
+			"exclude": "排除草稿",
+			"include": "包含草稿",
+			"only": "仅草稿"
+		},
+		"controls": {
+			"searchScopes": "搜索范围",
+			"noScopes": "未找到范围。",
+			"removeOption": "移除 {{label}}",
+			"loadingLabels": "正在加载标签",
+			"selectLabels": "选择标签",
+			"searchLabels": "搜索标签",
+			"loadingLabelsEmpty": "正在加载标签...",
+			"noLabels": "未找到标签。",
+			"selectRepo": "选择仓库"
+		}
+	},
+	"triage": {
+		"customInstructions": "自定义指令",
+		"customInstructionsHint": "用简单的语言告诉分流智能体应关注什么。",
+		"customInstructionsPlaceholder": "例如\n• 关注 Slack #incidents 频道和来自我的团队主管的私信\n• 呈现每一条 @ 提及我的 Slack 消息\n• 跳过机器人通知和每周摘要",
+		"sources": "来源",
+		"sourcesHint": "Grex 从何处拉取分流候选项。每 5 分钟增量获取一次。",
+		"checkingHealth": "正在检查来源状态…",
+		"loadingQueue": "正在加载候选队列…",
+		"candidatesWaiting_other": "个候选项等待评判。",
+		"autoRun": "自动运行",
+		"autoRunHeartbeat": "自动运行心跳",
+		"autoRunOnLabel": "开启",
+		"autoRunOnDescription": " — 每次获取后（每 5 分钟）立即触发一次运行。重叠的运行会被跳过。",
+		"autoRunOffLabel": "关闭",
+		"autoRunOffDescription": " — 仅在你按下“立即运行”时才运行。",
+		"stopping": "正在停止…",
+		"stop": "停止",
+		"runNow": "立即运行",
+		"smartTriage": "智能分流",
+		"smartTriageDescription": "本地 LLM 会扫描你启用的来源，并为可处理的项目创建由 AI 准备的工作区。",
+		"showReasoning": "显示智能体推理",
+		"noTickYet": "尚未运行任何周期。",
+		"lastTickCreated_other": "上次运行 · {{when}} · 创建了 {{count}} 个工作区",
+		"lastTickNothing": "上次运行 · {{when}} · 没有可处理的项目",
+		"lastTickStopped": "上次运行 · {{when}} · 已停止",
+		"lastTickFailed": "上次运行 · {{when}} · 失败",
+		"noMessage": "（无消息）",
+		"batchLabel": "第 {{index}} 批，共 {{total}} 批",
+		"tickRunning": "运行进行中",
+		"tickStats": "{{elapsed}} · 第 {{turns}} 轮 · {{tools}} 次工具调用",
+		"startedAt": "开始于 {{time}}",
+		"lastTool": " · 最近：{{tool}}",
+		"hide": "隐藏",
+		"show": "显示",
+		"toolCallList": "工具调用列表",
+		"noToolCalls": "尚无工具调用。",
+		"connect": "连接",
+		"status": {
+			"connected": "已连接",
+			"installRequired": "需要安装",
+			"signInRequired": "需要登录",
+			"notConfigured": "未配置",
+			"attention": "需要注意",
+			"unknown": "未知"
+		}
+	}
+}

@@ -1,0 +1,77 @@
+{
+	"ai": {
+		"reasoning": {
+			"thinking": "思考中…",
+			"thinkingStatic": "思考",
+			"thoughtForSeconds_other": "思考了 {{count}} 秒"
+		},
+		"openIn": {
+			"trigger": "在对话中打开",
+			"open": "打开",
+			"chatgpt": "在 ChatGPT 中打开",
+			"claude": "在 Claude 中打开",
+			"t3": "在 T3 Chat 中打开",
+			"scira": "在 Scira 中打开",
+			"v0": "在 v0 中打开",
+			"cursor": "在 Cursor 中打开",
+			"github": "在 GitHub 中打开"
+		}
+	},
+	"inlineBadge": {
+		"removeItem": "移除项目",
+		"unableToPreview": "无法预览"
+	},
+	"branchPicker": {
+		"searchPlaceholder": "搜索分支…",
+		"loading": "正在加载分支…",
+		"empty": "未找到分支"
+	},
+	"appendContext": {
+		"errorTitle": "无法附加上下文",
+		"errorFallback": "无法附加上下文。",
+		"ariaLabel": "将 {{subject}} 附加到编辑器"
+	},
+	"quitConfirm": {
+		"title": "退出 Grex？",
+		"description_other": "有 {{count}} 个任务正在进行中。现在退出将取消它们。",
+		"confirm": "仍然退出"
+	},
+	"forgeConnect": {
+		"github": "GitHub",
+		"gitlab": "GitLab",
+		"forge": "Forge",
+		"connect": "连接 {{provider}}",
+		"startError": "无法启动登录。",
+		"connectedAs": "已以 @{{login}} 身份连接到 {{provider}}",
+		"connected": "已连接 {{provider}}"
+	},
+	"larkConnect": {
+		"install": "安装 lark-cli",
+		"signIn": "登录",
+		"connectWithSuffix": "连接飞书 — {{suffix}}",
+		"connect": "连接飞书",
+		"connected": "已连接飞书",
+		"startError": "无法启动 lark-cli。"
+	},
+	"conductor": {
+		"importFailed": "导入失败。请重试。",
+		"welcome": "欢迎使用 Grex",
+		"workspacesReady_other": "{{count}} 个工作区已就绪",
+		"getStarted": "开始使用",
+		"overflowMore": "还有 {{count}} 个",
+		"imported": "已导入",
+		"importWorkspaces_other": "导入 {{count}} 个工作区",
+		"importEmpty": "导入工作区",
+		"skipForNow": "暂时跳过",
+		"aboutImporting": "关于导入",
+		"aboutImportingTooltip": "请放心 — 我们仅读取你的 Conductor 数据以将其导入此处。你的 Conductor 数据不会以任何方式被修改。",
+		"importing": "正在导入…"
+	},
+	"ui": {
+		"commandDialogTitle": "命令面板",
+		"commandDialogDescription": "搜索要运行的命令…",
+		"sidebarTitle": "侧边栏",
+		"sidebarDescription": "显示移动端侧边栏。",
+		"toggleSidebar": "切换侧边栏"
+	}
+}

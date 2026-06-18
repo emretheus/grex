@@ -30,3 +30,37 @@ export function validateBranchName(
 	}
 	return null;
 }
+
+/** i18n-aware variant of {@link validateBranchName}: returns the
+ *  `misc:workspaceStart.branchValidation.*` key (plus interpolation params)
+ *  for the first failing rule, or null when the name is valid. Components
+ *  translate the key at render so the message follows the active language;
+ *  `validateBranchName` keeps returning English for its unit-test contract. */
+export type BranchNameValidationError = {
+	key: string;
+	params?: Record<string, string>;
+};
+
+export function branchNameValidationKey(
+	raw: string,
+	existing: ReadonlyArray<string> = [],
+): BranchNameValidationError | null {
+	const value = raw.trim();
+	const prefix = "workspaceStart.branchValidation.";
+	if (value.length === 0) return { key: `${prefix}empty` };
+	if (value.endsWith("/")) return { key: `${prefix}endsWithSlash` };
+	if (value.startsWith("/") || value.startsWith(".") || value.startsWith("-")) {
+		return { key: `${prefix}startInvalid` };
+	}
+	if (value.includes("..")) return { key: `${prefix}doubleDot` };
+	if (/\s/.test(value)) return { key: `${prefix}whitespace` };
+	if (/[~^:?*[\\]/.test(value)) {
+		return { key: `${prefix}invalidCharacter` };
+	}
+	if (value.endsWith(".lock")) return { key: `${prefix}endsWithLock` };
+	if (value.includes("@{")) return { key: `${prefix}atBrace` };
+	if (existing.some((existingName) => existingName === value)) {
+		return { key: `${prefix}alreadyExists`, params: { name: value } };
+	}
+	return null;
+}

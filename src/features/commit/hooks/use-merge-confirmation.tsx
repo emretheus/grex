@@ -1,4 +1,5 @@
 import { type ReactNode, useCallback, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 
 type MergeConfirmRequest = {
@@ -16,6 +17,7 @@ export function useMergeConfirmation(): {
 	) => Promise<boolean>;
 	mergeConfirmDialogNode: ReactNode;
 } {
+	const { t } = useTranslation("commit");
 	const [pending, setPending] = useState<MergeConfirmRequest | null>(null);
 
 	const requestMergeConfirmation = useCallback(
@@ -44,7 +46,7 @@ export function useMergeConfirmation(): {
 			}}
 			title={pending?.title ?? ""}
 			description={pending?.description ?? ""}
-			confirmLabel={pending?.confirmLabel ?? "Merge anyway"}
+			confirmLabel={pending?.confirmLabel ?? t("confirm.mergeAnyway")}
 			onConfirm={() => resolveConfirmation(true)}
 		/>
 	);

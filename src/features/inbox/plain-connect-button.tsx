@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { ExternalLink, LifeBuoy, Loader2 } from "lucide-react";
 import { type FormEvent, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { type PlainConnection, plainConnect } from "@/lib/api";
@@ -32,6 +33,7 @@ export function PlainConnectState({
 	onConnected?: (connection: PlainConnection) => void;
 	className?: string;
 }) {
+	const { t } = useTranslation("inbox");
 	const [apiKey, setApiKey] = useState("");
 	const connectMutation = usePlainConnectMutation({ onConnected });
 	const trimmedKey = apiKey.trim();
@@ -51,10 +53,11 @@ export function PlainConnectState({
 		>
 			<LifeBuoy className="text-muted-foreground/80" size={28} />
 			<div className="space-y-1">
-				<div className="text-ui font-medium text-foreground">Connect Plain</div>
+				<div className="text-ui font-medium text-foreground">
+					{t("connect.plain.title")}
+				</div>
 				<div className="text-pretty text-small leading-5 text-muted-foreground">
-					Paste a Plain API key with the thread:read permission. Stored locally
-					in your macOS Keychain.
+					{t("connect.plain.description")}
 				</div>
 			</div>
 			<form
@@ -65,8 +68,8 @@ export function PlainConnectState({
 					type="password"
 					autoComplete="off"
 					spellCheck={false}
-					placeholder="Your Plain API key (plainApiKey_…)"
-					aria-label="Plain API key"
+					placeholder={t("connect.plain.apiKeyPlaceholder")}
+					aria-label={t("connect.plain.apiKeyLabel")}
 					value={apiKey}
 					onChange={(event) => setApiKey(event.target.value)}
 					disabled={connectMutation.isPending}
@@ -82,10 +85,10 @@ export function PlainConnectState({
 					{connectMutation.isPending ? (
 						<>
 							<Loader2 className="size-3.5 animate-spin" strokeWidth={2} />
-							Connecting…
+							{t("connect.connecting")}
 						</>
 					) : (
-						"Connect"
+						t("connect.connect")
 					)}
 				</Button>
 			</form>
@@ -94,7 +97,7 @@ export function PlainConnectState({
 				onClick={() => void openUrl(PLAIN_API_KEY_URL)}
 				className="inline-flex cursor-interactive items-center gap-1 text-mini text-muted-foreground/80 transition-colors hover:text-foreground"
 			>
-				Where do I create an API key?
+				{t("connect.plain.help")}
 				<ExternalLink className="size-3" strokeWidth={1.8} />
 			</button>
 		</div>
@@ -108,6 +111,7 @@ export function PlainConnectState({
 export function usePlainConnectMutation(opts?: {
 	onConnected?: (connection: PlainConnection) => void;
 }) {
+	const { t } = useTranslation("inbox");
 	const pushToast = useWorkspaceToast();
 	const queryClient = useQueryClient();
 	return useMutation({
@@ -126,8 +130,10 @@ export function usePlainConnectMutation(opts?: {
 		},
 		onError: (error) => {
 			const message =
-				error instanceof Error ? error.message : "Couldn't connect Plain.";
-			pushToast(message, "Plain connect failed", "destructive");
+				error instanceof Error
+					? error.message
+					: t("connect.plain.failedMessage");
+			pushToast(message, t("connect.plain.failedTitle"), "destructive");
 		},
 	});
 }

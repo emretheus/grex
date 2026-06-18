@@ -1,0 +1,314 @@
+{
+	"stateFilter": {
+		"all": "Alle",
+		"open": "Offen",
+		"closed": "Geschlossen",
+		"merged": "Zusammengeführt",
+		"answered": "Beantwortet",
+		"unanswered": "Unbeantwortet"
+	},
+	"comingSoon": {
+		"title": "Demnächst",
+		"mobile": {
+			"line1": "Sende Aufgaben, Links und Screenshots von deinem Telefon.",
+			"line2": "Halte schlanke Review- und Triage-Abläufe synchron.",
+			"line3": "Übergib mobil erfassten Kontext an Desktop-Agenten."
+		}
+	},
+	"search": {
+		"placeholder": "Suchen",
+		"clear": "Suche löschen",
+		"forgeAriaLabel": "{{provider}}-Kontexte durchsuchen",
+		"issuesAriaLabel": "{{provider}}-Issues durchsuchen",
+		"slackAriaLabel": "Slack-Nachrichten durchsuchen"
+	},
+	"filter": {
+		"byKind": "Nach {{kind}} filtern",
+		"sortBy": "Sortieren nach {{sort}}"
+	},
+	"sort": {
+		"newest": "Neueste",
+		"relevance": "Relevanteste"
+	},
+	"loading": {
+		"items": "Elemente werden geladen…",
+		"provider": "{{provider}} wird geladen…",
+		"slack": "Slack wird geladen…"
+	},
+	"error": {
+		"title": "Laden fehlgeschlagen",
+		"fallback": "Kontextelemente konnten nicht geladen werden.",
+		"providerFallback": "{{provider}}-Issues konnten nicht geladen werden.",
+		"slackFallback": "Slack-Posteingang konnte nicht geladen werden.",
+		"tryAgain": "Erneut versuchen"
+	},
+	"empty": {
+		"noMatches": "Keine Treffer",
+		"noMatchesProvider": "Nichts in {{provider}} passt zu \"{{query}}\".",
+		"noMatchesWorkspace": "Nichts in diesem Workspace passt zu \"{{query}}\".",
+		"noActivity": "Keine neue Aktivität",
+		"slackActivitySubtitle": "Erwähnungen und ungelesene Direktnachrichten erscheinen hier.",
+		"refresh": "Aktualisieren",
+		"noItems": "Noch keine {{plural}}",
+		"noItemsInRepo": "Keine {{plural}} in {{repo}}"
+	},
+	"configure": "Konfigurieren",
+	"connectForge": {
+		"kindDisabledTitle": "{{plural}} sind deaktiviert",
+		"kindDisabledDescription": "Aktiviere {{lower}} in den Kontext-Einstellungen wieder."
+	},
+	"card": {
+		"addToContext": "Zum Kontext hinzufügen",
+		"insertError": "Kontextkarte konnte nicht eingefügt werden"
+	},
+	"toast": {
+		"contextFetchFailed": "Abruf des Kontexts fehlgeschlagen",
+		"providerFetchFailed": "Abruf von {{provider}} fehlgeschlagen",
+		"slackFetchFailed": "Abruf von Slack fehlgeschlagen",
+		"slackSearchFailed": "Slack-Suche fehlgeschlagen",
+		"slackSearchFailedMessage": "Slack-Nachrichten konnten nicht durchsucht werden.",
+		"slackInboxFailedMessage": "Slack-Posteingangselemente konnten nicht geladen werden."
+	},
+	"connect": {
+		"connecting": "Verbinden…",
+		"connect": "Verbinden",
+		"featurebase": {
+			"title": "Featurebase verbinden",
+			"description": "Füge deinen Featurebase-API-Schlüssel und deine öffentliche Feedback-URL ein. Wird lokal in deinem macOS-Schlüsselbund gespeichert.",
+			"apiKeyPlaceholder": "Dein Featurebase-API-Schlüssel",
+			"apiKeyLabel": "Featurebase-API-Schlüssel",
+			"urlPlaceholder": "https://acme.featurebase.app",
+			"urlLabel": "Featurebase-Feedback-URL",
+			"help": "Wo finde ich das?",
+			"failedTitle": "Verbindung mit Featurebase fehlgeschlagen",
+			"failedMessage": "Featurebase konnte nicht verbunden werden."
+		},
+		"forgejo": {
+			"title": "Forgejo verbinden",
+			"description": "Füge die URL deiner Forgejo-Instanz und ein Zugriffstoken ein. Wird lokal in deinem macOS-Schlüsselbund gespeichert.",
+			"hostPlaceholder": "https://codeberg.org",
+			"hostLabel": "URL der Forgejo-Instanz",
+			"tokenPlaceholder": "Zugriffstoken",
+			"tokenLabel": "Forgejo-Zugriffstoken",
+			"help": "Zugriffstoken erstellen",
+			"failedTitle": "Verbindung mit Forgejo fehlgeschlagen",
+			"failedMessage": "Forgejo konnte nicht verbunden werden."
+		},
+		"jira": {
+			"title": "Jira verbinden",
+			"description": "Gib deine Website-URL, E-Mail-Adresse und ein API-Token ein. Wird lokal in deinem macOS-Schlüsselbund gespeichert.",
+			"sitePlaceholder": "https://dein-team.atlassian.net",
+			"siteLabel": "Jira-Website-URL",
+			"emailPlaceholder": "du@beispiel.com",
+			"emailLabel": "E-Mail-Adresse des Jira-Kontos",
+			"tokenPlaceholder": "API-Token",
+			"tokenLabel": "Jira-API-Token",
+			"help": "API-Token erstellen",
+			"failedTitle": "Verbindung mit Jira fehlgeschlagen",
+			"failedMessage": "Jira konnte nicht verbunden werden."
+		},
+		"linear": {
+			"title": "Linear verbinden",
+			"description": "Füge einen persönlichen API-Schlüssel ein. Er wird einmal validiert und lokal in deinem macOS-Schlüsselbund gespeichert.",
+			"apiKeyPlaceholder": "lin_api_…",
+			"apiKeyLabel": "Persönlicher Linear-API-Schlüssel",
+			"help": "Schlüssel in Linear erstellen",
+			"failedTitle": "Verbindung mit Linear fehlgeschlagen",
+			"failedMessage": "Linear konnte nicht verbunden werden."
+		},
+		"trello": {
+			"title": "Trello verbinden",
+			"description": "Füge deinen Trello-API-Schlüssel und dein Token ein. Wird lokal in deinem macOS-Schlüsselbund gespeichert.",
+			"apiKeyPlaceholder": "Dein Trello-API-Schlüssel",
+			"apiKeyLabel": "Trello-API-Schlüssel",
+			"tokenPlaceholder": "Token",
+			"tokenLabel": "Trello-Token",
+			"help": "API-Schlüssel und Token erhalten",
+			"failedTitle": "Verbindung mit Trello fehlgeschlagen",
+			"failedMessage": "Trello konnte nicht verbunden werden."
+		},
+		"plain": {
+			"title": "Plain verbinden",
+			"description": "Füge einen Plain-API-Schlüssel mit der Berechtigung thread:read ein. Wird lokal in deinem macOS-Schlüsselbund gespeichert.",
+			"apiKeyPlaceholder": "Dein Plain-API-Schlüssel (plainApiKey_…)",
+			"apiKeyLabel": "Plain-API-Schlüssel",
+			"help": "Wo erstelle ich einen API-Schlüssel?",
+			"failedTitle": "Verbindung mit Plain fehlgeschlagen",
+			"failedMessage": "Plain konnte nicht verbunden werden."
+		},
+		"slack": {
+			"title": "Einen Slack-Workspace verbinden",
+			"description": "Verbindet sich mit deiner angemeldeten Slack-Desktop-App. Alles bleibt lokal und sicher auf deinem Gerät.",
+			"descriptionUnsupported": "Der Import aus der Slack-Desktop-App ist unter macOS verfügbar. Windows-Unterstützung ist noch nicht eingerichtet.",
+			"readingSession": "Sitzung wird gelesen…",
+			"connect": "Slack verbinden",
+			"connectAnother": "Weiteren Workspace verbinden",
+			"nothingTitle": "Nichts zu verbinden",
+			"nothingMessage": "In deiner Desktop-App wurden keine angemeldeten Slack-Workspaces gefunden.",
+			"connectedWorkspace_one": "{{count}} Workspace verbunden",
+			"connectedWorkspace_other": "{{count}} Workspaces verbunden",
+			"alreadyConnected": "{{count}} bereits verbunden",
+			"failedSummary": "{{count}} fehlgeschlagen: {{details}}",
+			"resultPartialTitle": "Slack-Verbindung: teilweise",
+			"resultTitle": "Slack-Verbindung",
+			"readFailedTitle": "Verbindung fehlgeschlagen",
+			"readFailedMessage": "Slack-Desktop-Sitzung konnte nicht gelesen werden."
+		}
+	},
+	"section": {
+		"linear": {
+			"emptyTitle": "Keine zugewiesenen Issues",
+			"emptySubtitle": "Dir in Linear zugewiesene Issues erscheinen hier."
+		},
+		"jira": {
+			"emptyTitle": "Keine zugewiesenen Issues",
+			"emptySubtitle": "Dir in Jira zugewiesene Issues erscheinen hier."
+		},
+		"trello": {
+			"emptyTitle": "Keine Karten",
+			"emptySubtitle": "Karten, deren Mitglied du in Trello bist, erscheinen hier."
+		},
+		"forgejo": {
+			"emptyTitle": "Keine Issues",
+			"emptySubtitle": "Dir in Forgejo zugewiesene Issues erscheinen hier."
+		},
+		"featurebase": {
+			"emptyTitle": "Keine Beiträge",
+			"emptySubtitle": "Feedback-Beiträge von deinem Featurebase-Board erscheinen hier."
+		},
+		"plain": {
+			"emptyTitle": "Keine Threads",
+			"emptySubtitle": "Offene Support-Threads aus Plain erscheinen hier."
+		}
+	},
+	"slackCard": {
+		"ariaLabel": "{{author}}: {{snippet}}",
+		"dm": "DN",
+		"threadIn": "Thread in",
+		"mentionIn": "Erwähnung in",
+		"mentionedYou": "{{author}} hat dich erwähnt",
+		"sentMessage": "{{author}} hat eine Nachricht gesendet",
+		"preparing": "Slack-Kontext wird vorbereitet…",
+		"fetchingThread": "Thread wird abgerufen",
+		"noAttachments": "Keine Anhänge zum Zwischenspeichern",
+		"cachingAttachments": "Anhänge werden zwischengespeichert {{current}}/{{total}}",
+		"threadInlined": "Thread eingefügt",
+		"threadInlinedImages_one": "Thread eingefügt · {{count}} Bild angehängt",
+		"threadInlinedImages_other": "Thread eingefügt · {{count}} Bilder angehängt",
+		"threadInlinedPartial": "Thread eingefügt · {{attached}}/{{total}} Bilder angehängt (Rest nicht verfügbar)",
+		"ready": "Slack-Kontext bereit",
+		"prepareFailed": "Slack-Kontext konnte nicht vorbereitet werden",
+		"prepareFallback": "Es wird nur der Zusammenfassungskontext verwendet."
+	},
+	"slackSwitcher": {
+		"switch": "Slack-Workspace wechseln",
+		"workspaceFallback": "Workspace",
+		"noWorkspaces": "Keine verbundenen Workspaces",
+		"disconnect": "{{name}} trennen",
+		"disconnectFailedTitle": "Trennen fehlgeschlagen",
+		"disconnectFailedMessage": "Slack-Workspace konnte nicht getrennt werden."
+	},
+	"settings": {
+		"connectAccount": "Ein {{provider}}-Konto verbinden",
+		"connectAccountDescription": "Du brauchst mindestens ein {{provider}}-Konto, bevor Kontexte {{kinds}} abrufen kann.",
+		"addAccount": "Konto hinzufügen",
+		"itemsFallback": "Elemente",
+		"repository": "Repository",
+		"repositoryDescription": "Wähle das Repository, für das diese Kontext-Einstellungen gelten.",
+		"issuesDescription": "Zeige {{plural}}, die dir zugewiesen sind oder die du geöffnet hast.",
+		"prsDescription": "Zeige {{plural}}, die du geöffnet hast oder die dir zugewiesen sind.",
+		"discussionsDescription": "Zeige {{plural}} in Repositories, auf die du Zugriff hast.",
+		"scope": "Geltungsbereich",
+		"scopeDescription": "Welche {{singular}}-Beziehung {{provider}} standardmäßig verwenden soll.",
+		"sort": "Sortieren",
+		"sortDescription": "Standardreihenfolge, bevor Filter der Seitenleiste angewendet werden.",
+		"labels": "Labels",
+		"labelsDescription": "Nur {{plural}} mit ausgewählten Repository-Labels einbeziehen.",
+		"drafts": "Entwürfe",
+		"draftsDescription": "Ob {{plural}} im Entwurfsstatus im Feed erscheinen.",
+		"addRepoFirst": "Füge ein {{provider}}-Repository hinzu oder verbinde eines, bevor du Kontexte konfigurierst.",
+		"slackConnected": "Slack ist verbunden. Öffne die Kontext-Seitenleiste, um deinen Feed zu durchsuchen.",
+		"slackConnectedCount": "{{count}} Slack-Workspaces verbunden. Öffne die Kontext-Seitenleiste, um deinen Feed zu durchsuchen.",
+		"scopeOptions": {
+			"all": "Alle",
+			"involves": "Betreffen mich",
+			"assigned": "Mir zugewiesen",
+			"mentioned": "Erwähnen mich",
+			"created": "Von mir erstellt",
+			"reviewRequested": "Review angefordert",
+			"author": "Von mir erstellt",
+			"assignee": "Mir zugewiesen",
+			"mentions": "Erwähnen mich",
+			"reviewedBy": "Von mir überprüft"
+		},
+		"sortOptions": {
+			"updated": "Kürzlich aktualisiert",
+			"created": "Neueste",
+			"comments": "Meistkommentiert"
+		},
+		"draftOptions": {
+			"exclude": "Entwürfe ausschließen",
+			"include": "Entwürfe einschließen",
+			"only": "Nur Entwürfe"
+		},
+		"controls": {
+			"searchScopes": "Geltungsbereiche suchen",
+			"noScopes": "Keine Geltungsbereiche gefunden.",
+			"removeOption": "{{label}} entfernen",
+			"loadingLabels": "Labels werden geladen",
+			"selectLabels": "Labels auswählen",
+			"searchLabels": "Labels suchen",
+			"loadingLabelsEmpty": "Labels werden geladen...",
+			"noLabels": "Keine Labels gefunden.",
+			"selectRepo": "Repository auswählen"
+		}
+	},
+	"triage": {
+		"customInstructions": "Benutzerdefinierte Anweisungen",
+		"customInstructionsHint": "Sag dem Triage-Agenten in einfacher Sprache, worauf er sich konzentrieren soll.",
+		"customInstructionsPlaceholder": "z. B.\n• Beobachte den Slack-Kanal #incidents und Direktnachrichten meiner Teamleitung\n• Zeige jede Slack-Nachricht an, die mich @erwähnt\n• Ignoriere Bot-Benachrichtigungen und wöchentliche Zusammenfassungen",
+		"sources": "Quellen",
+		"sourcesHint": "Woher Grex Triage-Kandidaten bezieht. Inkrementeller Abruf alle 5 Minuten.",
+		"checkingHealth": "Quellenzustand wird geprüft…",
+		"loadingQueue": "Kandidaten-Warteschlange wird geladen…",
+		"candidatesWaiting_one": "Kandidat wartet auf Bewertung.",
+		"candidatesWaiting_other": "Kandidaten warten auf Bewertung.",
+		"autoRun": "Automatische Ausführung",
+		"autoRunHeartbeat": "Heartbeat der automatischen Ausführung",
+		"autoRunOnLabel": "Ein",
+		"autoRunOnDescription": " – ein Durchlauf startet direkt nach jedem Abruf (alle 5 Minuten). Überlappende Durchläufe werden übersprungen.",
+		"autoRunOffLabel": "Aus",
+		"autoRunOffDescription": " – Durchläufe starten nur, wenn du auf „Jetzt ausführen“ klickst.",
+		"stopping": "Wird gestoppt…",
+		"stop": "Stoppen",
+		"runNow": "Jetzt ausführen",
+		"smartTriage": "Smart-Triage",
+		"smartTriageDescription": "Das lokale LLM durchsucht deine aktivierten Quellen und erstellt KI-vorbereitete Workspaces für umsetzbare Elemente.",
+		"showReasoning": "Begründung des Agenten anzeigen",
+		"noTickYet": "Noch kein Durchlauf erfolgt.",
+		"lastTickCreated_one": "Letzter Durchlauf · {{when}} · {{count}} Workspace erstellt",
+		"lastTickCreated_other": "Letzter Durchlauf · {{when}} · {{count}} Workspaces erstellt",
+		"lastTickNothing": "Letzter Durchlauf · {{when}} · nichts Umsetzbares",
+		"lastTickStopped": "Letzter Durchlauf · {{when}} · gestoppt",
+		"lastTickFailed": "Letzter Durchlauf · {{when}} · fehlgeschlagen",
+		"noMessage": "(keine Meldung)",
+		"batchLabel": "Stapel {{index}} von {{total}}",
+		"tickRunning": "Durchlauf läuft",
+		"tickStats": "{{elapsed}} · Runde {{turns}} · {{tools}} Tool-Aufrufe",
+		"startedAt": "Gestartet {{time}}",
+		"lastTool": " · zuletzt: {{tool}}",
+		"hide": "Ausblenden",
+		"show": "Anzeigen",
+		"toolCallList": "Liste der Tool-Aufrufe",
+		"noToolCalls": "Noch keine Tool-Aufrufe.",
+		"connect": "Verbinden",
+		"status": {
+			"connected": "Verbunden",
+			"installRequired": "Installation erforderlich",
+			"signInRequired": "Anmeldung erforderlich",
+			"notConfigured": "Nicht konfiguriert",
+			"attention": "Achtung",
+			"unknown": "Unbekannt"
+		}
+	}
+}

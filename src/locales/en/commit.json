@@ -1,0 +1,126 @@
+{
+	"states": {
+		"commitAndPush": {
+			"idle": "Commit and Push",
+			"busy": "Committing...",
+			"done": "Pushed",
+			"disabled": "Commit and Push"
+		},
+		"push": {
+			"idle": "Push",
+			"busy": "Pushing...",
+			"done": "Pushed",
+			"disabled": "Push"
+		},
+		"fix": {
+			"idle": "Fix CI",
+			"busy": "Fixing CI...",
+			"done": "CI Fixed",
+			"disabled": "Fix CI"
+		},
+		"resolveConflicts": {
+			"idle": "Resolve Conflicts",
+			"busy": "Resolving...",
+			"done": "Resolved",
+			"disabled": "Resolve Conflicts"
+		},
+		"checksRunning": {
+			"idle": "Checks Running",
+			"busy": "Merging...",
+			"done": "Merged",
+			"disabled": "Checks Running"
+		},
+		"mergeBlocked": {
+			"idle": "Merge Blocked",
+			"busy": "Merging...",
+			"done": "Merged",
+			"disabled": "Merge Blocked"
+		},
+		"merge": {
+			"idle": "Merge",
+			"busy": "Merging...",
+			"done": "Merged",
+			"disabled": "Merge"
+		},
+		"merged": "Merged",
+		"closed": "Closed"
+	},
+	"createPr": {
+		"busy": "Creating {{changeRequestName}}...",
+		"done": "{{changeRequestName}} Created",
+		"idle": "Create {{changeRequestName}}"
+	},
+	"openPr": {
+		"busy": "Opening {{changeRequestName}}...",
+		"done": "Opened",
+		"idle": "Open {{changeRequestName}}"
+	},
+	"menu": {
+		"commitAndPushManually": "Commit and push manually",
+		"pushManually": "Push manually",
+		"fixManually": "Fix CI manually",
+		"createDraftPr": "Create draft {{changeRequestName}}",
+		"createPrManually": "Create {{changeRequestName}} manually"
+	},
+	"options": {
+		"commitAndPush": "Commit and push options",
+		"push": "Push options",
+		"fix": "Fix CI options",
+		"resolveConflicts": "Resolve conflicts options",
+		"checksRunning": "Checks running options",
+		"mergeBlocked": "Merge blocked options",
+		"merge": "Merge options",
+		"openPr": "Open {{changeRequestName}} options",
+		"merged": "Merged options",
+		"closed": "Closed options",
+		"createPr": "Create {{changeRequestName}} options"
+	},
+	"splitButton": {
+		"defaultLabel": "Commit",
+		"commitAria": "Commit current changes",
+		"moreActionsAria": "Git section more actions"
+	},
+	"mergeBlockedReason": {
+		"behindShort": "Behind Base",
+		"blockedShort": "Merge Blocked",
+		"draftShort": "Draft PR",
+		"unstableShort": "Unstable",
+		"behindDetail": "This branch is behind the base branch. Try anyway?",
+		"blockedDetail": "Branch protection is blocking this merge. Likely a missing review, unresolved conversation, or required check. Try anyway?",
+		"draftDetail": "This pull request is still a draft. Try anyway?",
+		"unstableDetail": "Non-required checks are failing. Try anyway?"
+	},
+	"confirm": {
+		"mergeAnyway": "Merge anyway",
+		"tryAnyway": "Try anyway",
+		"beforeChecksTitle": "Merge before checks pass?",
+		"beforeChecksDescription": "GitHub checks have not passed yet. Merge anyway and bypass them?",
+		"blockedMergeTitle": "Try blocked merge?"
+	},
+	"failureTitle": {
+		"createPr": "Create {{changeRequestName}} failed",
+		"commitAndPush": "Commit and push failed",
+		"push": "Push failed",
+		"fix": "Fix CI failed",
+		"resolveConflicts": "Resolve conflicts failed",
+		"merge": "Merge failed",
+		"openPr": "Open {{changeRequestName}} failed",
+		"closed": "Close {{changeRequestName}} failed",
+		"generic": "Action failed"
+	},
+	"toast": {
+		"mergeBlockedTitle": "Merge blocked",
+		"conflictMessage": "{{changeRequestName}} has merge conflicts and cannot be merged yet.",
+		"mergeabilityComputing": "Mergeability is still being calculated. Please wait and try again.",
+		"pushFailedFallback": "Unable to push branch.",
+		"promptNotDeliveredTitle": "Prompt not delivered",
+		"openChatFallback": "Unable to open a chat session.",
+		"reviewFailedTitle": "Review failed",
+		"reviewFallback": "Unable to start review.",
+		"reconnectMessage": "Reconnect your {{providerName}} account and try again.",
+		"notConnectedTitle": "{{providerName}} not connected",
+		"startActionFallback": "Unable to start action.",
+		"completeActionFallback": "Unable to complete action.",
+		"verifyActionFallback": "Unable to verify action result."
+	}
+}

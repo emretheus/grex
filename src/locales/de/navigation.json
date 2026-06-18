@@ -1,0 +1,104 @@
+{
+	"sidebar": {
+		"title": "Arbeitsbereiche"
+	},
+	"actions": {
+		"addRepository": "Repository hinzufügen",
+		"openProject": "Projekt öffnen",
+		"cloneFromUrl": "Von URL klonen",
+		"newWorkspace": "Neuer Arbeitsbereich",
+		"createNewWorkspace": "Neuen Arbeitsbereich erstellen",
+		"newWorkspaceInGroup": "Neuer Arbeitsbereich in {{group}}"
+	},
+	"sections": {
+		"archived": "Archiviert"
+	},
+	"row": {
+		"restoreWorkspace": "Arbeitsbereich wiederherstellen",
+		"confirmArchiveWorkspace": "Archivieren des Arbeitsbereichs bestätigen",
+		"archiveWorkspace": "Arbeitsbereich archivieren",
+		"interactionRequired": "Interaktion erforderlich",
+		"aiProposal": "KI-Vorschlag — zum Überprüfen öffnen",
+		"unread": "Ungelesen",
+		"deletePermanently": "Dauerhaft löschen",
+		"contextMenu": {
+			"pin": "Anheften",
+			"unpin": "Lösen",
+			"setStatus": "Status festlegen",
+			"markAsUnread": "Als ungelesen markieren",
+			"openInFinder": "Im Finder öffnen",
+			"moveIntoNewWorktree": "In neuen Worktree verschieben",
+			"restore": "Wiederherstellen",
+			"archive": "Archivieren"
+		}
+	},
+	"stack": {
+		"tip": "Stapelspitze",
+		"base": "Stapelbasis",
+		"node": "Stapel",
+		"depth": "{{current}} von {{total}}"
+	},
+	"status": {
+		"backlog": "Backlog",
+		"inProgress": "In Bearbeitung",
+		"inReview": "In Prüfung",
+		"done": "Erledigt",
+		"canceled": "Abgebrochen"
+	},
+	"hoverCard": {
+		"uncommittedChanges_one": "{{count}} nicht committete Änderung",
+		"uncommittedChanges_other": "{{count}} nicht committete Änderungen",
+		"commitsBehind_one": "{{count}} Commit hinter {{targetLabel}}",
+		"commitsBehind_other": "{{count}} Commits hinter {{targetLabel}}",
+		"unpushedCommits_one": "{{count}} nicht gepushter Commit",
+		"unpushedCommits_other": "{{count}} nicht gepushte Commits",
+		"upToDateClean": "Branch ist auf dem Stand von {{targetLabel}} · keine nicht committeten Änderungen",
+		"upToDate": "Branch ist auf dem Stand von {{targetLabel}}",
+		"runningFor": "Läuft seit {{elapsed}}",
+		"thinking": "Denkt nach…",
+		"lastActivityCreated": "{{lastActivityLabel}} · erstellt {{createdAt}}",
+		"lastActivity": {
+			"lastMessage": "Letzte Nachricht",
+			"lastChanged": "Zuletzt geändert",
+			"created": "Erstellt"
+		},
+		"sessionCount_one": "{{count}} Sitzung",
+		"sessionCount_other": "{{count}} Sitzungen"
+	},
+	"cloneDialog": {
+		"title": "Von URL klonen",
+		"gitUrl": "Git-URL",
+		"cloneLocation": "Klon-Speicherort",
+		"browse": "Durchsuchen…",
+		"folderPickerError": "Die Ordnerauswahl konnte nicht geöffnet werden.",
+		"cloneError": "Das Repository konnte nicht geklont werden.",
+		"submit": "Repository klonen",
+		"cloning": "Wird geklont…"
+	},
+	"moveToWorktreeDialog": {
+		"title": "In neuen Worktree verschieben",
+		"description": "<bold>{{name}}</bold> wird in einem frischen Worktree auf einem neuen, automatisch benannten Branch fortgesetzt.",
+		"localUntouched": "Dein lokales Repository bleibt genau so, wie es ist — Branch und Dateien unberührt.",
+		"changesCarriedOver": "Verfolgte und nicht verfolgte Änderungen werden in den neuen Worktree übernommen.",
+		"submit": "In Worktree verschieben",
+		"moving": "Wird verschoben…"
+	},
+	"viewPopover": {
+		"filterAndSortAria": "Seitenleiste filtern und sortieren",
+		"filterAndSort": "Filtern und sortieren",
+		"repository": "Repository",
+		"allRepositories": "Alle Repositorys",
+		"noRepositoriesFound": "Keine Repositorys gefunden.",
+		"searchRepositories": "Repositorys suchen",
+		"groupBy": "Gruppieren nach",
+		"status": "Status",
+		"sortBy": "Sortieren nach",
+		"selectedCount": "{{count}} ausgewählt",
+		"sort": {
+			"draggableOrder": "Eigene Reihenfolge",
+			"repositoryName": "Repository-Name",
+			"lastUpdated": "Zuletzt aktualisiert",
+			"createdTime": "Erstellungszeit"
+		}
+	}
+}

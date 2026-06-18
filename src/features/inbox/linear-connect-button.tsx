@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { ExternalLink, Loader2 } from "lucide-react";
 import { type FormEvent, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { LinearBrandIcon } from "@/components/brand-icon";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -32,6 +33,7 @@ export function LinearConnectState({
 	onConnected?: (connection: LinearConnection) => void;
 	className?: string;
 }) {
+	const { t } = useTranslation("inbox");
 	const [apiKey, setApiKey] = useState("");
 	const connectMutation = useLinearConnectMutation({ onConnected });
 	const trimmed = apiKey.trim();
@@ -52,11 +54,10 @@ export function LinearConnectState({
 			<LinearBrandIcon className="text-muted-foreground/80" size={28} />
 			<div className="space-y-1">
 				<div className="text-ui font-medium text-foreground">
-					Connect Linear
+					{t("connect.linear.title")}
 				</div>
 				<div className="text-pretty text-small leading-5 text-muted-foreground">
-					Paste a personal API key. It's validated once and stored locally in
-					your macOS Keychain.
+					{t("connect.linear.description")}
 				</div>
 			</div>
 			<form
@@ -67,8 +68,8 @@ export function LinearConnectState({
 					type="password"
 					autoComplete="off"
 					spellCheck={false}
-					placeholder="lin_api_…"
-					aria-label="Linear personal API key"
+					placeholder={t("connect.linear.apiKeyPlaceholder")}
+					aria-label={t("connect.linear.apiKeyLabel")}
 					value={apiKey}
 					onChange={(event) => setApiKey(event.target.value)}
 					disabled={connectMutation.isPending}
@@ -84,10 +85,10 @@ export function LinearConnectState({
 					{connectMutation.isPending ? (
 						<>
 							<Loader2 className="size-3.5 animate-spin" strokeWidth={2} />
-							Connecting…
+							{t("connect.connecting")}
 						</>
 					) : (
-						"Connect"
+						t("connect.connect")
 					)}
 				</Button>
 			</form>
@@ -96,7 +97,7 @@ export function LinearConnectState({
 				onClick={() => void openUrl(LINEAR_API_KEYS_URL)}
 				className="inline-flex cursor-interactive items-center gap-1 text-mini text-muted-foreground/80 transition-colors hover:text-foreground"
 			>
-				Create a key in Linear
+				{t("connect.linear.help")}
 				<ExternalLink className="size-3" strokeWidth={1.8} />
 			</button>
 		</div>
@@ -110,6 +111,7 @@ export function LinearConnectState({
 export function useLinearConnectMutation(opts?: {
 	onConnected?: (connection: LinearConnection) => void;
 }) {
+	const { t } = useTranslation("inbox");
 	const pushToast = useWorkspaceToast();
 	const queryClient = useQueryClient();
 	return useMutation({
@@ -128,8 +130,10 @@ export function useLinearConnectMutation(opts?: {
 		},
 		onError: (error) => {
 			const message =
-				error instanceof Error ? error.message : "Couldn't connect Linear.";
-			pushToast(message, "Linear connect failed", "destructive");
+				error instanceof Error
+					? error.message
+					: t("connect.linear.failedMessage");
+			pushToast(message, t("connect.linear.failedTitle"), "destructive");
 		},
 	});
 }

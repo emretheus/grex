@@ -1,0 +1,68 @@
+{
+	"common": {
+		"disconnect": "Desconectar",
+		"disconnecting": "Desconectando…",
+		"nothingToFilter": "No hay nada que filtrar.",
+		"countSelected_one": "{{count}} seleccionado",
+		"countSelected_other": "{{count}} seleccionados",
+		"assignedFeedHint": "Solo las incidencias asignadas a ti aparecen en el feed."
+	},
+	"scope": {
+		"assignedToMe": "Asignadas a mí"
+	},
+	"jira": {
+		"connectAnother": "Conectar otro sitio",
+		"siteFallback": "Sitio de Jira",
+		"updateFailed": "Error al actualizar Jira",
+		"updateError": "No se pudo guardar el alcance de Jira.",
+		"disconnectFailed": "Error al desconectar Jira",
+		"disconnectError": "No se pudo desconectar Jira.",
+		"scopeAll": "Todos los proyectos",
+		"projectsLabel": "Proyectos",
+		"allProjects": "Todos los proyectos"
+	},
+	"linear": {
+		"connectAnother": "Conectar otro espacio de trabajo",
+		"workspaceFallback": "Espacio de trabajo de Linear",
+		"updateFailed": "Error al actualizar Linear",
+		"updateError": "No se pudo guardar el alcance de Linear.",
+		"disconnectFailed": "Error al desconectar Linear",
+		"disconnectError": "No se pudo desconectar Linear.",
+		"scopeAll": "Todas las incidencias",
+		"teamsLabel": "Equipos",
+		"allTeams": "Todos los equipos",
+		"projectsLabel": "Proyectos",
+		"allProjects": "Todos los proyectos"
+	},
+	"trello": {
+		"connectAnother": "Conectar otra cuenta",
+		"accountFallback": "Cuenta de Trello",
+		"updateFailed": "Error al actualizar Trello",
+		"updateError": "No se pudo guardar el alcance de Trello.",
+		"disconnectFailed": "Error al desconectar Trello",
+		"disconnectError": "No se pudo desconectar Trello.",
+		"scopeMine": "Mis tarjetas",
+		"scopeAll": "Todos los tableros",
+		"boardsLabel": "Tableros",
+		"allBoards": "Todos los tableros",
+		"memberFeedHint": "Solo las tarjetas de las que eres miembro aparecen en el feed."
+	},
+	"forgejo": {
+		"connectAnother": "Conectar otra instancia",
+		"instanceFallback": "Instancia de Forgejo",
+		"updateFailed": "Error al actualizar Forgejo",
+		"updateError": "No se pudo guardar el alcance de Forgejo.",
+		"disconnectFailed": "Error al desconectar Forgejo",
+		"disconnectError": "No se pudo desconectar Forgejo.",
+		"scopeMine": "Mis incidencias",
+		"scopeAll": "Todas las incidencias",
+		"allIssuesHint": "Todas las incidencias de los repositorios que tu token puede leer."
+	},
+	"featurebase": {
+		"connectAnother": "Conectar otro tablero",
+		"boardFallback": "Tablero de Featurebase",
+		"disconnectFailed": "Error al desconectar Featurebase",
+		"disconnectError": "No se pudo desconectar Featurebase.",
+		"readOnlyHint": "Las publicaciones de feedback son de solo lectura; todo lo de este tablero aparece en el feed."
+	}
+}

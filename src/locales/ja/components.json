@@ -1,0 +1,77 @@
+{
+	"ai": {
+		"reasoning": {
+			"thinking": "思考中…",
+			"thinkingStatic": "思考",
+			"thoughtForSeconds_other": "{{count}} 秒考えました"
+		},
+		"openIn": {
+			"trigger": "チャットで開く",
+			"open": "開く",
+			"chatgpt": "ChatGPT で開く",
+			"claude": "Claude で開く",
+			"t3": "T3 Chat で開く",
+			"scira": "Scira で開く",
+			"v0": "v0 で開く",
+			"cursor": "Cursor で開く",
+			"github": "GitHub で開く"
+		}
+	},
+	"inlineBadge": {
+		"removeItem": "項目を削除",
+		"unableToPreview": "プレビューできません"
+	},
+	"branchPicker": {
+		"searchPlaceholder": "ブランチを検索…",
+		"loading": "ブランチを読み込み中…",
+		"empty": "ブランチが見つかりません"
+	},
+	"appendContext": {
+		"errorTitle": "コンテキストを追加できませんでした",
+		"errorFallback": "コンテキストを追加できませんでした。",
+		"ariaLabel": "{{subject}} をエディターに追加"
+	},
+	"quitConfirm": {
+		"title": "Grex を終了しますか？",
+		"description_other": "{{count}} 件のタスクが進行中です。今終了するとキャンセルされます。",
+		"confirm": "それでも終了"
+	},
+	"forgeConnect": {
+		"github": "GitHub",
+		"gitlab": "GitLab",
+		"forge": "Forge",
+		"connect": "{{provider}} に接続",
+		"startError": "ログインを開始できませんでした。",
+		"connectedAs": "{{provider}} に @{{login}} として接続しました",
+		"connected": "{{provider}} に接続しました"
+	},
+	"larkConnect": {
+		"install": "lark-cli をインストール",
+		"signIn": "サインイン",
+		"connectWithSuffix": "Lark に接続 — {{suffix}}",
+		"connect": "Lark に接続",
+		"connected": "Lark に接続しました",
+		"startError": "lark-cli を開始できませんでした。"
+	},
+	"conductor": {
+		"importFailed": "インポートに失敗しました。もう一度お試しください。",
+		"welcome": "Grex へようこそ",
+		"workspacesReady_other": "{{count}} 個のワークスペースが準備完了",
+		"getStarted": "開始する",
+		"overflowMore": "他 {{count}} 件",
+		"imported": "件インポート",
+		"importWorkspaces_other": "{{count}} 個のワークスペースをインポート",
+		"importEmpty": "ワークスペースをインポート",
+		"skipForNow": "今はスキップ",
+		"aboutImporting": "インポートについて",
+		"aboutImportingTooltip": "ご安心ください — ここにインポートするために Conductor のデータを読み取るだけです。Conductor のデータが変更されることは一切ありません。",
+		"importing": "インポート中…"
+	},
+	"ui": {
+		"commandDialogTitle": "コマンドパレット",
+		"commandDialogDescription": "実行するコマンドを検索…",
+		"sidebarTitle": "サイドバー",
+		"sidebarDescription": "モバイルのサイドバーを表示します。",
+		"toggleSidebar": "サイドバーを切り替え"
+	}
+}

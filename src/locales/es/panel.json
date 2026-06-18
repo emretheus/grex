@@ -1,0 +1,53 @@
+{
+	"header": {
+		"workspaceHeader": "Encabezado del espacio de trabajo",
+		"loading": "Cargando",
+		"sessions": "Sesiones",
+		"contextPreview": "Vista previa del contexto",
+		"closeContextPreview": "Cerrar vista previa del contexto",
+		"noSessions": "Sin sesiones",
+		"newSession": "Nueva sesión",
+		"sessionHistory": "Historial de sesiones",
+		"noHiddenSessions": "Sin sesiones ocultas",
+		"renameSession": "Renombrar sesión",
+		"closeSession": "Cerrar sesión",
+		"restoreSession": "Restaurar sesión",
+		"deleteSessionPermanently": "Eliminar sesión permanentemente",
+		"untitled": "Sin título",
+		"renameBranch": "Renombrar rama",
+		"copyBranchName": "Copiar nombre de la rama",
+		"noBranch": "Sin rama",
+		"baseBranch": "Rama base {{remote}}/{{branch}}",
+		"stackedOn": "Apilada sobre {{label}}",
+		"interactionRequired": "Se requiere interacción",
+		"unreadSession": "Sesión sin leer"
+	},
+	"emptyState": {
+		"creatingWorkspace": "Creando espacio de trabajo",
+		"nothingHereYet": "Aún no hay nada aquí",
+		"noSessionSelected": "Ninguna sesión seleccionada",
+		"preparingWorkspace": "Grex todavía está preparando este espacio de trabajo. La mensajería se desbloqueará automáticamente cuando termine la configuración.",
+		"newSessionIn": "Nueva sesión en",
+		"newSession": "Nueva sesión",
+		"chooseSession": "Elige una sesión en el encabezado para inspeccionar su cronología.",
+		"scriptActions": {
+			"setup": {
+				"title": "Crear script de configuración",
+				"description": "Instala las dependencias después de crear un espacio de trabajo."
+			},
+			"run": {
+				"title": "Crear acciones de ejecución",
+				"description": "Comandos con nombre que elegirás desde el menú Ejecutar del Inspector."
+			},
+			"archive": {
+				"title": "Crear script de archivado",
+				"description": "Limpieza ligera o transferencia antes de archivar."
+			}
+		},
+		"tipsLabel": "Consejos:",
+		"tipsBody": "Configurar estos scripts mejora tu ciclo de desarrollo."
+	},
+	"systemMessage": {
+		"useThisPrompt": "Usar este prompt"
+	}
+}

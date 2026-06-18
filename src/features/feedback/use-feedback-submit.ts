@@ -7,6 +7,7 @@ import type {
 } from "@/features/conversation";
 import { createWorkspaceFromStartComposer } from "@/features/workspace-start/create-workspace";
 import type { AgentModelOption, AgentModelSection } from "@/lib/api";
+import { i18n } from "@/lib/i18n";
 import { grexQueryKeys } from "@/lib/query-client";
 import type { AppSettings } from "@/lib/settings";
 import { requestSidebarReconcile } from "@/lib/sidebar-mutation-gate";
@@ -63,8 +64,8 @@ export function useFeedbackSubmit(deps: Deps) {
 			const model: AgentModelOption | undefined = preferred ?? allModels[0];
 			if (!model) {
 				pushToast(
-					"Pick a default model in Settings first.",
-					"Can't send feedback",
+					i18n.t("feedback:toast.noModelMessage"),
+					i18n.t("feedback:toast.noModelTitle"),
 				);
 				return;
 			}
@@ -138,8 +139,11 @@ export function useFeedbackSubmit(deps: Deps) {
 							current?.id === pendingId ? null : current,
 						);
 						pushToast(
-							describeUnknownError(error, "Workspace setup failed."),
-							"Workspace setup failed",
+							describeUnknownError(
+								error,
+								i18n.t("feedback:toast.workspaceSetupFailedMessage"),
+							),
+							i18n.t("feedback:toast.workspaceSetupFailedTitle"),
 						);
 						requestSidebarReconcile(queryClient);
 						return;
@@ -166,8 +170,11 @@ export function useFeedbackSubmit(deps: Deps) {
 				requestSidebarReconcile(queryClient);
 			} catch (error) {
 				pushToast(
-					describeUnknownError(error, "Failed to send feedback to agent."),
-					"Couldn't open workspace",
+					describeUnknownError(
+						error,
+						i18n.t("feedback:toast.sendToAgentFailedMessage"),
+					),
+					i18n.t("feedback:toast.openWorkspaceFailedTitle"),
 				);
 			}
 		},

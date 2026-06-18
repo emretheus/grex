@@ -1,0 +1,50 @@
+{
+	"actions": {
+		"openExternally": "Open externally",
+		"addToContext": "Add to context",
+		"addToContextError": "Couldn't insert context card",
+		"copyMarkdown": "Copy markdown",
+		"copied": "Copied",
+		"refresh": "Refresh",
+		"refreshing": "Refreshing…"
+	},
+	"kind": {
+		"issue": "issue",
+		"pullRequest": "pull request",
+		"discussion": "discussion",
+		"mergeRequest": "merge request",
+		"post": "post",
+		"card": "card",
+		"thread": "thread"
+	},
+	"body": {
+		"noDescription": "No description provided."
+	},
+	"meta": {
+		"updated": "Updated {{time}}",
+		"priority": "Priority: {{priority}}"
+	},
+	"relativeTime": {
+		"minutes_one": "{{count}}m ago",
+		"minutes_other": "{{count}}m ago",
+		"hours_one": "{{count}}h ago",
+		"hours_other": "{{count}}h ago",
+		"days_one": "{{count}}d ago",
+		"days_other": "{{count}}d ago"
+	},
+	"startWorkspace": {
+		"tooltip": "Start workspace",
+		"fromIssue": "Start workspace from issue",
+		"fromPost": "Start workspace from post",
+		"fromCard": "Start workspace from card",
+		"fromThread": "Start workspace from thread"
+	},
+	"slack": {
+		"invalidReference": "Invalid Slack item reference.",
+		"threadBadge": "Thread",
+		"openInSlack": "Open in Slack",
+		"loadError": "Couldn't load Slack thread.",
+		"noMessages": "No messages to show.",
+		"emptyMessage": "(empty message)"
+	}
+}

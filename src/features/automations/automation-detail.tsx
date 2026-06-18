@@ -1,5 +1,6 @@
 import { ChevronRight, Pause, Play, Trash2 } from "lucide-react";
 import { type ReactNode, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
@@ -59,6 +60,7 @@ export function AutomationDetail({
 	onBack: () => void;
 	onOpenSession: (workspaceId: string, sessionId: string) => void;
 }) {
+	const { t } = useTranslation(["automations", "common"]);
 	const [titleDraft, setTitleDraft] = useState(automation.title);
 	const [promptDraft, setPromptDraft] = useState(automation.prompt);
 	const [confirmDelete, setConfirmDelete] = useState(false);
@@ -71,12 +73,12 @@ export function AutomationDetail({
 
 	const workspaceName = automation.workspaceId
 		? (workspaces.find((workspace) => workspace.id === automation.workspaceId)
-				?.title ?? "Unknown workspace")
-		: "—";
+				?.title ?? t("detail.unknownWorkspace"))
+		: t("detail.none");
 	const sessionName = automation.sessionId
 		? (sessions.find((session) => session.id === automation.sessionId)?.title ??
-			"Unknown chat")
-		: "—";
+			t("detail.unknownChat"))
+		: t("detail.none");
 
 	const promptDirty = promptDraft !== automation.prompt;
 	const paused = automation.status === "paused";
@@ -103,8 +105,8 @@ export function AutomationDetail({
 				if (automation.workspaceId) {
 					onOpenSession(automation.workspaceId, sessionId);
 				} else {
-					toast.success("Automation started", {
-						description: "Running in its chat.",
+					toast.success(t("toast.started"), {
+						description: t("toast.runningInChat"),
 					});
 				}
 			},
@@ -121,7 +123,7 @@ export function AutomationDetail({
 							onClick={onBack}
 							className="shrink-0 cursor-pointer text-muted-foreground transition-colors hover:text-foreground"
 						>
-							Automations
+							{t("detail.breadcrumb")}
 						</button>
 						<ChevronRight className="size-3.5 shrink-0 text-muted-foreground/60" />
 						<span className="truncate font-medium text-foreground">
@@ -132,7 +134,9 @@ export function AutomationDetail({
 						<Button
 							variant="ghost"
 							size="icon-sm"
-							aria-label={paused ? "Resume automation" : "Pause automation"}
+							aria-label={
+								paused ? t("detail.resumeAria") : t("detail.pauseAria")
+							}
 							onClick={() =>
 								setStatus.mutate({
 									automationId: automation.id,
@@ -145,7 +149,7 @@ export function AutomationDetail({
 						<Button
 							variant="ghost"
 							size="icon-sm"
-							aria-label="Delete automation"
+							aria-label={t("detail.deleteAria")}
 							className="text-muted-foreground hover:text-destructive"
 							onClick={() => setConfirmDelete(true)}
 						>
@@ -158,7 +162,7 @@ export function AutomationDetail({
 							onClick={handleRunNow}
 						>
 							<Play data-icon="inline-start" />
-							Run now
+							{t("detail.runNow")}
 						</Button>
 					</div>
 				</div>
@@ -169,15 +173,15 @@ export function AutomationDetail({
 							value={titleDraft}
 							onChange={(event) => setTitleDraft(event.target.value)}
 							onBlur={saveTitle}
-							aria-label="Automation title"
+							aria-label={t("detail.titleAria")}
 							className="w-full bg-transparent text-heading font-semibold text-foreground outline-none placeholder:text-muted-foreground/60"
 						/>
 						<Textarea
 							value={promptDraft}
 							onChange={(event) => setPromptDraft(event.target.value)}
 							onBlur={savePrompt}
-							aria-label="Automation prompt"
-							placeholder="Add prompt e.g. look for crashes in $sentry"
+							aria-label={t("detail.promptAria")}
+							placeholder={t("detail.promptPlaceholder")}
 							className="mt-4 min-h-48 resize-none border-0 px-0 py-0 text-body leading-relaxed shadow-none focus-visible:ring-0 dark:bg-transparent"
 						/>
 						{promptDirty ? (
@@ -188,15 +192,15 @@ export function AutomationDetail({
 								disabled={update.isPending || promptDraft.trim() === ""}
 								onClick={savePrompt}
 							>
-								Save
+								{t("common:actions.save")}
 							</Button>
 						) : null}
 					</div>
 
 					<aside className="w-full shrink-0 md:w-64">
 						<div className="flex flex-col gap-6 rounded-xl border border-border p-4">
-							<SidebarGroup title="Status">
-								<SidebarRow label="Status">
+							<SidebarGroup title={t("detail.sections.status")}>
+								<SidebarRow label={t("detail.fields.status")}>
 									<span
 										className={cn(
 											"size-2 rounded-full",
@@ -205,29 +209,31 @@ export function AutomationDetail({
 									/>
 									{statusLabel(automation.status)}
 								</SidebarRow>
-								<SidebarRow label="Next run">
+								<SidebarRow label={t("detail.fields.nextRun")}>
 									{formatRunTime(automation.nextRunAt)}
 								</SidebarRow>
-								<SidebarRow label="Last ran">
+								<SidebarRow label={t("detail.fields.lastRan")}>
 									{automation.lastRunAt
 										? formatRunTime(automation.lastRunAt)
-										: "Never"}
+										: t("detail.never")}
 								</SidebarRow>
 							</SidebarGroup>
-							<SidebarGroup title="Details">
-								<SidebarRow label="Runs in">
-									{automation.runsIn === "chat" ? "Chat" : "Workspace"}
+							<SidebarGroup title={t("detail.sections.details")}>
+								<SidebarRow label={t("detail.fields.runsIn")}>
+									{automation.runsIn === "chat"
+										? t("detail.runsInChat")
+										: t("detail.runsInWorkspace")}
 								</SidebarRow>
 								{automation.runsIn === "chat" ? (
-									<SidebarRow label="Chat">
+									<SidebarRow label={t("detail.fields.chat")}>
 										<span className="truncate">{sessionName}</span>
 									</SidebarRow>
 								) : (
-									<SidebarRow label="Workspace">
+									<SidebarRow label={t("detail.fields.workspace")}>
 										<span className="truncate">{workspaceName}</span>
 									</SidebarRow>
 								)}
-								<SidebarRow label="Interval">
+								<SidebarRow label={t("detail.fields.interval")}>
 									<IntervalPicker
 										value={automation.schedule}
 										align="end"
@@ -245,9 +251,11 @@ export function AutomationDetail({
 			<ConfirmDialog
 				open={confirmDelete}
 				onOpenChange={setConfirmDelete}
-				title="Delete automation?"
-				description={`"${automation.title}" will stop running and be removed. This cannot be undone.`}
-				confirmLabel="Delete"
+				title={t("confirmDelete.title")}
+				description={t("confirmDelete.description", {
+					title: automation.title,
+				})}
+				confirmLabel={t("common:actions.delete")}
 				loading={remove.isPending}
 				onConfirm={() =>
 					remove.mutate(automation.id, {

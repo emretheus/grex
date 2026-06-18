@@ -1,0 +1,63 @@
+{
+	"button": {
+		"tooltip": "Envoyer un commentaire"
+	},
+	"dialog": {
+		"titleInput": "Envoyer un commentaire",
+		"titleContribute": "Contribuer à Grex"
+	},
+	"input": {
+		"placeholder": "Décrivez un bug, suggérez une amélioration ou posez une question.",
+		"ariaLabel": "Commentaire",
+		"connectGithubPrefix": "Connectez GitHub dans les ",
+		"settingsLink": "Paramètres",
+		"connectGithubSuffix": " pour envoyer un commentaire.",
+		"reuseLocalRepo": "Votre dépôt grex local sera réutilisé.",
+		"confirmPrompt": "Cela ouvrira un ticket dans {{slug}}. Confirmer ?",
+		"createIssue": "Créer un ticket",
+		"confirmSend": "Confirmer l'envoi",
+		"sending": "Envoi…",
+		"quickFix": "Correction rapide",
+		"quickFixTooltip": "Contribuer à Grex — très simple"
+	},
+	"clone": {
+		"forking": "Fork de {{slug}} vers votre compte GitHub…",
+		"forkReady": "Fork prêt. Choisissez où le cloner sur votre machine.",
+		"forkIntro": "Nous allons forker le dépôt Grex en amont vers votre compte GitHub.",
+		"cloneLocationLabel": "Emplacement du clone",
+		"cloneLocationPlaceholder": "Choisissez un dossier…",
+		"browse": "Parcourir…",
+		"tryAgain": "Réessayer",
+		"cloning": "Clonage…",
+		"cloneToFolder": "Cloner dans ce dossier",
+		"forkFailed": "Échec du fork de grex sur GitHub.",
+		"folderPickerFailed": "Impossible d'ouvrir le sélecteur de dossier.",
+		"cloneFailed": "Échec du clonage du dépôt."
+	},
+	"prompt": {
+		"description": "Modifiez-le si vous le souhaitez — c'est ce avec quoi l'agent démarre.",
+		"reuseLocalRepo": " Votre dépôt grex local sera réutilisé.",
+		"sendToAgent": "Envoyer à l'agent"
+	},
+	"template": {
+		"intro": "Je contribue à {{slug}}. Aidez-moi à finaliser cela.",
+		"feedbackHeading": "## Mon commentaire",
+		"howToHeading": "## Comment procéder",
+		"step1": "1. Explorez le code, posez toute question peu claire et proposez un changement minimal.",
+		"step2": "2. Implémentez une fois que je suis d'accord. Ne faites pas de commit, de push ni n'ouvrez de PR avant que je dise \"go ahead\".",
+		"step3": "3. Après mon \"go ahead\" : faites un commit, un push vers origin, puis `gh pr create --repo {{slug}} --base main` avec un titre et un corps générés à partir du diff.",
+		"replyInLanguage": "Répondez en utilisant la même langue que celle employée dans la section \"## Mon commentaire\" ci-dessus."
+	},
+	"toast": {
+		"issueCreated": "Ticket #{{number}} créé",
+		"viewIssue": "Voir",
+		"createIssueFailed": "Échec de la création du ticket",
+		"createIssueFailedDescription": "Veuillez réessayer.",
+		"noModelTitle": "Impossible d'envoyer le commentaire",
+		"noModelMessage": "Choisissez d'abord un modèle par défaut dans les Paramètres.",
+		"workspaceSetupFailedTitle": "Échec de la configuration de l'espace de travail",
+		"workspaceSetupFailedMessage": "Échec de la configuration de l'espace de travail.",
+		"openWorkspaceFailedTitle": "Impossible d'ouvrir l'espace de travail",
+		"sendToAgentFailedMessage": "Échec de l'envoi du commentaire à l'agent."
+	}
+}

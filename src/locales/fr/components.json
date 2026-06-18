@@ -1,0 +1,81 @@
+{
+	"ai": {
+		"reasoning": {
+			"thinking": "Réflexion…",
+			"thinkingStatic": "Réflexion",
+			"thoughtForSeconds_one": "A réfléchi pendant {{count}} s",
+			"thoughtForSeconds_other": "A réfléchi pendant {{count}} s"
+		},
+		"openIn": {
+			"trigger": "Ouvrir dans le chat",
+			"open": "Ouvrir",
+			"chatgpt": "Ouvrir dans ChatGPT",
+			"claude": "Ouvrir dans Claude",
+			"t3": "Ouvrir dans T3 Chat",
+			"scira": "Ouvrir dans Scira",
+			"v0": "Ouvrir dans v0",
+			"cursor": "Ouvrir dans Cursor",
+			"github": "Ouvrir dans GitHub"
+		}
+	},
+	"inlineBadge": {
+		"removeItem": "Supprimer l'élément",
+		"unableToPreview": "Aperçu impossible"
+	},
+	"branchPicker": {
+		"searchPlaceholder": "Rechercher des branches…",
+		"loading": "Chargement des branches…",
+		"empty": "Aucune branche trouvée"
+	},
+	"appendContext": {
+		"errorTitle": "Impossible d'ajouter le contexte",
+		"errorFallback": "Impossible d'ajouter le contexte.",
+		"ariaLabel": "Ajouter {{subject}} à l'éditeur"
+	},
+	"quitConfirm": {
+		"title": "Quitter Grex ?",
+		"description_one": "{{count}} tâche est en cours. Quitter maintenant l'annulera.",
+		"description_other": "{{count}} tâches sont en cours. Quitter maintenant les annulera.",
+		"confirm": "Quitter quand même"
+	},
+	"forgeConnect": {
+		"github": "GitHub",
+		"gitlab": "GitLab",
+		"forge": "Forge",
+		"connect": "Connecter {{provider}}",
+		"startError": "Impossible de démarrer la connexion.",
+		"connectedAs": "{{provider}} connecté en tant que @{{login}}",
+		"connected": "{{provider}} connecté"
+	},
+	"larkConnect": {
+		"install": "Installer lark-cli",
+		"signIn": "Se connecter",
+		"connectWithSuffix": "Connecter Lark — {{suffix}}",
+		"connect": "Connecter Lark",
+		"connected": "Lark connecté",
+		"startError": "Impossible de démarrer lark-cli."
+	},
+	"conductor": {
+		"importFailed": "Échec de l'importation. Réessayez.",
+		"welcome": "Bienvenue dans Grex",
+		"workspacesReady_one": "{{count}} espace de travail prêt",
+		"workspacesReady_other": "{{count}} espaces de travail prêts",
+		"getStarted": "Commencer",
+		"overflowMore": "+{{count}} de plus",
+		"imported": "importés",
+		"importWorkspaces_one": "Importer {{count}} espace de travail",
+		"importWorkspaces_other": "Importer {{count}} espaces de travail",
+		"importEmpty": "Importer des espaces de travail",
+		"skipForNow": "Ignorer pour l'instant",
+		"aboutImporting": "À propos de l'importation",
+		"aboutImportingTooltip": "Pas d'inquiétude — nous lisons uniquement vos données Conductor pour les importer ici. Vos données Conductor ne seront modifiées d'aucune manière.",
+		"importing": "Importation…"
+	},
+	"ui": {
+		"commandDialogTitle": "Palette de commandes",
+		"commandDialogDescription": "Rechercher une commande à exécuter…",
+		"sidebarTitle": "Barre latérale",
+		"sidebarDescription": "Affiche la barre latérale mobile.",
+		"toggleSidebar": "Basculer la barre latérale"
+	}
+}

@@ -1,4 +1,5 @@
 import { type ReactNode, useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { CodeBlock } from "@/components/ai/code-block";
 import type { ComposerPreviewPayload } from "@/lib/composer-insert";
 import { convertFileSrc } from "@/lib/ipc";
@@ -144,13 +145,14 @@ export function renderInlineBadgePreview(
 
 /** Placeholder frame used when a lazy preview fails to load. */
 export function PreviewErrorFrame({ title }: { title: string }) {
+	const { t } = useTranslation("components");
 	return (
 		<PreviewFrame
 			title={title}
 			bodyClassName="flex items-center justify-center px-4 py-6"
 		>
 			<span className="text-small text-muted-foreground">
-				Unable to preview
+				{t("inlineBadge.unableToPreview")}
 			</span>
 		</PreviewFrame>
 	);
@@ -158,12 +160,15 @@ export function PreviewErrorFrame({ title }: { title: string }) {
 
 /** Placeholder frame used while a lazy preview is still loading. */
 export function PreviewLoadingFrame({ title }: { title: string }) {
+	const { t } = useTranslation("common");
 	return (
 		<PreviewFrame
 			title={title}
 			bodyClassName="flex items-center justify-center px-4 py-6"
 		>
-			<span className="text-small text-muted-foreground">Loading…</span>
+			<span className="text-small text-muted-foreground">
+				{t("state.loading")}
+			</span>
 		</PreviewFrame>
 	);
 }

@@ -1,5 +1,6 @@
 import { LayersPlus, LoaderCircle } from "lucide-react";
 import { useCallback, useState } from "react";
+import { useTranslation } from "react-i18next";
 import type {
 	ComposerInsertItem,
 	ComposerInsertRequest,
@@ -110,11 +111,13 @@ export function AppendContextButton({
 	subjectLabel,
 	getPayload,
 	ariaLabel,
-	errorTitle = "Couldn't append context",
+	errorTitle,
 	disabled = false,
 	className,
 	onInserted,
 }: AppendContextButtonProps) {
+	const { t } = useTranslation("components");
+	const resolvedErrorTitle = errorTitle ?? t("appendContext.errorTitle");
 	const insertIntoComposer = useComposerInsert();
 	const pushToast = useWorkspaceToast();
 	const [isPending, setIsPending] = useState(false);
@@ -131,8 +134,10 @@ export function AppendContextButton({
 			onInserted?.();
 		} catch (error) {
 			pushToast(
-				error instanceof Error ? error.message : "Unable to append context.",
-				errorTitle,
+				error instanceof Error
+					? error.message
+					: t("appendContext.errorFallback"),
+				resolvedErrorTitle,
 				"destructive",
 			);
 		} finally {
@@ -140,7 +145,8 @@ export function AppendContextButton({
 		}
 	}, [
 		disabled,
-		errorTitle,
+		resolvedErrorTitle,
+		t,
 		getPayload,
 		insertIntoComposer,
 		isPending,
@@ -153,7 +159,9 @@ export function AppendContextButton({
 			type="button"
 			variant="ghost"
 			size="icon-xs"
-			aria-label={ariaLabel ?? `Append ${subjectLabel} to composer`}
+			aria-label={
+				ariaLabel ?? t("appendContext.ariaLabel", { subject: subjectLabel })
+			}
 			disabled={disabled || isPending}
 			onClick={(event) => {
 				event.stopPropagation();

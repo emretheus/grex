@@ -1,5 +1,6 @@
 import { CircleAlert, Loader2 } from "lucide-react";
 import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { GithubBrandIcon, GitlabBrandIcon } from "@/components/brand-icon";
 import { CachedAvatar } from "@/components/cached-avatar";
 import {
@@ -16,6 +17,7 @@ import { SettingsGroup } from "../components/settings-row";
 const GITHUB_DEFAULT_HOST = "github.com";
 
 export function AccountPanel() {
+	const { t } = useTranslation("settings");
 	// Shared cache key with onboarding + repo settings — see
 	// `useForgeAccountsAll` for why this matters (one cache entry,
 	// not three).
@@ -44,7 +46,7 @@ export function AccountPanel() {
 						<TooltipTrigger asChild>
 							<button
 								type="button"
-								aria-label="Account list error"
+								aria-label={t("account.errorAria")}
 								className="inline-flex h-7 cursor-default items-center justify-center text-destructive"
 							>
 								<CircleAlert className="size-4" strokeWidth={2.2} />
@@ -63,11 +65,11 @@ export function AccountPanel() {
 				{accountsQuery.isPending ? (
 					<div className="flex items-center justify-center gap-2 py-5 text-small text-muted-foreground">
 						<Loader2 className="size-3.5 animate-spin" />
-						Loading accounts…
+						{t("account.loading")}
 					</div>
 				) : sortedAccounts.length === 0 ? (
 					<div className="py-5 text-center text-small text-muted-foreground">
-						No accounts connected yet.
+						{t("account.empty")}
 					</div>
 				) : (
 					sortedAccounts.map((account) => (

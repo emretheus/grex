@@ -1,0 +1,63 @@
+{
+	"button": {
+		"tooltip": "发送反馈"
+	},
+	"dialog": {
+		"titleInput": "发送反馈",
+		"titleContribute": "为 Grex 做贡献"
+	},
+	"input": {
+		"placeholder": "描述一个缺陷、提出改进建议或提问。",
+		"ariaLabel": "反馈",
+		"connectGithubPrefix": "请在",
+		"settingsLink": "设置",
+		"connectGithubSuffix": "中连接 GitHub 以发送反馈。",
+		"reuseLocalRepo": "将复用你本地的 grex 仓库。",
+		"confirmPrompt": "这将在 {{slug}} 中创建一个 issue。确认吗？",
+		"createIssue": "创建 issue",
+		"confirmSend": "确认发送",
+		"sending": "发送中…",
+		"quickFix": "快速修复",
+		"quickFixTooltip": "为 Grex 做贡献——超级简单"
+	},
+	"clone": {
+		"forking": "正在将 {{slug}} fork 到你的 GitHub 账户…",
+		"forkReady": "Fork 已就绪。请选择将其克隆到本地的位置。",
+		"forkIntro": "我们会将上游 Grex 仓库 fork 到你的 GitHub 账户。",
+		"cloneLocationLabel": "克隆位置",
+		"cloneLocationPlaceholder": "选择一个文件夹…",
+		"browse": "浏览…",
+		"tryAgain": "重试",
+		"cloning": "克隆中…",
+		"cloneToFolder": "克隆到此文件夹",
+		"forkFailed": "在 GitHub 上 fork grex 失败。",
+		"folderPickerFailed": "无法打开文件夹选择器。",
+		"cloneFailed": "克隆仓库失败。"
+	},
+	"prompt": {
+		"description": "如有需要可以修改——这是 agent 的起始内容。",
+		"reuseLocalRepo": " 将复用你本地的 grex 仓库。",
+		"sendToAgent": "发送给 agent"
+	},
+	"template": {
+		"intro": "我正在为 {{slug}} 做贡献。请帮我把它完成并发布。",
+		"feedbackHeading": "## 我的反馈",
+		"howToHeading": "## 如何处理",
+		"step1": "1. 探索代码，对不清楚的地方提问，提出一个最小化的改动方案。",
+		"step2": "2. 在我同意后再实施。在我说“go ahead”之前，不要 commit、push 或开 PR。",
+		"step3": "3. 在我说“go ahead”之后：commit、push 到 origin，然后用从 diff 生成的标题和正文执行 `gh pr create --repo {{slug}} --base main`。",
+		"replyInLanguage": "请使用我在上面“## 我的反馈”部分所用的同一种语言回复。"
+	},
+	"toast": {
+		"issueCreated": "已创建 issue #{{number}}",
+		"viewIssue": "查看",
+		"createIssueFailed": "创建 issue 失败",
+		"createIssueFailedDescription": "请重试。",
+		"noModelTitle": "无法发送反馈",
+		"noModelMessage": "请先在设置中选择一个默认模型。",
+		"workspaceSetupFailedTitle": "工作区设置失败",
+		"workspaceSetupFailedMessage": "工作区设置失败。",
+		"openWorkspaceFailedTitle": "无法打开工作区",
+		"sendToAgentFailedMessage": "向 agent 发送反馈失败。"
+	}
+}

@@ -39,6 +39,7 @@ import type {
 	ThreadMessageLike,
 } from "@/lib/api";
 import type { ComposerCustomTag } from "@/lib/composer-insert";
+import { i18n } from "@/lib/i18n";
 import {
 	replaceStreamingTail,
 	restoreSnapshot,
@@ -195,7 +196,7 @@ export function createStreamEventDispatcher(
 			if (!nextUserInput) {
 				deps.storeActions.setSendError(
 					deps.contextKey,
-					"Unable to render user-input request: missing userInputId or modelId.",
+					i18n.t("conversation:error.userInputMissingIds"),
 				);
 				deps.clearSendingState(deps.contextKey);
 				return;
@@ -272,8 +273,8 @@ export function createStreamEventDispatcher(
 			deps.clearFastPrelude(deps.contextKey);
 			if (event.internal) {
 				deps.pushToast(
-					"Something went wrong. Please try again.",
-					"Error",
+					i18n.t("conversation:toast.genericError"),
+					i18n.t("conversation:toast.genericErrorTitle"),
 					"destructive",
 				);
 			}

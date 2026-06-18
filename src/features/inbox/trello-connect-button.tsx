@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { ExternalLink, Loader2 } from "lucide-react";
 import { type FormEvent, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { TrelloBrandIcon } from "@/components/brand-icon";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -32,6 +33,7 @@ export function TrelloConnectState({
 	onConnected?: (connection: TrelloConnection) => void;
 	className?: string;
 }) {
+	const { t } = useTranslation("inbox");
 	const [apiKey, setApiKey] = useState("");
 	const [token, setToken] = useState("");
 	const connectMutation = useTrelloConnectMutation({ onConnected });
@@ -54,11 +56,10 @@ export function TrelloConnectState({
 			<TrelloBrandIcon className="text-muted-foreground/80" size={28} />
 			<div className="space-y-1">
 				<div className="text-ui font-medium text-foreground">
-					Connect Trello
+					{t("connect.trello.title")}
 				</div>
 				<div className="text-pretty text-small leading-5 text-muted-foreground">
-					Paste your Trello API key and token. Stored locally in your macOS
-					Keychain.
+					{t("connect.trello.description")}
 				</div>
 			</div>
 			<form
@@ -69,8 +70,8 @@ export function TrelloConnectState({
 					type="text"
 					autoComplete="off"
 					spellCheck={false}
-					placeholder="Your Trello API key"
-					aria-label="Trello API key"
+					placeholder={t("connect.trello.apiKeyPlaceholder")}
+					aria-label={t("connect.trello.apiKeyLabel")}
 					value={apiKey}
 					onChange={(event) => setApiKey(event.target.value)}
 					disabled={connectMutation.isPending}
@@ -80,8 +81,8 @@ export function TrelloConnectState({
 					type="password"
 					autoComplete="off"
 					spellCheck={false}
-					placeholder="Token"
-					aria-label="Trello token"
+					placeholder={t("connect.trello.tokenPlaceholder")}
+					aria-label={t("connect.trello.tokenLabel")}
 					value={token}
 					onChange={(event) => setToken(event.target.value)}
 					disabled={connectMutation.isPending}
@@ -97,10 +98,10 @@ export function TrelloConnectState({
 					{connectMutation.isPending ? (
 						<>
 							<Loader2 className="size-3.5 animate-spin" strokeWidth={2} />
-							Connecting…
+							{t("connect.connecting")}
 						</>
 					) : (
-						"Connect"
+						t("connect.connect")
 					)}
 				</Button>
 			</form>
@@ -109,7 +110,7 @@ export function TrelloConnectState({
 				onClick={() => void openUrl(TRELLO_API_KEY_URL)}
 				className="inline-flex cursor-interactive items-center gap-1 text-mini text-muted-foreground/80 transition-colors hover:text-foreground"
 			>
-				Get your API key & token
+				{t("connect.trello.help")}
 				<ExternalLink className="size-3" strokeWidth={1.8} />
 			</button>
 		</div>
@@ -123,6 +124,7 @@ export function TrelloConnectState({
 export function useTrelloConnectMutation(opts?: {
 	onConnected?: (connection: TrelloConnection) => void;
 }) {
+	const { t } = useTranslation("inbox");
 	const pushToast = useWorkspaceToast();
 	const queryClient = useQueryClient();
 	return useMutation({
@@ -142,8 +144,10 @@ export function useTrelloConnectMutation(opts?: {
 		},
 		onError: (error) => {
 			const message =
-				error instanceof Error ? error.message : "Couldn't connect Trello.";
-			pushToast(message, "Trello connect failed", "destructive");
+				error instanceof Error
+					? error.message
+					: t("connect.trello.failedMessage");
+			pushToast(message, t("connect.trello.failedTitle"), "destructive");
 		},
 	});
 }

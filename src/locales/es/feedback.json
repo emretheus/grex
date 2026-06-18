@@ -1,0 +1,63 @@
+{
+	"button": {
+		"tooltip": "Enviar comentarios"
+	},
+	"dialog": {
+		"titleInput": "Enviar comentarios",
+		"titleContribute": "Contribuir a Grex"
+	},
+	"input": {
+		"placeholder": "Describe un error, sugiere una mejora o haz una pregunta.",
+		"ariaLabel": "Comentarios",
+		"connectGithubPrefix": "Conecta GitHub en ",
+		"settingsLink": "Ajustes",
+		"connectGithubSuffix": " para enviar comentarios.",
+		"reuseLocalRepo": "Se reutilizará tu repositorio grex local.",
+		"confirmPrompt": "Esto abrirá una incidencia en {{slug}}. ¿Confirmar?",
+		"createIssue": "Crear incidencia",
+		"confirmSend": "Confirmar envío",
+		"sending": "Enviando…",
+		"quickFix": "Arreglo rápido",
+		"quickFixTooltip": "Contribuir a Grex: muy fácil"
+	},
+	"clone": {
+		"forking": "Bifurcando {{slug}} en tu cuenta de GitHub…",
+		"forkReady": "Bifurcación lista. Elige dónde clonarla en tu equipo.",
+		"forkIntro": "Bifurcaremos el repositorio Grex original en tu cuenta de GitHub.",
+		"cloneLocationLabel": "Ubicación de clonación",
+		"cloneLocationPlaceholder": "Elige una carpeta…",
+		"browse": "Examinar…",
+		"tryAgain": "Reintentar",
+		"cloning": "Clonando…",
+		"cloneToFolder": "Clonar en esta carpeta",
+		"forkFailed": "No se pudo bifurcar grex en GitHub.",
+		"folderPickerFailed": "No se pudo abrir el selector de carpetas.",
+		"cloneFailed": "No se pudo clonar el repositorio."
+	},
+	"prompt": {
+		"description": "Ajústalo si quieres: es con lo que empieza el agente.",
+		"reuseLocalRepo": " Se reutilizará tu repositorio grex local.",
+		"sendToAgent": "Enviar al agente"
+	},
+	"template": {
+		"intro": "Estoy contribuyendo a {{slug}}. Ayúdame a sacar esto adelante.",
+		"feedbackHeading": "## Mis comentarios",
+		"howToHeading": "## Cómo gestionarlo",
+		"step1": "1. Explora el código, pregunta lo que no esté claro y propón un cambio mínimo.",
+		"step2": "2. Impleméntalo una vez que esté de acuerdo. No hagas commit, push ni abras un PR antes de que diga \"go ahead\".",
+		"step3": "3. Tras mi \"go ahead\": haz commit, push a origin y luego `gh pr create --repo {{slug}} --base main` con un título y un cuerpo generados a partir del diff.",
+		"replyInLanguage": "Responde usando el mismo idioma que usé en la sección \"## Mis comentarios\" de arriba."
+	},
+	"toast": {
+		"issueCreated": "Incidencia #{{number}} creada",
+		"viewIssue": "Ver",
+		"createIssueFailed": "No se pudo crear la incidencia",
+		"createIssueFailedDescription": "Inténtalo de nuevo.",
+		"noModelTitle": "No se pueden enviar comentarios",
+		"noModelMessage": "Primero elige un modelo predeterminado en Ajustes.",
+		"workspaceSetupFailedTitle": "Falló la configuración del espacio de trabajo",
+		"workspaceSetupFailedMessage": "Falló la configuración del espacio de trabajo.",
+		"openWorkspaceFailedTitle": "No se pudo abrir el espacio de trabajo",
+		"sendToAgentFailedMessage": "No se pudieron enviar los comentarios al agente."
+	}
+}

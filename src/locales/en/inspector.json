@@ -1,0 +1,190 @@
+{
+	"git": {
+		"title": "Git",
+		"sectionLabel": "Inspector section Git",
+		"changesPanelLabel": "Changes panel body",
+		"browseFiles": "Browse files",
+		"browseFilesTitle": "Browse all files in this workspace",
+		"openPullRequest": "Open pull request",
+		"openMergeRequest": "Open merge request",
+		"continue": "Continue",
+		"continueWorkspace": "Continue workspace",
+		"empty": "No changes on this branch yet.",
+		"groups": {
+			"stagedChanges": "Staged Changes",
+			"changes": "Changes",
+			"remote": "Remote"
+		},
+		"switchingTargetBranch": "Switching target branch…",
+		"viewToggle": {
+			"switchToListView": "Switch to list view",
+			"switchToTreeView": "Switch to tree view"
+		},
+		"row": {
+			"stageAll": "Stage all changes",
+			"unstageAll": "Unstage all changes",
+			"stageFile": "Stage file",
+			"unstageFile": "Unstage file",
+			"openInEditor": "Open in editor",
+			"discardFileChanges": "Discard file changes"
+		},
+		"contextMenu": {
+			"revealInFinder": "Reveal in Finder",
+			"copyPath": "Copy Path",
+			"copyRelativePath": "Copy Relative Path",
+			"copyRemoteFileUrl": "Copy Remote File URL"
+		},
+		"toast": {
+			"pathCopied": "Path copied",
+			"relativePathCopied": "Relative path copied",
+			"remoteFileUrlCopied": "Remote file URL copied",
+			"copyPathFailed": "Failed to copy path",
+			"copyRelativePathFailed": "Failed to copy relative path",
+			"copyRemoteFileUrlFailed": "Failed to copy remote file url",
+			"revealFailed": "Failed to reveal in Finder",
+			"noEditorTitle": "No editor",
+			"noEditorMessage": "Select a default editor before opening files.",
+			"openEditorFailed": "Failed to open {{editor}}",
+			"continuedTitle": "Continued",
+			"continuedMessage": "Workspace moved to {{branch}}."
+		},
+		"mutationError": {
+			"stageFileFailed": "Failed to stage file.",
+			"unstageFileFailed": "Failed to unstage file.",
+			"stageFilesFailed": "Failed to stage files.",
+			"unstageFilesFailed": "Failed to unstage files.",
+			"discardChangesFailed": "Failed to discard changes.",
+			"continueWorkspaceFailed": "Failed to continue workspace.",
+			"stageFileTitle": "Unable to stage file",
+			"unstageFileTitle": "Unable to unstage file",
+			"stageFilesTitle": "Unable to stage files",
+			"unstageFilesTitle": "Unable to unstage files",
+			"discardChangesTitle": "Unable to discard changes",
+			"continueWorkspaceTitle": "Unable to continue workspace"
+		}
+	},
+	"forge": {
+		"connecting": "Connecting",
+		"detected": "Detected {{provider}} at {{host}}",
+		"thisHost": "this host",
+		"whyWeThinkSo": "Why we think so:"
+	},
+	"actions": {
+		"title": "Actions",
+		"sectionLabel": "Inspector section Actions",
+		"toggle": "Toggle inspector actions section",
+		"panelLabel": "Actions panel body",
+		"groups": {
+			"helpers": "Helpers",
+			"git": "Git",
+			"review": "Review",
+			"deployments": "Deployments",
+			"checks": "Checks"
+		},
+		"reviewChanges": "Review changes",
+		"reviewing": "Reviewing",
+		"reviewAction": "Review",
+		"skipped": "skipped",
+		"openItem": "Open {{name}}",
+		"insertCheckError": "Couldn't insert check",
+		"loading": {
+			"pushing": "Pushing",
+			"pulling": "Pulling",
+			"resolving": "Resolving",
+			"committing": "Committing",
+			"loading": "Loading"
+		},
+		"status": {
+			"passed": "Passed",
+			"skipped": "Skipped",
+			"running": "Running",
+			"failed": "Failed",
+			"pending": "Pending"
+		},
+		"button": {
+			"commitAndPush": "Commit and push",
+			"push": "Push",
+			"resolve": "Resolve",
+			"pull": "Pull"
+		},
+		"git": {
+			"noUncommittedChanges": "No uncommitted changes",
+			"uncommittedChanges_one": "{{count}} uncommitted change",
+			"uncommittedChanges_other": "{{count}} uncommitted changes",
+			"branchNotPublished": "Branch not published to remote",
+			"commitsAheadOfRemote_one": "{{count}} commit ahead of {{ref}}",
+			"commitsAheadOfRemote_other": "{{count}} commits ahead of {{ref}}",
+			"branchFullyPushed": "Branch fully pushed",
+			"mergeConflictsDetected": "Merge conflicts detected",
+			"commitsBehindTarget_one": "{{count}} commit behind {{target}}",
+			"commitsBehindTarget_other": "{{count}} commits behind {{target}}",
+			"upToDate": "Up to date with {{target}}",
+			"syncUnavailable": "Sync status unavailable",
+			"targetBranch": "target branch",
+			"upstream": "upstream"
+		},
+		"review": {
+			"authRequired": "{{provider}} CLI authentication required",
+			"approved": "Review approved",
+			"changeRequestClosed": "{{changeRequest}} closed",
+			"changesRequested": "Changes requested",
+			"waitingForReview": "Waiting for {{changeRequest}} review",
+			"mergeConflictsDetected": "Merge conflicts detected"
+		},
+		"sync": {
+			"pulledLatest": "Pulled latest from {{target}}",
+			"alreadyUpToDate": "Already up to date with {{target}}",
+			"pullFailed": "Unable to pull target updates."
+		}
+	},
+	"tabs": {
+		"sectionLabel": "Inspector section Tabs",
+		"bodyLabel": "Inspector tabs body",
+		"toggle": "Toggle inspector tabs section",
+		"setup": "Setup",
+		"run": "Run",
+		"terminal": "Terminal",
+		"terminalNumbered": "Terminal {{number}}",
+		"newTerminal": "New terminal",
+		"closeTerminal": "Close terminal",
+		"closeNamed": "Close {{name}}",
+		"enableHoverZoom": "Enable hover zoom",
+		"disableHoverZoom": "Disable hover zoom",
+		"switchRunAction": "Switch run action",
+		"create": "Create"
+	},
+	"setup": {
+		"noScriptConfigured": "No setup script configured",
+		"noScriptHint": "Add a setup script in repository settings to run it here.",
+		"openSettings": "Open settings",
+		"completed": "Setup completed",
+		"completedLabel": "Setup completed",
+		"noOutput": "No setup script output",
+		"noOutputHint": "Setup script output will appear here after running setup.",
+		"runSetup": "Run setup",
+		"rerunSetup": "Rerun setup",
+		"stop": "Stop"
+	},
+	"run": {
+		"open": "Open",
+		"openWithPort": "Open:{{port}}",
+		"openNoUrl": "Open dev server (no URL detected yet)",
+		"openAtUrl": "Open dev server at {{url}}",
+		"openWithCount_one": "Open dev server ({{count}} URL detected)",
+		"openWithCount_other": "Open dev server ({{count}} URLs detected)",
+		"addRunScript": "Add run script",
+		"addRunScriptHint": "Run tests or a development server to test changes in this workspace.",
+		"defaultActionName": "Default",
+		"noOutputFor": "No output for",
+		"noOutputHint": "Run script output will appear here after running.",
+		"run": "Run",
+		"rerun": "Rerun",
+		"stop": "Stop",
+		"forceStop": "Force Stop",
+		"runStopCommand": "Run stop command: {{command}}",
+		"skipCleanup": "Skip cleanup and force-kill"
+	},
+	"terminal": {
+		"truncationNotice": "… earlier output truncated (buffer limit reached) …"
+	}
+}

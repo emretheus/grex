@@ -1,14 +1,15 @@
 import { ImageOff } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import type { DiffFileStatus, EditorSessionState } from "@/lib/editor-session";
 import { convertFileSrc } from "@/lib/ipc";
 import { cn } from "@/lib/utils";
 
-const STATUS_LABEL: Record<DiffFileStatus, string> = {
-	A: "Added",
-	M: "Modified",
-	D: "Deleted",
+const STATUS_LABEL_KEY: Record<DiffFileStatus, string> = {
+	A: "image.status.added",
+	M: "image.status.modified",
+	D: "image.status.deleted",
 };
 
 const STATUS_CLASS: Record<DiffFileStatus, string> = {
@@ -52,6 +53,7 @@ export function EditorImagePreview({
 }: {
 	session: EditorSessionState;
 }) {
+	const { t } = useTranslation("editor");
 	const [dims, setDims] = useState<{ w: number; h: number } | null>(null);
 	const [errored, setErrored] = useState(false);
 
@@ -63,14 +65,14 @@ export function EditorImagePreview({
 	}, [session.path]);
 
 	const status = session.fileStatus;
-	const statusLabel = status ? STATUS_LABEL[status] : null;
+	const statusLabel = status ? t(STATUS_LABEL_KEY[status]) : null;
 	const deleted = status === "D";
 	const src = convertFileSrc(session.path);
 	const dimsLabel = formatDimensions(dims);
 
 	return (
 		<div
-			aria-label="Image preview"
+			aria-label={t("image.ariaLabel")}
 			className="absolute inset-0 flex flex-col bg-background"
 		>
 			<div className="flex h-8 shrink-0 items-center gap-2 border-b border-border/50 px-4 text-micro text-muted-foreground">
@@ -92,13 +94,13 @@ export function EditorImagePreview({
 				style={CHECKERBOARD_STYLE}
 			>
 				{deleted ? (
-					<ImageNotice icon message="This image was deleted in this change." />
+					<ImageNotice icon message={t("image.deleted")} />
 				) : errored ? (
-					<ImageNotice icon message="Couldn't load this image from disk." />
+					<ImageNotice icon message={t("image.loadError")} />
 				) : (
 					<img
 						src={src}
-						alt={`Preview of ${session.path}`}
+						alt={t("image.previewAlt", { path: session.path })}
 						className="max-h-full max-w-full object-contain shadow-sm"
 						onLoad={(event) => {
 							const img = event.currentTarget;

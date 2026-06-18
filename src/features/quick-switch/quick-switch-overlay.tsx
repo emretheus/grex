@@ -2,6 +2,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { GitBranch, MessageCircle } from "lucide-react";
 import { useEffect, useMemo } from "react";
 import { createPortal } from "react-dom";
+import { useTranslation } from "react-i18next";
 import { GrexThinkingIndicator } from "@/components/grex-thinking-indicator";
 import { WorkspaceAvatar } from "@/features/navigation/avatar";
 import { deriveWorkspaceDisplay } from "@/features/navigation/workspace-display";
@@ -29,6 +30,7 @@ export function QuickSwitchOverlay({
 	onSelectIndex,
 	onCommitIndex,
 }: QuickSwitchOverlayProps) {
+	const { t } = useTranslation("misc");
 	// Keep the highlighted card in view when cycling. Use a DOM query rather
 	// than a per-card ref so we don't have to thread refs through the loop.
 	useEffect(() => {
@@ -59,7 +61,7 @@ export function QuickSwitchOverlay({
 			<div
 				role="dialog"
 				aria-modal="true"
-				aria-label="Quick switch workspace"
+				aria-label={t("quickSwitch.switchWorkspace")}
 				className="rounded-2xl bg-popover/95 p-3 text-popover-foreground shadow-2xl ring-1 ring-foreground/10"
 			>
 				<div className="flex max-w-[80vw] gap-2 overflow-x-auto scroll-smooth py-1">
@@ -90,6 +92,7 @@ function QuickSwitchCard({
 	onSelect: () => void;
 	onCommit: () => void;
 }) {
+	const { t } = useTranslation("misc");
 	const queryClient = useQueryClient();
 	const busySessionIds = useBusySessionIds();
 	const sessionId = row.activeSessionId ?? row.primarySessionId ?? null;
@@ -211,7 +214,7 @@ function QuickSwitchCard({
 					: isStreaming
 						? [
 								<div key="thinking" className="italic text-muted-foreground/70">
-									Thinking…
+									{t("quickSwitch.thinking")}
 								</div>,
 							]
 						: null}

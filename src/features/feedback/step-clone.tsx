@@ -1,6 +1,7 @@
 import { open as openDialog } from "@tauri-apps/plugin-dialog";
 import { FolderOpen, LoaderCircle } from "lucide-react";
 import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -35,6 +36,7 @@ export function StepClone({
 	onFailed,
 	onCloneSucceeded,
 }: StepCloneProps) {
+	const { t } = useTranslation("feedback");
 	// Kick off the fork as soon as the step mounts. Reducer seeds phase =
 	// "forking" on entry; if we're back in "idle" after a failure the user
 	// can hit "Try again" manually.
@@ -51,16 +53,14 @@ export function StepClone({
 				}
 			} catch (error) {
 				if (!cancelled) {
-					onFailed(
-						describeUnknownError(error, "Failed to fork grex on GitHub."),
-					);
+					onFailed(describeUnknownError(error, t("clone.forkFailed")));
 				}
 			}
 		})();
 		return () => {
 			cancelled = true;
 		};
-	}, [phase, forkedCloneUrl, onForkSucceeded, onFailed]);
+	}, [phase, forkedCloneUrl, onForkSucceeded, onFailed, t]);
 
 	const handleBrowse = async () => {
 		try {
@@ -74,9 +74,7 @@ export function StepClone({
 				onDirectorySelected(selected);
 			}
 		} catch (error) {
-			onFailed(
-				describeUnknownError(error, "Unable to open the folder picker."),
-			);
+			onFailed(describeUnknownError(error, t("clone.folderPickerFailed")));
 		}
 	};
 
@@ -90,7 +88,7 @@ export function StepClone({
 			});
 			onCloneSucceeded(response.repositoryId);
 		} catch (error) {
-			onFailed(describeUnknownError(error, "Failed to clone repository."));
+			onFailed(describeUnknownError(error, t("clone.cloneFailed")));
 		}
 	};
 
@@ -108,17 +106,13 @@ export function StepClone({
 							strokeWidth={2.1}
 						/>
 						<span className="text-muted-foreground">
-							Forking {GREX_UPSTREAM_SLUG} to your GitHub account…
+							{t("clone.forking", { slug: GREX_UPSTREAM_SLUG })}
 						</span>
 					</>
 				) : forkedCloneUrl ? (
-					<span className="text-muted-foreground">
-						Fork ready. Choose where to clone it on your machine.
-					</span>
+					<span className="text-muted-foreground">{t("clone.forkReady")}</span>
 				) : (
-					<span className="text-muted-foreground">
-						We'll fork the upstream Grex repo into your GitHub account.
-					</span>
+					<span className="text-muted-foreground">{t("clone.forkIntro")}</span>
 				)}
 			</div>
 
@@ -128,7 +122,7 @@ export function StepClone({
 						htmlFor="feedback-clone-location"
 						className="text-small font-medium tracking-[-0.01em]"
 					>
-						Clone location
+						{t("clone.cloneLocationLabel")}
 					</Label>
 					<div className="flex items-center gap-1.5">
 						<Input
@@ -136,7 +130,7 @@ export function StepClone({
 							type="text"
 							value={cloneDirectory ?? ""}
 							readOnly
-							placeholder="Choose a folder…"
+							placeholder={t("clone.cloneLocationPlaceholder")}
 							className="h-7 text-ui"
 						/>
 						<Button
@@ -149,7 +143,7 @@ export function StepClone({
 							disabled={phase === "cloning"}
 						>
 							<FolderOpen data-icon="inline-start" />
-							Browse…
+							{t("clone.browse")}
 						</Button>
 					</div>
 				</div>
@@ -169,7 +163,7 @@ export function StepClone({
 						size="sm"
 						onClick={handleRetryFork}
 					>
-						Try again
+						{t("clone.tryAgain")}
 					</Button>
 				) : null}
 				<Button
@@ -192,10 +186,10 @@ export function StepClone({
 								className="animate-spin"
 								strokeWidth={2.1}
 							/>
-							Cloning…
+							{t("clone.cloning")}
 						</>
 					) : (
-						"Clone to this folder"
+						t("clone.cloneToFolder")
 					)}
 				</Button>
 			</div>

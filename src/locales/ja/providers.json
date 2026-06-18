@@ -1,0 +1,244 @@
+{
+	"status": {
+		"ready": "準備完了",
+		"connecting": "接続中"
+	},
+	"actions": {
+		"logIn": "ログイン",
+		"getApiKey": "API キーを取得",
+		"addProvider": "プロバイダーを追加",
+		"addModel": "モデルを追加",
+		"newProvider": "新しいプロバイダー",
+		"fetchModels": "モデルを取得",
+		"refreshModels": "モデルを更新",
+		"refreshModelList": "モデル一覧を更新",
+		"syncModels": "モデルを同期",
+		"unselectAll": "すべて選択解除",
+		"removeModel": "モデルを削除"
+	},
+	"row": {
+		"version": "v{{version}}"
+	},
+	"common": {
+		"models": "モデル",
+		"customProviders": "カスタムプロバイダー",
+		"apiKey": "API キー",
+		"baseUrl": "ベース URL",
+		"displayName": "表示名",
+		"apiStyle": "API スタイル",
+		"custom": "カスタム"
+	},
+	"providers": {
+		"opencode": {
+			"modelsDescription": "コンポーザーのピッカーに表示するモデルを選択します。",
+			"customProvidersDescription": "API キーまたは OpenAI 互換エンドポイントでプロバイダーを追加します。~/.config/opencode に保存されます。"
+		},
+		"claude": {
+			"modelsDescription": "コンポーザーのピッカーに表示する公式 Claude モデルを選択します。",
+			"customProvidersDescription": "ここに API キーを入力するとサードパーティのモデルを利用できます。Claude Code の公式モデルと併用されます。"
+		},
+		"codex": {
+			"modelsDescription": "コンポーザーのピッカーに表示する公式 Codex モデルを選択します。",
+			"customProvidersDescription": "Codex を任意の OpenAI 互換（Responses API）エンドポイントに向けます。公式モデルと併用されます。"
+		},
+		"cursor": {
+			"description": "API キーを追加してから、コンポーザーのピッカーに表示するモデルを選択します。"
+		},
+		"kimi": {
+			"customProvidersDescription": "OpenAI 互換または Anthropic 形式のエンドポイントを追加します。~/.kimi-code/config.toml に保存されます。"
+		}
+	},
+	"proxy": {
+		"title": "プロキシ",
+		"description": "すべてのプロバイダーのトラフィックを中継します — Claude Code、Codex、OpenCode、Cursor、Gemini。",
+		"placeholder": "http://127.0.0.1:7890",
+		"modes": {
+			"none": "未設定",
+			"system": "システムプロキシ",
+			"custom": "カスタムプロキシ"
+		}
+	},
+	"multiSelect": {
+		"searchModels": "モデルを検索",
+		"noModelsPicked": "モデルが選択されていません",
+		"selected": "{{count}} 件選択済み",
+		"loadingModels": "モデルを読み込み中…",
+		"noCachedModels": "キャッシュ済みのモデルはまだありません — 更新をクリックしてください。",
+		"noModelsFound": "モデルが見つかりません。",
+		"overflowMore": "他 {{count}} 件",
+		"removeModel": "{{label}} を削除"
+	},
+	"claudeCustom": {
+		"apiKeyPlaceholder": "{{provider}} の API キー",
+		"getApiKeyAria": "{{provider}} の API キーを取得",
+		"baseUrlPlaceholder": "ベース URL",
+		"apiKeyPlaceholderPlain": "API キー",
+		"customLabel": "カスタム",
+		"noneConfigured": "サードパーティのプロバイダーは設定されていません。",
+		"removeAria": "{{label}} を削除"
+	},
+	"cursorBody": {
+		"apiKeyPlaceholder": "Cursor の API キー",
+		"getApiKeyAria": "Cursor の API キーを取得",
+		"fetchError": "モデルを取得できませんでした — {{error}}。コンポーザーは Auto にフォールバックします。"
+	},
+	"cursorKey": {
+		"apiKeyPlaceholder": "API キー",
+		"validating": "検証中…",
+		"validatingAria": "API キーを検証中",
+		"getApiKeyAria": "Cursor の API キーを取得"
+	},
+	"codexCustom": {
+		"providerId": "プロバイダー id",
+		"providerIdPlaceholder": "hundun",
+		"displayName": "表示名",
+		"displayNamePlaceholder": "Codex (Hundun)",
+		"baseUrlPlaceholder": "https://api.example.com/v1",
+		"apiKeyPlaceholder": "sk-…",
+		"modelsHint": "エンドポイントから取得し、コンポーザーに表示するモデルを選択します。",
+		"emptyState": "カスタム Codex プロバイダーはありません。Codex を任意の OpenAI 互換（Responses API）エンドポイントに向けてください。",
+		"editAria": "{{id}} を編集",
+		"deleteAria": "{{id}} を削除",
+		"errors": {
+			"idRequired": "プロバイダー id は必須です。",
+			"baseUrlRequired": "ベース URL は必須です。"
+		}
+	},
+	"opencodeCustom": {
+		"namePlaceholder": "表示名（例: My Proxy）",
+		"baseUrlPlaceholder": "ベース URL (https://…/v1)",
+		"apiKeyPlaceholder": "API キー",
+		"presetApiKeyPlaceholder": "{{provider}} の API キー",
+		"getApiKeyAria": "API キーを取得",
+		"customOption": "カスタム（OpenAI 互換）",
+		"noneConfigured": "カスタムプロバイダーは設定されていません。",
+		"apiKeyConfigured": "API キー設定済み",
+		"detail_other": "{{baseUrl}} · {{count}} 件のモデル",
+		"editAria": "{{id}} を編集",
+		"deleteAria": "{{id}} を削除",
+		"apiStyles": {
+			"chatCompletions": {
+				"label": "Chat Completions",
+				"hint": "/v1/chat/completions — 最も広い互換性。"
+			},
+			"responses": {
+				"label": "Responses API",
+				"hint": "/v1/responses — 高度な推論とツール。"
+			}
+		}
+	},
+	"kimiCustom": {
+		"namePlaceholder": "表示名（例: My Proxy）",
+		"baseUrlPlaceholder": "ベース URL (https://…/v1)",
+		"apiKeyPlaceholder": "API キー",
+		"noneConfigured": "カスタムプロバイダーは設定されていません。",
+		"noBaseUrl": "ベース URL なし",
+		"detail_other": "{{baseUrl}} · {{count}} 件のモデル",
+		"editAria": "{{id}} を編集",
+		"deleteAria": "{{id}} を削除",
+		"apiStyles": {
+			"openai": {
+				"label": "OpenAI-compatible",
+				"hint": "GET {base}/models · Authorization: Bearer。ベース URL に /v1 を含めます。"
+			},
+			"openaiResponses": {
+				"label": "OpenAI Responses",
+				"hint": "OpenAI Responses API (/v1/responses)。"
+			},
+			"anthropic": {
+				"label": "Anthropic",
+				"hint": "GET {base}/v1/models · x-api-key / anthropic-version。"
+			},
+			"kimi": {
+				"label": "Kimi (Moonshot)",
+				"hint": "Moonshot の OpenAI 形式 API。"
+			}
+		}
+	},
+	"modelsEditor": {
+		"title": "モデル",
+		"emptyState": "モデルはまだありません — エンドポイントが提供するモデル id を追加してください。",
+		"modelIdPlaceholder": "model-id",
+		"displayNamePlaceholder": "表示名（任意）",
+		"reasoningLabel": "推論（強度）— モデルが対応している場合のみ",
+		"removeModelAria": "モデルを削除"
+	},
+	"opencodeModels": {
+		"syncModelsAria": "モデルを同期",
+		"syncTooltip": "モデルを同期 — ~/.config/opencode を再読み込み",
+		"confirmTitle": "OpenCode のモデルを同期しますか？",
+		"confirmDescription_other": "設定を再読み込みすると OpenCode が再起動し、実行中の {{count}} 件のチャットが停止します。",
+		"confirmLabel": "それでも同期"
+	},
+	"localLlm": {
+		"title": "ローカル LLM",
+		"description": "セッションタイトル / ブランチ名の生成とスマートトリアージを動かします — どちらも完全にお使いのデバイス上で実行されます。",
+		"status": {
+			"starting": "起動中",
+			"running": "実行中",
+			"noModel": "モデルなし",
+			"stopped": "停止"
+		},
+		"noModelBanner": "モデルが選択されていません。開始するには下の「モデル」ドロップダウンから 1 つ選択してください — ディスクに GGUF が既にある場合はカスタムも選べます。",
+		"models": "モデル",
+		"loadingModels": "モデルを読み込み中…",
+		"custom": "カスタム",
+		"customSlotHint": "ご自身の GGUF ファイルを使用します。下にパスを設定してください。",
+		"active": "有効",
+		"badges": {
+			"downloading": "ダウンロード中",
+			"paused": "一時停止",
+			"failed": "失敗",
+			"downloaded": "ダウンロード済み",
+			"recommended": "おすすめ"
+		},
+		"actions": {
+			"addVision": "ビジョンを追加",
+			"cancel": "キャンセル",
+			"resume": "再開",
+			"retry": "再試行",
+			"download": "ダウンロード",
+			"delete": "削除",
+			"pause": "一時停止",
+			"reset": "リセット",
+			"apply": "適用"
+		},
+		"downloads": "ダウンロード",
+		"customPath": {
+			"label": "カスタムモデルパス",
+			"placeholder": "/path/to/model.gguf",
+			"helpAria": "カスタムモデルパスについて",
+			"helpTooltip": "ご自身でダウンロードした <0>.gguf</0> を指定してください。上のキュレートされたモデルが優先されます — このフィールドを空にするとピッカーに戻ります。"
+		},
+		"context": {
+			"label": "コンテキスト",
+			"helpAria": "コンテキストサイズとは？",
+			"helpTooltip": "入力と生成される出力を合わせたトークンの総予算です。コンテキストが大きいほど長いプロンプトを送れますが、メモリの使用量が増え、起動も遅くなります。",
+			"helpDefault": "迷ったら、デフォルト値（{{value}}）はお使いのハードウェアに合わせて調整されています — そのままにしておいてください。",
+			"discardPending": "保留中の変更を破棄",
+			"resetToDefault": "デフォルトにリセット"
+		},
+		"deleteDialog": {
+			"title": "このモデルを削除しますか？",
+			"descriptionFallback": "モデルをディスクから削除します。",
+			"descriptionPrefix": "これにより ",
+			"descriptionSuffix": "（{{size}}）をディスクから削除します。再び使用するにはダウンロードし直す必要があります。"
+		},
+		"progress": {
+			"paused": "一時停止",
+			"connecting": "接続中…",
+			"perSecond": "{{rate}}/秒",
+			"etaLeft": "残り {{eta}}"
+		}
+	},
+	"loginDialog": {
+		"title": "{{provider}} のログイン",
+		"close": "閉じる"
+	},
+	"agentStatus": {
+		"waiting": "待機中...",
+		"restart": "再開",
+		"restartSetup": "セットアップを再開",
+		"logIn": "ログイン"
+	}
+}

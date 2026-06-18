@@ -1,0 +1,67 @@
+{
+	"common": {
+		"disconnect": "断开连接",
+		"disconnecting": "正在断开连接…",
+		"nothingToFilter": "没有可筛选的内容。",
+		"countSelected_other": "已选择 {{count}} 项",
+		"assignedFeedHint": "只有分配给你的事项才会显示在信息流中。"
+	},
+	"scope": {
+		"assignedToMe": "分配给我"
+	},
+	"jira": {
+		"connectAnother": "连接其他站点",
+		"siteFallback": "Jira 站点",
+		"updateFailed": "Jira 更新失败",
+		"updateError": "无法保存 Jira 范围。",
+		"disconnectFailed": "Jira 断开连接失败",
+		"disconnectError": "无法断开 Jira 连接。",
+		"scopeAll": "所有项目",
+		"projectsLabel": "项目",
+		"allProjects": "所有项目"
+	},
+	"linear": {
+		"connectAnother": "连接其他工作区",
+		"workspaceFallback": "Linear 工作区",
+		"updateFailed": "Linear 更新失败",
+		"updateError": "无法保存 Linear 范围。",
+		"disconnectFailed": "Linear 断开连接失败",
+		"disconnectError": "无法断开 Linear 连接。",
+		"scopeAll": "所有事项",
+		"teamsLabel": "团队",
+		"allTeams": "所有团队",
+		"projectsLabel": "项目",
+		"allProjects": "所有项目"
+	},
+	"trello": {
+		"connectAnother": "连接其他账户",
+		"accountFallback": "Trello 账户",
+		"updateFailed": "Trello 更新失败",
+		"updateError": "无法保存 Trello 范围。",
+		"disconnectFailed": "Trello 断开连接失败",
+		"disconnectError": "无法断开 Trello 连接。",
+		"scopeMine": "我的卡片",
+		"scopeAll": "所有看板",
+		"boardsLabel": "看板",
+		"allBoards": "所有看板",
+		"memberFeedHint": "只有你参与的卡片才会显示在信息流中。"
+	},
+	"forgejo": {
+		"connectAnother": "连接其他实例",
+		"instanceFallback": "Forgejo 实例",
+		"updateFailed": "Forgejo 更新失败",
+		"updateError": "无法保存 Forgejo 范围。",
+		"disconnectFailed": "Forgejo 断开连接失败",
+		"disconnectError": "无法断开 Forgejo 连接。",
+		"scopeMine": "我的事项",
+		"scopeAll": "所有事项",
+		"allIssuesHint": "你的令牌可读取的所有仓库中的全部事项。"
+	},
+	"featurebase": {
+		"connectAnother": "连接其他看板",
+		"boardFallback": "Featurebase 看板",
+		"disconnectFailed": "Featurebase 断开连接失败",
+		"disconnectError": "无法断开 Featurebase 连接。",
+		"readOnlyHint": "反馈帖子为只读；此看板的所有内容都会显示在信息流中。"
+	}
+}

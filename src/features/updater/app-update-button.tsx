@@ -1,5 +1,6 @@
 import { Download, Loader2 } from "lucide-react";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
@@ -18,6 +19,7 @@ type AppUpdateButtonProps = {
 };
 
 export function AppUpdateButton({ status, className }: AppUpdateButtonProps) {
+	const { t } = useTranslation("misc");
 	const [installing, setInstalling] = useState(false);
 
 	if (status?.stage !== "downloaded" || !status.update) {
@@ -33,7 +35,9 @@ export function AppUpdateButton({ status, className }: AppUpdateButtonProps) {
 					type="button"
 					variant="default"
 					size="xs"
-					aria-label={`Update Grex to ${update.version}`}
+					aria-label={t("updater.updateGrexAria", {
+						version: update.version,
+					})}
 					className={cn(
 						"h-6 gap-1 rounded-sm px-1.5 text-mini font-medium tracking-[0.01em] transition-[background-color,color,border-color,box-shadow] duration-200 hover:bg-primary/90",
 						className,
@@ -42,14 +46,14 @@ export function AppUpdateButton({ status, className }: AppUpdateButtonProps) {
 						setInstalling(true);
 						void installDownloadedAppUpdate()
 							.catch((error: unknown) => {
-								toast.error("Install failed", {
+								toast.error(t("updater.installFailed"), {
 									description:
 										error instanceof Error
 											? error.message
-											: "Unable to install the downloaded update.",
+											: t("updater.installFailedDescription"),
 									action: update.releaseUrl
 										? {
-												label: "Change log",
+												label: t("updater.changeLog"),
 												onClick: () => void openUrl(update.releaseUrl),
 											}
 										: undefined,
@@ -64,7 +68,7 @@ export function AppUpdateButton({ status, className }: AppUpdateButtonProps) {
 					) : (
 						<Download className="size-3" />
 					)}
-					<span>Update</span>
+					<span>{t("updater.update")}</span>
 				</Button>
 			</TooltipTrigger>
 			<TooltipContent

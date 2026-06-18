@@ -1,0 +1,100 @@
+{
+	"sidebar": {
+		"title": "工作区"
+	},
+	"actions": {
+		"addRepository": "添加仓库",
+		"openProject": "打开项目",
+		"cloneFromUrl": "从 URL 克隆",
+		"newWorkspace": "新建工作区",
+		"createNewWorkspace": "创建新工作区",
+		"newWorkspaceInGroup": "在 {{group}} 中新建工作区"
+	},
+	"sections": {
+		"archived": "已归档"
+	},
+	"row": {
+		"restoreWorkspace": "恢复工作区",
+		"confirmArchiveWorkspace": "确认归档工作区",
+		"archiveWorkspace": "归档工作区",
+		"interactionRequired": "需要交互",
+		"aiProposal": "AI 提案 — 点击查看",
+		"unread": "未读",
+		"deletePermanently": "永久删除",
+		"contextMenu": {
+			"pin": "置顶",
+			"unpin": "取消置顶",
+			"setStatus": "设置状态",
+			"markAsUnread": "标记为未读",
+			"openInFinder": "在访达中打开",
+			"moveIntoNewWorktree": "迁移到新工作树",
+			"restore": "恢复",
+			"archive": "归档"
+		}
+	},
+	"stack": {
+		"tip": "栈顶",
+		"base": "栈底",
+		"node": "栈",
+		"depth": "第 {{current}} 个，共 {{total}} 个"
+	},
+	"status": {
+		"backlog": "待办",
+		"inProgress": "进行中",
+		"inReview": "审查中",
+		"done": "已完成",
+		"canceled": "已取消"
+	},
+	"hoverCard": {
+		"uncommittedChanges_other": "{{count}} 项未提交的更改",
+		"commitsBehind_other": "落后 {{targetLabel}} {{count}} 个提交",
+		"unpushedCommits_other": "{{count}} 个未推送的提交",
+		"upToDateClean": "分支与 {{targetLabel}} 保持一致 · 无未提交的更改",
+		"upToDate": "分支与 {{targetLabel}} 保持一致",
+		"runningFor": "已运行 {{elapsed}}",
+		"thinking": "思考中…",
+		"lastActivityCreated": "{{lastActivityLabel}} · 创建于 {{createdAt}}",
+		"lastActivity": {
+			"lastMessage": "最后消息",
+			"lastChanged": "最后修改",
+			"created": "已创建"
+		},
+		"sessionCount_other": "{{count}} 个会话"
+	},
+	"cloneDialog": {
+		"title": "从 URL 克隆",
+		"gitUrl": "Git URL",
+		"cloneLocation": "克隆位置",
+		"browse": "浏览…",
+		"folderPickerError": "无法打开文件夹选择器。",
+		"cloneError": "无法克隆仓库。",
+		"submit": "克隆仓库",
+		"cloning": "克隆中…"
+	},
+	"moveToWorktreeDialog": {
+		"title": "迁移到新工作树",
+		"description": "<bold>{{name}}</bold> 将在一个全新的工作树上继续，并使用自动命名的新分支。",
+		"localUntouched": "你的本地仓库将保持原样 — 分支和文件均不受影响。",
+		"changesCarriedOver": "已跟踪和未跟踪的更改都会带入新的工作树。",
+		"submit": "迁移到工作树",
+		"moving": "迁移中…"
+	},
+	"viewPopover": {
+		"filterAndSortAria": "筛选并排序侧边栏",
+		"filterAndSort": "筛选与排序",
+		"repository": "仓库",
+		"allRepositories": "所有仓库",
+		"noRepositoriesFound": "未找到仓库。",
+		"searchRepositories": "搜索仓库",
+		"groupBy": "分组方式",
+		"status": "状态",
+		"sortBy": "排序方式",
+		"selectedCount": "已选择 {{count}} 个",
+		"sort": {
+			"draggableOrder": "拖拽排序",
+			"repositoryName": "仓库名称",
+			"lastUpdated": "最近更新",
+			"createdTime": "创建时间"
+		}
+	}
+}

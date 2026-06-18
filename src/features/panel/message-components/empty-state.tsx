@@ -7,6 +7,7 @@ import {
 	Orbit,
 	Play,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { GrexLogoAnimated } from "@/components/grex-logo-animated";
 import {
 	Empty,
@@ -24,24 +25,27 @@ import {
 import type { WorkspaceScriptType } from "@/lib/workspace-script-actions";
 import { formatWorkspaceStarProgress } from "@/lib/workspace-star-collection";
 
+// Module-level constants can't react to language switches, so we store
+// translation KEYS here and resolve them with `t` at render time. The map
+// keys (setup/run/archive) are `WorkspaceScriptType` enum values — never
+// translated.
 const SCRIPT_ACTION_COPY: Record<
 	WorkspaceScriptType,
-	{ title: string; description: string; icon: LucideIcon }
+	{ titleKey: string; descriptionKey: string; icon: LucideIcon }
 > = {
 	setup: {
-		title: "Create setup script",
-		description: "Bootstrap dependencies after a workspace is created.",
+		titleKey: "emptyState.scriptActions.setup.title",
+		descriptionKey: "emptyState.scriptActions.setup.description",
 		icon: Hammer,
 	},
 	run: {
-		title: "Create run actions",
-		description:
-			"Named commands you'll pick from the Inspector's Run dropdown.",
+		titleKey: "emptyState.scriptActions.run.title",
+		descriptionKey: "emptyState.scriptActions.run.description",
 		icon: Play,
 	},
 	archive: {
-		title: "Create archive script",
-		description: "Light cleanup or handoff before archiving.",
+		titleKey: "emptyState.scriptActions.archive.title",
+		descriptionKey: "emptyState.scriptActions.archive.description",
 		icon: Archive,
 	},
 };
@@ -59,6 +63,7 @@ export function EmptyState({
 	missingScriptTypes?: WorkspaceScriptType[];
 	onInitializeScript?: (scriptType: WorkspaceScriptType) => void;
 }) {
+	const { t } = useTranslation("panel");
 	const isCreatingWorkspace = workspaceState === "initializing";
 	const showScriptActions =
 		hasSession &&
@@ -87,18 +92,18 @@ export function EmptyState({
 					}
 				>
 					{isCreatingWorkspace
-						? "Creating workspace"
+						? t("emptyState.creatingWorkspace")
 						: hasSession
-							? "Nothing here yet"
-							: "No session selected"}
+							? t("emptyState.nothingHereYet")
+							: t("emptyState.noSessionSelected")}
 				</EmptyTitle>
 				<EmptyDescription>
 					{isCreatingWorkspace ? (
-						"Grex is still preparing this workspace. Messaging will unlock automatically when setup finishes."
+						t("emptyState.preparingWorkspace")
 					) : hasSession ? (
 						workspaceName ? (
 							<span className="inline-flex items-center justify-center gap-1 whitespace-nowrap text-muted-foreground/75">
-								<span>New session in</span>
+								<span>{t("emptyState.newSessionIn")}</span>
 								<Tooltip>
 									<TooltipTrigger asChild>
 										<button
@@ -119,10 +124,10 @@ export function EmptyState({
 								</Tooltip>
 							</span>
 						) : (
-							"New session"
+							t("emptyState.newSession")
 						)
 					) : (
-						"Choose a session from the header to inspect its timeline."
+						t("emptyState.chooseSession")
 					)}
 				</EmptyDescription>
 			</EmptyHeader>
@@ -154,10 +159,10 @@ export function EmptyState({
 								</span>
 								<span className="flex min-w-0 flex-1 flex-col">
 									<span className="block text-small font-medium leading-[1.4] tracking-[-0.005em] text-foreground">
-										{item.title}
+										{t(item.titleKey)}
 									</span>
 									<span className="mt-0.5 block text-mini leading-[1.5] text-muted-foreground">
-										{item.description}
+										{t(item.descriptionKey)}
 									</span>
 								</span>
 							</button>
@@ -170,8 +175,10 @@ export function EmptyState({
 							strokeWidth={1.5}
 						/>
 						<span>
-							<span className="font-medium text-foreground/80">Tips:</span>{" "}
-							Configuring these scripts upgrades your dev loop.
+							<span className="font-medium text-foreground/80">
+								{t("emptyState.tipsLabel")}
+							</span>{" "}
+							{t("emptyState.tipsBody")}
 						</span>
 					</p>
 				</EmptyContent>

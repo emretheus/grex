@@ -6,6 +6,7 @@ import {
 	installDownloadedAppUpdate,
 	listenAppUpdateStatus,
 } from "@/lib/api";
+import { i18n } from "@/lib/i18n";
 import { openUrl } from "@/lib/platform-bridge";
 import { isQuickPanelWindow } from "@/lib/window-role";
 
@@ -26,9 +27,11 @@ function showDownloadedUpdateToast(
 		update: NonNullable<AppUpdateStatus["update"]>;
 	},
 ) {
-	toast("Update ready to install", {
+	toast(i18n.t("misc:updater.updateReady"), {
 		id: toastIdForUpdate(status) ?? undefined,
-		description: `Grex ${status.update.version} has been downloaded.`,
+		description: i18n.t("misc:updater.updateDownloaded", {
+			version: status.update.version,
+		}),
 		action: createElement(
 			"button",
 			{
@@ -37,16 +40,16 @@ function showDownloadedUpdateToast(
 				"data-action": true,
 				onClick: () => {
 					void installDownloadedAppUpdate().catch((error: unknown) => {
-						toast.error("Install failed", {
+						toast.error(i18n.t("misc:updater.installFailed"), {
 							description:
 								error instanceof Error
 									? error.message
-									: "Unable to install the downloaded update.",
+									: i18n.t("misc:updater.installFailedDescription"),
 						});
 					});
 				},
 			},
-			"Update and restart",
+			i18n.t("misc:updater.updateAndRestart"),
 		),
 		cancel: createElement(
 			"button",
@@ -56,7 +59,7 @@ function showDownloadedUpdateToast(
 				"data-cancel": true,
 				onClick: () => void openUrl(status.update.releaseUrl),
 			},
-			"View change log",
+			i18n.t("misc:updater.viewChangeLog"),
 		),
 		duration: 8000,
 	});

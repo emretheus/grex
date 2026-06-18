@@ -1,3 +1,5 @@
+import { i18n } from "@/lib/i18n";
+
 import {
 	FALLBACK_ISSUE_TITLE,
 	GREX_UPSTREAM_SLUG,
@@ -35,16 +37,16 @@ export function splitIssueTitleAndBody(input: string): {
  */
 export function buildPromptTemplate(input: string): string {
 	return [
-		`I'm contributing to ${GREX_UPSTREAM_SLUG}. Please help me ship this.`,
+		i18n.t("feedback:template.intro", { slug: GREX_UPSTREAM_SLUG }),
 		"",
-		"## My feedback",
+		i18n.t("feedback:template.feedbackHeading"),
 		input.trim(),
 		"",
-		"## How to handle this",
-		"1. Explore the code, ask anything unclear, propose a minimal change.",
-		'2. Implement once I agree. Do not commit, push, or open a PR before I say "go ahead".',
-		`3. After my "go ahead": commit, push to origin, then \`gh pr create --repo ${GREX_UPSTREAM_SLUG} --base main\` with a title and body generated from the diff.`,
+		i18n.t("feedback:template.howToHeading"),
+		i18n.t("feedback:template.step1"),
+		i18n.t("feedback:template.step2"),
+		i18n.t("feedback:template.step3", { slug: GREX_UPSTREAM_SLUG }),
 		"",
-		'Reply using the same language I used in the "## My feedback" section above.',
+		i18n.t("feedback:template.replyInLanguage"),
 	].join("\n");
 }

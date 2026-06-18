@@ -1,10 +1,12 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Plus, Search } from "lucide-react";
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { installSkill, type SkillSummary } from "@/lib/api";
+import { i18n } from "@/lib/i18n";
 import { grexQueryKeys, librarySkillsQueryOptions } from "@/lib/query-client";
 import { BrandIcon } from "../mcp-brand-icon";
 import {
@@ -24,8 +26,16 @@ function iconKeyForSkill(name: string): string | undefined {
 	return SKILLS_CATALOG.find((e) => e.key === name)?.iconKey;
 }
 
+/** Translated catalog description for a skill, falling back to the English source. */
+function skillDescription(entry: SkillCatalogEntry): string {
+	return i18n.t(`library:catalog.skills.${entry.key}`, {
+		defaultValue: entry.description,
+	});
+}
+
 /** Library → Skills: installed skills + a recommended catalog to install. */
 export function LibrarySkillsPanel() {
+	const { t } = useTranslation("library");
 	const queryClient = useQueryClient();
 	const { data: skills = [] } = useQuery(librarySkillsQueryOptions());
 	const [editor, setEditor] = useState<{ name: string | null } | null>(null);
@@ -43,7 +53,8 @@ export function LibrarySkillsPanel() {
 		() =>
 			SKILLS_CATALOG.filter(
 				(e) =>
-					!installedNames.has(e.key) && matches(search, e.name, e.description),
+					!installedNames.has(e.key) &&
+					matches(search, e.name, skillDescription(e)),
 			),
 		[installedNames, search],
 	);
@@ -74,20 +85,20 @@ export function LibrarySkillsPanel() {
 					<Input
 						value={search}
 						onChange={(e) => setSearch(e.target.value)}
-						placeholder="Search skills…"
+						placeholder={t("skills.searchPlaceholder")}
 						className="pl-8"
 					/>
 				</div>
 				<Button size="sm" onClick={() => setEditor({ name: null })}>
 					<Plus className="size-4" />
-					New skill
+					{t("skills.new")}
 				</Button>
 			</div>
 
 			<ScrollArea className="min-h-0 flex-1">
 				<div className="space-y-5 px-6 pb-6">
 					{installed.length > 0 ? (
-						<Section title="Installed">
+						<Section title={t("sectionTitles.installed")}>
 							{installed.map((skill) => (
 								<InstalledCard
 									key={skill.name}
@@ -99,7 +110,7 @@ export function LibrarySkillsPanel() {
 					) : null}
 
 					{recommended.length > 0 ? (
-						<Section title="Recommended">
+						<Section title={t("sectionTitles.recommended")}>
 							{recommended.map((entry) => (
 								<CatalogCard
 									key={entry.key}
@@ -115,7 +126,7 @@ export function LibrarySkillsPanel() {
 
 					{installed.length === 0 && recommended.length === 0 ? (
 						<p className="px-2 py-8 text-center text-small text-muted-foreground">
-							No skills match “{search}”. Use New skill to create one.
+							{t("skills.noSearchMatch", { query: search })}
 						</p>
 					) : null}
 				</div>
@@ -162,12 +173,12 @@ function InstalledCard({
 					</span>
 					{!skill.managed ? (
 						<span className="shrink-0 text-nano text-muted-foreground">
-							read-only
+							{i18n.t("library:skills.readOnly")}
 						</span>
 					) : null}
 				</div>
 				<span className="line-clamp-2 text-small text-muted-foreground">
-					{skill.description || "No description"}
+					{skill.description || i18n.t("library:empty.noDescription")}
 				</span>
 			</div>
 		</button>
@@ -191,13 +202,13 @@ function CatalogCard({
 					{entry.name}
 				</span>
 				<span className="line-clamp-2 text-small text-muted-foreground">
-					{entry.description}
+					{skillDescription(entry)}
 				</span>
 			</div>
 			<Button
 				variant="ghost"
 				size="icon-xs"
-				aria-label={`Install ${entry.name}`}
+				aria-label={i18n.t("library:skills.installAria", { name: entry.name })}
 				disabled={pending}
 				onClick={onAdd}
 			>

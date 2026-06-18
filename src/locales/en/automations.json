@@ -1,0 +1,134 @@
+{
+	"title": "Automations",
+	"create": {
+		"viaChat": "Create via chat",
+		"manually": "Create manually",
+		"moreOptions": "More create options",
+		"dialogTitle": "Create automation",
+		"titlePlaceholder": "Automation title",
+		"promptPlaceholder": "Add prompt e.g. look for crashes in $sentry",
+		"submit": "Create"
+	},
+	"list": {
+		"currentHeading": "Current",
+		"loadError": "Unable to load automations.",
+		"empty": "No automations yet. Schedule a recurring prompt and it will run on its own.",
+		"createButton": "Create automation"
+	},
+	"row": {
+		"runNow": "Run now",
+		"edit": "Edit automation",
+		"moreActions": "More actions",
+		"resume": "Resume",
+		"pause": "Pause"
+	},
+	"detail": {
+		"breadcrumb": "Automations",
+		"resumeAria": "Resume automation",
+		"pauseAria": "Pause automation",
+		"deleteAria": "Delete automation",
+		"runNow": "Run now",
+		"titleAria": "Automation title",
+		"promptAria": "Automation prompt",
+		"promptPlaceholder": "Add prompt e.g. look for crashes in $sentry",
+		"sections": {
+			"status": "Status",
+			"details": "Details"
+		},
+		"fields": {
+			"status": "Status",
+			"nextRun": "Next run",
+			"lastRan": "Last ran",
+			"runsIn": "Runs in",
+			"chat": "Chat",
+			"workspace": "Workspace",
+			"interval": "Interval"
+		},
+		"never": "Never",
+		"runsInChat": "Chat",
+		"runsInWorkspace": "Workspace",
+		"unknownWorkspace": "Unknown workspace",
+		"unknownChat": "Unknown chat",
+		"none": "—"
+	},
+	"target": {
+		"target": "Target",
+		"selectWorkspace": "Select workspace",
+		"selectChat": "Select chat",
+		"nothingAvailable": "Nothing available",
+		"chat": "Chat",
+		"workspace": "Workspace"
+	},
+	"interval": {
+		"amountAria": "Interval amount",
+		"hourly": "Hourly",
+		"dailyAt": "Daily at",
+		"weeklyOn": "Weekly on",
+		"every": "Every",
+		"at": "at",
+		"dailyTimeAria": "Daily run time",
+		"weeklyTimeAria": "Weekly run time",
+		"unit": {
+			"minutes": "minutes",
+			"hours": "hours"
+		}
+	},
+	"weekday": {
+		"sunday": "Sunday",
+		"monday": "Monday",
+		"tuesday": "Tuesday",
+		"wednesday": "Wednesday",
+		"thursday": "Thursday",
+		"friday": "Friday",
+		"saturday": "Saturday"
+	},
+	"month": {
+		"jan": "Jan",
+		"feb": "Feb",
+		"mar": "Mar",
+		"apr": "Apr",
+		"may": "May",
+		"jun": "Jun",
+		"jul": "Jul",
+		"aug": "Aug",
+		"sep": "Sep",
+		"oct": "Oct",
+		"nov": "Nov",
+		"dec": "Dec"
+	},
+	"schedule": {
+		"hourly": "Hourly",
+		"daily": "Daily",
+		"weekly": "Weekly",
+		"dailyAt": "Daily at {{time}}",
+		"weeklyAt": "Weekly on {{weekday}} at {{time}}",
+		"everyMinutes": "Every {{amount}}m",
+		"everyHours": "Every {{amount}}h"
+	},
+	"status": {
+		"active": "Active",
+		"paused": "Paused"
+	},
+	"runTime": {
+		"today": "Today at {{clock}}",
+		"yesterday": "Yesterday at {{clock}}",
+		"date": "{{month}} {{day}} at {{clock}}",
+		"meridiem": {
+			"am": "AM",
+			"pm": "PM"
+		}
+	},
+	"confirmDelete": {
+		"title": "Delete automation?",
+		"description": "\"{{title}}\" will stop running and be removed. This cannot be undone."
+	},
+	"toast": {
+		"started": "Automation started",
+		"runningInChat": "Running in its chat.",
+		"createFailed": "Unable to create automation",
+		"updateFailed": "Unable to update automation",
+		"deleteFailed": "Unable to delete automation",
+		"statusFailed": "Unable to change automation status",
+		"runFailed": "Unable to run automation"
+	}
+}

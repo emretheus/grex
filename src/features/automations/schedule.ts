@@ -1,29 +1,36 @@
 import type { AutomationSchedule, AutomationStatus } from "@/lib/api";
+import { i18n } from "@/lib/i18n";
 
-export const WEEKDAY_NAMES = [
-	"Sunday",
-	"Monday",
-	"Tuesday",
-	"Wednesday",
-	"Thursday",
-	"Friday",
-	"Saturday",
+const WEEKDAY_KEYS = [
+	"sunday",
+	"monday",
+	"tuesday",
+	"wednesday",
+	"thursday",
+	"friday",
+	"saturday",
 ] as const;
 
-const MONTH_NAMES = [
-	"Jan",
-	"Feb",
-	"Mar",
-	"Apr",
-	"May",
-	"Jun",
-	"Jul",
-	"Aug",
-	"Sep",
-	"Oct",
-	"Nov",
-	"Dec",
+const MONTH_KEYS = [
+	"jan",
+	"feb",
+	"mar",
+	"apr",
+	"may",
+	"jun",
+	"jul",
+	"aug",
+	"sep",
+	"oct",
+	"nov",
+	"dec",
 ] as const;
+
+/** Localized weekday names (Sunday-first), recomputed per call so a language
+ *  switch is reflected without a cached stale array. */
+export function weekdayNames(): string[] {
+	return WEEKDAY_KEYS.map((key) => i18n.t(`automations:weekday.${key}`));
+}
 
 /** Wall-clock time used whenever a daily/weekly schedule needs a default. */
 export const DEFAULT_TIME = "09:00";
@@ -38,13 +45,24 @@ export const DEFAULT_SCHEDULE: AutomationSchedule = {
 export function scheduleSummary(schedule: AutomationSchedule): string {
 	switch (schedule.kind) {
 		case "hourly":
-			return "Hourly";
+			return i18n.t("automations:schedule.hourly");
 		case "daily":
-			return `Daily at ${schedule.time}`;
+			return i18n.t("automations:schedule.dailyAt", { time: schedule.time });
 		case "weekly":
-			return `Weekly on ${WEEKDAY_NAMES[schedule.weekday] ?? "Sunday"} at ${schedule.time}`;
+			return i18n.t("automations:schedule.weeklyAt", {
+				weekday:
+					weekdayNames()[schedule.weekday] ??
+					i18n.t("automations:weekday.sunday"),
+				time: schedule.time,
+			});
 		case "every":
-			return `Every ${schedule.amount}${schedule.unit === "minutes" ? "m" : "h"}`;
+			return schedule.unit === "minutes"
+				? i18n.t("automations:schedule.everyMinutes", {
+						amount: schedule.amount,
+					})
+				: i18n.t("automations:schedule.everyHours", {
+						amount: schedule.amount,
+					});
 	}
 }
 
@@ -52,11 +70,11 @@ export function scheduleSummary(schedule: AutomationSchedule): string {
 export function scheduleShortLabel(schedule: AutomationSchedule): string {
 	switch (schedule.kind) {
 		case "hourly":
-			return "Hourly";
+			return i18n.t("automations:schedule.hourly");
 		case "daily":
-			return "Daily";
+			return i18n.t("automations:schedule.daily");
 		case "weekly":
-			return "Weekly";
+			return i18n.t("automations:schedule.weekly");
 		case "every":
 			return scheduleSummary(schedule);
 	}
@@ -66,7 +84,10 @@ function formatClockTime(date: Date): string {
 	const hours24 = date.getHours();
 	const hour12 = ((hours24 + 11) % 12) + 1;
 	const minutes = String(date.getMinutes()).padStart(2, "0");
-	const meridiem = hours24 < 12 ? "AM" : "PM";
+	const meridiem =
+		hours24 < 12
+			? i18n.t("automations:runTime.meridiem.am")
+			: i18n.t("automations:runTime.meridiem.pm");
 	return `${hour12}:${minutes} ${meridiem}`;
 }
 
@@ -86,11 +107,17 @@ export function formatRunTime(iso: string): string {
 	if (Number.isNaN(date.getTime())) return iso;
 	const clock = formatClockTime(date);
 	const now = new Date();
-	if (isSameLocalDay(date, now)) return `Today at ${clock}`;
+	if (isSameLocalDay(date, now))
+		return i18n.t("automations:runTime.today", { clock });
 	const yesterday = new Date(now);
 	yesterday.setDate(now.getDate() - 1);
-	if (isSameLocalDay(date, yesterday)) return `Yesterday at ${clock}`;
-	return `${MONTH_NAMES[date.getMonth()]} ${date.getDate()} at ${clock}`;
+	if (isSameLocalDay(date, yesterday))
+		return i18n.t("automations:runTime.yesterday", { clock });
+	return i18n.t("automations:runTime.date", {
+		month: i18n.t(`automations:month.${MONTH_KEYS[date.getMonth()]}`),
+		day: date.getDate(),
+		clock,
+	});
 }
 
 export function statusDotClass(status: AutomationStatus): string {
@@ -98,5 +125,7 @@ export function statusDotClass(status: AutomationStatus): string {
 }
 
 export function statusLabel(status: AutomationStatus): string {
-	return status === "active" ? "Active" : "Paused";
+	return status === "active"
+		? i18n.t("automations:status.active")
+		: i18n.t("automations:status.paused");
 }

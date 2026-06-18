@@ -1,6 +1,7 @@
 import { open } from "@tauri-apps/plugin-dialog";
 import { LoaderCircle } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import {
 	Dialog,
@@ -30,6 +31,7 @@ export function CloneFromUrlDialog({
 	defaultCloneDirectory,
 	onSubmit,
 }: CloneFromUrlDialogProps) {
+	const { t } = useTranslation("navigation");
 	const [gitUrl, setGitUrl] = useState("");
 	const [cloneDirectory, setCloneDirectory] = useState("");
 	const [isSubmitting, setIsSubmitting] = useState(false);
@@ -64,10 +66,10 @@ export function CloneFromUrlDialog({
 			}
 		} catch (error) {
 			setErrorMessage(
-				describeUnknownError(error, "Unable to open the folder picker."),
+				describeUnknownError(error, t("cloneDialog.folderPickerError")),
 			);
 		}
-	}, [cloneDirectory, defaultCloneDirectory]);
+	}, [cloneDirectory, defaultCloneDirectory, t]);
 
 	const trimmedUrl = gitUrl.trim();
 	const trimmedDirectory = cloneDirectory.trim();
@@ -90,13 +92,11 @@ export function CloneFromUrlDialog({
 			cloneDirectoryTouchedRef.current = false;
 			onOpenChange(false);
 		} catch (error) {
-			setErrorMessage(
-				describeUnknownError(error, "Unable to clone repository."),
-			);
+			setErrorMessage(describeUnknownError(error, t("cloneDialog.cloneError")));
 		} finally {
 			setIsSubmitting(false);
 		}
-	}, [canSubmit, onOpenChange, onSubmit, trimmedDirectory, trimmedUrl]);
+	}, [canSubmit, onOpenChange, onSubmit, trimmedDirectory, trimmedUrl, t]);
 
 	return (
 		<Dialog
@@ -111,7 +111,7 @@ export function CloneFromUrlDialog({
 			<DialogContent className="gap-3 p-4 sm:max-w-sm">
 				<DialogHeader>
 					<DialogTitle className="text-ui font-medium tracking-[-0.01em]">
-						Clone from URL
+						{t("cloneDialog.title")}
 					</DialogTitle>
 				</DialogHeader>
 				<form
@@ -126,7 +126,7 @@ export function CloneFromUrlDialog({
 							htmlFor="clone-git-url"
 							className="text-small font-medium tracking-[-0.01em]"
 						>
-							Git URL
+							{t("cloneDialog.gitUrl")}
 						</Label>
 						<Input
 							id="clone-git-url"
@@ -147,7 +147,7 @@ export function CloneFromUrlDialog({
 							htmlFor="clone-location"
 							className="text-small font-medium tracking-[-0.01em]"
 						>
-							Clone location
+							{t("cloneDialog.cloneLocation")}
 						</Label>
 						<div className="flex items-center gap-1.5">
 							<Input
@@ -173,7 +173,7 @@ export function CloneFromUrlDialog({
 								}}
 								disabled={isSubmitting}
 							>
-								Browse…
+								{t("cloneDialog.browse")}
 							</Button>
 						</div>
 					</div>
@@ -190,10 +190,10 @@ export function CloneFromUrlDialog({
 							{isSubmitting ? (
 								<>
 									<LoaderCircle className="animate-spin" strokeWidth={2.1} />
-									Cloning…
+									{t("cloneDialog.cloning")}
 								</>
 							) : (
-								"Clone repository"
+								t("cloneDialog.submit")
 							)}
 						</Button>
 					</div>

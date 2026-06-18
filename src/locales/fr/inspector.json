@@ -1,0 +1,190 @@
+{
+	"git": {
+		"title": "Git",
+		"sectionLabel": "Section de l'inspecteur Git",
+		"changesPanelLabel": "Corps du panneau des modifications",
+		"browseFiles": "Parcourir les fichiers",
+		"browseFilesTitle": "Parcourir tous les fichiers de cet espace de travail",
+		"openPullRequest": "Ouvrir la pull request",
+		"openMergeRequest": "Ouvrir la merge request",
+		"continue": "Continuer",
+		"continueWorkspace": "Continuer l'espace de travail",
+		"empty": "Aucune modification sur cette branche pour l'instant.",
+		"groups": {
+			"stagedChanges": "Modifications indexées",
+			"changes": "Modifications",
+			"remote": "Distant"
+		},
+		"switchingTargetBranch": "Changement de branche cible…",
+		"viewToggle": {
+			"switchToListView": "Passer à la vue liste",
+			"switchToTreeView": "Passer à la vue arborescente"
+		},
+		"row": {
+			"stageAll": "Indexer toutes les modifications",
+			"unstageAll": "Désindexer toutes les modifications",
+			"stageFile": "Indexer le fichier",
+			"unstageFile": "Désindexer le fichier",
+			"openInEditor": "Ouvrir dans l'éditeur",
+			"discardFileChanges": "Abandonner les modifications du fichier"
+		},
+		"contextMenu": {
+			"revealInFinder": "Afficher dans le Finder",
+			"copyPath": "Copier le chemin",
+			"copyRelativePath": "Copier le chemin relatif",
+			"copyRemoteFileUrl": "Copier l'URL du fichier distant"
+		},
+		"toast": {
+			"pathCopied": "Chemin copié",
+			"relativePathCopied": "Chemin relatif copié",
+			"remoteFileUrlCopied": "URL du fichier distant copiée",
+			"copyPathFailed": "Échec de la copie du chemin",
+			"copyRelativePathFailed": "Échec de la copie du chemin relatif",
+			"copyRemoteFileUrlFailed": "Échec de la copie de l'url du fichier distant",
+			"revealFailed": "Échec de l'affichage dans le Finder",
+			"noEditorTitle": "Aucun éditeur",
+			"noEditorMessage": "Sélectionnez un éditeur par défaut avant d'ouvrir des fichiers.",
+			"openEditorFailed": "Échec de l'ouverture de {{editor}}",
+			"continuedTitle": "Continué",
+			"continuedMessage": "Espace de travail déplacé vers {{branch}}."
+		},
+		"mutationError": {
+			"stageFileFailed": "Échec de l'indexation du fichier.",
+			"unstageFileFailed": "Échec de la désindexation du fichier.",
+			"stageFilesFailed": "Échec de l'indexation des fichiers.",
+			"unstageFilesFailed": "Échec de la désindexation des fichiers.",
+			"discardChangesFailed": "Échec de l'abandon des modifications.",
+			"continueWorkspaceFailed": "Échec de la poursuite de l'espace de travail.",
+			"stageFileTitle": "Impossible d'indexer le fichier",
+			"unstageFileTitle": "Impossible de désindexer le fichier",
+			"stageFilesTitle": "Impossible d'indexer les fichiers",
+			"unstageFilesTitle": "Impossible de désindexer les fichiers",
+			"discardChangesTitle": "Impossible d'abandonner les modifications",
+			"continueWorkspaceTitle": "Impossible de continuer l'espace de travail"
+		}
+	},
+	"forge": {
+		"connecting": "Connexion en cours",
+		"detected": "{{provider}} détecté sur {{host}}",
+		"thisHost": "cet hôte",
+		"whyWeThinkSo": "Pourquoi nous le pensons :"
+	},
+	"actions": {
+		"title": "Actions",
+		"sectionLabel": "Section de l'inspecteur Actions",
+		"toggle": "Basculer la section des actions de l'inspecteur",
+		"panelLabel": "Corps du panneau des actions",
+		"groups": {
+			"helpers": "Assistants",
+			"git": "Git",
+			"review": "Révision",
+			"deployments": "Déploiements",
+			"checks": "Vérifications"
+		},
+		"reviewChanges": "Réviser les modifications",
+		"reviewing": "Révision en cours",
+		"reviewAction": "Réviser",
+		"skipped": "ignoré",
+		"openItem": "Ouvrir {{name}}",
+		"insertCheckError": "Impossible d'insérer la vérification",
+		"loading": {
+			"pushing": "Envoi en cours",
+			"pulling": "Récupération en cours",
+			"resolving": "Résolution en cours",
+			"committing": "Validation en cours",
+			"loading": "Chargement"
+		},
+		"status": {
+			"passed": "Réussi",
+			"skipped": "Ignoré",
+			"running": "En cours",
+			"failed": "Échoué",
+			"pending": "En attente"
+		},
+		"button": {
+			"commitAndPush": "Valider et envoyer",
+			"push": "Envoyer",
+			"resolve": "Résoudre",
+			"pull": "Récupérer"
+		},
+		"git": {
+			"noUncommittedChanges": "Aucune modification non validée",
+			"uncommittedChanges_one": "{{count}} modification non validée",
+			"uncommittedChanges_other": "{{count}} modifications non validées",
+			"branchNotPublished": "Branche non publiée sur le distant",
+			"commitsAheadOfRemote_one": "{{count}} commit en avance sur {{ref}}",
+			"commitsAheadOfRemote_other": "{{count}} commits en avance sur {{ref}}",
+			"branchFullyPushed": "Branche entièrement envoyée",
+			"mergeConflictsDetected": "Conflits de fusion détectés",
+			"commitsBehindTarget_one": "{{count}} commit en retard sur {{target}}",
+			"commitsBehindTarget_other": "{{count}} commits en retard sur {{target}}",
+			"upToDate": "À jour avec {{target}}",
+			"syncUnavailable": "État de synchronisation indisponible",
+			"targetBranch": "branche cible",
+			"upstream": "amont"
+		},
+		"review": {
+			"authRequired": "Authentification de la CLI {{provider}} requise",
+			"approved": "Révision approuvée",
+			"changeRequestClosed": "{{changeRequest}} fermée",
+			"changesRequested": "Modifications demandées",
+			"waitingForReview": "En attente de la révision de {{changeRequest}}",
+			"mergeConflictsDetected": "Conflits de fusion détectés"
+		},
+		"sync": {
+			"pulledLatest": "Dernières modifications récupérées depuis {{target}}",
+			"alreadyUpToDate": "Déjà à jour avec {{target}}",
+			"pullFailed": "Impossible de récupérer les mises à jour de la cible."
+		}
+	},
+	"tabs": {
+		"sectionLabel": "Section de l'inspecteur Onglets",
+		"bodyLabel": "Corps des onglets de l'inspecteur",
+		"toggle": "Basculer la section des onglets de l'inspecteur",
+		"setup": "Configuration",
+		"run": "Exécuter",
+		"terminal": "Terminal",
+		"terminalNumbered": "Terminal {{number}}",
+		"newTerminal": "Nouveau terminal",
+		"closeTerminal": "Fermer le terminal",
+		"closeNamed": "Fermer {{name}}",
+		"enableHoverZoom": "Activer le zoom au survol",
+		"disableHoverZoom": "Désactiver le zoom au survol",
+		"switchRunAction": "Changer d'action d'exécution",
+		"create": "Créer"
+	},
+	"setup": {
+		"noScriptConfigured": "Aucun script de configuration défini",
+		"noScriptHint": "Ajoutez un script de configuration dans les paramètres du dépôt pour l'exécuter ici.",
+		"openSettings": "Ouvrir les paramètres",
+		"completed": "Configuration terminée",
+		"completedLabel": "Configuration terminée",
+		"noOutput": "Aucune sortie du script de configuration",
+		"noOutputHint": "La sortie du script de configuration apparaîtra ici après l'exécution de la configuration.",
+		"runSetup": "Exécuter la configuration",
+		"rerunSetup": "Réexécuter la configuration",
+		"stop": "Arrêter"
+	},
+	"run": {
+		"open": "Ouvrir",
+		"openWithPort": "Ouvrir:{{port}}",
+		"openNoUrl": "Ouvrir le serveur de développement (aucune URL détectée pour l'instant)",
+		"openAtUrl": "Ouvrir le serveur de développement à {{url}}",
+		"openWithCount_one": "Ouvrir le serveur de développement ({{count}} URL détectée)",
+		"openWithCount_other": "Ouvrir le serveur de développement ({{count}} URL détectées)",
+		"addRunScript": "Ajouter un script d'exécution",
+		"addRunScriptHint": "Exécutez des tests ou un serveur de développement pour tester les modifications dans cet espace de travail.",
+		"defaultActionName": "Par défaut",
+		"noOutputFor": "Aucune sortie pour",
+		"noOutputHint": "La sortie du script d'exécution apparaîtra ici après l'exécution.",
+		"run": "Exécuter",
+		"rerun": "Réexécuter",
+		"stop": "Arrêter",
+		"forceStop": "Forcer l'arrêt",
+		"runStopCommand": "Exécuter la commande d'arrêt : {{command}}",
+		"skipCleanup": "Ignorer le nettoyage et forcer l'arrêt"
+	},
+	"terminal": {
+		"truncationNotice": "… sortie antérieure tronquée (limite du tampon atteinte) …"
+	}
+}

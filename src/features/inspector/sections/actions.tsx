@@ -9,6 +9,7 @@ import {
 	TriangleIcon,
 } from "lucide-react";
 import { useCallback, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import {
 	AppendContextButton,
@@ -35,6 +36,7 @@ import {
 	type WorkspaceGitActionStatus,
 } from "@/lib/api";
 import { buildComposerPreviewPayload } from "@/lib/composer-insert";
+import { i18n } from "@/lib/i18n";
 import { openUrl } from "@/lib/platform-bridge";
 import {
 	grexQueryKeys,
@@ -58,24 +60,11 @@ interface GitStatusItem {
 	status: ActionStatusKind;
 	action?: {
 		label: string;
+		/** Translated busy-state label shown while the action runs. */
+		loadingLabel: string;
 		kind: "commit" | "sync";
 		mode?: WorkspaceCommitButtonMode;
 	};
-}
-
-function loadingActionLabel(label: string): string {
-	switch (label) {
-		case "Push":
-			return "Pushing";
-		case "Pull":
-			return "Pulling";
-		case "Resolve":
-			return "Resolving";
-		case "Commit and push":
-			return "Committing";
-		default:
-			return "Loading";
-	}
 }
 
 const EMPTY_GIT_ACTION_STATUS: WorkspaceGitActionStatus = {
@@ -172,6 +161,7 @@ export function ActionsSection({
 	commitButtonState,
 	changeRequest,
 }: ActionsSectionProps) {
+	const { t } = useTranslation("inspector");
 	const queryClient = useQueryClient();
 	const [syncPending, setSyncPending] = useState(false);
 	const [reviewPending, setReviewPending] = useState(false);
@@ -255,9 +245,9 @@ export function ActionsSection({
 			const result = await syncWorkspaceWithTargetBranch(workspaceId);
 			const target = result.targetBranch;
 			if (result.outcome === "updated") {
-				toast.success(`Pulled latest from ${target}`);
+				toast.success(t("actions.sync.pulledLatest", { target }));
 			} else if (result.outcome === "alreadyUpToDate") {
-				toast(`Already up to date with ${target}`);
+				toast(t("actions.sync.alreadyUpToDate", { target }));
 			} else {
 				// conflict or stashPopConflict — both hand off to the agent
 				// with a kind-specific narrow prompt.
@@ -265,9 +255,7 @@ export function ActionsSection({
 			}
 		} catch (error) {
 			const message =
-				error instanceof Error
-					? error.message
-					: "Unable to pull target updates.";
+				error instanceof Error ? error.message : t("actions.sync.pullFailed");
 			toast.error(message);
 		} finally {
 			requestSidebarReconcile(queryClient);
@@ -326,7 +314,7 @@ export function ActionsSection({
 	return (
 		<section
 			ref={sectionRef}
-			aria-label="Inspector section Actions"
+			aria-label={t("actions.sectionLabel")}
 			className={cn(
 				"flex min-h-0 shrink-0 flex-col overflow-hidden border-b border-border/60 bg-sidebar transition-colors",
 			)}
@@ -339,10 +327,12 @@ export function ActionsSection({
 					!open && "border-b-transparent",
 				)}
 			>
-				<span className={INSPECTOR_SECTION_TITLE_CLASS}>Actions</span>
+				<span className={INSPECTOR_SECTION_TITLE_CLASS}>
+					{t("actions.title")}
+				</span>
 				<Button
 					type="button"
-					aria-label="Toggle inspector actions section"
+					aria-label={t("actions.toggle")}
 					onClick={onToggle}
 					variant="ghost"
 					size="icon-sm"
@@ -365,14 +355,14 @@ export function ActionsSection({
 			{open && (
 				<div className="min-h-0 flex-1">
 					<ScrollArea
-						aria-label="Actions panel body"
+						aria-label={t("actions.panelLabel")}
 						className="h-full min-h-0 bg-muted/18 text-ui"
 					>
 						{showHelpersGroup && (
 							<>
 								<div className="px-2.5 pb-1 pt-2">
 									<span className="text-mini font-medium tracking-wide text-muted-foreground/70">
-										Helpers
+										{t("actions.groups.helpers")}
 									</span>
 								</div>
 								{showReviewHelper && (
@@ -387,13 +377,17 @@ export function ActionsSection({
 											className="size-3 shrink-0"
 											strokeWidth={2}
 										/>
-										<span className="truncate">Review changes</span>
+										<span className="truncate">
+											{t("actions.reviewChanges")}
+										</span>
 										<button
 											type="button"
 											onClick={() => void handleReviewChanges()}
 											disabled={reviewPending || workspaceId === null}
 											aria-busy={reviewPending ? true : undefined}
-											aria-label={reviewPending ? "Reviewing" : undefined}
+											aria-label={
+												reviewPending ? t("actions.reviewing") : undefined
+											}
 											className="ml-auto shrink-0 cursor-interactive text-micro text-foreground transition-colors hover:text-foreground disabled:cursor-not-allowed disabled:opacity-50"
 										>
 											<span className="inline-flex items-center gap-1">
@@ -404,7 +398,7 @@ export function ActionsSection({
 														strokeWidth={2}
 													/>
 												) : null}
-												{reviewPending ? null : "Review"}
+												{reviewPending ? null : t("actions.reviewAction")}
 											</span>
 										</button>
 									</div>
@@ -413,7 +407,7 @@ export function ActionsSection({
 						)}
 						<div className="px-2.5 pb-1 pt-2">
 							<span className="text-mini font-medium tracking-wide text-muted-foreground/70">
-								Git
+								{t("actions.groups.git")}
 							</span>
 						</div>
 						{gitRows.map((item) => {
@@ -457,9 +451,7 @@ export function ActionsSection({
 											}
 											aria-busy={isActionBusy ? true : undefined}
 											aria-label={
-												isActionBusy
-													? loadingActionLabel(action.label)
-													: undefined
+												isActionBusy ? action.loadingLabel : undefined
 											}
 										>
 											<span className="inline-flex items-center gap-1">
@@ -482,7 +474,7 @@ export function ActionsSection({
 							<>
 								<div className="px-2.5 pb-1 pt-2.5">
 									<span className="text-mini font-medium tracking-wide text-muted-foreground/70">
-										Review
+										{t("actions.groups.review")}
 									</span>
 								</div>
 								{reviewRows.map((item) => (
@@ -504,7 +496,7 @@ export function ActionsSection({
 							<>
 								<div className="px-2.5 pb-1 pt-2.5">
 									<span className="text-mini font-medium tracking-wide text-muted-foreground/70">
-										Deployments
+										{t("actions.groups.deployments")}
 									</span>
 								</div>
 								{sortedDeployments.map((item) => (
@@ -517,7 +509,7 @@ export function ActionsSection({
 							<>
 								<div className="px-2.5 pb-1 pt-2.5">
 									<span className="text-mini font-medium tracking-wide text-muted-foreground/70">
-										Checks
+										{t("actions.groups.checks")}
 									</span>
 								</div>
 								{sortedChecks.map((item) => (
@@ -558,7 +550,7 @@ function StatusIcon({ status }: { status: ActionStatusKind }) {
 	if (status === "success") {
 		return (
 			<CheckIcon
-				aria-label="Passed"
+				aria-label={i18n.t("inspector:actions.status.passed")}
 				className="size-3 shrink-0 text-chart-2"
 				strokeWidth={2.2}
 			/>
@@ -568,7 +560,7 @@ function StatusIcon({ status }: { status: ActionStatusKind }) {
 	if (status === "skipped") {
 		return (
 			<CircleSlashIcon
-				aria-label="Skipped"
+				aria-label={i18n.t("inspector:actions.status.skipped")}
 				className="size-3 shrink-0 text-muted-foreground"
 				strokeWidth={2}
 			/>
@@ -577,10 +569,10 @@ function StatusIcon({ status }: { status: ActionStatusKind }) {
 
 	const label =
 		status === "running"
-			? "Running"
+			? i18n.t("inspector:actions.status.running")
 			: status === "failure"
-				? "Failed"
-				: "Pending";
+				? i18n.t("inspector:actions.status.failed")
+				: i18n.t("inspector:actions.status.pending");
 	const color =
 		status === "running"
 			? "rgb(245, 158, 11)"
@@ -619,77 +611,85 @@ function buildGitRows(
 	return [
 		uncommittedCount === 0
 			? {
-					label: "No uncommitted changes",
+					label: i18n.t("inspector:actions.git.noUncommittedChanges"),
 					status: "success",
 				}
 			: {
-					label:
-						uncommittedCount === 1
-							? "1 uncommitted change"
-							: `${uncommittedCount} uncommitted changes`,
+					label: i18n.t("inspector:actions.git.uncommittedChanges", {
+						count: uncommittedCount,
+					}),
 					status: "pending",
 					action: {
-						label: "Commit and push",
+						label: i18n.t("inspector:actions.button.commitAndPush"),
+						loadingLabel: i18n.t("inspector:actions.loading.committing"),
 						kind: "commit",
 						mode: "commit-and-push",
 					},
 				},
 		gitStatus.pushStatus === "unpublished"
 			? {
-					label: "Branch not published to remote",
+					label: i18n.t("inspector:actions.git.branchNotPublished"),
 					status: "pending",
 					action: {
-						label: "Push",
+						label: i18n.t("inspector:actions.button.push"),
+						loadingLabel: i18n.t("inspector:actions.loading.pushing"),
 						kind: "commit",
 						mode: "push",
 					},
 				}
 			: (gitStatus.aheadOfRemoteCount ?? 0) > 0
 				? {
-						label:
-							gitStatus.aheadOfRemoteCount === 1
-								? `1 commit ahead of ${gitStatus.remoteTrackingRef ?? "upstream"}`
-								: `${gitStatus.aheadOfRemoteCount} commits ahead of ${gitStatus.remoteTrackingRef ?? "upstream"}`,
+						label: i18n.t("inspector:actions.git.commitsAheadOfRemote", {
+							count: gitStatus.aheadOfRemoteCount ?? 0,
+							ref:
+								gitStatus.remoteTrackingRef ??
+								i18n.t("inspector:actions.git.upstream"),
+						}),
 						status: "pending",
 						action: {
-							label: "Push",
+							label: i18n.t("inspector:actions.button.push"),
+							loadingLabel: i18n.t("inspector:actions.loading.pushing"),
 							kind: "commit",
 							mode: "push",
 						},
 					}
 				: {
-						label: "Branch fully pushed",
+						label: i18n.t("inspector:actions.git.branchFullyPushed"),
 						status: "success",
 					},
 		conflictCount > 0
 			? {
-					label: "Merge conflicts detected",
+					label: i18n.t("inspector:actions.git.mergeConflictsDetected"),
 					status: "failure",
 					action: {
-						label: "Resolve",
+						label: i18n.t("inspector:actions.button.resolve"),
+						loadingLabel: i18n.t("inspector:actions.loading.resolving"),
 						kind: "commit",
 						mode: "resolve-conflicts",
 					},
 				}
 			: gitStatus.syncStatus === "behind"
 				? {
-						label:
-							gitStatus.behindTargetCount === 1
-								? `1 commit behind ${syncTargetBranch}`
-								: `${gitStatus.behindTargetCount} commits behind ${syncTargetBranch}`,
+						label: i18n.t("inspector:actions.git.commitsBehindTarget", {
+							count: gitStatus.behindTargetCount,
+							target: syncTargetBranch,
+						}),
 						status: "pending",
 						action: {
-							label: "Pull",
+							label: i18n.t("inspector:actions.button.pull"),
+							loadingLabel: i18n.t("inspector:actions.loading.pulling"),
 							kind: "sync",
 						},
 					}
 				: gitStatus.syncStatus === "upToDate"
 					? {
-							label: `Up to date with ${syncTargetBranch}`,
+							label: i18n.t("inspector:actions.git.upToDate", {
+								target: syncTargetBranch,
+							}),
 							status: "success",
 						}
 					: {
-							label: "Sync status unavailable",
+							label: i18n.t("inspector:actions.git.syncUnavailable"),
 							status: "pending",
 						},
 	];
@@ -701,7 +701,7 @@ function formatSyncTargetRef(
 ): string {
 	const branch = syncTargetBranch?.trim();
 	if (!branch) {
-		return "target branch";
+		return i18n.t("inspector:actions.git.targetBranch");
 	}
 	if (branch.includes("/")) {
 		return branch;
@@ -724,25 +724,40 @@ function buildReviewRows(
 
 	if (forgeStatus.remoteState === "unauthenticated") {
 		rows.push({
-			label: `${providerName} CLI authentication required`,
+			label: i18n.t("inspector:actions.review.authRequired", {
+				provider: providerName,
+			}),
 			status: "pending",
 		});
 	} else if (isMerged || forgeStatus.reviewDecision === "APPROVED") {
-		rows.push({ label: "Review approved", status: "success" });
+		rows.push({
+			label: i18n.t("inspector:actions.review.approved"),
+			status: "success",
+		});
 	} else if (currentChangeRequest?.state === "CLOSED") {
-		rows.push({ label: `${changeRequestName} closed`, status: "failure" });
+		rows.push({
+			label: i18n.t("inspector:actions.review.changeRequestClosed", {
+				changeRequest: changeRequestName,
+			}),
+			status: "failure",
+		});
 	} else if (forgeStatus.reviewDecision === "CHANGES_REQUESTED") {
-		rows.push({ label: "Changes requested", status: "failure" });
+		rows.push({
+			label: i18n.t("inspector:actions.review.changesRequested"),
+			status: "failure",
+		});
 	} else if (forgeStatus.remoteState !== "noPr") {
 		rows.push({
-			label: `Waiting for ${changeRequestName} review`,
+			label: i18n.t("inspector:actions.review.waitingForReview", {
+				changeRequest: changeRequestName,
+			}),
 			status: "pending",
 		});
 	}
 
 	if (hasMergeConflict) {
 		rows.push({
-			label: "Merge conflicts detected",
+			label: i18n.t("inspector:actions.review.mergeConflictsDetected"),
 			status: "failure",
 		});
 	}
@@ -786,7 +801,7 @@ function ActionStatusRow({
 				</span>
 				{item.status === "skipped" ? (
 					<span className="shrink-0 text-micro text-muted-foreground/70">
-						skipped
+						{i18n.t("inspector:actions.skipped")}
 					</span>
 				) : (
 					item.duration && (
@@ -801,7 +816,7 @@ function ActionStatusRow({
 					<AppendContextButton
 						subjectLabel={item.name}
 						getPayload={() => onInsertToComposer(item)}
-						errorTitle="Couldn't insert check"
+						errorTitle={i18n.t("inspector:actions.insertCheckError")}
 						className={appendActionButtonClassName}
 					/>
 				)}
@@ -810,7 +825,9 @@ function ActionStatusRow({
 						type="button"
 						variant="ghost"
 						size="icon-xs"
-						aria-label={`Open ${item.name}`}
+						aria-label={i18n.t("inspector:actions.openItem", {
+							name: item.name,
+						})}
 						onClick={() => {
 							if (!item.url) {
 								return;

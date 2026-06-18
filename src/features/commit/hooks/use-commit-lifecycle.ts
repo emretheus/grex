@@ -32,6 +32,7 @@ import {
 	buildCommitButtonPrompt,
 	isActionSessionMode,
 } from "@/lib/commit-button-prompts";
+import { i18n } from "@/lib/i18n";
 import { grexQueryKeys, workspaceForgeQueryOptions } from "@/lib/query-client";
 import {
 	holdSidebarMutation,
@@ -99,25 +100,25 @@ function getActionFailureTitle(
 ): string {
 	switch (mode) {
 		case "create-pr":
-			return `Create ${changeRequestName} failed`;
+			return i18n.t("commit:failureTitle.createPr", { changeRequestName });
 		case "commit-and-push":
-			return "Commit and push failed";
+			return i18n.t("commit:failureTitle.commitAndPush");
 		case "push":
-			return "Push failed";
+			return i18n.t("commit:failureTitle.push");
 		case "fix":
-			return "Fix CI failed";
+			return i18n.t("commit:failureTitle.fix");
 		case "resolve-conflicts":
-			return "Resolve conflicts failed";
+			return i18n.t("commit:failureTitle.resolveConflicts");
 		case "checks-running":
 		case "merge-blocked":
 		case "merge":
-			return "Merge failed";
+			return i18n.t("commit:failureTitle.merge");
 		case "open-pr":
-			return `Open ${changeRequestName} failed`;
+			return i18n.t("commit:failureTitle.openPr", { changeRequestName });
 		case "closed":
-			return `Close ${changeRequestName} failed`;
+			return i18n.t("commit:failureTitle.closed", { changeRequestName });
 		default:
-			return "Action failed";
+			return i18n.t("commit:failureTitle.generic");
 	}
 }
 
@@ -318,8 +319,8 @@ export function useWorkspaceCommitLifecycle({
 							`[commitButton] merge blocked: ${changeRequestName} has merge conflicts`,
 						);
 						pushToast?.(
-							`${changeRequestName} has merge conflicts and cannot be merged yet.`,
-							"Merge blocked",
+							i18n.t("commit:toast.conflictMessage", { changeRequestName }),
+							i18n.t("commit:toast.mergeBlockedTitle"),
 							"destructive",
 						);
 						return;
@@ -329,8 +330,8 @@ export function useWorkspaceCommitLifecycle({
 							"[commitButton] merge blocked: mergeable status still computing, please wait",
 						);
 						pushToast?.(
-							"Mergeability is still being calculated. Please wait and try again.",
-							"Merge blocked",
+							i18n.t("commit:toast.mergeabilityComputing"),
+							i18n.t("commit:toast.mergeBlockedTitle"),
 							"destructive",
 						);
 						// Trigger a refresh so the status resolves sooner
@@ -342,10 +343,9 @@ export function useWorkspaceCommitLifecycle({
 					const checksHaveNotPassed = hasNonPassingForgeChecks(currentStatus);
 					if (checksHaveNotPassed) {
 						const confirmed = await requestMergeConfirmation({
-							title: "Merge before checks pass?",
-							description:
-								"GitHub checks have not passed yet. Merge anyway and bypass them?",
-							confirmLabel: "Merge anyway",
+							title: i18n.t("commit:confirm.beforeChecksTitle"),
+							description: i18n.t("commit:confirm.beforeChecksDescription"),
+							confirmLabel: i18n.t("commit:confirm.mergeAnyway"),
 						});
 						if (!confirmed) {
 							console.warn(
@@ -362,9 +362,9 @@ export function useWorkspaceCommitLifecycle({
 						: getMergeBlockedReason(currentStatus);
 					if (blockedReason) {
 						const confirmed = await requestMergeConfirmation({
-							title: "Try blocked merge?",
+							title: i18n.t("commit:confirm.blockedMergeTitle"),
 							description: mergeBlockedDetailText(blockedReason),
-							confirmLabel: "Try anyway",
+							confirmLabel: i18n.t("commit:confirm.tryAnyway"),
 						});
 						if (!confirmed) {
 							console.warn(
@@ -427,7 +427,10 @@ export function useWorkspaceCommitLifecycle({
 					} catch (error) {
 						console.error(`[commitButton] ${mode} failed:`, error);
 						pushToast?.(
-							getErrorMessage(error, "Unable to complete action."),
+							getErrorMessage(
+								error,
+								i18n.t("commit:toast.completeActionFallback"),
+							),
 							getActionFailureTitle(mode, changeRequestName),
 							"destructive",
 						);
@@ -472,8 +475,15 @@ export function useWorkspaceCommitLifecycle({
 					}));
 				} catch (error) {
 					console.error("[commitButton] Failed to push branch:", error);
-					const message = getErrorMessage(error, "Unable to push branch.");
-					pushToast?.(message, "Push failed", "destructive");
+					const message = getErrorMessage(
+						error,
+						i18n.t("commit:toast.pushFailedFallback"),
+					);
+					pushToast?.(
+						message,
+						i18n.t("commit:failureTitle.push"),
+						"destructive",
+					);
 					patchLifecycle(workspaceId, (current) => ({
 						...current,
 						phase: "error",
@@ -549,8 +559,8 @@ export function useWorkspaceCommitLifecycle({
 						if (verdict !== "loggedOut") return;
 						void stopAgentStream(sessionId).catch(() => {});
 						pushToast?.(
-							`Reconnect your ${providerName} account and try again.`,
-							`${providerName} not connected`,
+							i18n.t("commit:toast.reconnectMessage", { providerName }),
+							i18n.t("commit:toast.notConnectedTitle", { providerName }),
 							"destructive",
 						);
 						// Every workspace on this account shares the backend
@@ -566,7 +576,7 @@ export function useWorkspaceCommitLifecycle({
 			} catch (error) {
 				console.error("[commitButton] Failed to start session:", error);
 				pushToast?.(
-					getErrorMessage(error, "Unable to start action."),
+					getErrorMessage(error, i18n.t("commit:toast.startActionFallback")),
 					getActionFailureTitle(mode, changeRequestName),
 					"destructive",
 				);
@@ -622,8 +632,8 @@ export function useWorkspaceCommitLifecycle({
 							error,
 						);
 						pushToast?.(
-							getErrorMessage(error, "Unable to open a chat session."),
-							"Prompt not delivered",
+							getErrorMessage(error, i18n.t("commit:toast.openChatFallback")),
+							i18n.t("commit:toast.promptNotDeliveredTitle"),
 							"destructive",
 						);
 					}
@@ -684,8 +694,8 @@ export function useWorkspaceCommitLifecycle({
 			} catch (error) {
 				console.error("[review] failed to start session:", error);
 				pushToast?.(
-					getErrorMessage(error, "Unable to start review."),
-					"Review failed",
+					getErrorMessage(error, i18n.t("commit:toast.reviewFallback")),
+					i18n.t("commit:toast.reviewFailedTitle"),
 					"destructive",
 				);
 			}
@@ -816,7 +826,7 @@ export function useWorkspaceCommitLifecycle({
 				} catch (error) {
 					console.error("[commitButton] PR lookup failed:", error);
 					pushToast?.(
-						getErrorMessage(error, "Unable to verify action result."),
+						getErrorMessage(error, i18n.t("commit:toast.verifyActionFallback")),
 						getActionFailureTitle(mode, changeRequestName),
 						"destructive",
 					);

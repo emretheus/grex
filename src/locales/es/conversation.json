@@ -1,0 +1,94 @@
+{
+	"collapse": {
+		"working": "Trabajando...",
+		"done": "Hecho",
+		"separator": ", ",
+		"activeSuffix": "{{clauses}}...",
+		"search": {
+			"onePattern": {
+				"lead": {
+					"active": "Buscando '{{pattern}}'",
+					"done": "Se buscó '{{pattern}}'"
+				},
+				"cont": {
+					"active": "buscando '{{pattern}}'",
+					"done": "se buscó '{{pattern}}'"
+				}
+			},
+			"onePatternRepeated": {
+				"lead": {
+					"active": "Buscando '{{pattern}}' ({{count}}×)",
+					"done": "Se buscó '{{pattern}}' ({{count}}×)"
+				},
+				"cont": {
+					"active": "buscando '{{pattern}}' ({{count}}×)",
+					"done": "se buscó '{{pattern}}' ({{count}}×)"
+				}
+			},
+			"manyPatterns": {
+				"lead": {
+					"active": "Buscando {{count}} patrones",
+					"done": "Se buscaron {{count}} patrones"
+				},
+				"cont": {
+					"active": "buscando {{count}} patrones",
+					"done": "se buscaron {{count}} patrones"
+				}
+			},
+			"times": {
+				"lead": {
+					"active_one": "Buscando {{count}} vez",
+					"active_other": "Buscando {{count}} veces",
+					"done_one": "Se buscó {{count}} vez",
+					"done_other": "Se buscaron {{count}} veces"
+				},
+				"cont": {
+					"active_one": "buscando {{count}} vez",
+					"active_other": "buscando {{count}} veces",
+					"done_one": "se buscó {{count}} vez",
+					"done_other": "se buscaron {{count}} veces"
+				}
+			}
+		},
+		"read": {
+			"lead": {
+				"active_one": "Leyendo {{count}} archivo",
+				"active_other": "Leyendo {{count}} archivos",
+				"done_one": "Se leyó {{count}} archivo",
+				"done_other": "Se leyeron {{count}} archivos"
+			},
+			"cont": {
+				"active_one": "leyendo {{count}} archivo",
+				"active_other": "leyendo {{count}} archivos",
+				"done_one": "se leyó {{count}} archivo",
+				"done_other": "se leyeron {{count}} archivos"
+			}
+		},
+		"shell": {
+			"lead": {
+				"active_one": "Ejecutando {{count}} comando de solo lectura",
+				"active_other": "Ejecutando {{count}} comandos de solo lectura",
+				"done_one": "Se ejecutó {{count}} comando de solo lectura",
+				"done_other": "Se ejecutaron {{count}} comandos de solo lectura"
+			},
+			"cont": {
+				"active_one": "ejecutando {{count}} comando de solo lectura",
+				"active_other": "ejecutando {{count}} comandos de solo lectura",
+				"done_one": "se ejecutó {{count}} comando de solo lectura",
+				"done_other": "se ejecutaron {{count}} comandos de solo lectura"
+			}
+		}
+	},
+	"toast": {
+		"genericError": "Algo salió mal. Inténtalo de nuevo.",
+		"genericErrorTitle": "Error"
+	},
+	"error": {
+		"userInputMissingIds": "No se puede mostrar la solicitud de entrada del usuario: falta userInputId o modelId.",
+		"deliverUserInputFailed": "No se pudo entregar la respuesta de entrada del usuario.",
+		"sendMessageFailed": "No se pudo enviar el mensaje."
+	},
+	"pending": {
+		"awaitingAnswer": "Esperando tu respuesta."
+	}
+}

@@ -1,0 +1,133 @@
+{
+	"aria": {
+		"composer": "工作区编辑器",
+		"input": "工作区输入框"
+	},
+	"placeholder": {
+		"default": "请求修改、用 @ 提及文件、运行 /命令",
+		"plan": "描述需要修改的内容，然后点击“请求修改”"
+	},
+	"hint": {
+		"terminalDirective": "发送以在终端模式中启动",
+		"toFocus": "聚焦"
+	},
+	"model": {
+		"loading": "正在加载模型…",
+		"select": "选择模型",
+		"addCustom": "添加自定义模型..."
+	},
+	"fastMode": {
+		"label": "快速模式",
+		"labelOn": "快速模式（已开启）",
+		"aria": "快速模式"
+	},
+	"effort": {
+		"label": "投入程度",
+		"extraHigh": "超高"
+	},
+	"permission": {
+		"plan": "规划",
+		"auto": "自动",
+		"planAria": "规划模式",
+		"autoAria": "自动模式",
+		"planTooltip": "规划 · 只读",
+		"autoTooltip": "自动 · 完全访问"
+	},
+	"terminalMode": {
+		"label": "终端模式",
+		"aria": "终端模式"
+	},
+	"addContext": "添加上下文",
+	"actions": {
+		"requestChanges": "请求修改",
+		"implement": "执行",
+		"stop": "停止",
+		"steer": "引导",
+		"send": "发送",
+		"startOptions": "启动选项"
+	},
+	"startSubmit": {
+		"newWorkspace": "新建工作区",
+		"saveForLater": "稍后处理",
+		"startNow": "立即开始"
+	},
+	"slashCommands": {
+		"addDir": "将额外目录关联到此工作区",
+		"prompt": "从你的提示词库插入一条已保存的提示词",
+		"codexCompact": "压缩此 Codex 线程的上下文",
+		"opencodeCompact": "压缩此对话的上下文",
+		"codexGoal": "设定一个持续目标，让 Codex 在多个回合中持续推进，直到完成或暂停",
+		"claudeGoal": "为 Claude 设定一个努力达成的完成条件",
+		"workflows": "查看此对话的工作流运行记录"
+	},
+	"autoClose": {
+		"help": "启用后，操作会话将在完成时自动关闭。",
+		"enableAria": "启用自动关闭",
+		"disableAria": "停用自动关闭",
+		"enable": "启用自动关闭",
+		"on": "自动关闭已开启"
+	},
+	"planImplementPrompt": "按这个方案继续。",
+	"triage": {
+		"go": "开始吧。",
+		"prompt": "AI 提议了此任务——开始处理或忽略。",
+		"dismiss": "忽略",
+		"dismissAria": "忽略此分诊提议",
+		"start": "开始",
+		"startAria": "开始处理此分诊提议"
+	},
+	"usageStats": {
+		"title": "用量统计",
+		"aria": "用量统计"
+	},
+	"working": "处理中...",
+	"toast": {
+		"updateLinkedDirectoriesFailed": "更新关联目录失败",
+		"openDirectoryPickerFailed": "无法打开目录选择器"
+	},
+	"goalReplace": {
+		"title": "替换目标？",
+		"currentLabel": "当前：",
+		"newLabel": "新：",
+		"replaceLabel": "替换当前目标",
+		"replaceDescription": "设定新目标并立即开始",
+		"keepDescription": "保留当前目标"
+	},
+	"contextBar": {
+		"label": "上下文",
+		"pathLabel": "路径",
+		"removeAria": "移除 {{displayName}}"
+	},
+	"queue": {
+		"editAria": "在编辑器中编辑",
+		"edit": "编辑",
+		"steerAria": "立即引导",
+		"steer": "引导",
+		"removeAria": "从队列中移除"
+	},
+	"workflow": {
+		"status": {
+			"running": "运行中",
+			"done": "已完成",
+			"failed": "失败",
+			"stopped": "已停止"
+		},
+		"agentCount_other": "{{count}} 个智能体",
+		"toolCount_other": "{{count}} 个工具",
+		"tokens": "{{tokens}} 个 token",
+		"title": "工作流",
+		"runFallback": "工作流",
+		"agentFallback": "智能体",
+		"closeAria": "关闭工作流",
+		"emptyRuns": "此对话中暂无工作流。当智能体运行动态工作流时，它们会显示在这里。",
+		"emptyAgents": "暂无智能体报告。",
+		"agentUnavailable": "智能体不可用。",
+		"noResultPreview": "无结果预览。"
+	},
+	"contextUsage": {
+		"loadingDetails": "正在加载上下文详情…"
+	},
+	"quickActions": {
+		"restack": "重新堆叠"
+	}
+}

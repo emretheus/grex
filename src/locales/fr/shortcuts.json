@@ -1,0 +1,120 @@
+{
+	"search": {
+		"placeholder": "Rechercher des raccourcis"
+	},
+	"section": {
+		"global": "Global"
+	},
+	"groups": {
+		"Navigation": "Navigation",
+		"Session": "Session",
+		"Workspace": "Espace de travail",
+		"Actions": "Actions",
+		"System": "Système",
+		"Composer": "Zone de saisie",
+		"Start surface": "Page de démarrage",
+		"Editor": "Éditeur",
+		"Terminal": "Terminal"
+	},
+	"row": {
+		"conflictAria": "Conflit de raccourci",
+		"conflictUsedBy": "Déjà utilisé par {{names}}",
+		"resetAria": "Réinitialiser par défaut",
+		"resetTooltip": "Réinitialiser par défaut"
+	},
+	"menu": {
+		"remove": "Supprimer le raccourci",
+		"resetDefault": "Réinitialiser le raccourci par défaut"
+	},
+	"toast": {
+		"registerFailed": "Échec de l'enregistrement du raccourci global"
+	},
+	"definitions": {
+		"workspace.previous": { "title": "Espace de travail précédent" },
+		"workspace.next": { "title": "Espace de travail suivant" },
+		"workspace.quickSwitchNext": {
+			"title": "Changement rapide d'espace de travail"
+		},
+		"workspace.quickSwitchPrevious": {
+			"title": "Changement rapide d'espace de travail (inverse)"
+		},
+		"session.previous": { "title": "Session précédente" },
+		"session.next": { "title": "Session suivante" },
+		"session.new": { "title": "Nouvelle session" },
+		"session.close": { "title": "Fermer la session actuelle" },
+		"session.reopenClosed": { "title": "Rouvrir une session fermée" },
+		"window.close": { "title": "Fermer la fenêtre" },
+		"workspace.copyPath": {
+			"title": "Copier le chemin de l'espace de travail"
+		},
+		"workspace.openInEditor": {
+			"title": "Ouvrir le dépôt dans l'app par défaut"
+		},
+		"workspace.new": { "title": "Ouvrir la page de démarrage" },
+		"workspace.justChat": {
+			"title": "Ouvrir la page de démarrage (chat seul)"
+		},
+		"workspace.addRepository": { "title": "Ajouter un dépôt" },
+		"workspace.filterSidebar": {
+			"title": "Filtrer et trier la barre latérale"
+		},
+		"script.run": { "title": "Exécuter / arrêter le script" },
+		"action.createPr": { "title": "Créer une PR" },
+		"action.commitAndPush": { "title": "Valider et pousser" },
+		"action.pullLatest": {
+			"title": "Récupérer les dernières modifications de main"
+		},
+		"action.mergePr": { "title": "Fusionner la PR" },
+		"action.fixErrors": { "title": "Corriger les erreurs" },
+		"action.openPullRequest": { "title": "Ouvrir la PR dans le navigateur" },
+		"settings.open": { "title": "Ouvrir les paramètres" },
+		"library.open": { "title": "Ouvrir la bibliothèque" },
+		"global.hotkey": {
+			"title": "Raccourci global",
+			"description": "Afficher/masquer Grex depuis n'importe où."
+		},
+		"quickPanel.hotkey": {
+			"title": "Raccourci du panneau rapide",
+			"description": "Ouvrir le panneau de tâches rapides depuis n'importe où."
+		},
+		"theme.toggle": { "title": "Changer de thème (sombre/clair)" },
+		"window.miniMode.toggle": { "title": "Activer/désactiver le mode mini" },
+		"sidebar.left.toggle": {
+			"title": "Afficher/masquer la barre latérale gauche"
+		},
+		"sidebar.right.toggle": {
+			"title": "Afficher/masquer la barre latérale droite"
+		},
+		"zen.toggle": { "title": "Activer/désactiver le mode zen" },
+		"zoom.in": { "title": "Zoom avant" },
+		"zoom.out": { "title": "Zoom arrière" },
+		"zoom.reset": { "title": "Réinitialiser le zoom" },
+		"composer.focus": { "title": "Mettre le focus sur la zone de chat" },
+		"composer.togglePlanMode": { "title": "Activer/désactiver le mode plan" },
+		"composer.toggleTerminalMode": {
+			"title": "Activer/désactiver le mode terminal"
+		},
+		"startSurface.cycleRepository": { "title": "Changer de dépôt" },
+		"composer.toggleContextPanel": {
+			"title": "Afficher/masquer le panneau de contexte"
+		},
+		"composer.openModelPicker": { "title": "Ouvrir le sélecteur de modèle" },
+		"composer.toggleFollowUpBehavior": {
+			"title": "Envoyer avec le comportement de suivi inverse"
+		},
+		"editor.edit": { "title": "Basculer entre diff et édition" },
+		"editor.new": { "title": "Ouvrir un fichier" },
+		"editor.close": { "title": "Fermer le fichier actuel" },
+		"editor.toggleExplorer": {
+			"title": "Afficher/masquer l'explorateur de fichiers"
+		},
+		"terminal.new": { "title": "Nouveau terminal" },
+		"terminal.close": { "title": "Fermer le terminal actuel" },
+		"terminal.previous": { "title": "Terminal précédent" },
+		"terminal.next": { "title": "Terminal suivant" },
+		"inspector.focusTerminal": { "title": "Mettre le focus sur le terminal" },
+		"inspector.toggleScripts": {
+			"title": "Afficher/masquer le panneau de scripts"
+		}
+	}
+}

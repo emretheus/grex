@@ -1,0 +1,98 @@
+{
+	"search": {
+		"placeholder": "ショートカットを検索"
+	},
+	"section": {
+		"global": "グローバル"
+	},
+	"groups": {
+		"Navigation": "ナビゲーション",
+		"Session": "セッション",
+		"Workspace": "ワークスペース",
+		"Actions": "アクション",
+		"System": "システム",
+		"Composer": "入力欄",
+		"Start surface": "スタート画面",
+		"Editor": "エディター",
+		"Terminal": "ターミナル"
+	},
+	"row": {
+		"conflictAria": "ショートカットの競合",
+		"conflictUsedBy": "{{names}} ですでに使用されています",
+		"resetAria": "デフォルトに戻す",
+		"resetTooltip": "デフォルトに戻す"
+	},
+	"menu": {
+		"remove": "ショートカットを削除",
+		"resetDefault": "ショートカットをデフォルトに戻す"
+	},
+	"toast": {
+		"registerFailed": "グローバルショートカットの登録に失敗しました"
+	},
+	"definitions": {
+		"workspace.previous": { "title": "前のワークスペース" },
+		"workspace.next": { "title": "次のワークスペース" },
+		"workspace.quickSwitchNext": {
+			"title": "ワークスペースをクイック切り替え"
+		},
+		"workspace.quickSwitchPrevious": {
+			"title": "ワークスペースをクイック切り替え（逆方向）"
+		},
+		"session.previous": { "title": "前のセッション" },
+		"session.next": { "title": "次のセッション" },
+		"session.new": { "title": "新しいセッション" },
+		"session.close": { "title": "現在のセッションを閉じる" },
+		"session.reopenClosed": { "title": "閉じたセッションを再度開く" },
+		"window.close": { "title": "ウィンドウを閉じる" },
+		"workspace.copyPath": { "title": "ワークスペースのパスをコピー" },
+		"workspace.openInEditor": { "title": "デフォルトアプリでリポジトリを開く" },
+		"workspace.new": { "title": "スタート画面を開く" },
+		"workspace.justChat": { "title": "スタート画面を開く（チャットのみ）" },
+		"workspace.addRepository": { "title": "リポジトリを追加" },
+		"workspace.filterSidebar": { "title": "サイドバーをフィルター・並べ替え" },
+		"script.run": { "title": "スクリプトを実行 / 停止" },
+		"action.createPr": { "title": "PR を作成" },
+		"action.commitAndPush": { "title": "コミットしてプッシュ" },
+		"action.pullLatest": { "title": "main から最新を取得" },
+		"action.mergePr": { "title": "PR をマージ" },
+		"action.fixErrors": { "title": "エラーを修正" },
+		"action.openPullRequest": { "title": "ブラウザーで PR を開く" },
+		"settings.open": { "title": "設定を開く" },
+		"library.open": { "title": "ライブラリを開く" },
+		"global.hotkey": {
+			"title": "グローバルショートカット",
+			"description": "どこからでも Grex を表示/非表示にします。"
+		},
+		"quickPanel.hotkey": {
+			"title": "クイックパネルのショートカット",
+			"description": "どこからでもクイックタスクパネルを開きます。"
+		},
+		"theme.toggle": { "title": "テーマを切り替え（ダーク/ライト）" },
+		"window.miniMode.toggle": { "title": "ミニモードを切り替え" },
+		"sidebar.left.toggle": { "title": "左サイドバーを切り替え" },
+		"sidebar.right.toggle": { "title": "右サイドバーを切り替え" },
+		"zen.toggle": { "title": "禅モードを切り替え" },
+		"zoom.in": { "title": "拡大" },
+		"zoom.out": { "title": "縮小" },
+		"zoom.reset": { "title": "ズームをリセット" },
+		"composer.focus": { "title": "チャット入力にフォーカス" },
+		"composer.togglePlanMode": { "title": "プランモードを切り替え" },
+		"composer.toggleTerminalMode": { "title": "ターミナルモードを切り替え" },
+		"startSurface.cycleRepository": { "title": "リポジトリを切り替え" },
+		"composer.toggleContextPanel": { "title": "コンテキストパネルを切り替え" },
+		"composer.openModelPicker": { "title": "モデルピッカーを開く" },
+		"composer.toggleFollowUpBehavior": {
+			"title": "反対のフォローアップ動作で送信"
+		},
+		"editor.edit": { "title": "差分と編集を切り替え" },
+		"editor.new": { "title": "ファイルを開く" },
+		"editor.close": { "title": "現在のファイルを閉じる" },
+		"editor.toggleExplorer": { "title": "ファイルエクスプローラーを切り替え" },
+		"terminal.new": { "title": "新しいターミナル" },
+		"terminal.close": { "title": "現在のターミナルを閉じる" },
+		"terminal.previous": { "title": "前のターミナル" },
+		"terminal.next": { "title": "次のターミナル" },
+		"inspector.focusTerminal": { "title": "ターミナルにフォーカス" },
+		"inspector.toggleScripts": { "title": "スクリプトパネルを切り替え" }
+	}
+}

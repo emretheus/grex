@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { Clock3, GitBranchPlus, LifeBuoy } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import {
 	Tooltip,
@@ -27,6 +28,7 @@ export function PlainThreadView({
 	appendContextTarget,
 	onStartWorkspace,
 }: SourceDetailProps) {
+	const { t } = useTranslation("sourceDetail");
 	const meta = card.meta.type === "plain" ? card.meta : null;
 	const connectionId = meta?.connectionId ?? "";
 	// The card id IS the Plain thread id (set in `plainItemToContextCard`);
@@ -40,8 +42,7 @@ export function PlainThreadView({
 		refetchOnWindowFocus: "always",
 	});
 	const detail = detailQuery.data ?? null;
-	const markdownBody =
-		detail?.description?.trim() || "No description provided.";
+	const markdownBody = detail?.description?.trim() || t("body.noDescription");
 
 	const insertIntoComposer = useComposerInsert();
 	const handleStartWorkspace = () => {
@@ -70,7 +71,7 @@ export function PlainThreadView({
 						) : null}
 						<span className="inline-flex items-center gap-1 font-normal text-muted-foreground/70">
 							<LifeBuoy className="size-[13px]" strokeWidth={1.8} />
-							thread
+							{t("kind.thread")}
 						</span>
 						<span className="inline-flex items-center gap-1 font-normal text-muted-foreground/70">
 							<Clock3 className="size-[13px]" strokeWidth={1.8} />
@@ -93,7 +94,7 @@ export function PlainThreadView({
 				{meta?.priority ? (
 					<div className="mt-2 flex flex-wrap items-center gap-1.5">
 						<span className="inline-flex items-center gap-1 rounded-full border border-border/60 px-2 py-0.5 text-mini text-muted-foreground">
-							Priority: {meta.priority}
+							{t("meta.priority", { priority: meta.priority })}
 						</span>
 					</div>
 				) : null}
@@ -121,6 +122,7 @@ function cnDetailBody(centered: boolean) {
 }
 
 function StartWorkspaceButton({ onClick }: { onClick: () => void }) {
+	const { t } = useTranslation("sourceDetail");
 	return (
 		<Tooltip>
 			<TooltipTrigger asChild>
@@ -128,14 +130,14 @@ function StartWorkspaceButton({ onClick }: { onClick: () => void }) {
 					type="button"
 					variant="ghost"
 					size="icon-xs"
-					aria-label="Start workspace from thread"
+					aria-label={t("startWorkspace.fromThread")}
 					onClick={onClick}
 					className="size-7 cursor-interactive rounded-md text-muted-foreground hover:bg-foreground/10 hover:text-foreground"
 				>
 					<GitBranchPlus className="size-[13px]" strokeWidth={1.8} />
 				</Button>
 			</TooltipTrigger>
-			<TooltipContent side="top">Start workspace</TooltipContent>
+			<TooltipContent side="top">{t("startWorkspace.tooltip")}</TooltipContent>
 		</Tooltip>
 	);
 }

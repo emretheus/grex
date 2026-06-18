@@ -1,0 +1,50 @@
+{
+	"actions": {
+		"openExternally": "Extern öffnen",
+		"addToContext": "Zum Kontext hinzufügen",
+		"addToContextError": "Kontextkarte konnte nicht eingefügt werden",
+		"copyMarkdown": "Markdown kopieren",
+		"copied": "Kopiert",
+		"refresh": "Aktualisieren",
+		"refreshing": "Wird aktualisiert…"
+	},
+	"kind": {
+		"issue": "Issue",
+		"pullRequest": "Pull-Request",
+		"discussion": "Diskussion",
+		"mergeRequest": "Merge-Request",
+		"post": "Beitrag",
+		"card": "Karte",
+		"thread": "Thread"
+	},
+	"body": {
+		"noDescription": "Keine Beschreibung vorhanden."
+	},
+	"meta": {
+		"updated": "Aktualisiert {{time}}",
+		"priority": "Priorität: {{priority}}"
+	},
+	"relativeTime": {
+		"minutes_one": "vor {{count}} Min.",
+		"minutes_other": "vor {{count}} Min.",
+		"hours_one": "vor {{count}} Std.",
+		"hours_other": "vor {{count}} Std.",
+		"days_one": "vor {{count}} T.",
+		"days_other": "vor {{count}} T."
+	},
+	"startWorkspace": {
+		"tooltip": "Workspace starten",
+		"fromIssue": "Workspace aus Issue starten",
+		"fromPost": "Workspace aus Beitrag starten",
+		"fromCard": "Workspace aus Karte starten",
+		"fromThread": "Workspace aus Thread starten"
+	},
+	"slack": {
+		"invalidReference": "Ungültige Slack-Elementreferenz.",
+		"threadBadge": "Thread",
+		"openInSlack": "In Slack öffnen",
+		"loadError": "Slack-Thread konnte nicht geladen werden.",
+		"noMessages": "Keine Nachrichten vorhanden.",
+		"emptyMessage": "(leere Nachricht)"
+	}
+}

@@ -1,5 +1,6 @@
 import { ChevronDown, X } from "lucide-react";
 import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -62,6 +63,7 @@ export function ModelMultiSelect({
 	grouped?: boolean;
 	triggerClassName?: string;
 }) {
+	const { t } = useTranslation(["providers", "common"]);
 	// Render picks in user-saved order; popup list keeps catalog order.
 	const enabled = enabledIds.map(
 		(id) => available.find((m) => m.id === id) ?? { id, label: id },
@@ -114,7 +116,9 @@ export function ModelMultiSelect({
 					<span className="flex min-w-0 flex-1 flex-wrap items-center gap-1.5">
 						{enabled.length === 0 ? (
 							<span className="px-1 text-small text-muted-foreground">
-								{loading ? "Loading…" : "No models picked"}
+								{loading
+									? t("common:state.loading")
+									: t("multiSelect.noModelsPicked")}
 							</span>
 						) : (
 							<>
@@ -128,7 +132,9 @@ export function ModelMultiSelect({
 										<span className="truncate">{model.label}</span>
 										<button
 											type="button"
-											aria-label={`Remove ${model.label}`}
+											aria-label={t("multiSelect.removeModel", {
+												label: model.label,
+											})}
 											onClick={(event) => {
 												event.preventDefault();
 												event.stopPropagation();
@@ -142,7 +148,7 @@ export function ModelMultiSelect({
 								))}
 								{overflow > 0 ? (
 									<span className="px-1 text-mini text-muted-foreground">
-										+{overflow} more
+										{t("multiSelect.overflowMore", { count: overflow })}
 									</span>
 								) : null}
 							</>
@@ -156,14 +162,14 @@ export function ModelMultiSelect({
 			</PopoverTrigger>
 			<PopoverContent align="end" className="w-[440px] max-w-[90vw] p-1.5">
 				<Command filter={scoreModel}>
-					<CommandInput placeholder="Search models" />
+					<CommandInput placeholder={t("multiSelect.searchModels")} />
 					{enabledIds.length > 0 ? (
 						<div className="flex items-center justify-between gap-2 px-2 pt-0.5 pb-1">
 							<span className="text-mini text-muted-foreground">
-								{enabledIds.length} selected
+								{t("multiSelect.selected", { count: enabledIds.length })}
 							</span>
 							<Button type="button" variant="ghost" size="xs" onClick={onClear}>
-								Unselect all
+								{t("actions.unselectAll")}
 							</Button>
 						</div>
 					) : null}
@@ -171,9 +177,9 @@ export function ModelMultiSelect({
 						<CommandEmpty>
 							{available.length === 0
 								? loading
-									? "Loading models…"
-									: "No cached models yet — click Refresh."
-								: "No models found."}
+									? t("multiSelect.loadingModels")
+									: t("multiSelect.noCachedModels")
+								: t("multiSelect.noModelsFound")}
 						</CommandEmpty>
 						{groups ? (
 							groups.map(([heading, models]) => (

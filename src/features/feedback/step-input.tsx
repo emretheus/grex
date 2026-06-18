@@ -1,3 +1,5 @@
+import { useTranslation } from "react-i18next";
+
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -40,6 +42,7 @@ export function StepInput({
 	onQuickFix,
 	onOpenSettings,
 }: StepInputProps) {
+	const { t } = useTranslation(["feedback", "common"]);
 	const hasInput = input.trim().length > 0;
 	const canCreateIssue = hasInput && githubConnected;
 	// Quick fix additionally waits for the existing-repo lookup so it
@@ -52,33 +55,33 @@ export function StepInput({
 				id="feedback-input"
 				value={input}
 				onChange={(event) => onInputChange(event.target.value)}
-				placeholder="Describe a bug, suggest an improvement, or ask a question."
-				aria-label="Feedback"
+				placeholder={t("input.placeholder")}
+				aria-label={t("input.ariaLabel")}
 				disabled={sending}
 				className="field-sizing-fixed min-h-32"
 			/>
 			<div className="min-h-4 text-small text-muted-foreground">
 				{!githubConnected ? (
 					<>
-						Connect GitHub in{" "}
+						{t("input.connectGithubPrefix")}
 						<Button
 							variant="link"
 							size="xs"
 							className="h-auto p-0 text-small"
 							onClick={onOpenSettings}
 						>
-							Settings
-						</Button>{" "}
-						to send feedback.
+							{t("input.settingsLink")}
+						</Button>
+						{t("input.connectGithubSuffix")}
 					</>
 				) : existing && !confirming ? (
-					"Will reuse your local grex repo."
+					t("input.reuseLocalRepo")
 				) : null}
 			</div>
 			<div className="mt-1 flex items-center justify-between gap-3">
 				<p className="text-small text-muted-foreground">
 					{confirming
-						? `This will open an issue in ${GREX_UPSTREAM_SLUG}. Confirm?`
+						? t("input.confirmPrompt", { slug: GREX_UPSTREAM_SLUG })
 						: null}
 				</p>
 				<div className="flex shrink-0 items-center gap-2">
@@ -90,10 +93,10 @@ export function StepInput({
 								onClick={onCancelConfirm}
 								disabled={sending}
 							>
-								Cancel
+								{t("common:actions.cancel")}
 							</Button>
 							<Button size="sm" onClick={onCreateIssue} disabled={sending}>
-								{sending ? "Sending…" : "Confirm send"}
+								{sending ? t("input.sending") : t("input.confirmSend")}
 							</Button>
 						</>
 					) : (
@@ -104,7 +107,7 @@ export function StepInput({
 								onClick={onCreateIssue}
 								disabled={!canCreateIssue}
 							>
-								Create issue
+								{t("input.createIssue")}
 							</Button>
 							<Tooltip>
 								<TooltipTrigger asChild>
@@ -113,11 +116,11 @@ export function StepInput({
 										onClick={onQuickFix}
 										disabled={!canQuickFix}
 									>
-										Quick fix
+										{t("input.quickFix")}
 									</Button>
 								</TooltipTrigger>
 								<TooltipContent side="top" sideOffset={6}>
-									Contribute to Grex — super easy
+									{t("input.quickFixTooltip")}
 								</TooltipContent>
 							</Tooltip>
 						</>

@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { RefreshCcw, SquareArrowOutUpRight } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -23,6 +24,7 @@ import { ModelMultiSelect } from "./model-multi-select";
 const CURSOR_DASHBOARD_URL = "https://cursor.com/dashboard/integrations";
 
 export function CursorCardBody() {
+	const { t } = useTranslation("providers");
 	const queryClient = useQueryClient();
 	const { settings, updateSettings } = useSettings();
 	const cursor = settings.cursorProvider;
@@ -117,7 +119,7 @@ export function CursorCardBody() {
 					value={keyDraft}
 					onBlur={commitKey}
 					onChange={(event) => setKeyDraft(event.target.value)}
-					placeholder="Cursor API key"
+					placeholder={t("cursorBody.apiKeyPlaceholder")}
 					className="h-8 min-w-0 flex-1 border-border/50 bg-muted/20 text-ui"
 				/>
 				{!keyDraft && (
@@ -125,10 +127,10 @@ export function CursorCardBody() {
 						type="button"
 						variant="outline"
 						size="sm"
-						aria-label="Get Cursor API key"
+						aria-label={t("cursorBody.getApiKeyAria")}
 						onClick={() => void openUrl(CURSOR_DASHBOARD_URL)}
 					>
-						Get your API key
+						{t("actions.getApiKey")}
 						<SquareArrowOutUpRight className="size-3.5" />
 					</Button>
 				)}
@@ -153,7 +155,7 @@ export function CursorCardBody() {
 									type="button"
 									variant="outline"
 									size="icon-sm"
-									aria-label="Refresh model list"
+									aria-label={t("actions.refreshModelList")}
 									disabled={fetchMutation.isPending}
 									onClick={() => fetchMutation.mutate()}
 								>
@@ -165,13 +167,12 @@ export function CursorCardBody() {
 									/>
 								</Button>
 							</TooltipTrigger>
-							<TooltipContent>Refresh models</TooltipContent>
+							<TooltipContent>{t("actions.refreshModels")}</TooltipContent>
 						</Tooltip>
 					</div>
 					{fetchError ? (
 						<p className="text-small leading-snug text-destructive">
-							Could not fetch models — {fetchError}. The composer will fall back
-							to Auto.
+							{t("cursorBody.fetchError", { error: fetchError })}
 						</p>
 					) : null}
 				</>

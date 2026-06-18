@@ -1,6 +1,7 @@
 import { useIsMutating } from "@tanstack/react-query";
 import { ChevronDown, Loader2 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import {
 	DropdownMenu,
@@ -11,6 +12,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import type { SlackInboxItem, SlackSearchSort } from "@/lib/api";
 import type { ComposerInsertTarget } from "@/lib/composer-insert";
+import { i18n } from "@/lib/i18n";
 import { formatSlackTextPlain } from "@/lib/slack-text";
 import type { ContextCard, SlackThreadMeta } from "@/lib/sources/types";
 import { InboxActionMenuButton, InboxSearchField } from "./actions";
@@ -30,9 +32,9 @@ import { useSlackWorkspaces } from "./use-slack-workspaces";
 /** Sort-mode labels for the right-side dropdown. Order matches Slack's
  *  own UI: timestamp first because the inbox is fundamentally a "what's
  *  new" surface. */
-const SORT_OPTIONS: { id: SlackSearchSort; label: string }[] = [
-	{ id: "newest", label: "Newest" },
-	{ id: "relevance", label: "Most relevant" },
+const SORT_OPTIONS: { id: SlackSearchSort; labelKey: string }[] = [
+	{ id: "newest", labelKey: "sort.newest" },
+	{ id: "relevance", labelKey: "sort.relevance" },
 ];
 
 /** Self-contained Slack subtree of the Contexts sidebar. Owns:
@@ -55,6 +57,7 @@ export function SlackInboxSection({
 	appendContextTarget?: ComposerInsertTarget;
 	horizontalPaddingClass: string;
 }) {
+	const { t } = useTranslation("inbox");
 	const workspacesQuery = useSlackWorkspaces();
 	const workspaces = workspacesQuery.data ?? [];
 	const [activeTeamId, setActiveTeamId] = useState<string | null>(null);
@@ -118,8 +121,10 @@ export function SlackInboxSection({
 	const isImporting =
 		useIsMutating({ mutationKey: SLACK_IMPORT_MUTATION_KEY }) > 0;
 
-	const activeSortLabel = SORT_OPTIONS.find((option) => option.id === sort)
-		?.label as string; // both SlackSearchSort values are in SORT_OPTIONS
+	const activeSortLabel = t(
+		(SORT_OPTIONS.find((option) => option.id === sort)?.labelKey ??
+			"sort.newest") as string,
+	); // both SlackSearchSort values are in SORT_OPTIONS
 
 	const sentinelRef = useRef<HTMLDivElement | null>(null);
 	useEffect(() => {
@@ -147,12 +152,14 @@ export function SlackInboxSection({
 					value={searchInput}
 					onChange={(e) => setSearchInput(e.target.value)}
 					onClear={() => setSearchInput("")}
-					ariaLabel="Search Slack messages"
+					ariaLabel={t("search.slackAriaLabel")}
 				/>
 				{isSearching ? (
 					<DropdownMenu>
 						<DropdownMenuTrigger asChild>
-							<InboxActionMenuButton aria-label={`Sort by ${activeSortLabel}`}>
+							<InboxActionMenuButton
+								aria-label={t("filter.sortBy", { sort: activeSortLabel })}
+							>
 								<span>{activeSortLabel}</span>
 								<ChevronDown className="size-3" strokeWidth={2} />
 							</InboxActionMenuButton>
@@ -168,7 +175,7 @@ export function SlackInboxSection({
 										value={option.id}
 										className="text-mini"
 									>
-										{option.label}
+										{t(option.labelKey)}
 									</DropdownMenuRadioItem>
 								))}
 							</DropdownMenuRadioGroup>
@@ -262,10 +269,11 @@ export function SlackInboxSection({
 }
 
 function InboxLoadingState() {
+	const { t } = useTranslation("inbox");
 	return (
 		<div className="mt-8 flex flex-col items-center gap-2 px-6 text-muted-foreground/70">
 			<Loader2 className="size-4 animate-spin" strokeWidth={2} />
-			<div className="text-small leading-5">Loading Slack…</div>
+			<div className="text-small leading-5">{t("loading.slack")}</div>
 		</div>
 	);
 }
@@ -277,11 +285,14 @@ function InboxErrorState({
 	error: unknown;
 	onRetry: () => void;
 }) {
+	const { t } = useTranslation("inbox");
 	const message =
-		error instanceof Error ? error.message : "Couldn't load Slack inbox.";
+		error instanceof Error ? error.message : t("error.slackFallback");
 	return (
 		<div className="mt-8 flex flex-col items-center gap-2 px-6 text-center">
-			<div className="text-ui font-medium text-foreground">Couldn't load</div>
+			<div className="text-ui font-medium text-foreground">
+				{t("error.title")}
+			</div>
 			<div className="text-small leading-5 text-muted-foreground">
 				{message}
 			</div>
@@ -292,7 +303,7 @@ function InboxErrorState({
 				onClick={onRetry}
 				className="mt-1 cursor-interactive text-small"
 			>
-				Try again
+				{t("error.tryAgain")}
 			</Button>
 		</div>
 	);
@@ -307,15 +318,16 @@ function EmptyState({
 	query: string;
 	onRefresh: () => void;
 }) {
+	const { t } = useTranslation("inbox");
 	// Two distinct empty states: searching with zero hits is a UX
 	// dead-end if we say "no new activity" — the user can see they
 	// just typed something. The activity-feed empty state stays
 	// reassuring ("nothing waiting for you"); the search empty state
 	// reminds them what they searched for.
-	const title = isSearching ? "No matches" : "No new activity";
+	const title = isSearching ? t("empty.noMatches") : t("empty.noActivity");
 	const subtitle = isSearching
-		? `Nothing in this workspace matches "${query}".`
-		: "Mentions and unread DMs will appear here.";
+		? t("empty.noMatchesWorkspace", { query })
+		: t("empty.slackActivitySubtitle");
 	return (
 		<div className="mt-10 flex flex-col items-center gap-2 px-6 text-center">
 			<div className="text-ui font-medium text-foreground">{title}</div>
@@ -330,7 +342,7 @@ function EmptyState({
 					onClick={onRefresh}
 					className="mt-1 cursor-interactive text-small"
 				>
-					Refresh
+					{t("empty.refresh")}
 				</Button>
 			) : null}
 		</div>
@@ -369,6 +381,6 @@ function titleForItem(item: SlackInboxItem): string {
 	const cleaned = formatSlackTextPlain(item.textSnippet);
 	if (cleaned) return cleaned;
 	return item.kind === "mention"
-		? `${item.authorName} mentioned you`
-		: `${item.authorName} sent a message`;
+		? i18n.t("inbox:slackCard.mentionedYou", { author: item.authorName })
+		: i18n.t("inbox:slackCard.sentMessage", { author: item.authorName });
 }

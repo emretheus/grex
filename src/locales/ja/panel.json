@@ -1,0 +1,53 @@
+{
+	"header": {
+		"workspaceHeader": "ワークスペースヘッダー",
+		"loading": "読み込み中",
+		"sessions": "セッション",
+		"contextPreview": "コンテキストプレビュー",
+		"closeContextPreview": "コンテキストプレビューを閉じる",
+		"noSessions": "セッションがありません",
+		"newSession": "新しいセッション",
+		"sessionHistory": "セッション履歴",
+		"noHiddenSessions": "非表示のセッションはありません",
+		"renameSession": "セッションの名前を変更",
+		"closeSession": "セッションを閉じる",
+		"restoreSession": "セッションを復元",
+		"deleteSessionPermanently": "セッションを完全に削除",
+		"untitled": "無題",
+		"renameBranch": "ブランチの名前を変更",
+		"copyBranchName": "ブランチ名をコピー",
+		"noBranch": "ブランチなし",
+		"baseBranch": "ベースブランチ {{remote}}/{{branch}}",
+		"stackedOn": "{{label}} にスタック",
+		"interactionRequired": "操作が必要です",
+		"unreadSession": "未読のセッション"
+	},
+	"emptyState": {
+		"creatingWorkspace": "ワークスペースを作成中",
+		"nothingHereYet": "まだ何もありません",
+		"noSessionSelected": "セッションが選択されていません",
+		"preparingWorkspace": "Grex はまだこのワークスペースを準備しています。セットアップが完了すると、メッセージ送信が自動的に有効になります。",
+		"newSessionIn": "新しいセッションの作成先",
+		"newSession": "新しいセッション",
+		"chooseSession": "ヘッダーからセッションを選択して、そのタイムラインを確認してください。",
+		"scriptActions": {
+			"setup": {
+				"title": "セットアップスクリプトを作成",
+				"description": "ワークスペースの作成後に依存関係をセットアップします。"
+			},
+			"run": {
+				"title": "実行アクションを作成",
+				"description": "インスペクターの実行ドロップダウンから選べる名前付きコマンド。"
+			},
+			"archive": {
+				"title": "アーカイブスクリプトを作成",
+				"description": "アーカイブ前の軽いクリーンアップや引き継ぎ。"
+			}
+		},
+		"tipsLabel": "ヒント:",
+		"tipsBody": "これらのスクリプトを設定すると開発フローが向上します。"
+	},
+	"systemMessage": {
+		"useThisPrompt": "このプロンプトを使用"
+	}
+}

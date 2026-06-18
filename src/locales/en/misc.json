@@ -1,0 +1,81 @@
+{
+	"quickPanel": {
+		"panelLabel": "Quick panel",
+		"newWorkspace": "New Workspace",
+		"openInGrex": "Open in Grex"
+	},
+	"quickSwitch": {
+		"switchWorkspace": "Quick switch workspace",
+		"thinking": "Thinking…"
+	},
+	"workspaceStart": {
+		"chatHeading": "What should we work on?",
+		"buildHeadingPrefix": "What should we build",
+		"buildHeadingIn": "in",
+		"buildHeadingSuffix": "?",
+		"repositoryPlaceholder": "a repository",
+		"repositoryShort": "Repository",
+		"switchRepository": "Switch repository",
+		"closeSourcePreview": "Close source preview",
+		"workLocally": "Work locally",
+		"justChat": "Just chat",
+		"newWorktree": "New worktree",
+		"selectWhereToRun": "Select where to run the task",
+		"addRepository": "Add a repository…",
+		"reuse": "Reuse",
+		"branchOff": "Branch off",
+		"reuseDescription": "Check out the picked branch directly.",
+		"branchOffDescription": "Fork a fresh branch off the picked base.",
+		"reuseTooltip": "Check out the picked branch directly.",
+		"branchOffTooltip": "Fork a fresh branch off the picked base",
+		"switchBranch": "Switch branch",
+		"branchToReuse": "Branch to reuse",
+		"baseToForkOff": "Base to fork off",
+		"createCheckoutNewBranch": "Create and checkout new branch…",
+		"contexts": "Contexts",
+		"backToInspector": "Back to inspector",
+		"createBranchDialog": {
+			"title": "Create and checkout branch",
+			"branchNameLabel": "Branch name",
+			"branchNamePlaceholder": "feature/awesome",
+			"submit": "Create and checkout"
+		},
+		"branchValidation": {
+			"empty": "Branch name cannot be empty.",
+			"endsWithSlash": "Branch name cannot end with \"/\".",
+			"startInvalid": "Branch name cannot start with \"/\", \".\" or \"-\".",
+			"doubleDot": "Branch name cannot contain \"..\".",
+			"whitespace": "Branch name cannot contain whitespace.",
+			"invalidCharacter": "Branch name contains an invalid character.",
+			"endsWithLock": "Branch name cannot end with \".lock\".",
+			"atBrace": "Branch name cannot contain \"@{\".",
+			"alreadyExists": "A branch named \"{{name}}\" already exists."
+		}
+	},
+	"updater": {
+		"update": "Update",
+		"updateGrexAria": "Update Grex to {{version}}",
+		"installFailed": "Install failed",
+		"installFailedDescription": "Unable to install the downloaded update.",
+		"changeLog": "Change log",
+		"updateReady": "Update ready to install",
+		"updateDownloaded": "Grex {{version}} has been downloaded.",
+		"updateAndRestart": "Update and restart",
+		"viewChangeLog": "View change log"
+	},
+	"announcements": {
+		"newInVersion": "New in v{{version}}",
+		"expand": "Expand release announcement",
+		"collapse": "Collapse release announcement",
+		"dismiss": "Dismiss release announcement",
+		"changelogs": "Changelogs"
+	},
+	"terminal": {
+		"starting": "Starting {{agent}}…",
+		"agentFallback": "terminal",
+		"preparingWorkspace": "Preparing workspace…",
+		"truncationNotice": "… earlier output truncated (buffer limit reached) …",
+		"processExited": "[Process exited with code {{code}}]",
+		"failedToStart": "Failed to start terminal: {{error}}"
+	}
+}

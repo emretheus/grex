@@ -1,5 +1,6 @@
 import { Loader2, RefreshCw } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
@@ -9,33 +10,38 @@ import {
 	installDownloadedAppUpdate,
 	listenAppUpdateStatus,
 } from "@/lib/api";
+import { i18n } from "@/lib/i18n";
 import { openUrl } from "@/lib/platform-bridge";
 import { SettingsNotice, SettingsRow } from "../components/settings-row";
 
 function formatStatusDescription(status: AppUpdateStatus): string {
 	if (!status.configured) {
-		return "Updater is not configured in this build.";
+		return i18n.t("settings:appUpdates.status.notConfigured");
 	}
 
 	switch (status.stage) {
 		case "checking":
-			return "Checking GitHub releases in the background.";
+			return i18n.t("settings:appUpdates.status.checking");
 		case "downloading":
 			return status.update
-				? `Downloading ${status.update.version} in the background.`
-				: "Downloading an update in the background.";
+				? i18n.t("settings:appUpdates.status.downloadingVersion", {
+						version: status.update.version,
+					})
+				: i18n.t("settings:appUpdates.status.downloading");
 		case "downloaded":
 			return status.update
-				? `${status.update.version} has been downloaded and is ready to install.`
-				: "The latest update has been downloaded and is ready to install.";
+				? i18n.t("settings:appUpdates.status.downloadedVersion", {
+						version: status.update.version,
+					})
+				: i18n.t("settings:appUpdates.status.downloaded");
 		case "error":
-			return status.lastError ?? "The last update check failed.";
+			return status.lastError ?? i18n.t("settings:appUpdates.status.error");
 		case "disabled":
 			return status.autoUpdateEnabled
-				? "Automatic update checks are waiting for updater configuration."
-				: "Automatic update checks are disabled.";
+				? i18n.t("settings:appUpdates.status.disabledWaiting")
+				: i18n.t("settings:appUpdates.status.disabled");
 		default:
-			return "Checks GitHub releases, downloads updates quietly, then prompts when ready.";
+			return i18n.t("settings:appUpdates.status.idle");
 	}
 }
 
@@ -77,6 +83,7 @@ function DownloadProgressBar({ status }: { status: AppUpdateStatus }) {
 }
 
 export function AppUpdatesPanel() {
+	const { t } = useTranslation("settings");
 	const [status, setStatus] = useState<AppUpdateStatus | null>(null);
 	const [checking, setChecking] = useState(false);
 	const [installing, setInstalling] = useState(false);
@@ -118,24 +125,28 @@ export function AppUpdatesPanel() {
 	const anyBusy = checkBusy || isDownloading || installBusy;
 
 	const checkLabel = isDownloading
-		? "Downloading"
+		? t("appUpdates.check.downloading")
 		: installBusy
-			? "Installing"
+			? t("appUpdates.check.installing")
 			: checkBusy
-				? "Checking"
-				: "Check now";
+				? t("appUpdates.check.checking")
+				: t("appUpdates.check.checkNow");
 
 	return (
 		<SettingsRow
 			align="start"
-			title="App Updates"
+			title={t("appUpdates.title")}
 			description={
 				<>
-					{status ? formatStatusDescription(status) : "Loading updater status…"}
+					{status
+						? formatStatusDescription(status)
+						: t("appUpdates.loadingStatus")}
 					{status?.update ? (
 						<SettingsNotice tone="info">
-							Current {status.update.currentVersion} · Available{" "}
-							{status.update.version}
+							{t("appUpdates.versionNotice", {
+								current: status.update.currentVersion,
+								available: status.update.version,
+							})}
 						</SettingsNotice>
 					) : null}
 					{status ? <DownloadProgressBar status={status} /> : null}
@@ -152,12 +163,13 @@ export function AppUpdatesPanel() {
 							.then((nextStatus) => {
 								setStatus(nextStatus);
 								if (nextStatus.stage === "idle") {
-									toast.success("Grex is up to date");
+									toast.success(t("appUpdates.toast.upToDate"));
 								}
 								if (nextStatus.stage === "error") {
-									toast.error("Update check failed", {
+									toast.error(t("appUpdates.toast.checkFailed"), {
 										description:
-											nextStatus.lastError ?? "Unable to check for updates.",
+											nextStatus.lastError ??
+											t("appUpdates.toast.checkFailedFallback"),
 									});
 								}
 							})
@@ -180,18 +192,18 @@ export function AppUpdatesPanel() {
 							void installDownloadedAppUpdate()
 								.then(setStatus)
 								.catch((error: unknown) => {
-									toast.error("Install failed", {
+									toast.error(t("appUpdates.toast.installFailed"), {
 										description:
 											error instanceof Error
 												? error.message
-												: "Unable to install the downloaded update.",
+												: t("appUpdates.toast.installFailedFallback"),
 									});
 								})
 								.finally(() => setInstalling(false));
 						}}
 						disabled={anyBusy}
 					>
-						Update and restart
+						{t("appUpdates.updateAndRestart")}
 					</Button>
 				)}
 				{status?.update?.releaseUrl && (
@@ -200,7 +212,7 @@ export function AppUpdatesPanel() {
 						size="sm"
 						onClick={() => void openUrl(status.update?.releaseUrl ?? "")}
 					>
-						Change log
+						{t("appUpdates.changeLog")}
 					</Button>
 				)}
 			</div>

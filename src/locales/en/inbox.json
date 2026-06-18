@@ -1,0 +1,314 @@
+{
+	"stateFilter": {
+		"all": "All",
+		"open": "Open",
+		"closed": "Closed",
+		"merged": "Merged",
+		"answered": "Answered",
+		"unanswered": "Unanswered"
+	},
+	"comingSoon": {
+		"title": "Coming Soon",
+		"mobile": {
+			"line1": "Send tasks, links, and screenshots from your phone.",
+			"line2": "Keep lightweight review and triage flows in sync.",
+			"line3": "Hand off mobile-captured context to desktop agents."
+		}
+	},
+	"search": {
+		"placeholder": "Search",
+		"clear": "Clear search",
+		"forgeAriaLabel": "Search {{provider}} contexts",
+		"issuesAriaLabel": "Search {{provider}} issues",
+		"slackAriaLabel": "Search Slack messages"
+	},
+	"filter": {
+		"byKind": "Filter by {{kind}}",
+		"sortBy": "Sort by {{sort}}"
+	},
+	"sort": {
+		"newest": "Newest",
+		"relevance": "Most relevant"
+	},
+	"loading": {
+		"items": "Loading items…",
+		"provider": "Loading {{provider}}…",
+		"slack": "Loading Slack…"
+	},
+	"error": {
+		"title": "Couldn't load",
+		"fallback": "Couldn't load context items.",
+		"providerFallback": "Couldn't load {{provider}} issues.",
+		"slackFallback": "Couldn't load Slack inbox.",
+		"tryAgain": "Try again"
+	},
+	"empty": {
+		"noMatches": "No matches",
+		"noMatchesProvider": "Nothing in {{provider}} matches \"{{query}}\".",
+		"noMatchesWorkspace": "Nothing in this workspace matches \"{{query}}\".",
+		"noActivity": "No new activity",
+		"slackActivitySubtitle": "Mentions and unread DMs will appear here.",
+		"refresh": "Refresh",
+		"noItems": "No {{plural}} yet",
+		"noItemsInRepo": "No {{plural}} in {{repo}}"
+	},
+	"configure": "Configure",
+	"connectForge": {
+		"kindDisabledTitle": "{{plural}} are off",
+		"kindDisabledDescription": "Turn {{lower}} back on in Contexts settings."
+	},
+	"card": {
+		"addToContext": "Add to context",
+		"insertError": "Couldn't insert context card"
+	},
+	"toast": {
+		"contextFetchFailed": "Context fetch failed",
+		"providerFetchFailed": "{{provider}} fetch failed",
+		"slackFetchFailed": "Slack fetch failed",
+		"slackSearchFailed": "Slack search failed",
+		"slackSearchFailedMessage": "Couldn't search Slack messages.",
+		"slackInboxFailedMessage": "Couldn't load Slack inbox items."
+	},
+	"connect": {
+		"connecting": "Connecting…",
+		"connect": "Connect",
+		"featurebase": {
+			"title": "Connect Featurebase",
+			"description": "Paste your Featurebase API key and your public feedback URL. Stored locally in your macOS Keychain.",
+			"apiKeyPlaceholder": "Your Featurebase API key",
+			"apiKeyLabel": "Featurebase API key",
+			"urlPlaceholder": "https://acme.featurebase.app",
+			"urlLabel": "Featurebase feedback URL",
+			"help": "Where do I find these?",
+			"failedTitle": "Featurebase connect failed",
+			"failedMessage": "Couldn't connect Featurebase."
+		},
+		"forgejo": {
+			"title": "Connect Forgejo",
+			"description": "Paste your Forgejo instance URL and an access token. Stored locally in your macOS Keychain.",
+			"hostPlaceholder": "https://codeberg.org",
+			"hostLabel": "Forgejo instance URL",
+			"tokenPlaceholder": "Access token",
+			"tokenLabel": "Forgejo access token",
+			"help": "Create an access token",
+			"failedTitle": "Forgejo connect failed",
+			"failedMessage": "Couldn't connect Forgejo."
+		},
+		"jira": {
+			"title": "Connect Jira",
+			"description": "Enter your site URL, email, and API token. Stored locally in your macOS Keychain.",
+			"sitePlaceholder": "https://your-team.atlassian.net",
+			"siteLabel": "Jira site URL",
+			"emailPlaceholder": "you@example.com",
+			"emailLabel": "Jira account email",
+			"tokenPlaceholder": "API token",
+			"tokenLabel": "Jira API token",
+			"help": "Create an API token",
+			"failedTitle": "Jira connect failed",
+			"failedMessage": "Couldn't connect Jira."
+		},
+		"linear": {
+			"title": "Connect Linear",
+			"description": "Paste a personal API key. It's validated once and stored locally in your macOS Keychain.",
+			"apiKeyPlaceholder": "lin_api_…",
+			"apiKeyLabel": "Linear personal API key",
+			"help": "Create a key in Linear",
+			"failedTitle": "Linear connect failed",
+			"failedMessage": "Couldn't connect Linear."
+		},
+		"trello": {
+			"title": "Connect Trello",
+			"description": "Paste your Trello API key and token. Stored locally in your macOS Keychain.",
+			"apiKeyPlaceholder": "Your Trello API key",
+			"apiKeyLabel": "Trello API key",
+			"tokenPlaceholder": "Token",
+			"tokenLabel": "Trello token",
+			"help": "Get your API key & token",
+			"failedTitle": "Trello connect failed",
+			"failedMessage": "Couldn't connect Trello."
+		},
+		"plain": {
+			"title": "Connect Plain",
+			"description": "Paste a Plain API key with the thread:read permission. Stored locally in your macOS Keychain.",
+			"apiKeyPlaceholder": "Your Plain API key (plainApiKey_…)",
+			"apiKeyLabel": "Plain API key",
+			"help": "Where do I create an API key?",
+			"failedTitle": "Plain connect failed",
+			"failedMessage": "Couldn't connect Plain."
+		},
+		"slack": {
+			"title": "Connect a Slack workspace",
+			"description": "Connects to your signed-in Slack desktop app. Everything stays local and secure on your device.",
+			"descriptionUnsupported": "Slack desktop import is available on macOS. Windows support is not wired up yet.",
+			"readingSession": "Reading session…",
+			"connect": "Connect Slack",
+			"connectAnother": "Connect another workspace",
+			"nothingTitle": "Nothing to connect",
+			"nothingMessage": "No signed-in Slack workspaces were found in your desktop app.",
+			"connectedWorkspace_one": "Connected {{count}} workspace",
+			"connectedWorkspace_other": "Connected {{count}} workspaces",
+			"alreadyConnected": "{{count}} already connected",
+			"failedSummary": "{{count}} failed: {{details}}",
+			"resultPartialTitle": "Slack connect: partial",
+			"resultTitle": "Slack connect",
+			"readFailedTitle": "Connect failed",
+			"readFailedMessage": "Couldn't read Slack desktop session."
+		}
+	},
+	"section": {
+		"linear": {
+			"emptyTitle": "No assigned issues",
+			"emptySubtitle": "Issues assigned to you in Linear will appear here."
+		},
+		"jira": {
+			"emptyTitle": "No assigned issues",
+			"emptySubtitle": "Issues assigned to you in Jira will appear here."
+		},
+		"trello": {
+			"emptyTitle": "No cards",
+			"emptySubtitle": "Cards you're a member of in Trello will appear here."
+		},
+		"forgejo": {
+			"emptyTitle": "No issues",
+			"emptySubtitle": "Issues assigned to you in Forgejo will appear here."
+		},
+		"featurebase": {
+			"emptyTitle": "No posts",
+			"emptySubtitle": "Feedback posts from your Featurebase board will appear here."
+		},
+		"plain": {
+			"emptyTitle": "No threads",
+			"emptySubtitle": "Open support threads from Plain will appear here."
+		}
+	},
+	"slackCard": {
+		"ariaLabel": "{{author}}: {{snippet}}",
+		"dm": "DM",
+		"threadIn": "Thread in",
+		"mentionIn": "Mention in",
+		"mentionedYou": "{{author}} mentioned you",
+		"sentMessage": "{{author}} sent a message",
+		"preparing": "Preparing Slack context…",
+		"fetchingThread": "Fetching thread",
+		"noAttachments": "No attachments to cache",
+		"cachingAttachments": "Caching attachments {{current}}/{{total}}",
+		"threadInlined": "Thread inlined",
+		"threadInlinedImages_one": "Thread inlined · {{count}} image attached",
+		"threadInlinedImages_other": "Thread inlined · {{count}} images attached",
+		"threadInlinedPartial": "Thread inlined · {{attached}}/{{total}} images attached (rest unavailable)",
+		"ready": "Slack context ready",
+		"prepareFailed": "Couldn't prepare Slack context",
+		"prepareFallback": "Falling back to summary-only context."
+	},
+	"slackSwitcher": {
+		"switch": "Switch Slack workspace",
+		"workspaceFallback": "Workspace",
+		"noWorkspaces": "No connected workspaces",
+		"disconnect": "Disconnect {{name}}",
+		"disconnectFailedTitle": "Disconnect failed",
+		"disconnectFailedMessage": "Couldn't disconnect Slack workspace."
+	},
+	"settings": {
+		"connectAccount": "Connect a {{provider}} account",
+		"connectAccountDescription": "You need at least one {{provider}} account before Contexts can pull {{kinds}}.",
+		"addAccount": "Add account",
+		"itemsFallback": "items",
+		"repository": "Repository",
+		"repositoryDescription": "Choose the repo these Contexts settings apply to.",
+		"issuesDescription": "Surface {{plural}} you're assigned to or have opened.",
+		"prsDescription": "Surface {{plural}} you opened or are assigned to.",
+		"discussionsDescription": "Surface {{plural}} in repos you have access to.",
+		"scope": "Scope",
+		"scopeDescription": "Which {{singular}} relationship {{provider}} should use by default.",
+		"sort": "Sort",
+		"sortDescription": "Default ordering before any sidebar filters are applied.",
+		"labels": "Labels",
+		"labelsDescription": "Only include {{plural}} with selected repository labels.",
+		"drafts": "Drafts",
+		"draftsDescription": "Whether draft {{plural}} appear in the feed.",
+		"addRepoFirst": "Add or connect a {{provider}} repository before configuring Contexts.",
+		"slackConnected": "Slack is connected. Open the Context sidebar to browse your feed.",
+		"slackConnectedCount": "{{count}} Slack workspaces connected. Open the Context sidebar to browse your feed.",
+		"scopeOptions": {
+			"all": "All",
+			"involves": "Involves me",
+			"assigned": "Assigned to me",
+			"mentioned": "Mentioned me",
+			"created": "Created by me",
+			"reviewRequested": "Review requested",
+			"author": "Created by me",
+			"assignee": "Assigned to me",
+			"mentions": "Mentioned me",
+			"reviewedBy": "Reviewed by me"
+		},
+		"sortOptions": {
+			"updated": "Recently updated",
+			"created": "Newest",
+			"comments": "Most commented"
+		},
+		"draftOptions": {
+			"exclude": "Exclude drafts",
+			"include": "Include drafts",
+			"only": "Drafts only"
+		},
+		"controls": {
+			"searchScopes": "Search scopes",
+			"noScopes": "No scopes found.",
+			"removeOption": "Remove {{label}}",
+			"loadingLabels": "Loading labels",
+			"selectLabels": "Select labels",
+			"searchLabels": "Search labels",
+			"loadingLabelsEmpty": "Loading labels...",
+			"noLabels": "No labels found.",
+			"selectRepo": "Select repo"
+		}
+	},
+	"triage": {
+		"customInstructions": "Custom instructions",
+		"customInstructionsHint": "Tell the triage agent what to focus on, in plain language.",
+		"customInstructionsPlaceholder": "e.g.\n• Watch Slack #incidents and DMs from my team lead\n• Surface every Slack message that @-mentions me\n• Skip bot notifications and weekly digests",
+		"sources": "Sources",
+		"sourcesHint": "Where Grex pulls triage candidates from. Incremental fetch every 5 minutes.",
+		"checkingHealth": "Checking source health…",
+		"loadingQueue": "Loading candidate queue…",
+		"candidatesWaiting_one": "candidate waiting to be judged.",
+		"candidatesWaiting_other": "candidates waiting to be judged.",
+		"autoRun": "Auto-run",
+		"autoRunHeartbeat": "Auto-run heartbeat",
+		"autoRunOnLabel": "On",
+		"autoRunOnDescription": " — a tick fires right after each fetch (every 5 minutes). Overlapping ticks are skipped.",
+		"autoRunOffLabel": "Off",
+		"autoRunOffDescription": " — ticks only run when you press Run now.",
+		"stopping": "Stopping…",
+		"stop": "Stop",
+		"runNow": "Run now",
+		"smartTriage": "Smart triage",
+		"smartTriageDescription": "The local LLM scans your enabled sources and creates AI-prepared workspaces for actionable items.",
+		"showReasoning": "Show agent reasoning",
+		"noTickYet": "No tick run yet.",
+		"lastTickCreated_one": "Last tick · {{when}} · created {{count}} workspace",
+		"lastTickCreated_other": "Last tick · {{when}} · created {{count}} workspaces",
+		"lastTickNothing": "Last tick · {{when}} · nothing actionable",
+		"lastTickStopped": "Last tick · {{when}} · stopped",
+		"lastTickFailed": "Last tick · {{when}} · failed",
+		"noMessage": "(no message)",
+		"batchLabel": "Batch {{index}} of {{total}}",
+		"tickRunning": "Tick running",
+		"tickStats": "{{elapsed}} · turn {{turns}} · {{tools}} tool calls",
+		"startedAt": "Started {{time}}",
+		"lastTool": " · last: {{tool}}",
+		"hide": "Hide",
+		"show": "Show",
+		"toolCallList": "tool call list",
+		"noToolCalls": "No tool calls yet.",
+		"connect": "Connect",
+		"status": {
+			"connected": "Connected",
+			"installRequired": "Install required",
+			"signInRequired": "Sign-in required",
+			"notConfigured": "Not configured",
+			"attention": "Attention",
+			"unknown": "Unknown"
+		}
+	}
+}

@@ -1,5 +1,6 @@
 import { useIsMutating, useQuery } from "@tanstack/react-query";
 import { useEffect, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import {
 	ClaudeColorIcon,
 	CursorIcon,
@@ -27,6 +28,7 @@ import { useKimiModelSync } from "./providers/use-kimi-model-sync";
 
 // SettingsDialog renders outside AppShell's TooltipProvider, so wrap our own.
 export function ProvidersPanel() {
+	const { t } = useTranslation("providers");
 	const statusQuery = useQuery({
 		queryKey: grexQueryKeys.agentLoginStatus,
 		queryFn: getAgentLoginStatus,
@@ -77,14 +79,14 @@ export function ProvidersPanel() {
 					collapsible
 				>
 					<ProviderConfigRow
-						label="Models"
-						description="Pick which models appear in the composer's picker."
+						label={t("common.models")}
+						description={t("providers.opencode.modelsDescription")}
 					>
 						<OpencodeModels ref={opencodeModelsRef} />
 					</ProviderConfigRow>
 					<ProviderConfigRow
-						label="Custom Providers"
-						description="Add a provider by API key or OpenAI-compatible endpoint, saved to ~/.config/opencode."
+						label={t("common.customProviders")}
+						description={t("providers.opencode.customProvidersDescription")}
 					>
 						<OpencodeCustomProvidersPanel
 							onChanged={() => opencodeModelsRef.current?.syncIfIdle()}
@@ -102,14 +104,14 @@ export function ProvidersPanel() {
 					collapsible
 				>
 					<ProviderConfigRow
-						label="Models"
-						description="Pick which official Claude models appear in the composer's picker."
+						label={t("common.models")}
+						description={t("providers.claude.modelsDescription")}
 					>
 						<OfficialModelSelect provider="claude" />
 					</ProviderConfigRow>
 					<ProviderConfigRow
-						label="Custom Providers"
-						description="Enter API keys here to use third-party models. They run alongside Claude Code's official models."
+						label={t("common.customProviders")}
+						description={t("providers.claude.customProvidersDescription")}
 					>
 						<ClaudeCustomProvidersPanel />
 					</ProviderConfigRow>
@@ -125,14 +127,14 @@ export function ProvidersPanel() {
 					collapsible
 				>
 					<ProviderConfigRow
-						label="Models"
-						description="Pick which official Codex models appear in the composer's picker."
+						label={t("common.models")}
+						description={t("providers.codex.modelsDescription")}
 					>
 						<OfficialModelSelect provider="codex" />
 					</ProviderConfigRow>
 					<ProviderConfigRow
-						label="Custom Providers"
-						description="Point Codex at any OpenAI-compatible (Responses API) endpoint. Runs alongside the official models."
+						label={t("common.customProviders")}
+						description={t("providers.codex.customProvidersDescription")}
 					>
 						<CodexCustomProvidersPanel />
 					</ProviderConfigRow>
@@ -143,7 +145,7 @@ export function ProvidersPanel() {
 					ready={Boolean(status?.cursor)}
 					loginProvider={null}
 				>
-					<ProviderConfigRow description="Add your API key, then pick which models appear in the composer's picker.">
+					<ProviderConfigRow description={t("providers.cursor.description")}>
 						<CursorCardBody />
 					</ProviderConfigRow>
 				</ProviderRow>
@@ -170,8 +172,8 @@ export function ProvidersPanel() {
 					collapsible
 				>
 					<ProviderConfigRow
-						label="Custom Providers"
-						description="Add an OpenAI-compatible or Anthropic-shaped endpoint, saved to ~/.kimi-code/config.toml."
+						label={t("common.customProviders")}
+						description={t("providers.kimi.customProvidersDescription")}
 					>
 						<KimiCustomProvidersPanel onChanged={() => void syncKimi()} />
 					</ProviderConfigRow>

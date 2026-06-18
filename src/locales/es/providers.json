@@ -1,0 +1,247 @@
+{
+	"status": {
+		"ready": "Listo",
+		"connecting": "Conectando"
+	},
+	"actions": {
+		"logIn": "Iniciar sesión",
+		"getApiKey": "Obtén tu clave de API",
+		"addProvider": "Añadir proveedor",
+		"addModel": "Añadir modelo",
+		"newProvider": "Nuevo proveedor",
+		"fetchModels": "Obtener modelos",
+		"refreshModels": "Actualizar modelos",
+		"refreshModelList": "Actualizar lista de modelos",
+		"syncModels": "Sincronizar modelos",
+		"unselectAll": "Deseleccionar todo",
+		"removeModel": "Quitar modelo"
+	},
+	"row": {
+		"version": "v{{version}}"
+	},
+	"common": {
+		"models": "Modelos",
+		"customProviders": "Proveedores personalizados",
+		"apiKey": "Clave de API",
+		"baseUrl": "URL base",
+		"displayName": "Nombre visible",
+		"apiStyle": "Estilo de API",
+		"custom": "Personalizado"
+	},
+	"providers": {
+		"opencode": {
+			"modelsDescription": "Elige qué modelos aparecen en el selector del compositor.",
+			"customProvidersDescription": "Añade un proveedor mediante clave de API o un endpoint compatible con OpenAI, guardado en ~/.config/opencode."
+		},
+		"claude": {
+			"modelsDescription": "Elige qué modelos oficiales de Claude aparecen en el selector del compositor.",
+			"customProvidersDescription": "Introduce aquí las claves de API para usar modelos de terceros. Se ejecutan junto a los modelos oficiales de Claude Code."
+		},
+		"codex": {
+			"modelsDescription": "Elige qué modelos oficiales de Codex aparecen en el selector del compositor.",
+			"customProvidersDescription": "Apunta Codex a cualquier endpoint compatible con OpenAI (Responses API). Se ejecuta junto a los modelos oficiales."
+		},
+		"cursor": {
+			"description": "Añade tu clave de API y luego elige qué modelos aparecen en el selector del compositor."
+		},
+		"kimi": {
+			"customProvidersDescription": "Añade un endpoint compatible con OpenAI o con el formato de Anthropic, guardado en ~/.kimi-code/config.toml."
+		}
+	},
+	"proxy": {
+		"title": "Proxy",
+		"description": "Enruta todo el tráfico de los proveedores: Claude Code, Codex, OpenCode, Cursor y Gemini.",
+		"placeholder": "http://127.0.0.1:7890",
+		"modes": {
+			"none": "Sin definir",
+			"system": "Proxy del sistema",
+			"custom": "Proxy personalizado"
+		}
+	},
+	"multiSelect": {
+		"searchModels": "Buscar modelos",
+		"noModelsPicked": "Ningún modelo elegido",
+		"selected": "{{count}} seleccionados",
+		"loadingModels": "Cargando modelos…",
+		"noCachedModels": "Aún no hay modelos en caché: haz clic en Actualizar.",
+		"noModelsFound": "No se encontraron modelos.",
+		"overflowMore": "+{{count}} más",
+		"removeModel": "Quitar {{label}}"
+	},
+	"claudeCustom": {
+		"apiKeyPlaceholder": "Clave de API de {{provider}}",
+		"getApiKeyAria": "Obtener clave de API de {{provider}}",
+		"baseUrlPlaceholder": "URL base",
+		"apiKeyPlaceholderPlain": "Clave de API",
+		"customLabel": "Personalizado",
+		"noneConfigured": "No hay proveedores de terceros configurados.",
+		"removeAria": "Quitar {{label}}"
+	},
+	"cursorBody": {
+		"apiKeyPlaceholder": "Clave de API de Cursor",
+		"getApiKeyAria": "Obtener clave de API de Cursor",
+		"fetchError": "No se pudieron obtener los modelos: {{error}}. El compositor recurrirá a Auto."
+	},
+	"cursorKey": {
+		"apiKeyPlaceholder": "Clave de API",
+		"validating": "Validando…",
+		"validatingAria": "Validando clave de API",
+		"getApiKeyAria": "Obtener clave de API de Cursor"
+	},
+	"codexCustom": {
+		"providerId": "id del proveedor",
+		"providerIdPlaceholder": "hundun",
+		"displayName": "Nombre visible",
+		"displayNamePlaceholder": "Codex (Hundun)",
+		"baseUrlPlaceholder": "https://api.example.com/v1",
+		"apiKeyPlaceholder": "sk-…",
+		"modelsHint": "Obténlos del endpoint y luego elige cuáles aparecen en el compositor.",
+		"emptyState": "No hay proveedores de Codex personalizados. Apunta Codex a cualquier endpoint compatible con OpenAI (Responses API).",
+		"editAria": "Editar {{id}}",
+		"deleteAria": "Eliminar {{id}}",
+		"errors": {
+			"idRequired": "El id del proveedor es obligatorio.",
+			"baseUrlRequired": "La URL base es obligatoria."
+		}
+	},
+	"opencodeCustom": {
+		"namePlaceholder": "Nombre visible (p. ej. My Proxy)",
+		"baseUrlPlaceholder": "URL base (https://…/v1)",
+		"apiKeyPlaceholder": "Clave de API",
+		"presetApiKeyPlaceholder": "Clave de API de {{provider}}",
+		"getApiKeyAria": "Obtener clave de API",
+		"customOption": "Personalizado (compatible con OpenAI)",
+		"noneConfigured": "No hay proveedores personalizados configurados.",
+		"apiKeyConfigured": "Clave de API configurada",
+		"detail_one": "{{baseUrl}} · {{count}} modelo",
+		"detail_other": "{{baseUrl}} · {{count}} modelos",
+		"editAria": "Editar {{id}}",
+		"deleteAria": "Eliminar {{id}}",
+		"apiStyles": {
+			"chatCompletions": {
+				"label": "Chat Completions",
+				"hint": "/v1/chat/completions: la mayor compatibilidad."
+			},
+			"responses": {
+				"label": "Responses API",
+				"hint": "/v1/responses: razonamiento y herramientas avanzados."
+			}
+		}
+	},
+	"kimiCustom": {
+		"namePlaceholder": "Nombre visible (p. ej. My Proxy)",
+		"baseUrlPlaceholder": "URL base (https://…/v1)",
+		"apiKeyPlaceholder": "Clave de API",
+		"noneConfigured": "No hay proveedores personalizados configurados.",
+		"noBaseUrl": "sin URL base",
+		"detail_one": "{{baseUrl}} · {{count}} modelo",
+		"detail_other": "{{baseUrl}} · {{count}} modelos",
+		"editAria": "Editar {{id}}",
+		"deleteAria": "Eliminar {{id}}",
+		"apiStyles": {
+			"openai": {
+				"label": "OpenAI-compatible",
+				"hint": "GET {base}/models · Authorization: Bearer. La URL base incluye /v1."
+			},
+			"openaiResponses": {
+				"label": "OpenAI Responses",
+				"hint": "OpenAI Responses API (/v1/responses)."
+			},
+			"anthropic": {
+				"label": "Anthropic",
+				"hint": "GET {base}/v1/models · x-api-key / anthropic-version."
+			},
+			"kimi": {
+				"label": "Kimi (Moonshot)",
+				"hint": "La API con formato de OpenAI de Moonshot."
+			}
+		}
+	},
+	"modelsEditor": {
+		"title": "Modelos",
+		"emptyState": "Aún no hay modelos: añade los id de modelo que sirve tu endpoint.",
+		"modelIdPlaceholder": "model-id",
+		"displayNamePlaceholder": "Nombre visible (opcional)",
+		"reasoningLabel": "Razonamiento (esfuerzo): solo si el modelo lo admite",
+		"removeModelAria": "Quitar modelo"
+	},
+	"opencodeModels": {
+		"syncModelsAria": "Sincronizar modelos",
+		"syncTooltip": "Sincronizar modelos: vuelve a leer ~/.config/opencode",
+		"confirmTitle": "¿Sincronizar los modelos de OpenCode?",
+		"confirmDescription_one": "Volver a leer tu configuración reinicia OpenCode y detendrá {{count}} chat en ejecución.",
+		"confirmDescription_other": "Volver a leer tu configuración reinicia OpenCode y detendrá {{count}} chats en ejecución.",
+		"confirmLabel": "Sincronizar de todos modos"
+	},
+	"localLlm": {
+		"title": "LLM local",
+		"description": "Impulsa la generación de títulos de sesión / nombres de rama y la Clasificación inteligente; ambas se ejecutan por completo en tu dispositivo.",
+		"status": {
+			"starting": "Iniciando",
+			"running": "En ejecución",
+			"noModel": "Sin modelo",
+			"stopped": "Detenido"
+		},
+		"noModelBanner": "Ningún modelo seleccionado. Elige uno del menú Modelos de abajo para empezar, incluido Personalizado si ya tienes un GGUF en disco.",
+		"models": "Modelos",
+		"loadingModels": "Cargando modelos…",
+		"custom": "Personalizado",
+		"customSlotHint": "Usa tu propio archivo GGUF. Define la ruta abajo.",
+		"active": "Activo",
+		"badges": {
+			"downloading": "Descargando",
+			"paused": "En pausa",
+			"failed": "Falló",
+			"downloaded": "Descargado",
+			"recommended": "Recomendado"
+		},
+		"actions": {
+			"addVision": "Añadir visión",
+			"cancel": "Cancelar",
+			"resume": "Reanudar",
+			"retry": "Reintentar",
+			"download": "Descargar",
+			"delete": "Eliminar",
+			"pause": "Pausar",
+			"reset": "Restablecer",
+			"apply": "Aplicar"
+		},
+		"downloads": "Descargas",
+		"customPath": {
+			"label": "Ruta de modelo personalizada",
+			"placeholder": "/ruta/al/modelo.gguf",
+			"helpAria": "Acerca de la ruta de modelo personalizada",
+			"helpTooltip": "Apunta esto a un <0>.gguf</0> que hayas descargado tú mismo. Los modelos seleccionados de arriba tienen prioridad: borra este campo para volver al selector."
+		},
+		"context": {
+			"label": "Contexto",
+			"helpAria": "¿Qué es el tamaño de contexto?",
+			"helpTooltip": "El presupuesto total de tokens para la entrada más la salida generada combinadas. Un contexto mayor te permite enviar prompts más largos, pero usa más RAM y tarda más en iniciar.",
+			"helpDefault": "Si tienes dudas, el valor predeterminado ({{value}}) está dimensionado para tu hardware: déjalo como está.",
+			"discardPending": "Descartar el cambio pendiente",
+			"resetToDefault": "Restablecer al valor predeterminado"
+		},
+		"deleteDialog": {
+			"title": "¿Eliminar este modelo?",
+			"descriptionFallback": "Esto eliminará el modelo del disco.",
+			"descriptionPrefix": "Esto eliminará ",
+			"descriptionSuffix": " ({{size}}) del disco. Tendrás que descargarlo de nuevo para usarlo."
+		},
+		"progress": {
+			"paused": "En pausa",
+			"connecting": "Conectando…",
+			"perSecond": "{{rate}}/s",
+			"etaLeft": "quedan {{eta}}"
+		}
+	},
+	"loginDialog": {
+		"title": "Inicio de sesión de {{provider}}",
+		"close": "Cerrar"
+	},
+	"agentStatus": {
+		"waiting": "Esperando...",
+		"restart": "Reiniciar",
+		"restartSetup": "Reiniciar configuración",
+		"logIn": "Iniciar sesión"
+	}
+}

@@ -8,6 +8,7 @@
 // `useQuickPanelWindow`; per-app singletons inside the shared hooks are gated
 // by `isQuickPanelWindow`.
 import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { Toaster } from "@/components/ui/sonner";
 import type { SettingsSection } from "@/features/settings";
 import { resolveTheme } from "@/lib/settings";
@@ -30,6 +31,7 @@ export function QuickShell({
 		initialSection?: SettingsSection,
 	) => void;
 }) {
+	const { t } = useTranslation("misc");
 	const s = useAppShellState({ onOpenSettings });
 	useQuickPanelWindow({
 		openWorkspaceStart: s.handleOpenWorkspaceStart,
@@ -68,7 +70,7 @@ export function QuickShell({
 				visibleToasts={3}
 			/>
 			<main
-				aria-label="Quick panel"
+				aria-label={t("quickPanel.panelLabel")}
 				className="h-dvh w-dvw overflow-hidden bg-transparent font-sans text-foreground antialiased"
 			>
 				<div className="relative flex h-full min-h-0 flex-col overflow-hidden rounded-xl border border-border/60 bg-background">

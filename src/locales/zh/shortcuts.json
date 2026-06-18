@@ -1,0 +1,92 @@
+{
+	"search": {
+		"placeholder": "搜索快捷键"
+	},
+	"section": {
+		"global": "全局"
+	},
+	"groups": {
+		"Navigation": "导航",
+		"Session": "会话",
+		"Workspace": "工作区",
+		"Actions": "操作",
+		"System": "系统",
+		"Composer": "输入框",
+		"Start surface": "起始页",
+		"Editor": "编辑器",
+		"Terminal": "终端"
+	},
+	"row": {
+		"conflictAria": "快捷键冲突",
+		"conflictUsedBy": "已被 {{names}} 使用",
+		"resetAria": "重置为默认值",
+		"resetTooltip": "重置为默认值"
+	},
+	"menu": {
+		"remove": "移除快捷键",
+		"resetDefault": "重置快捷键为默认值"
+	},
+	"toast": {
+		"registerFailed": "注册全局快捷键失败"
+	},
+	"definitions": {
+		"workspace.previous": { "title": "上一个工作区" },
+		"workspace.next": { "title": "下一个工作区" },
+		"workspace.quickSwitchNext": { "title": "快速切换工作区" },
+		"workspace.quickSwitchPrevious": { "title": "快速切换工作区（反向）" },
+		"session.previous": { "title": "上一个会话" },
+		"session.next": { "title": "下一个会话" },
+		"session.new": { "title": "新建会话" },
+		"session.close": { "title": "关闭当前会话" },
+		"session.reopenClosed": { "title": "重新打开已关闭的会话" },
+		"window.close": { "title": "关闭窗口" },
+		"workspace.copyPath": { "title": "复制工作区路径" },
+		"workspace.openInEditor": { "title": "在默认应用中打开仓库" },
+		"workspace.new": { "title": "打开起始页" },
+		"workspace.justChat": { "title": "打开起始页（仅聊天）" },
+		"workspace.addRepository": { "title": "添加仓库" },
+		"workspace.filterSidebar": { "title": "筛选和排序侧边栏" },
+		"script.run": { "title": "运行 / 停止脚本" },
+		"action.createPr": { "title": "创建 PR" },
+		"action.commitAndPush": { "title": "提交并推送" },
+		"action.pullLatest": { "title": "从主分支拉取最新内容" },
+		"action.mergePr": { "title": "合并 PR" },
+		"action.fixErrors": { "title": "修复错误" },
+		"action.openPullRequest": { "title": "在浏览器中打开 PR" },
+		"settings.open": { "title": "打开设置" },
+		"library.open": { "title": "打开资源库" },
+		"global.hotkey": {
+			"title": "全局快捷键",
+			"description": "在任意位置显示/隐藏 Grex。"
+		},
+		"quickPanel.hotkey": {
+			"title": "快捷面板快捷键",
+			"description": "在任意位置打开快捷任务面板。"
+		},
+		"theme.toggle": { "title": "切换主题（深色/浅色）" },
+		"window.miniMode.toggle": { "title": "切换迷你模式" },
+		"sidebar.left.toggle": { "title": "切换左侧边栏" },
+		"sidebar.right.toggle": { "title": "切换右侧边栏" },
+		"zen.toggle": { "title": "切换禅模式" },
+		"zoom.in": { "title": "放大" },
+		"zoom.out": { "title": "缩小" },
+		"zoom.reset": { "title": "重置缩放" },
+		"composer.focus": { "title": "聚焦聊天输入框" },
+		"composer.togglePlanMode": { "title": "切换计划模式" },
+		"composer.toggleTerminalMode": { "title": "切换终端模式" },
+		"startSurface.cycleRepository": { "title": "切换仓库" },
+		"composer.toggleContextPanel": { "title": "切换上下文面板" },
+		"composer.openModelPicker": { "title": "打开模型选择器" },
+		"composer.toggleFollowUpBehavior": { "title": "以相反的后续行为发送" },
+		"editor.edit": { "title": "切换差异与编辑" },
+		"editor.new": { "title": "打开文件" },
+		"editor.close": { "title": "关闭当前文件" },
+		"editor.toggleExplorer": { "title": "切换文件资源管理器" },
+		"terminal.new": { "title": "新建终端" },
+		"terminal.close": { "title": "关闭当前终端" },
+		"terminal.previous": { "title": "上一个终端" },
+		"terminal.next": { "title": "下一个终端" },
+		"inspector.focusTerminal": { "title": "聚焦终端" },
+		"inspector.toggleScripts": { "title": "切换脚本面板" }
+	}
+}

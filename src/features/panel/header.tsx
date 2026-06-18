@@ -1,4 +1,5 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import type { TFunction } from "i18next";
 import {
 	AlertCircle,
 	ArrowRight,
@@ -18,6 +19,7 @@ import {
 	X,
 } from "lucide-react";
 import { memo, useCallback, useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
 	AccountHoverCardContent,
 	accountInfoFromForgeAccount,
@@ -140,6 +142,7 @@ export const WorkspacePanelHeader = memo(function WorkspacePanelHeader({
 	onSelectWorkspace,
 	newSessionShortcut,
 }: WorkspacePanelHeaderProps) {
+	const { t } = useTranslation("panel");
 	const branchTone = getWorkspaceBranchTone({
 		workspaceState: workspace?.state,
 		status: workspace?.status,
@@ -231,7 +234,7 @@ export const WorkspacePanelHeader = memo(function WorkspacePanelHeader({
 	return (
 		<header className="relative z-20">
 			<div
-				aria-label="Workspace header"
+				aria-label={t("header.workspaceHeader")}
 				className="flex h-9 items-center justify-between gap-3 px-[18px]"
 				data-tauri-drag-region
 			>
@@ -332,14 +335,14 @@ export const WorkspacePanelHeader = memo(function WorkspacePanelHeader({
 									<>
 										<HyperText
 											key={workspace?.id}
-											text={workspace?.branch ?? "No branch"}
+											text={workspace?.branch ?? t("header.noBranch")}
 											className="truncate"
 										/>
 										{workspace?.branch && workspace.state !== "archived" ? (
 											<span className="pointer-events-none invisible absolute inset-y-0 right-0 flex items-center gap-0.5 bg-[linear-gradient(to_right,transparent_0%,var(--background)_35%,var(--background)_100%)] pl-5 pr-1 group-hover/branch:pointer-events-auto group-hover/branch:visible">
 												<span
 													role="button"
-													aria-label="Rename branch"
+													aria-label={t("header.renameBranch")}
 													onClick={branchRename.startBranchRename}
 													className="flex cursor-interactive items-center justify-center rounded-sm p-0.5 text-muted-foreground hover:bg-accent/60 hover:text-foreground"
 												>
@@ -347,7 +350,7 @@ export const WorkspacePanelHeader = memo(function WorkspacePanelHeader({
 												</span>
 												<span
 													role="button"
-													aria-label="Copy branch name"
+													aria-label={t("header.copyBranchName")}
 													onClick={branchRename.copyBranchName}
 													className="flex cursor-interactive items-center justify-center rounded-sm p-0.5 text-muted-foreground hover:bg-accent/60 hover:text-foreground"
 												>
@@ -505,7 +508,7 @@ export const WorkspacePanelHeader = memo(function WorkspacePanelHeader({
 						{loadingWorkspace ? (
 							<div className="flex h-[1.85rem] items-center gap-1.5 px-2 text-small text-muted-foreground">
 								<Clock3 className="size-3 animate-pulse" strokeWidth={1.8} />
-								Loading
+								{t("header.loading")}
 							</div>
 						) : sessions.length > 0 || contextPreviewCard ? (
 							<Tabs
@@ -520,7 +523,7 @@ export const WorkspacePanelHeader = memo(function WorkspacePanelHeader({
 								className="min-w-max gap-0"
 							>
 								<TabsList
-									aria-label="Sessions"
+									aria-label={t("header.sessions")}
 									className="inline-flex min-w-full w-max justify-start self-start"
 								>
 									{contextPreviewCard ? (
@@ -528,7 +531,7 @@ export const WorkspacePanelHeader = memo(function WorkspacePanelHeader({
 											<TooltipTrigger asChild>
 												<TabsTrigger
 													value={contextTabValue}
-													aria-label="Context preview"
+													aria-label={t("header.contextPreview")}
 													onKeyDownCapture={(event) => {
 														if (
 															event.key.toLowerCase() !== "w" ||
@@ -551,7 +554,7 @@ export const WorkspacePanelHeader = memo(function WorkspacePanelHeader({
 													<span className="pointer-events-none invisible absolute inset-y-0 right-0 flex items-center pr-1 group-hover/tab:pointer-events-auto group-hover/tab:visible">
 														<span
 															role="button"
-															aria-label="Close context preview"
+															aria-label={t("header.closeContextPreview")}
 															onPointerDown={stopTabActionPointerDown}
 															onClick={(event) => {
 																event.preventDefault();
@@ -647,15 +650,15 @@ export const WorkspacePanelHeader = memo(function WorkspacePanelHeader({
 																			: undefined,
 																	)}
 																>
-																	{displaySessionTitle(session)}
+																	{displaySessionTitle(session, t)}
 																</span>
 															)}
 															{hasStatusDot && !isEditing ? (
 																<span
 																	aria-label={
 																		isInteractionRequired
-																			? "Interaction required"
-																			: "Unread session"
+																			? t("header.interactionRequired")
+																			: t("header.unreadSession")
 																	}
 																	className={cn(
 																		"size-1.5 shrink-0 rounded-full",
@@ -670,7 +673,7 @@ export const WorkspacePanelHeader = memo(function WorkspacePanelHeader({
 															<span className="pointer-events-none invisible absolute inset-y-0 right-0 flex items-center gap-0.5 pr-1 group-hover/tab:pointer-events-auto group-hover/tab:visible">
 																<span
 																	role="button"
-																	aria-label="Rename session"
+																	aria-label={t("header.renameSession")}
 																	onPointerDown={stopTabActionPointerDown}
 																	onClick={(event) =>
 																		sessionActions.startRename(session, event)
@@ -681,7 +684,7 @@ export const WorkspacePanelHeader = memo(function WorkspacePanelHeader({
 																</span>
 																<span
 																	role="button"
-																	aria-label="Close session"
+																	aria-label={t("header.closeSession")}
 																	onPointerDown={stopTabActionPointerDown}
 																	onClick={(event) =>
 																		sessionActions.hideSession(
@@ -705,7 +708,7 @@ export const WorkspacePanelHeader = memo(function WorkspacePanelHeader({
 													>
 														<span className={SESSION_TITLE_TOOLTIP_TEXT_CLASS}>
 															{displayTooltipTitle(
-																displaySessionTitle(session),
+																displaySessionTitle(session, t),
 															)}
 														</span>
 													</TooltipContent>
@@ -718,7 +721,7 @@ export const WorkspacePanelHeader = memo(function WorkspacePanelHeader({
 						) : (
 							<div className="flex h-[1.85rem] items-center gap-1.5 px-2 text-small text-muted-foreground">
 								<AlertCircle className="size-3" strokeWidth={1.8} />
-								No sessions
+								{t("header.noSessions")}
 							</div>
 						)}
 					</div>
@@ -727,7 +730,7 @@ export const WorkspacePanelHeader = memo(function WorkspacePanelHeader({
 				<Tooltip>
 					<TooltipTrigger asChild>
 						<Button
-							aria-label="New session"
+							aria-label={t("header.newSession")}
 							onClick={() => void sessionActions.createSession()}
 							variant="ghost"
 							size="icon-sm"
@@ -741,7 +744,7 @@ export const WorkspacePanelHeader = memo(function WorkspacePanelHeader({
 						sideOffset={4}
 						className="flex h-[24px] items-center gap-2 rounded-md px-2 text-small leading-none"
 					>
-						<span>New session</span>
+						<span>{t("header.newSession")}</span>
 						{newSessionShortcut ? (
 							<InlineShortcutDisplay
 								hotkey={newSessionShortcut}
@@ -757,7 +760,7 @@ export const WorkspacePanelHeader = memo(function WorkspacePanelHeader({
 				>
 					<DropdownMenuTrigger asChild>
 						<Button
-							aria-label="Session history"
+							aria-label={t("header.sessionHistory")}
 							variant="ghost"
 							size="icon-sm"
 							className={cn(
@@ -783,12 +786,12 @@ export const WorkspacePanelHeader = memo(function WorkspacePanelHeader({
 													active={false}
 												/>
 												<span className="truncate">
-													{displaySessionTitle(session)}
+													{displaySessionTitle(session, t)}
 												</span>
 											</div>
 											<div className="flex shrink-0 items-center gap-0.5">
 												<Button
-													aria-label="Restore session"
+													aria-label={t("header.restoreSession")}
 													onClick={() => hiddenHistory.unhide(session.id)}
 													variant="ghost"
 													size="icon-xs"
@@ -797,7 +800,7 @@ export const WorkspacePanelHeader = memo(function WorkspacePanelHeader({
 													<RotateCcw className="size-3" strokeWidth={1.8} />
 												</Button>
 												<Button
-													aria-label="Delete session permanently"
+													aria-label={t("header.deleteSessionPermanently")}
 													onClick={() =>
 														sessionActions.deleteHiddenSession(session.id)
 													}
@@ -816,14 +819,14 @@ export const WorkspacePanelHeader = memo(function WorkspacePanelHeader({
 										className={SESSION_TITLE_TOOLTIP_CLASS}
 									>
 										<span className={SESSION_TITLE_TOOLTIP_TEXT_CLASS}>
-											{displayTooltipTitle(displaySessionTitle(session))}
+											{displayTooltipTitle(displaySessionTitle(session, t))}
 										</span>
 									</TooltipContent>
 								</Tooltip>
 							))
 						) : (
 							<div className="px-2.5 py-1.5 text-mini text-muted-foreground">
-								No hidden sessions
+								{t("header.noHiddenSessions")}
 							</div>
 						)}
 					</DropdownMenuContent>
@@ -870,11 +873,14 @@ function SessionProviderIcon({
 	return <ClaudeIcon className="size-3 shrink-0 text-muted-foreground" />;
 }
 
-function displaySessionTitle(session: WorkspaceSessionSummary): string {
+function displaySessionTitle(
+	session: WorkspaceSessionSummary,
+	t: TFunction<"panel">,
+): string {
 	if (session.title && session.title !== "Untitled") {
 		return session.title;
 	}
-	return "Untitled";
+	return t("header.untitled");
 }
 
 function displayTooltipTitle(title: string): string {
@@ -907,6 +913,7 @@ function StackParentChip({
 	archived: boolean;
 	onSelectWorkspace?: (workspaceId: string) => void;
 }) {
+	const { t } = useTranslation("panel");
 	const parentQuery = useQuery(workspaceDetailQueryOptions(parentWorkspaceId));
 	const parent = parentQuery.data ?? null;
 	const label = parent?.title?.trim() || fallbackBranch || "base";
@@ -948,10 +955,15 @@ function StackParentChip({
 				>
 					{branchHint ? (
 						<span className="block text-background/70">
-							Base branch {displayRemote}/{branchHint}
+							{t("header.baseBranch", {
+								remote: displayRemote,
+								branch: branchHint,
+							})}
 						</span>
 					) : (
-						<span className="block text-background/70">Stacked on {label}</span>
+						<span className="block text-background/70">
+							{t("header.stackedOn", { label })}
+						</span>
 					)}
 				</TooltipContent>
 			</Tooltip>

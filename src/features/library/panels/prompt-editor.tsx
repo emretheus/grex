@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { ArrowLeft, Trash2 } from "lucide-react";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -22,6 +23,7 @@ export function PromptEditor({
 	prompt: PromptTemplate | null;
 	onDone: () => void;
 }) {
+	const { t } = useTranslation("library");
 	const queryClient = useQueryClient();
 	const [title, setTitle] = useState(prompt?.title ?? "");
 	const [body, setBody] = useState(prompt?.prompt ?? "");
@@ -59,12 +61,14 @@ export function PromptEditor({
 					variant="ghost"
 					size="icon-xs"
 					onClick={onDone}
-					aria-label="Back to prompts"
+					aria-label={t("prompts.editor.back")}
 				>
 					<ArrowLeft className="size-4" />
 				</Button>
 				<span className="text-ui font-medium text-foreground">
-					{prompt ? "Edit prompt" : "New prompt"}
+					{prompt
+						? t("prompts.editor.editTitle")
+						: t("prompts.editor.newTitle")}
 				</span>
 				<div className="ml-auto flex items-center gap-2">
 					{prompt ? (
@@ -76,11 +80,11 @@ export function PromptEditor({
 							onClick={() => remove.mutate()}
 						>
 							<Trash2 className="size-4" />
-							Delete
+							{t("prompts.editor.delete")}
 						</Button>
 					) : null}
 					<Button size="sm" disabled={!canSave} onClick={() => save.mutate()}>
-						Save
+						{t("prompts.editor.save")}
 					</Button>
 				</div>
 			</div>
@@ -91,13 +95,13 @@ export function PromptEditor({
 						htmlFor="prompt-title"
 						className="text-small font-medium text-foreground"
 					>
-						Title
+						{t("prompts.editor.titleLabel")}
 					</label>
 					<Input
 						id="prompt-title"
 						value={title}
 						onChange={(e) => setTitle(e.target.value)}
-						placeholder="e.g. Review carefully"
+						placeholder={t("prompts.editor.titlePlaceholder")}
 						autoFocus={!prompt}
 					/>
 				</div>
@@ -106,22 +110,22 @@ export function PromptEditor({
 						htmlFor="prompt-body"
 						className="text-small font-medium text-foreground"
 					>
-						Prompt
+						{t("prompts.editor.promptLabel")}
 					</label>
 					<Textarea
 						id="prompt-body"
 						value={body}
 						onChange={(e) => setBody(e.target.value)}
-						placeholder="The instructions sent to the agent when you insert this prompt…"
+						placeholder={t("prompts.editor.promptPlaceholder")}
 						className="min-h-0 flex-1 resize-none font-mono text-small"
 					/>
 					<p className="text-nano text-muted-foreground">
-						Keep it agent-neutral so it works across every provider.
+						{t("prompts.editor.hint")}
 					</p>
 				</div>
 				{save.isError ? (
 					<p className="text-small text-destructive">
-						Couldn't save this prompt. Check the title and try again.
+						{t("prompts.editor.saveError")}
 					</p>
 				) : null}
 			</div>

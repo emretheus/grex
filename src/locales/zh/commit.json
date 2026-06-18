@@ -1,0 +1,126 @@
+{
+	"states": {
+		"commitAndPush": {
+			"idle": "提交并推送",
+			"busy": "正在提交…",
+			"done": "已推送",
+			"disabled": "提交并推送"
+		},
+		"push": {
+			"idle": "推送",
+			"busy": "正在推送…",
+			"done": "已推送",
+			"disabled": "推送"
+		},
+		"fix": {
+			"idle": "修复 CI",
+			"busy": "正在修复 CI…",
+			"done": "CI 已修复",
+			"disabled": "修复 CI"
+		},
+		"resolveConflicts": {
+			"idle": "解决冲突",
+			"busy": "正在解决…",
+			"done": "已解决",
+			"disabled": "解决冲突"
+		},
+		"checksRunning": {
+			"idle": "检查进行中",
+			"busy": "正在合并…",
+			"done": "已合并",
+			"disabled": "检查进行中"
+		},
+		"mergeBlocked": {
+			"idle": "合并被阻止",
+			"busy": "正在合并…",
+			"done": "已合并",
+			"disabled": "合并被阻止"
+		},
+		"merge": {
+			"idle": "合并",
+			"busy": "正在合并…",
+			"done": "已合并",
+			"disabled": "合并"
+		},
+		"merged": "已合并",
+		"closed": "已关闭"
+	},
+	"createPr": {
+		"busy": "正在创建{{changeRequestName}}…",
+		"done": "{{changeRequestName}}已创建",
+		"idle": "创建{{changeRequestName}}"
+	},
+	"openPr": {
+		"busy": "正在打开{{changeRequestName}}…",
+		"done": "已打开",
+		"idle": "打开{{changeRequestName}}"
+	},
+	"menu": {
+		"commitAndPushManually": "手动提交并推送",
+		"pushManually": "手动推送",
+		"fixManually": "手动修复 CI",
+		"createDraftPr": "创建{{changeRequestName}}草稿",
+		"createPrManually": "手动创建{{changeRequestName}}"
+	},
+	"options": {
+		"commitAndPush": "提交并推送选项",
+		"push": "推送选项",
+		"fix": "修复 CI 选项",
+		"resolveConflicts": "解决冲突选项",
+		"checksRunning": "检查进行中选项",
+		"mergeBlocked": "合并被阻止选项",
+		"merge": "合并选项",
+		"openPr": "打开{{changeRequestName}}选项",
+		"merged": "已合并选项",
+		"closed": "已关闭选项",
+		"createPr": "创建{{changeRequestName}}选项"
+	},
+	"splitButton": {
+		"defaultLabel": "提交",
+		"commitAria": "提交当前更改",
+		"moreActionsAria": "Git 区域更多操作"
+	},
+	"mergeBlockedReason": {
+		"behindShort": "落后于基础分支",
+		"blockedShort": "合并被阻止",
+		"draftShort": "草稿 PR",
+		"unstableShort": "不稳定",
+		"behindDetail": "此分支落后于基础分支。仍要尝试吗？",
+		"blockedDetail": "分支保护正在阻止此次合并。可能缺少评审、存在未解决的讨论或必需的检查未通过。仍要尝试吗？",
+		"draftDetail": "此拉取请求仍是草稿。仍要尝试吗？",
+		"unstableDetail": "非必需的检查未通过。仍要尝试吗？"
+	},
+	"confirm": {
+		"mergeAnyway": "仍要合并",
+		"tryAnyway": "仍要尝试",
+		"beforeChecksTitle": "在检查通过前合并？",
+		"beforeChecksDescription": "GitHub 检查尚未通过。仍要合并并绕过这些检查吗？",
+		"blockedMergeTitle": "尝试被阻止的合并？"
+	},
+	"failureTitle": {
+		"createPr": "创建{{changeRequestName}}失败",
+		"commitAndPush": "提交并推送失败",
+		"push": "推送失败",
+		"fix": "修复 CI 失败",
+		"resolveConflicts": "解决冲突失败",
+		"merge": "合并失败",
+		"openPr": "打开{{changeRequestName}}失败",
+		"closed": "关闭{{changeRequestName}}失败",
+		"generic": "操作失败"
+	},
+	"toast": {
+		"mergeBlockedTitle": "合并被阻止",
+		"conflictMessage": "{{changeRequestName}}存在合并冲突，暂时无法合并。",
+		"mergeabilityComputing": "正在计算可合并性。请稍候并重试。",
+		"pushFailedFallback": "无法推送分支。",
+		"promptNotDeliveredTitle": "提示未送达",
+		"openChatFallback": "无法打开聊天会话。",
+		"reviewFailedTitle": "评审失败",
+		"reviewFallback": "无法开始评审。",
+		"reconnectMessage": "请重新连接你的{{providerName}}账户后再试。",
+		"notConnectedTitle": "{{providerName}}未连接",
+		"startActionFallback": "无法开始操作。",
+		"completeActionFallback": "无法完成操作。",
+		"verifyActionFallback": "无法验证操作结果。"
+	}
+}

@@ -1,0 +1,101 @@
+{
+	"surface": {
+		"ariaLabel": "ワークスペースエディター画面",
+		"canvasAriaLabel": "エディターキャンバス",
+		"closeDiff": "差分ビューを閉じる",
+		"closeEditor": "エディタービューを閉じる"
+	},
+	"breadcrumb": {
+		"revealInExplorer": "エクスプローラーで表示",
+		"copyAbsolutePath": "絶対パスをコピー"
+	},
+	"tabs": {
+		"openFilesAriaLabel": "開いているファイル",
+		"closeFileAriaLabel": "{{name}} を閉じる",
+		"modifiedAriaLabel": "変更済み",
+		"openFileAriaLabel": "ファイルを開く",
+		"close": "閉じる",
+		"closeOthers": "他を閉じる",
+		"closeAll": "すべて閉じる"
+	},
+	"contextMenu": {
+		"copyPath": "パスをコピー",
+		"copyRelativePath": "相対パスをコピー",
+		"revealInFinder": "Finder で表示",
+		"openWith": "アプリで開く",
+		"addToChat": "チャットに追加"
+	},
+	"search": {
+		"placeholder": "ファイルを検索",
+		"loading": "ファイルを読み込み中",
+		"empty": "ファイルが見つかりません"
+	},
+	"toolbar": {
+		"toggleExplorerAriaLabel": "ファイルエクスプローラーの切り替え",
+		"toggleExplorerTitle": "ファイルエクスプローラー",
+		"viewModeAriaLabel": "Markdown 表示モード",
+		"source": "ソース",
+		"preview": "プレビュー",
+		"edit": "編集",
+		"diff": "差分",
+		"addFileToChatAriaLabel": "このファイルをチャットに追加",
+		"addFileToChatTitle": "ファイルをチャットに追加",
+		"viewOptionsAriaLabel": "エディターの表示オプション",
+		"viewOptionsTitle": "表示オプション",
+		"close": "閉じる"
+	},
+	"viewOptions": {
+		"goToLine": "行に移動…",
+		"wordWrap": "折り返し",
+		"minimap": "ミニマップ",
+		"stickyScroll": "固定スクロール",
+		"renderWhitespace": "空白を表示",
+		"sideBySideDiff": "並列の差分"
+	},
+	"preview": {
+		"ariaLabel": "Markdown プレビュー"
+	},
+	"landing": {
+		"ariaLabel": "ファイルエクスプローラー",
+		"title": "ファイル",
+		"closeAriaLabel": "ファイルエクスプローラーを閉じる",
+		"close": "閉じる",
+		"heading": "コードベースを閲覧",
+		"pickFile": "左側のツリーからファイルを選んでエディターで開きます。",
+		"openWorkspace": "ワークスペースを開いてファイルを閲覧します。"
+	},
+	"explorer": {
+		"ariaLabel": "ファイルエクスプローラー",
+		"refreshAriaLabel": "ファイルツリーを更新",
+		"refreshTitle": "更新",
+		"resizeAriaLabel": "ファイルエクスプローラーのサイズを変更",
+		"heading": "エクスプローラー",
+		"loading": "読み込み中…",
+		"loadError": "読み込みに失敗しました — 再試行",
+		"empty": "空"
+	},
+	"image": {
+		"ariaLabel": "画像プレビュー",
+		"previewAlt": "{{path}} のプレビュー",
+		"deleted": "この画像はこの変更で削除されました。",
+		"loadError": "ディスクからこの画像を読み込めませんでした。",
+		"status": {
+			"added": "追加",
+			"modified": "変更",
+			"deleted": "削除"
+		}
+	},
+	"errors": {
+		"loadFile": "選択したファイルを読み込めませんでした。",
+		"loadFileTitle": "ファイルを開けませんでした",
+		"startEditor": "エディターを起動できませんでした。",
+		"startEditorTitle": "エディターの起動に失敗しました",
+		"startReview": "レビュー画面を起動できませんでした。",
+		"startReviewTitle": "レビュー画面の起動に失敗しました",
+		"listFiles": "ワークスペースのファイルを一覧表示できませんでした。",
+		"openFile": "選択したファイルを開けませんでした。",
+		"openFileTitle": "ファイルを開けませんでした",
+		"saveFile": "選択したファイルを保存できませんでした。",
+		"saveFileTitle": "保存に失敗しました"
+	}
+}

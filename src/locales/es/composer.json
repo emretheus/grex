@@ -1,0 +1,135 @@
+{
+	"aria": {
+		"composer": "Redactor del espacio de trabajo",
+		"input": "Campo de entrada del espacio de trabajo"
+	},
+	"placeholder": {
+		"default": "Pide cambios, menciona archivos con @, ejecuta /comandos",
+		"plan": "Describe qué cambiar y luego haz clic en Solicitar cambios"
+	},
+	"hint": {
+		"terminalDirective": "Envía para iniciar en modo Terminal",
+		"toFocus": "para enfocar"
+	},
+	"model": {
+		"loading": "Cargando modelos…",
+		"select": "Seleccionar modelo",
+		"addCustom": "Añadir modelo personalizado..."
+	},
+	"fastMode": {
+		"label": "Modo rápido",
+		"labelOn": "Modo rápido (activado)",
+		"aria": "Modo rápido"
+	},
+	"effort": {
+		"label": "Esfuerzo",
+		"extraHigh": "Muy alto"
+	},
+	"permission": {
+		"plan": "Plan",
+		"auto": "Auto",
+		"planAria": "Modo plan",
+		"autoAria": "Modo auto",
+		"planTooltip": "Plan · solo lectura",
+		"autoTooltip": "Auto · acceso total"
+	},
+	"terminalMode": {
+		"label": "Modo Terminal",
+		"aria": "Modo Terminal"
+	},
+	"addContext": "Añadir contexto",
+	"actions": {
+		"requestChanges": "Solicitar cambios",
+		"implement": "Implementar",
+		"stop": "Detener",
+		"steer": "Guiar",
+		"send": "Enviar",
+		"startOptions": "Opciones de inicio"
+	},
+	"startSubmit": {
+		"newWorkspace": "Nuevo espacio de trabajo",
+		"saveForLater": "Guardar para después",
+		"startNow": "Iniciar ahora"
+	},
+	"slashCommands": {
+		"addDir": "Vincular directorios adicionales a este espacio de trabajo",
+		"prompt": "Insertar un prompt guardado de tu biblioteca",
+		"codexCompact": "Compactar el contexto de este hilo de Codex",
+		"opencodeCompact": "Compactar el contexto de esta conversación",
+		"codexGoal": "Establecer un objetivo persistente que Codex persiga turno tras turno hasta completarlo o pausarlo",
+		"claudeGoal": "Establecer una condición de finalización para que Claude trabaje hacia ella",
+		"workflows": "Ver las ejecuciones de flujos de trabajo de esta conversación"
+	},
+	"autoClose": {
+		"help": "Cuando está activado, las sesiones de acción se cerrarán automáticamente al finalizar.",
+		"enableAria": "Activar cierre automático",
+		"disableAria": "Desactivar cierre automático",
+		"enable": "Activar cierre automático",
+		"on": "Cierre automático activado"
+	},
+	"planImplementPrompt": "Adelante con el plan.",
+	"triage": {
+		"go": "Adelante.",
+		"prompt": "La IA propuso esta tarea: empieza para abordarla o descártala.",
+		"dismiss": "Descartar",
+		"dismissAria": "Descartar esta propuesta de triaje",
+		"start": "Empezar",
+		"startAria": "Empezar a trabajar en esta propuesta de triaje"
+	},
+	"usageStats": {
+		"title": "Estadísticas de uso",
+		"aria": "Estadísticas de uso"
+	},
+	"working": "Trabajando...",
+	"toast": {
+		"updateLinkedDirectoriesFailed": "No se pudieron actualizar los directorios vinculados",
+		"openDirectoryPickerFailed": "No se pudo abrir el selector de directorios"
+	},
+	"goalReplace": {
+		"title": "¿Reemplazar el objetivo?",
+		"currentLabel": "Actual:",
+		"newLabel": "Nuevo:",
+		"replaceLabel": "Reemplazar el objetivo actual",
+		"replaceDescription": "Establecer el nuevo objetivo e iniciarlo ahora",
+		"keepDescription": "Mantener el objetivo actual"
+	},
+	"contextBar": {
+		"label": "contexto",
+		"pathLabel": "ruta",
+		"removeAria": "Quitar {{displayName}}"
+	},
+	"queue": {
+		"editAria": "Editar en el redactor",
+		"edit": "Editar",
+		"steerAria": "Guiar ahora",
+		"steer": "Guiar",
+		"removeAria": "Quitar de la cola"
+	},
+	"workflow": {
+		"status": {
+			"running": "en ejecución",
+			"done": "completado",
+			"failed": "fallido",
+			"stopped": "detenido"
+		},
+		"agentCount_one": "{{count}} agente",
+		"agentCount_other": "{{count}} agentes",
+		"toolCount_one": "{{count}} herramienta",
+		"toolCount_other": "{{count}} herramientas",
+		"tokens": "{{tokens}} tokens",
+		"title": "Flujos de trabajo",
+		"runFallback": "Flujo de trabajo",
+		"agentFallback": "Agente",
+		"closeAria": "Cerrar flujos de trabajo",
+		"emptyRuns": "Aún no hay flujos de trabajo en esta conversación. Aparecerán aquí cuando el agente ejecute un flujo de trabajo dinámico.",
+		"emptyAgents": "Aún no se han reportado agentes.",
+		"agentUnavailable": "Agente no disponible.",
+		"noResultPreview": "Sin vista previa del resultado."
+	},
+	"contextUsage": {
+		"loadingDetails": "Cargando detalles del contexto…"
+	},
+	"quickActions": {
+		"restack": "Reapilar"
+	}
+}

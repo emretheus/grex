@@ -1,0 +1,126 @@
+{
+	"states": {
+		"commitAndPush": {
+			"idle": "Committen und pushen",
+			"busy": "Wird committet...",
+			"done": "Gepusht",
+			"disabled": "Committen und pushen"
+		},
+		"push": {
+			"idle": "Pushen",
+			"busy": "Wird gepusht...",
+			"done": "Gepusht",
+			"disabled": "Pushen"
+		},
+		"fix": {
+			"idle": "CI reparieren",
+			"busy": "CI wird repariert...",
+			"done": "CI repariert",
+			"disabled": "CI reparieren"
+		},
+		"resolveConflicts": {
+			"idle": "Konflikte lösen",
+			"busy": "Wird gelöst...",
+			"done": "Gelöst",
+			"disabled": "Konflikte lösen"
+		},
+		"checksRunning": {
+			"idle": "Prüfungen laufen",
+			"busy": "Wird zusammengeführt...",
+			"done": "Zusammengeführt",
+			"disabled": "Prüfungen laufen"
+		},
+		"mergeBlocked": {
+			"idle": "Merge blockiert",
+			"busy": "Wird zusammengeführt...",
+			"done": "Zusammengeführt",
+			"disabled": "Merge blockiert"
+		},
+		"merge": {
+			"idle": "Zusammenführen",
+			"busy": "Wird zusammengeführt...",
+			"done": "Zusammengeführt",
+			"disabled": "Zusammenführen"
+		},
+		"merged": "Zusammengeführt",
+		"closed": "Geschlossen"
+	},
+	"createPr": {
+		"busy": "{{changeRequestName}} wird erstellt...",
+		"done": "{{changeRequestName}} erstellt",
+		"idle": "{{changeRequestName}} erstellen"
+	},
+	"openPr": {
+		"busy": "{{changeRequestName}} wird geöffnet...",
+		"done": "Geöffnet",
+		"idle": "{{changeRequestName}} öffnen"
+	},
+	"menu": {
+		"commitAndPushManually": "Manuell committen und pushen",
+		"pushManually": "Manuell pushen",
+		"fixManually": "CI manuell reparieren",
+		"createDraftPr": "Entwurf für {{changeRequestName}} erstellen",
+		"createPrManually": "{{changeRequestName}} manuell erstellen"
+	},
+	"options": {
+		"commitAndPush": "Optionen für Committen und Pushen",
+		"push": "Push-Optionen",
+		"fix": "Optionen für CI-Reparatur",
+		"resolveConflicts": "Optionen zum Lösen von Konflikten",
+		"checksRunning": "Optionen für laufende Prüfungen",
+		"mergeBlocked": "Optionen für blockierten Merge",
+		"merge": "Merge-Optionen",
+		"openPr": "Optionen zum Öffnen von {{changeRequestName}}",
+		"merged": "Optionen für zusammengeführt",
+		"closed": "Optionen für geschlossen",
+		"createPr": "Optionen zum Erstellen von {{changeRequestName}}"
+	},
+	"splitButton": {
+		"defaultLabel": "Committen",
+		"commitAria": "Aktuelle Änderungen committen",
+		"moreActionsAria": "Weitere Aktionen im Git-Bereich"
+	},
+	"mergeBlockedReason": {
+		"behindShort": "Hinter Basis",
+		"blockedShort": "Merge blockiert",
+		"draftShort": "PR-Entwurf",
+		"unstableShort": "Instabil",
+		"behindDetail": "Dieser Branch liegt hinter dem Basis-Branch. Trotzdem versuchen?",
+		"blockedDetail": "Der Branch-Schutz blockiert diesen Merge. Wahrscheinlich fehlt ein Review, es gibt eine ungelöste Unterhaltung oder eine erforderliche Prüfung. Trotzdem versuchen?",
+		"draftDetail": "Dieser Pull Request ist noch ein Entwurf. Trotzdem versuchen?",
+		"unstableDetail": "Nicht erforderliche Prüfungen schlagen fehl. Trotzdem versuchen?"
+	},
+	"confirm": {
+		"mergeAnyway": "Trotzdem zusammenführen",
+		"tryAnyway": "Trotzdem versuchen",
+		"beforeChecksTitle": "Vor bestandenen Prüfungen zusammenführen?",
+		"beforeChecksDescription": "Die GitHub-Prüfungen sind noch nicht bestanden. Trotzdem zusammenführen und umgehen?",
+		"blockedMergeTitle": "Blockierten Merge versuchen?"
+	},
+	"failureTitle": {
+		"createPr": "Erstellen von {{changeRequestName}} fehlgeschlagen",
+		"commitAndPush": "Committen und Pushen fehlgeschlagen",
+		"push": "Pushen fehlgeschlagen",
+		"fix": "CI-Reparatur fehlgeschlagen",
+		"resolveConflicts": "Lösen der Konflikte fehlgeschlagen",
+		"merge": "Zusammenführen fehlgeschlagen",
+		"openPr": "Öffnen von {{changeRequestName}} fehlgeschlagen",
+		"closed": "Schließen von {{changeRequestName}} fehlgeschlagen",
+		"generic": "Aktion fehlgeschlagen"
+	},
+	"toast": {
+		"mergeBlockedTitle": "Merge blockiert",
+		"conflictMessage": "{{changeRequestName}} hat Merge-Konflikte und kann noch nicht zusammengeführt werden.",
+		"mergeabilityComputing": "Die Zusammenführbarkeit wird noch berechnet. Bitte warte und versuche es erneut.",
+		"pushFailedFallback": "Branch konnte nicht gepusht werden.",
+		"promptNotDeliveredTitle": "Eingabe nicht zugestellt",
+		"openChatFallback": "Chat-Sitzung konnte nicht geöffnet werden.",
+		"reviewFailedTitle": "Review fehlgeschlagen",
+		"reviewFallback": "Review konnte nicht gestartet werden.",
+		"reconnectMessage": "Verbinde dein {{providerName}}-Konto erneut und versuche es noch einmal.",
+		"notConnectedTitle": "{{providerName}} nicht verbunden",
+		"startActionFallback": "Aktion konnte nicht gestartet werden.",
+		"completeActionFallback": "Aktion konnte nicht abgeschlossen werden.",
+		"verifyActionFallback": "Aktionsergebnis konnte nicht überprüft werden."
+	}
+}

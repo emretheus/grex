@@ -1,5 +1,6 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useEffect, useMemo, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import type { IssueInboxItem, IssueInboxPage } from "@/lib/api";
 import { useWorkspaceToast } from "@/lib/workspace-toast-context";
 
@@ -64,6 +65,7 @@ export function useIssueInboxItems(args: {
 		staleTime: STALE_MS,
 	});
 
+	const { t } = useTranslation("inbox");
 	const pushToast = useWorkspaceToast();
 	const lastErrorRef = useRef<unknown>(null);
 	useEffect(() => {
@@ -76,9 +78,13 @@ export function useIssueInboxItems(args: {
 		const message =
 			infiniteQuery.error instanceof Error
 				? infiniteQuery.error.message
-				: `Couldn't load ${args.errorLabel} issues.`;
-		pushToast(message, `${args.errorLabel} fetch failed`, "destructive");
-	}, [infiniteQuery.error, pushToast, args.errorLabel]);
+				: t("error.providerFallback", { provider: args.errorLabel });
+		pushToast(
+			message,
+			t("toast.providerFetchFailed", { provider: args.errorLabel }),
+			"destructive",
+		);
+	}, [infiniteQuery.error, pushToast, args.errorLabel, t]);
 
 	const items = useMemo<IssueInboxItem[]>(
 		() => (infiniteQuery.data?.pages ?? []).flatMap((p) => p.items),

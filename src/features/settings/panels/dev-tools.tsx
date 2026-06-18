@@ -1,5 +1,6 @@
 import { Loader2, RotateCcw, Trash2 } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
+import { Trans, useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { devResetAllData, loadDataInfo } from "@/lib/api";
@@ -11,6 +12,7 @@ import {
 } from "../components/settings-row";
 
 export function DevToolsPanel() {
+	const { t } = useTranslation("settings");
 	const [dataDir, setDataDir] = useState<string | null>(null);
 	const [confirmOpen, setConfirmOpen] = useState(false);
 	const [resetting, setResetting] = useState(false);
@@ -55,23 +57,22 @@ export function DevToolsPanel() {
 								className="size-3.5 text-muted-foreground"
 								strokeWidth={1.8}
 							/>
-							<span>Show Onboarding Again</span>
+							<span>{t("devTools.showOnboarding.title")}</span>
 						</span>
 					}
 					description={
 						<>
-							Mark onboarding as incomplete so it appears the next time Grex
-							starts.
+							{t("devTools.showOnboarding.description")}
 							{onboardingReset ? (
 								<SettingsNotice tone="ok">
-									Onboarding will be shown on the next launch.
+									{t("devTools.showOnboarding.notice")}
 								</SettingsNotice>
 							) : null}
 						</>
 					}
 				>
 					<Button variant="outline" size="sm" onClick={handleResetOnboarding}>
-						Reset Onboarding
+						{t("devTools.showOnboarding.button")}
 					</Button>
 				</SettingsRow>
 
@@ -80,17 +81,15 @@ export function DevToolsPanel() {
 					title={
 						<span className="flex items-center gap-1.5">
 							<Trash2 className="size-3.5 text-destructive" strokeWidth={1.8} />
-							<span>Reset All Data</span>
+							<span>{t("devTools.resetData.title")}</span>
 						</span>
 					}
 					description={
 						<>
-							Delete all workspaces, sessions, messages, and repositories from
-							the development database. Filesystem artefacts (worktrees,
-							paste-cache) will also be removed.
+							{t("devTools.resetData.description")}
 							{dataDir ? (
 								<SettingsNotice tone="info">
-									Data directory:{" "}
+									{t("devTools.resetData.dataDir")}{" "}
 									<code className="rounded bg-muted px-1 py-0.5">
 										{dataDir}
 									</code>
@@ -114,10 +113,10 @@ export function DevToolsPanel() {
 						{resetting ? (
 							<>
 								<Loader2 className="mr-1.5 size-3.5 animate-spin" />
-								Resetting...
+								{t("devTools.resetData.resetting")}
 							</>
 						) : (
-							"Reset All Dev Data"
+							t("devTools.resetData.button")
 						)}
 					</Button>
 				</SettingsRow>
@@ -126,16 +125,18 @@ export function DevToolsPanel() {
 			<ConfirmDialog
 				open={confirmOpen}
 				onOpenChange={setConfirmOpen}
-				title="Confirm Reset"
+				title={t("devTools.resetData.confirmTitle")}
 				description={
-					<>
-						This will permanently delete{" "}
-						<strong>all workspaces, sessions, and repositories</strong> from the
-						development database. This action cannot be undone. You can
-						re-import from Conductor afterwards.
-					</>
+					<Trans
+						i18nKey="settings:devTools.resetData.confirmDescription"
+						components={{ strong: <strong /> }}
+					/>
 				}
-				confirmLabel={resetting ? "Resetting..." : "Delete Everything"}
+				confirmLabel={
+					resetting
+						? t("devTools.resetData.confirmLabelBusy")
+						: t("devTools.resetData.confirmLabel")
+				}
 				onConfirm={() => void handleReset()}
 				loading={resetting}
 			/>

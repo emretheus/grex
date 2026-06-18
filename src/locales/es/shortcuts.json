@@ -1,0 +1,104 @@
+{
+	"search": {
+		"placeholder": "Buscar atajos"
+	},
+	"section": {
+		"global": "Global"
+	},
+	"groups": {
+		"Navigation": "Navegación",
+		"Session": "Sesión",
+		"Workspace": "Espacio de trabajo",
+		"Actions": "Acciones",
+		"System": "Sistema",
+		"Composer": "Redactor",
+		"Start surface": "Pantalla de inicio",
+		"Editor": "Editor",
+		"Terminal": "Terminal"
+	},
+	"row": {
+		"conflictAria": "Conflicto de atajo",
+		"conflictUsedBy": "Ya lo usa {{names}}",
+		"resetAria": "Restablecer al valor predeterminado",
+		"resetTooltip": "Restablecer al valor predeterminado"
+	},
+	"menu": {
+		"remove": "Quitar atajo",
+		"resetDefault": "Restablecer atajo al valor predeterminado"
+	},
+	"toast": {
+		"registerFailed": "No se pudo registrar el atajo global"
+	},
+	"definitions": {
+		"workspace.previous": { "title": "Espacio de trabajo anterior" },
+		"workspace.next": { "title": "Espacio de trabajo siguiente" },
+		"workspace.quickSwitchNext": {
+			"title": "Cambio rápido de espacio de trabajo"
+		},
+		"workspace.quickSwitchPrevious": {
+			"title": "Cambio rápido de espacio de trabajo (inverso)"
+		},
+		"session.previous": { "title": "Sesión anterior" },
+		"session.next": { "title": "Sesión siguiente" },
+		"session.new": { "title": "Nueva sesión" },
+		"session.close": { "title": "Cerrar la sesión actual" },
+		"session.reopenClosed": { "title": "Reabrir sesión cerrada" },
+		"window.close": { "title": "Cerrar ventana" },
+		"workspace.copyPath": { "title": "Copiar ruta del espacio de trabajo" },
+		"workspace.openInEditor": {
+			"title": "Abrir repositorio en la app predeterminada"
+		},
+		"workspace.new": { "title": "Abrir la pantalla de inicio" },
+		"workspace.justChat": {
+			"title": "Abrir la pantalla de inicio (solo chat)"
+		},
+		"workspace.addRepository": { "title": "Añadir repositorio" },
+		"workspace.filterSidebar": {
+			"title": "Filtrar y ordenar la barra lateral"
+		},
+		"script.run": { "title": "Ejecutar / detener script" },
+		"action.createPr": { "title": "Crear PR" },
+		"action.commitAndPush": { "title": "Confirmar y subir" },
+		"action.pullLatest": { "title": "Traer lo último de main" },
+		"action.mergePr": { "title": "Fusionar PR" },
+		"action.fixErrors": { "title": "Corregir errores" },
+		"action.openPullRequest": { "title": "Abrir PR en el navegador" },
+		"settings.open": { "title": "Abrir ajustes" },
+		"library.open": { "title": "Abrir la biblioteca" },
+		"global.hotkey": {
+			"title": "Atajo global",
+			"description": "Mostrar u ocultar Grex desde cualquier lugar."
+		},
+		"quickPanel.hotkey": {
+			"title": "Atajo del panel rápido",
+			"description": "Abrir el panel de tareas rápidas desde cualquier lugar."
+		},
+		"theme.toggle": { "title": "Cambiar tema (oscuro/claro)" },
+		"window.miniMode.toggle": { "title": "Alternar modo mini" },
+		"sidebar.left.toggle": { "title": "Alternar barra lateral izquierda" },
+		"sidebar.right.toggle": { "title": "Alternar barra lateral derecha" },
+		"zen.toggle": { "title": "Alternar modo zen" },
+		"zoom.in": { "title": "Acercar" },
+		"zoom.out": { "title": "Alejar" },
+		"zoom.reset": { "title": "Restablecer zoom" },
+		"composer.focus": { "title": "Enfocar el campo de chat" },
+		"composer.togglePlanMode": { "title": "Alternar modo de planificación" },
+		"composer.toggleTerminalMode": { "title": "Alternar modo terminal" },
+		"startSurface.cycleRepository": { "title": "Cambiar de repositorio" },
+		"composer.toggleContextPanel": { "title": "Alternar panel de contexto" },
+		"composer.openModelPicker": { "title": "Abrir el selector de modelo" },
+		"composer.toggleFollowUpBehavior": {
+			"title": "Enviar con el comportamiento de seguimiento opuesto"
+		},
+		"editor.edit": { "title": "Alternar diferencias y edición" },
+		"editor.new": { "title": "Abrir archivo" },
+		"editor.close": { "title": "Cerrar el archivo actual" },
+		"editor.toggleExplorer": { "title": "Alternar explorador de archivos" },
+		"terminal.new": { "title": "Nueva terminal" },
+		"terminal.close": { "title": "Cerrar la terminal actual" },
+		"terminal.previous": { "title": "Terminal anterior" },
+		"terminal.next": { "title": "Terminal siguiente" },
+		"inspector.focusTerminal": { "title": "Enfocar la terminal" },
+		"inspector.toggleScripts": { "title": "Alternar panel de scripts" }
+	}
+}

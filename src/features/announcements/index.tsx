@@ -9,6 +9,7 @@ import {
 	ZapIcon,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { GithubBrandIcon } from "@/components/brand-icon";
 import { GrexLogoAnimated } from "@/components/grex-logo-animated";
 import { Button } from "@/components/ui/button";
@@ -134,6 +135,7 @@ function ReleaseAnnouncementToast({
 	onOpenChangelog: () => void;
 	onRunAction: (action: ReleaseAnnouncementAction) => void;
 }) {
+	const { t } = useTranslation("misc");
 	const [collapsed, setCollapsed] = useState(false);
 
 	return (
@@ -146,7 +148,9 @@ function ReleaseAnnouncementToast({
 						className="shrink-0 opacity-90"
 					/>
 					<div className="truncate text-ui font-semibold leading-none text-foreground">
-						New in v{announcement.version}
+						{t("announcements.newInVersion", {
+							version: announcement.version,
+						})}
 					</div>
 				</div>
 				<div className="-mr-1 flex items-center gap-1">
@@ -157,8 +161,8 @@ function ReleaseAnnouncementToast({
 						className="text-muted-foreground hover:text-foreground"
 						aria-label={
 							collapsed
-								? "Expand release announcement"
-								: "Collapse release announcement"
+								? t("announcements.expand")
+								: t("announcements.collapse")
 						}
 						onClick={() => setCollapsed((value) => !value)}
 					>
@@ -173,7 +177,7 @@ function ReleaseAnnouncementToast({
 						variant="ghost"
 						size="icon-xs"
 						className="text-muted-foreground hover:text-foreground"
-						aria-label="Dismiss release announcement"
+						aria-label={t("announcements.dismiss")}
 						onClick={onClose}
 					>
 						<XIcon className="size-3.5" />
@@ -210,7 +214,7 @@ function ReleaseAnnouncementToast({
 								onClick={onOpenChangelog}
 							>
 								<GithubBrandIcon size={14} />
-								Changelogs
+								{t("announcements.changelogs")}
 								<ExternalLinkIcon className="size-3" />
 							</Button>
 						</div>

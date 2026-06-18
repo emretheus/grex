@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Loader2, Plus } from "lucide-react";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { PlainConnectState } from "@/features/inbox/plain-connect-button";
 import { usePlainConnections } from "@/features/inbox/use-plain-connection";
@@ -13,6 +14,7 @@ import { useWorkspaceToast } from "@/lib/workspace-toast-context";
  *  Lists every connected workspace; each exposes Disconnect. A "Connect
  *  another workspace" affordance reuses `PlainConnectState`. */
 export function PlainSettingsPanel() {
+	const { t } = useTranslation("settings");
 	const connectionsQuery = usePlainConnections();
 	const connections = connectionsQuery.data ?? [];
 	const [showConnectAnother, setShowConnectAnother] = useState(false);
@@ -50,7 +52,7 @@ export function PlainSettingsPanel() {
 					onClick={() => setShowConnectAnother(true)}
 				>
 					<Plus className="size-3.5" strokeWidth={2} />
-					Connect another workspace
+					{t("plain.connectAnother")}
 				</Button>
 			)}
 		</div>
@@ -58,6 +60,7 @@ export function PlainSettingsPanel() {
 }
 
 function PlainConnectionCard({ connection }: { connection: PlainConnection }) {
+	const { t } = useTranslation("settings");
 	const pushToast = useWorkspaceToast();
 	const queryClient = useQueryClient();
 
@@ -70,8 +73,8 @@ function PlainConnectionCard({ connection }: { connection: PlainConnection }) {
 		},
 		onError: (error) => {
 			const message =
-				error instanceof Error ? error.message : "Couldn't disconnect Plain.";
-			pushToast(message, "Plain disconnect failed", "destructive");
+				error instanceof Error ? error.message : t("plain.disconnectError");
+			pushToast(message, t("plain.disconnectFailed"), "destructive");
 		},
 	});
 
@@ -82,7 +85,7 @@ function PlainConnectionCard({ connection }: { connection: PlainConnection }) {
 			<div className="flex items-start justify-between gap-3">
 				<div className="min-w-0">
 					<div className="truncate text-ui font-medium text-foreground">
-						{workspace || "Plain workspace"}
+						{workspace || t("plain.workspaceFallback")}
 					</div>
 				</div>
 				<Button
@@ -93,12 +96,14 @@ function PlainConnectionCard({ connection }: { connection: PlainConnection }) {
 					onClick={() => disconnectMutation.mutate()}
 					disabled={disconnectMutation.isPending}
 				>
-					{disconnectMutation.isPending ? "Disconnecting…" : "Disconnect"}
+					{disconnectMutation.isPending
+						? t("plain.disconnecting")
+						: t("plain.disconnect")}
 				</Button>
 			</div>
 
 			<p className="text-mini text-muted-foreground/65">
-				Open threads (Todo and Snoozed) appear in the feed.
+				{t("plain.threadsHint")}
 			</p>
 		</div>
 	);

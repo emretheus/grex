@@ -1,5 +1,6 @@
 import { Check, ChevronDown, Monitor, Moon, Sun } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import {
 	Popover,
@@ -8,6 +9,7 @@ import {
 } from "@/components/ui/popover";
 import { Switch } from "@/components/ui/switch";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { SUPPORTED_LANGUAGES } from "@/lib/i18n/locales";
 import {
 	type AppSettings,
 	type ColorTheme,
@@ -18,6 +20,7 @@ import { cn } from "@/lib/utils";
 import { FontPicker } from "../components/font-picker";
 import { FontSizeStepper } from "../components/font-size-stepper";
 import { SettingsGroup, SettingsRow } from "../components/settings-row";
+import { SettingsSelect } from "../components/settings-select";
 
 type ColorThemeOption = {
 	id: ColorTheme;
@@ -226,6 +229,7 @@ export function AppearancePanel({
 	settings,
 	updateSettings,
 }: AppearancePanelProps) {
+	const { t } = useTranslation("settings");
 	// The picker edits the preset slot that matches the current effective
 	// mode — `lightTheme` and `darkTheme` are persisted independently, so
 	// flipping Theme between Light/Dark/System swaps which slot you see.
@@ -253,10 +257,26 @@ export function AppearancePanel({
 
 	return (
 		<SettingsGroup>
+			{/* ── Language ─────────────────────────────────────────────────── */}
+			<SettingsRow
+				title={t("language.title")}
+				description={t("language.description")}
+			>
+				<SettingsSelect
+					value={settings.language}
+					ariaLabel={t("language.aria")}
+					options={SUPPORTED_LANGUAGES.map((l) => ({
+						value: l.code,
+						label: l.label,
+					}))}
+					onChange={(next) => updateSettings({ language: next })}
+				/>
+			</SettingsRow>
+
 			{/* ── Mode ─────────────────────────────────────────────────────── */}
 			<SettingsRow
-				title="Theme"
-				description="Use light, dark, or match your system"
+				title={t("appearance.theme.title")}
+				description={t("appearance.theme.description")}
 			>
 				<ToggleGroup
 					type="single"
@@ -268,9 +288,13 @@ export function AppearancePanel({
 				>
 					{(
 						[
-							{ value: "light", icon: Sun, label: "Light" },
-							{ value: "dark", icon: Moon, label: "Dark" },
-							{ value: "system", icon: Monitor, label: "System" },
+							{ value: "light", icon: Sun, label: t("appearance.theme.light") },
+							{ value: "dark", icon: Moon, label: t("appearance.theme.dark") },
+							{
+								value: "system",
+								icon: Monitor,
+								label: t("appearance.theme.system"),
+							},
 						] as const
 					).map(({ value, icon: Icon, label }) => (
 						<ToggleGroupItem
@@ -286,7 +310,10 @@ export function AppearancePanel({
 			</SettingsRow>
 
 			{/* ── Color theme ──────────────────────────────────────────────── */}
-			<SettingsRow title="Color Theme" description="Choose an accent palette">
+			<SettingsRow
+				title={t("appearance.colorTheme.title")}
+				description={t("appearance.colorTheme.description")}
+			>
 				<ColorThemePicker
 					value={activeColorTheme}
 					isLight={isLight}
@@ -296,50 +323,50 @@ export function AppearancePanel({
 
 			{/* ── Chat font size ────────────────────────────────────────────── */}
 			<SettingsRow
-				title="Chat font size"
-				description="Size used for chat message bodies"
+				title={t("appearance.chatFontSize.title")}
+				description={t("appearance.chatFontSize.description")}
 			>
 				<FontSizeStepper
 					value={settings.chatFontSize}
 					onChange={(next) => updateSettings({ chatFontSize: next })}
 					min={12}
 					max={24}
-					ariaLabel="Chat font size"
+					ariaLabel={t("appearance.chatFontSize.aria")}
 				/>
 			</SettingsRow>
 
 			{/* ── Fonts (free-form text inputs) ─────────────────────────────── */}
-			<SettingsRow title="UI font">
+			<SettingsRow title={t("appearance.uiFont.title")}>
 				<FontPicker
 					value={settings.uiFontFamily}
 					onChange={(next) => updateSettings({ uiFontFamily: next })}
 					effectivePlaceholder={effective.fontSans}
-					ariaLabel="UI font family"
+					ariaLabel={t("appearance.uiFont.aria")}
 				/>
 			</SettingsRow>
 
-			<SettingsRow title="Code font">
+			<SettingsRow title={t("appearance.codeFont.title")}>
 				<FontPicker
 					value={settings.codeFontFamily}
 					onChange={(next) => updateSettings({ codeFontFamily: next })}
 					effectivePlaceholder={effective.fontMono}
-					ariaLabel="Code font family"
+					ariaLabel={t("appearance.codeFont.aria")}
 				/>
 			</SettingsRow>
 
-			<SettingsRow title="Terminal font">
+			<SettingsRow title={t("appearance.terminalFont.title")}>
 				<FontPicker
 					value={settings.terminalFontFamily}
 					onChange={(next) => updateSettings({ terminalFontFamily: next })}
 					effectivePlaceholder={effective.fontTerminal}
-					ariaLabel="Terminal font family"
+					ariaLabel={t("appearance.terminalFont.aria")}
 				/>
 			</SettingsRow>
 
 			{/* ── Cursors ──────────────────────────────────────────────────── */}
 			<SettingsRow
-				title="Use pointer cursors"
-				description="Change the cursor to a pointer when hovering over interactive elements"
+				title={t("appearance.pointerCursors.title")}
+				description={t("appearance.pointerCursors.description")}
 			>
 				<Switch
 					checked={settings.usePointerCursors}

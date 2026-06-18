@@ -1,4 +1,5 @@
 import { MessageSquareWarning } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -10,6 +11,7 @@ import {
 export { FeedbackDialog } from "./feedback-dialog";
 
 export function FeedbackButton({ onClick }: { onClick: () => void }) {
+	const { t } = useTranslation("feedback");
 	return (
 		<Tooltip>
 			<TooltipTrigger asChild>
@@ -27,7 +29,7 @@ export function FeedbackButton({ onClick }: { onClick: () => void }) {
 				sideOffset={6}
 				className="flex h-[22px] items-center rounded-md px-1.5 text-mini leading-none"
 			>
-				<span className="leading-none">Send feedback</span>
+				<span className="leading-none">{t("button.tooltip")}</span>
 			</TooltipContent>
 		</Tooltip>
 	);

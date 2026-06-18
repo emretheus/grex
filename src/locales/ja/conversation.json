@@ -1,0 +1,82 @@
+{
+	"collapse": {
+		"working": "処理中...",
+		"done": "完了",
+		"separator": "、",
+		"activeSuffix": "{{clauses}}...",
+		"search": {
+			"onePattern": {
+				"lead": {
+					"active": "'{{pattern}}' を検索中",
+					"done": "'{{pattern}}' を検索しました"
+				},
+				"cont": {
+					"active": "'{{pattern}}' を検索中",
+					"done": "'{{pattern}}' を検索しました"
+				}
+			},
+			"onePatternRepeated": {
+				"lead": {
+					"active": "'{{pattern}}' を検索中（{{count}}×）",
+					"done": "'{{pattern}}' を検索しました（{{count}}×）"
+				},
+				"cont": {
+					"active": "'{{pattern}}' を検索中（{{count}}×）",
+					"done": "'{{pattern}}' を検索しました（{{count}}×）"
+				}
+			},
+			"manyPatterns": {
+				"lead": {
+					"active": "{{count}} 件のパターンを検索中",
+					"done": "{{count}} 件のパターンを検索しました"
+				},
+				"cont": {
+					"active": "{{count}} 件のパターンを検索中",
+					"done": "{{count}} 件のパターンを検索しました"
+				}
+			},
+			"times": {
+				"lead": {
+					"active_other": "{{count}} 回検索中",
+					"done_other": "{{count}} 回検索しました"
+				},
+				"cont": {
+					"active_other": "{{count}} 回検索中",
+					"done_other": "{{count}} 回検索しました"
+				}
+			}
+		},
+		"read": {
+			"lead": {
+				"active_other": "{{count}} 件のファイルを読み込み中",
+				"done_other": "{{count}} 件のファイルを読み込みました"
+			},
+			"cont": {
+				"active_other": "{{count}} 件のファイルを読み込み中",
+				"done_other": "{{count}} 件のファイルを読み込みました"
+			}
+		},
+		"shell": {
+			"lead": {
+				"active_other": "{{count}} 件の読み取り専用コマンドを実行中",
+				"done_other": "{{count}} 件の読み取り専用コマンドを実行しました"
+			},
+			"cont": {
+				"active_other": "{{count}} 件の読み取り専用コマンドを実行中",
+				"done_other": "{{count}} 件の読み取り専用コマンドを実行しました"
+			}
+		}
+	},
+	"toast": {
+		"genericError": "問題が発生しました。もう一度お試しください。",
+		"genericErrorTitle": "エラー"
+	},
+	"error": {
+		"userInputMissingIds": "ユーザー入力リクエストを表示できません: userInputId または modelId がありません。",
+		"deliverUserInputFailed": "ユーザー入力への応答を送信できませんでした。",
+		"sendMessageFailed": "メッセージを送信できませんでした。"
+	},
+	"pending": {
+		"awaitingAnswer": "あなたの回答を待っています。"
+	}
+}

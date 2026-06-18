@@ -1,5 +1,6 @@
 import { ChevronsRight, ExternalLink } from "lucide-react";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { GithubBrandIcon, GitlabBrandIcon } from "@/components/brand-icon";
 import { Button } from "@/components/ui/button";
 import {
@@ -33,7 +34,6 @@ import {
 import { ForgeCliTrigger } from "./forge-cli-onboarding";
 
 const SHIMMER_MIN_DISPLAY_MS = 1500;
-const CONTINUE_LABEL = "Continue";
 const CONTINUE_BUTTON_PADDING_X_PX = 8;
 const CONTINUE_BUTTON_GAP_PX = 4;
 const CONTINUE_ICON_SIZE_PX = 13;
@@ -116,6 +116,7 @@ export function GitSectionHeader({
 	isContinuingWorkspace = false,
 	className,
 }: GitSectionHeaderProps) {
+	const { t } = useTranslation("inspector");
 	const { settings } = useSettings();
 	const gitHeaderHighlightClass =
 		getGitSectionHeaderHighlightClass(commitButtonMode);
@@ -280,7 +281,9 @@ export function GitSectionHeader({
 				className="flex shrink-0 items-center gap-1.5"
 			>
 				{!showChangeRequest ? (
-					<span className={INSPECTOR_SECTION_TITLE_CLASS}>Git</span>
+					<span className={INSPECTOR_SECTION_TITLE_CLASS}>
+						{t("git.title")}
+					</span>
 				) : (
 					(() => {
 						const button = (
@@ -326,8 +329,8 @@ export function GitSectionHeader({
 							</Button>
 						);
 						const openLabel = isMergeRequest
-							? "Open merge request"
-							: "Open pull request";
+							? t("git.openMergeRequest")
+							: t("git.openPullRequest");
 						return (
 							<Tooltip>
 								<TooltipTrigger asChild>{button}</TooltipTrigger>
@@ -360,7 +363,7 @@ export function GitSectionHeader({
 								type="button"
 								variant="outline"
 								size="xs"
-								aria-label="Continue workspace"
+								aria-label={t("git.continueWorkspace")}
 								className={cn(
 									"shrink-0 justify-start overflow-hidden self-center rounded-md border-dashed border-[var(--workspace-pr-merged-accent)] bg-transparent px-0 font-medium text-[var(--workspace-pr-merged-accent)] transition-[background-color,border-color,color,box-shadow,opacity] duration-200 ease-out hover:bg-transparent hover:text-[var(--workspace-pr-merged-accent)] hover:opacity-80",
 								)}
@@ -379,7 +382,7 @@ export function GitSectionHeader({
 									className="block min-w-0 overflow-hidden text-ellipsis whitespace-nowrap text-left leading-none"
 									style={{ maxWidth: labelMaxWidth }}
 								>
-									{CONTINUE_LABEL}
+									{t("git.continue")}
 								</span>
 							</Button>
 						)}

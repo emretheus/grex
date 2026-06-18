@@ -1,5 +1,6 @@
 import { X } from "lucide-react";
 import type { RefObject } from "react";
+import { useTranslation } from "react-i18next";
 import { LoginTerminalPreview as LoginTerminalCore } from "@/components/agent-login/login-terminal";
 import {
 	type TerminalHandle,
@@ -35,6 +36,7 @@ export function OnboardingTerminalPreview({
 	terminalRef: RefObject<TerminalHandle | null>;
 	padding?: string;
 }) {
+	const { t } = useTranslation("onboarding");
 	return (
 		<div
 			aria-hidden={!active}
@@ -61,7 +63,7 @@ export function OnboardingTerminalPreview({
 						<button
 							type="button"
 							onClick={onClose}
-							aria-label="Close login terminal"
+							aria-label={t("terminal.close")}
 							className="group/close grid size-2.5 cursor-interactive place-items-center rounded-full bg-muted-foreground/35 leading-none transition-colors hover:bg-status-danger"
 						>
 							<X

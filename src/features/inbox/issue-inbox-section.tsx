@@ -1,5 +1,6 @@
 import { Loader2 } from "lucide-react";
 import { type ReactNode, useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import type { IssueInboxPage } from "@/lib/api";
 import type { ComposerInsertTarget } from "@/lib/composer-insert";
@@ -50,6 +51,7 @@ export type IssueInboxSectionProps = {
  *  + Slack inbox paths so cards open in the same preview slot. Linear, Jira,
  *  and Trello are thin wrappers that supply their connections + fns. */
 export function IssueInboxSection(props: IssueInboxSectionProps) {
+	const { t } = useTranslation("inbox");
 	const [searchInput, setSearchInput] = useState("");
 	const debouncedQuery = useDebouncedValue(searchInput, 250);
 	const trimmedQuery = debouncedQuery.trim();
@@ -89,7 +91,7 @@ export function IssueInboxSection(props: IssueInboxSectionProps) {
 			value={searchInput}
 			onChange={(e) => setSearchInput(e.target.value)}
 			onClear={() => setSearchInput("")}
-			ariaLabel={`Search ${props.providerLabel} issues`}
+			ariaLabel={t("search.issuesAriaLabel", { provider: props.providerLabel })}
 		/>
 	) : null;
 
@@ -158,10 +160,13 @@ export function IssueInboxSection(props: IssueInboxSectionProps) {
 }
 
 function InboxLoadingState({ label }: { label: string }) {
+	const { t } = useTranslation("inbox");
 	return (
 		<div className="mt-8 flex flex-col items-center gap-2 px-6 text-muted-foreground/70">
 			<Loader2 className="size-4 animate-spin" strokeWidth={2} />
-			<div className="text-small leading-5">Loading {label}…</div>
+			<div className="text-small leading-5">
+				{t("loading.provider", { provider: label })}
+			</div>
 		</div>
 	);
 }
@@ -175,11 +180,16 @@ function InboxErrorState({
 	error: unknown;
 	onRetry: () => void;
 }) {
+	const { t } = useTranslation("inbox");
 	const message =
-		error instanceof Error ? error.message : `Couldn't load ${label} issues.`;
+		error instanceof Error
+			? error.message
+			: t("error.providerFallback", { provider: label });
 	return (
 		<div className="mt-8 flex flex-col items-center gap-2 px-6 text-center">
-			<div className="text-ui font-medium text-foreground">Couldn't load</div>
+			<div className="text-ui font-medium text-foreground">
+				{t("error.title")}
+			</div>
 			<div className="text-small leading-5 text-muted-foreground">
 				{message}
 			</div>
@@ -190,7 +200,7 @@ function InboxErrorState({
 				onClick={onRetry}
 				className="mt-1 cursor-interactive text-small"
 			>
-				Try again
+				{t("error.tryAgain")}
 			</Button>
 		</div>
 	);
@@ -211,9 +221,10 @@ function EmptyState({
 	emptySubtitle: string;
 	onRefresh: () => void;
 }) {
-	const title = isSearching ? "No matches" : emptyTitle;
+	const { t } = useTranslation("inbox");
+	const title = isSearching ? t("empty.noMatches") : emptyTitle;
 	const subtitle = isSearching
-		? `Nothing in ${providerLabel} matches "${query}".`
+		? t("empty.noMatchesProvider", { provider: providerLabel, query })
 		: emptySubtitle;
 	return (
 		<div className="mt-10 flex flex-col items-center gap-2 px-6 text-center">
@@ -229,7 +240,7 @@ function EmptyState({
 					onClick={onRefresh}
 					className="mt-1 cursor-interactive text-small"
 				>
-					Refresh
+					{t("empty.refresh")}
 				</Button>
 			) : null}
 		</div>

@@ -3,6 +3,7 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { X } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { LarkBrandIcon } from "@/components/brand-icon";
 import {
@@ -59,6 +60,7 @@ export function LarkConnectDialog({
 	onOpenChange,
 	action,
 }: LarkConnectDialogProps) {
+	const { t } = useTranslation(["components", "common"]);
 	const queryClient = useQueryClient();
 	const termRef = useRef<TerminalHandle | null>(null);
 	const instanceIdRef = useRef<string>("");
@@ -93,9 +95,9 @@ export function LarkConnectDialog({
 		const settled = await detectLarkOkAfterClose();
 		void queryClient.invalidateQueries({ queryKey: SOURCE_HEALTH_KEY });
 		if (settled?.state === "ok") {
-			toast.success("Lark connected");
+			toast.success(t("components:larkConnect.connected"));
 		}
-	}, [action, queryClient]);
+	}, [action, queryClient, t]);
 
 	useEffect(() => {
 		onOpenChangeRef.current = (next) => {
@@ -138,13 +140,15 @@ export function LarkConnectDialog({
 		}).catch((error) => {
 			if (cancelled) return;
 			const message =
-				error instanceof Error ? error.message : "Unable to start lark-cli.";
+				error instanceof Error
+					? error.message
+					: t("components:larkConnect.startError");
 			termRef.current?.write(`\r\n${message}\r\n`);
 		});
 		return () => {
 			cancelled = true;
 		};
-	}, [open, action, instanceId]);
+	}, [open, action, instanceId, t]);
 
 	const handleOpenChange = useCallback((next: boolean) => {
 		onOpenChangeRef.current(next);
@@ -168,7 +172,10 @@ export function LarkConnectDialog({
 		[action],
 	);
 
-	const titleSuffix = action === "install" ? "Install lark-cli" : "Sign in";
+	const titleSuffix =
+		action === "install"
+			? t("components:larkConnect.install")
+			: t("components:larkConnect.signIn");
 
 	return (
 		<Dialog open={open} onOpenChange={handleOpenChange}>
@@ -177,12 +184,14 @@ export function LarkConnectDialog({
 				className="w-[640px] max-w-[calc(100vw-4rem)] gap-0 overflow-hidden p-0 sm:max-w-[640px]"
 			>
 				<DialogTitle className="sr-only">
-					Connect Lark — {titleSuffix}
+					{t("components:larkConnect.connectWithSuffix", {
+						suffix: titleSuffix,
+					})}
 				</DialogTitle>
 				<header className="flex h-10 items-center gap-2 border-b border-border/55 px-3">
 					<div className="flex items-center gap-1.5 text-small font-medium text-foreground">
 						<LarkBrandIcon size={12} />
-						<span>Connect Lark</span>
+						<span>{t("components:larkConnect.connect")}</span>
 						<span className="ml-1 text-muted-foreground/80">
 							· {titleSuffix}
 						</span>
@@ -193,7 +202,7 @@ export function LarkConnectDialog({
 							variant="ghost"
 							size="sm"
 							onClick={() => handleOpenChange(false)}
-							aria-label="Close"
+							aria-label={t("common:actions.close")}
 							className={cn(
 								"gap-1.5 px-2 text-muted-foreground hover:text-foreground",
 							)}

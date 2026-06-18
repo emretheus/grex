@@ -1,0 +1,63 @@
+{
+	"button": {
+		"tooltip": "Feedback senden"
+	},
+	"dialog": {
+		"titleInput": "Feedback senden",
+		"titleContribute": "Zu Grex beitragen"
+	},
+	"input": {
+		"placeholder": "Beschreibe einen Fehler, schlage eine Verbesserung vor oder stelle eine Frage.",
+		"ariaLabel": "Feedback",
+		"connectGithubPrefix": "Verbinde GitHub in den ",
+		"settingsLink": "Einstellungen",
+		"connectGithubSuffix": ", um Feedback zu senden.",
+		"reuseLocalRepo": "Dein lokales grex-Repository wird wiederverwendet.",
+		"confirmPrompt": "Dadurch wird ein Issue in {{slug}} erstellt. Bestätigen?",
+		"createIssue": "Issue erstellen",
+		"confirmSend": "Senden bestätigen",
+		"sending": "Wird gesendet…",
+		"quickFix": "Schnelle Lösung",
+		"quickFixTooltip": "Zu Grex beitragen – ganz einfach"
+	},
+	"clone": {
+		"forking": "{{slug}} wird in dein GitHub-Konto geforkt…",
+		"forkReady": "Fork bereit. Wähle, wohin er auf deinem Rechner geklont werden soll.",
+		"forkIntro": "Wir forken das Upstream-Grex-Repository in dein GitHub-Konto.",
+		"cloneLocationLabel": "Klon-Speicherort",
+		"cloneLocationPlaceholder": "Ordner auswählen…",
+		"browse": "Durchsuchen…",
+		"tryAgain": "Erneut versuchen",
+		"cloning": "Wird geklont…",
+		"cloneToFolder": "In diesen Ordner klonen",
+		"forkFailed": "grex konnte auf GitHub nicht geforkt werden.",
+		"folderPickerFailed": "Die Ordnerauswahl konnte nicht geöffnet werden.",
+		"cloneFailed": "Das Repository konnte nicht geklont werden."
+	},
+	"prompt": {
+		"description": "Passe das bei Bedarf an – damit beginnt der Agent.",
+		"reuseLocalRepo": " Dein lokales grex-Repository wird wiederverwendet.",
+		"sendToAgent": "An Agent senden"
+	},
+	"template": {
+		"intro": "Ich trage zu {{slug}} bei. Bitte hilf mir, das umzusetzen.",
+		"feedbackHeading": "## Mein Feedback",
+		"howToHeading": "## Vorgehensweise",
+		"step1": "1. Erkunde den Code, frage nach allem Unklaren und schlage eine minimale Änderung vor.",
+		"step2": "2. Setze es um, sobald ich zustimme. Mache keinen Commit, Push und öffne keinen PR, bevor ich \"go ahead\" sage.",
+		"step3": "3. Nach meinem \"go ahead\": committe, pushe zu origin und führe dann `gh pr create --repo {{slug}} --base main` mit aus dem Diff generiertem Titel und Beschreibung aus.",
+		"replyInLanguage": "Antworte in derselben Sprache, die ich oben im Abschnitt \"## Mein Feedback\" verwendet habe."
+	},
+	"toast": {
+		"issueCreated": "Issue #{{number}} erstellt",
+		"viewIssue": "Ansehen",
+		"createIssueFailed": "Issue konnte nicht erstellt werden",
+		"createIssueFailedDescription": "Bitte versuche es erneut.",
+		"noModelTitle": "Feedback kann nicht gesendet werden",
+		"noModelMessage": "Wähle zuerst in den Einstellungen ein Standardmodell aus.",
+		"workspaceSetupFailedTitle": "Arbeitsbereich-Einrichtung fehlgeschlagen",
+		"workspaceSetupFailedMessage": "Arbeitsbereich-Einrichtung fehlgeschlagen.",
+		"openWorkspaceFailedTitle": "Arbeitsbereich konnte nicht geöffnet werden",
+		"sendToAgentFailedMessage": "Feedback konnte nicht an den Agenten gesendet werden."
+	}
+}

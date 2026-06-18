@@ -1,0 +1,81 @@
+{
+	"quickPanel": {
+		"panelLabel": "Schnellpanel",
+		"newWorkspace": "Neuer Arbeitsbereich",
+		"openInGrex": "In Grex öffnen"
+	},
+	"quickSwitch": {
+		"switchWorkspace": "Arbeitsbereich schnell wechseln",
+		"thinking": "Denkt nach…"
+	},
+	"workspaceStart": {
+		"chatHeading": "Woran sollen wir arbeiten?",
+		"buildHeadingPrefix": "Was sollen wir bauen",
+		"buildHeadingIn": "in",
+		"buildHeadingSuffix": "?",
+		"repositoryPlaceholder": "einem Repository",
+		"repositoryShort": "Repository",
+		"switchRepository": "Repository wechseln",
+		"closeSourcePreview": "Quellenvorschau schließen",
+		"workLocally": "Lokal arbeiten",
+		"justChat": "Nur chatten",
+		"newWorktree": "Neuer Worktree",
+		"selectWhereToRun": "Wähle aus, wo die Aufgabe ausgeführt werden soll",
+		"addRepository": "Repository hinzufügen…",
+		"reuse": "Wiederverwenden",
+		"branchOff": "Abzweigen",
+		"reuseDescription": "Den ausgewählten Branch direkt auschecken.",
+		"branchOffDescription": "Einen neuen Branch von der ausgewählten Basis abzweigen.",
+		"reuseTooltip": "Den ausgewählten Branch direkt auschecken.",
+		"branchOffTooltip": "Einen neuen Branch von der ausgewählten Basis abzweigen",
+		"switchBranch": "Branch wechseln",
+		"branchToReuse": "Wiederzuverwendender Branch",
+		"baseToForkOff": "Basis zum Abzweigen",
+		"createCheckoutNewBranch": "Neuen Branch erstellen und auschecken…",
+		"contexts": "Kontexte",
+		"backToInspector": "Zurück zum Inspektor",
+		"createBranchDialog": {
+			"title": "Branch erstellen und auschecken",
+			"branchNameLabel": "Branch-Name",
+			"branchNamePlaceholder": "feature/awesome",
+			"submit": "Erstellen und auschecken"
+		},
+		"branchValidation": {
+			"empty": "Der Branch-Name darf nicht leer sein.",
+			"endsWithSlash": "Der Branch-Name darf nicht mit „/“ enden.",
+			"startInvalid": "Der Branch-Name darf nicht mit „/“, „.“ oder „-“ beginnen.",
+			"doubleDot": "Der Branch-Name darf kein „..“ enthalten.",
+			"whitespace": "Der Branch-Name darf keine Leerzeichen enthalten.",
+			"invalidCharacter": "Der Branch-Name enthält ein ungültiges Zeichen.",
+			"endsWithLock": "Der Branch-Name darf nicht mit „.lock“ enden.",
+			"atBrace": "Der Branch-Name darf kein „@{“ enthalten.",
+			"alreadyExists": "Ein Branch namens „{{name}}“ existiert bereits."
+		}
+	},
+	"updater": {
+		"update": "Aktualisieren",
+		"updateGrexAria": "Grex auf {{version}} aktualisieren",
+		"installFailed": "Installation fehlgeschlagen",
+		"installFailedDescription": "Das heruntergeladene Update konnte nicht installiert werden.",
+		"changeLog": "Änderungsprotokoll",
+		"updateReady": "Update bereit zur Installation",
+		"updateDownloaded": "Grex {{version}} wurde heruntergeladen.",
+		"updateAndRestart": "Aktualisieren und neu starten",
+		"viewChangeLog": "Änderungsprotokoll anzeigen"
+	},
+	"announcements": {
+		"newInVersion": "Neu in v{{version}}",
+		"expand": "Versionsankündigung ausklappen",
+		"collapse": "Versionsankündigung einklappen",
+		"dismiss": "Versionsankündigung schließen",
+		"changelogs": "Änderungsprotokolle"
+	},
+	"terminal": {
+		"starting": "{{agent}} wird gestartet…",
+		"agentFallback": "Terminal",
+		"preparingWorkspace": "Arbeitsbereich wird vorbereitet…",
+		"truncationNotice": "… frühere Ausgabe abgeschnitten (Pufferlimit erreicht) …",
+		"processExited": "[Prozess mit Code {{code}} beendet]",
+		"failedToStart": "Terminal konnte nicht gestartet werden: {{error}}"
+	}
+}

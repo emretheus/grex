@@ -1,0 +1,63 @@
+{
+	"button": {
+		"tooltip": "Send feedback"
+	},
+	"dialog": {
+		"titleInput": "Send feedback",
+		"titleContribute": "Contribute to Grex"
+	},
+	"input": {
+		"placeholder": "Describe a bug, suggest an improvement, or ask a question.",
+		"ariaLabel": "Feedback",
+		"connectGithubPrefix": "Connect GitHub in ",
+		"settingsLink": "Settings",
+		"connectGithubSuffix": " to send feedback.",
+		"reuseLocalRepo": "Will reuse your local grex repo.",
+		"confirmPrompt": "This will open an issue in {{slug}}. Confirm?",
+		"createIssue": "Create issue",
+		"confirmSend": "Confirm send",
+		"sending": "Sending…",
+		"quickFix": "Quick fix",
+		"quickFixTooltip": "Contribute to Grex — super easy"
+	},
+	"clone": {
+		"forking": "Forking {{slug}} to your GitHub account…",
+		"forkReady": "Fork ready. Choose where to clone it on your machine.",
+		"forkIntro": "We'll fork the upstream Grex repo into your GitHub account.",
+		"cloneLocationLabel": "Clone location",
+		"cloneLocationPlaceholder": "Choose a folder…",
+		"browse": "Browse…",
+		"tryAgain": "Try again",
+		"cloning": "Cloning…",
+		"cloneToFolder": "Clone to this folder",
+		"forkFailed": "Failed to fork grex on GitHub.",
+		"folderPickerFailed": "Unable to open the folder picker.",
+		"cloneFailed": "Failed to clone repository."
+	},
+	"prompt": {
+		"description": "Tweak this if you want — it's what the agent starts with.",
+		"reuseLocalRepo": " Reusing your local grex repo.",
+		"sendToAgent": "Send to agent"
+	},
+	"template": {
+		"intro": "I'm contributing to {{slug}}. Please help me ship this.",
+		"feedbackHeading": "## My feedback",
+		"howToHeading": "## How to handle this",
+		"step1": "1. Explore the code, ask anything unclear, propose a minimal change.",
+		"step2": "2. Implement once I agree. Do not commit, push, or open a PR before I say \"go ahead\".",
+		"step3": "3. After my \"go ahead\": commit, push to origin, then `gh pr create --repo {{slug}} --base main` with a title and body generated from the diff.",
+		"replyInLanguage": "Reply using the same language I used in the \"## My feedback\" section above."
+	},
+	"toast": {
+		"issueCreated": "Issue #{{number}} created",
+		"viewIssue": "View",
+		"createIssueFailed": "Failed to create issue",
+		"createIssueFailedDescription": "Please try again.",
+		"noModelTitle": "Can't send feedback",
+		"noModelMessage": "Pick a default model in Settings first.",
+		"workspaceSetupFailedTitle": "Workspace setup failed",
+		"workspaceSetupFailedMessage": "Workspace setup failed.",
+		"openWorkspaceFailedTitle": "Couldn't open workspace",
+		"sendToAgentFailedMessage": "Failed to send feedback to agent."
+	}
+}

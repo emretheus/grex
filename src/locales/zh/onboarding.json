@@ -1,0 +1,167 @@
+{
+	"region": {
+		"main": "Grex 引导设置",
+		"dragRegion": "Grex 引导拖拽区域"
+	},
+	"intro": {
+		"logoAlt": "Grex",
+		"heading": "你好，Grex！",
+		"tagline": "AI 负责生成代码。Grex 则是你编排、审查并交付代码的地方。",
+		"explore": "探索",
+		"previewLabel": "Grex 预览"
+	},
+	"agents": {
+		"sectionLabel": "Agent 登录",
+		"heading": "登录你的 agent",
+		"description": "Grex 会使用你本地的 Claude Code 和 Codex 登录会话。你可以现在登录，也可以继续操作稍后再登录。",
+		"back": "返回",
+		"next": "下一步",
+		"cursorKeyError": "无法验证密钥：{{error}}"
+	},
+	"repositoryCli": {
+		"sectionLabel": "仓库 CLI 设置",
+		"heading": "连接账户",
+		"description": "每个仓库使用你的其中一个账户。现在添加或跳过——已有的登录会被自动识别。所有账户都保存在你本地的 gh/glab CLI 中。",
+		"back": "返回",
+		"next": "下一步",
+		"checkingAccounts": "正在检查已连接的账户…",
+		"noAccounts": "尚未连接任何账户。",
+		"addingAccountWithLogin": "正在添加 @{{login}}…",
+		"addingAccountProvider": "正在添加 {{provider}} 账户…",
+		"connectedCount_other": "已连接 {{count}} 个",
+		"moreAccounts_other": "另有 {{count}} 个账户",
+		"connectedToast": "{{provider}} 已以 @{{login}} 身份连接",
+		"finishAuthToast": "完成 {{provider}} CLI 认证，然后再次点击“设置”。",
+		"enterDomainError": "请输入 GitLab 域名。",
+		"providerGitlabHost": "GitLab · {{host}}",
+		"gitlabDomainTitle": "GitLab 域名",
+		"gitlabDomainHelp": "使用 gitlab.com 或你自托管的 GitLab 域名。",
+		"gitlabDomainLabel": "GitLab 域名",
+		"cancel": "取消",
+		"logIn": "登录",
+		"startLoginFailed": "无法开始登录。"
+	},
+	"skills": {
+		"sectionLabel": "MCP 与技能设置",
+		"heading": "增强 Grex",
+		"description": "Grex 正在后台安装 CLI 和技能，以便拆分任务、运行 agent、调用工具，并在你的各个工作区之间延续上下文。",
+		"setupFailed": "出了点问题——别担心，即使没有它 Grex 也能正常工作。",
+		"installing": "正在安装",
+		"retry": "重试",
+		"back": "返回",
+		"next": "下一步",
+		"cli": {
+			"label": "Grex CLI",
+			"description": "从终端控制 Grex：创建工作区、发送提示、查看文件，并将可复用的流程脚本化。"
+		},
+		"grexSkills": {
+			"label": "Grex 技能（Beta）",
+			"description": "安装技能，让 Grex 在每个工作区都能协助处理更多工作流。"
+		}
+	},
+	"repoImport": {
+		"sectionLabel": "仓库导入",
+		"heading": "导入你的第一批仓库",
+		"description": "从一个本地项目开始，或从 GitHub 拉取一个远程仓库。在进入 Grex 之前，你可以添加多个仓库。",
+		"chooseLocalProject": "选择本地项目",
+		"addingRepository": "正在添加仓库…",
+		"chooseLocalDescription": "添加本机上已有的文件夹。",
+		"addingLocalDescription": "选择一个文件夹，我们会帮你配置好。",
+		"importFromGithub": "从 GitHub 导入",
+		"importFromGithubDescription": "将远程项目克隆到 Grex 中。",
+		"importedRepositories": "已导入的仓库",
+		"emptyState": "选择一个本地文件夹或从 GitHub 导入，以建立你的第一个队列。",
+		"removeRepository": "移除 {{name}}",
+		"back": "返回",
+		"ship": "开始交付"
+	},
+	"setupItem": {
+		"defaultAction": "设置"
+	},
+	"terminal": {
+		"close": "关闭登录终端"
+	},
+	"errors": {
+		"addRepository": "无法添加仓库。",
+		"removeRepository": "无法移除仓库。"
+	},
+	"fallback": {
+		"localProject": "本地项目",
+		"githubRepository": "GitHub 仓库"
+	},
+	"mockup": {
+		"workspacePreview": "Grex 工作区预览",
+		"sidebar": {
+			"title": "工作区",
+			"addRepository": "添加仓库",
+			"newWorkspace": "新建工作区",
+			"openProject": "打开项目",
+			"cloneFromUrl": "从 URL 克隆",
+			"groups": {
+				"done": "已完成",
+				"review": "审查中",
+				"progress": "进行中",
+				"backlog": "待办"
+			},
+			"workspaces": {
+				"release": "发布 v1.2",
+				"settings": "设置刷新",
+				"authPlan": "认证功能方案",
+				"authDb": "用户认证 - 数据库",
+				"authBe": "用户认证 - 后端",
+				"authFe": "用户认证 - 前端",
+				"cleanup": "API 清理"
+			},
+			"row": {
+				"interactionRequired": "需要交互",
+				"unread": "未读",
+				"deletePermanently": "永久删除"
+			}
+		},
+		"conversation": {
+			"sessions": {
+				"planSplit": "规划工作区拆分",
+				"refineContracts": "完善 API 契约"
+			},
+			"sessionTab": {
+				"interactionRequired": "需要交互",
+				"unread": "未读会话",
+				"newSession": "新建会话"
+			},
+			"userPrompt": "把这个功能拆成三个工作区——数据库迁移、后端处理器和前端接线——这样我就能并行地在每个上结对开发。",
+			"reasoning": "正在规划工作区拆分",
+			"assistantReply": "已创建三个工作区——在侧边栏中切换它们，让每条线都持续推进。",
+			"composerPlaceholder": "请求修改、用 @ 提及文件、运行 /commands",
+			"effortHigh": "高",
+			"plan": "计划",
+			"working": "进行中",
+			"planProgress": "计划 - 已完成 {{completed}}/{{total}}"
+		},
+		"inspector": {
+			"git": "Git",
+			"actions": "操作",
+			"review": "审查",
+			"createPr": "创建 PR",
+			"remote": "远程",
+			"tabSetup": "设置",
+			"tabRun": "运行",
+			"changes_other": "{{count}} 处更改",
+			"branchUnpublished": "分支未发布",
+			"upToDate": "已是最新",
+			"commit": "提交",
+			"push": "推送",
+			"waitingForReview": "等待审查",
+			"status": {
+				"passed": "已通过",
+				"running": "运行中",
+				"failed": "失败",
+				"pending": "待处理"
+			}
+		},
+		"header": {
+			"workspaceHeader": "工作区头部",
+			"composer": "工作区输入框",
+			"noBranch": "无分支"
+		}
+	}
+}

@@ -1,0 +1,21 @@
+{
+	"actions": {
+		"save": "Enregistrer",
+		"cancel": "Annuler",
+		"dismiss": "Ignorer",
+		"retry": "Réessayer",
+		"close": "Fermer",
+		"confirm": "Confirmer",
+		"delete": "Supprimer",
+		"remove": "Retirer",
+		"edit": "Modifier",
+		"copy": "Copier",
+		"done": "Terminé"
+	},
+	"state": {
+		"loading": "Chargement…"
+	},
+	"toast": {
+		"actionFailed": "Échec de l’action"
+	}
+}

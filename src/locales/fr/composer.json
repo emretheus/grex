@@ -1,0 +1,135 @@
+{
+	"aria": {
+		"composer": "Éditeur de l'espace de travail",
+		"input": "Champ de saisie de l'espace de travail"
+	},
+	"placeholder": {
+		"default": "Demandez des modifications, mentionnez des fichiers avec @, exécutez des /commandes",
+		"plan": "Décrivez ce qu'il faut modifier, puis cliquez sur Demander des modifications"
+	},
+	"hint": {
+		"terminalDirective": "Envoyez pour démarrer en mode Terminal",
+		"toFocus": "pour activer"
+	},
+	"model": {
+		"loading": "Chargement des modèles…",
+		"select": "Sélectionner un modèle",
+		"addCustom": "Ajouter un modèle personnalisé..."
+	},
+	"fastMode": {
+		"label": "Mode rapide",
+		"labelOn": "Mode rapide (activé)",
+		"aria": "Mode rapide"
+	},
+	"effort": {
+		"label": "Effort",
+		"extraHigh": "Très élevé"
+	},
+	"permission": {
+		"plan": "Plan",
+		"auto": "Auto",
+		"planAria": "Mode plan",
+		"autoAria": "Mode auto",
+		"planTooltip": "Plan · lecture seule",
+		"autoTooltip": "Auto · accès complet"
+	},
+	"terminalMode": {
+		"label": "Mode Terminal",
+		"aria": "Mode Terminal"
+	},
+	"addContext": "Ajouter du contexte",
+	"actions": {
+		"requestChanges": "Demander des modifications",
+		"implement": "Implémenter",
+		"stop": "Arrêter",
+		"steer": "Orienter",
+		"send": "Envoyer",
+		"startOptions": "Options de démarrage"
+	},
+	"startSubmit": {
+		"newWorkspace": "Nouvel espace de travail",
+		"saveForLater": "Enregistrer pour plus tard",
+		"startNow": "Démarrer maintenant"
+	},
+	"slashCommands": {
+		"addDir": "Lier des répertoires supplémentaires à cet espace de travail",
+		"prompt": "Insérer un prompt enregistré depuis votre bibliothèque",
+		"codexCompact": "Compacter le contexte de ce fil Codex",
+		"opencodeCompact": "Compacter le contexte de cette conversation",
+		"codexGoal": "Définir un objectif persistant que Codex poursuit tour après tour jusqu'à son achèvement ou sa mise en pause",
+		"claudeGoal": "Définir une condition d'achèvement vers laquelle Claude doit travailler",
+		"workflows": "Afficher les exécutions de workflow de cette conversation"
+	},
+	"autoClose": {
+		"help": "Lorsqu'elle est activée, les sessions d'action se ferment automatiquement une fois terminées.",
+		"enableAria": "Activer la fermeture automatique",
+		"disableAria": "Désactiver la fermeture automatique",
+		"enable": "Activer la fermeture automatique",
+		"on": "Fermeture automatique activée"
+	},
+	"planImplementPrompt": "Vas-y avec le plan.",
+	"triage": {
+		"go": "Vas-y.",
+		"prompt": "L'IA a proposé cette tâche — commencez pour vous en occuper ou ignorez-la.",
+		"dismiss": "Ignorer",
+		"dismissAria": "Ignorer cette proposition de triage",
+		"start": "Commencer",
+		"startAria": "Commencer à travailler sur cette proposition de triage"
+	},
+	"usageStats": {
+		"title": "Statistiques d'utilisation",
+		"aria": "Statistiques d'utilisation"
+	},
+	"working": "En cours...",
+	"toast": {
+		"updateLinkedDirectoriesFailed": "Échec de la mise à jour des répertoires liés",
+		"openDirectoryPickerFailed": "Impossible d'ouvrir le sélecteur de répertoire"
+	},
+	"goalReplace": {
+		"title": "Remplacer l'objectif ?",
+		"currentLabel": "Actuel :",
+		"newLabel": "Nouveau :",
+		"replaceLabel": "Remplacer l'objectif actuel",
+		"replaceDescription": "Définir le nouvel objectif et le démarrer maintenant",
+		"keepDescription": "Conserver l'objectif actuel"
+	},
+	"contextBar": {
+		"label": "contexte",
+		"pathLabel": "chemin",
+		"removeAria": "Retirer {{displayName}}"
+	},
+	"queue": {
+		"editAria": "Modifier dans l'éditeur",
+		"edit": "Modifier",
+		"steerAria": "Orienter maintenant",
+		"steer": "Orienter",
+		"removeAria": "Retirer de la file d'attente"
+	},
+	"workflow": {
+		"status": {
+			"running": "en cours",
+			"done": "terminé",
+			"failed": "échoué",
+			"stopped": "arrêté"
+		},
+		"agentCount_one": "{{count}} agent",
+		"agentCount_other": "{{count}} agents",
+		"toolCount_one": "{{count}} outil",
+		"toolCount_other": "{{count}} outils",
+		"tokens": "{{tokens}} tokens",
+		"title": "Workflows",
+		"runFallback": "Workflow",
+		"agentFallback": "Agent",
+		"closeAria": "Fermer les workflows",
+		"emptyRuns": "Aucun workflow dans cette conversation pour l'instant. Ils apparaîtront ici lorsque l'agent exécutera un workflow dynamique.",
+		"emptyAgents": "Aucun agent signalé pour l'instant.",
+		"agentUnavailable": "Agent indisponible.",
+		"noResultPreview": "Aucun aperçu du résultat."
+	},
+	"contextUsage": {
+		"loadingDetails": "Chargement des détails du contexte…"
+	},
+	"quickActions": {
+		"restack": "Réempiler"
+	}
+}

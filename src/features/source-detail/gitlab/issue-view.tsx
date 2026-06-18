@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import {
 	GitHubDetailPage,
 	type SourceDetailProps,
@@ -9,6 +10,7 @@ export function GitLabIssueView({
 	card,
 	appendContextTarget,
 }: SourceDetailProps) {
+	const { t } = useTranslation("sourceDetail");
 	const detailRef =
 		card.detailRef?.source === "gitlab_issue" ? card.detailRef : null;
 	const detailQuery = useInboxItemDetailQuery(detailRef, card.id);
@@ -22,7 +24,7 @@ export function GitLabIssueView({
 			description={detail?.body ?? undefined}
 			error={detailQuery.error}
 			isLoading={detailQuery.isLoading}
-			kindLabel="issue"
+			kindLabel={t("kind.issue")}
 			refresh={detailRef ? toRefreshControl(detailQuery) : undefined}
 		/>
 	);

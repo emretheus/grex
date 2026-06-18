@@ -10,6 +10,12 @@ import type {
  * from `./ui/shared` (mockup-private string literals), NOT from
  * `@/lib/api` — that's how we keep the onboarding preview from breaking
  * when production types evolve.
+ *
+ * User-visible strings are stored as i18next keys (under the `onboarding`
+ * namespace) rather than literal English. The mockup consumers translate
+ * them at render via `t(...)`, so the preview is localized in all six
+ * supported languages. Identifier-like values (branch names, file paths,
+ * repo initials, provider ids) stay literal.
  */
 
 export type MockWorkspaceRow = {
@@ -78,8 +84,12 @@ export type MockChangeItem = {
 };
 
 export type MockActionStatus = {
+	/** i18next key (onboarding namespace) for the row label. */
 	label: string;
+	/** Interpolation values for the label key (e.g. `{ count }`). */
+	labelValues?: Record<string, string | number>;
 	status: ActionStatusKind;
+	/** i18next key for the optional right-aligned action link. */
 	action?: string;
 };
 
@@ -91,12 +101,12 @@ export const mockSidebar: {
 	groups: [
 		{
 			id: "done",
-			label: "Done",
+			label: "mockup.sidebar.groups.done",
 			tone: "done",
 			rows: [
 				{
 					id: "workspace-release",
-					title: "Release v1.2",
+					title: "mockup.sidebar.workspaces.release",
 					branch: "release/v1.2",
 					repoInitials: "HE",
 					branchTone: "merged",
@@ -105,12 +115,12 @@ export const mockSidebar: {
 		},
 		{
 			id: "review",
-			label: "In review",
+			label: "mockup.sidebar.groups.review",
 			tone: "review",
 			rows: [
 				{
 					id: "workspace-settings",
-					title: "Settings refresh",
+					title: "mockup.sidebar.workspaces.settings",
 					branch: "review/settings",
 					repoInitials: "ST",
 					branchTone: "open",
@@ -120,12 +130,12 @@ export const mockSidebar: {
 		},
 		{
 			id: "progress",
-			label: "In progress",
+			label: "mockup.sidebar.groups.progress",
 			tone: "progress",
 			rows: [
 				{
 					id: "workspace-auth-main",
-					title: "Auth feature plan",
+					title: "mockup.sidebar.workspaces.authPlan",
 					branch: "feature/user-auth",
 					repoInitials: "UA",
 					branchTone: "working",
@@ -134,7 +144,7 @@ export const mockSidebar: {
 				},
 				{
 					id: "workspace-auth-db",
-					title: "User Auth - Database",
+					title: "mockup.sidebar.workspaces.authDb",
 					branch: "feature/user-auth-db",
 					repoInitials: "DB",
 					branchTone: "working",
@@ -142,7 +152,7 @@ export const mockSidebar: {
 				},
 				{
 					id: "workspace-auth-be",
-					title: "User Auth - Backend",
+					title: "mockup.sidebar.workspaces.authBe",
 					branch: "feature/user-auth-be",
 					repoInitials: "BE",
 					branchTone: "working",
@@ -150,7 +160,7 @@ export const mockSidebar: {
 				},
 				{
 					id: "workspace-auth-fe",
-					title: "User Auth - Frontend",
+					title: "mockup.sidebar.workspaces.authFe",
 					branch: "feature/user-auth-fe",
 					repoInitials: "FE",
 					branchTone: "working",
@@ -160,12 +170,12 @@ export const mockSidebar: {
 		},
 		{
 			id: "backlog",
-			label: "Backlog",
+			label: "mockup.sidebar.groups.backlog",
 			tone: "backlog",
 			rows: [
 				{
 					id: "workspace-cleanup",
-					title: "API cleanup",
+					title: "mockup.sidebar.workspaces.cleanup",
 					branch: "task/api-cleanup",
 					repoInitials: "AC",
 					branchTone: "inactive",
@@ -188,13 +198,13 @@ export const mockConversation: {
 	sessions: [
 		{
 			id: "session-plan",
-			title: "Plan workspace split",
+			title: "mockup.conversation.sessions.planSplit",
 			provider: "claude",
 			active: true,
 		},
 		{
 			id: "session-contracts",
-			title: "Refine API contracts",
+			title: "mockup.conversation.sessions.refineContracts",
 			provider: "codex",
 			unread: true,
 			streaming: true,
@@ -204,13 +214,13 @@ export const mockConversation: {
 		{
 			id: "user-1",
 			role: "user",
-			text: "Split this feature into three workspaces — DB migration, backend handlers, and frontend wiring — so I can pair on each in parallel.",
+			text: "mockup.conversation.userPrompt",
 		},
 		{
 			id: "assistant-1",
 			role: "assistant",
 			parts: [
-				{ type: "reasoning", label: "Planning the workspace split" },
+				{ type: "reasoning", label: "mockup.conversation.reasoning" },
 				{
 					type: "tool",
 					name: "Bash",
@@ -231,7 +241,7 @@ export const mockConversation: {
 				},
 				{
 					type: "text",
-					text: "Spun up three workspaces — switch between them in the sidebar to keep each lane moving.",
+					text: "mockup.conversation.assistantReply",
 				},
 			],
 		},
@@ -265,9 +275,20 @@ export const mockInspector: {
 		},
 	],
 	gitActions: [
-		{ label: "3 changes", status: "pending", action: "Commit" },
-		{ label: "Branch unpublished", status: "pending", action: "Push" },
-		{ label: "Up to date", status: "success" },
+		{
+			label: "mockup.inspector.changes",
+			labelValues: { count: 3 },
+			status: "pending",
+			action: "mockup.inspector.commit",
+		},
+		{
+			label: "mockup.inspector.branchUnpublished",
+			status: "pending",
+			action: "mockup.inspector.push",
+		},
+		{ label: "mockup.inspector.upToDate", status: "success" },
 	],
-	reviewActions: [{ label: "Waiting for review", status: "pending" }],
+	reviewActions: [
+		{ label: "mockup.inspector.waitingForReview", status: "pending" },
+	],
 };

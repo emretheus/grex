@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { useTranslation } from "react-i18next";
 
 /**
  * Frozen snapshot of the workspace sidebar shell (outer flex column +
@@ -18,6 +19,7 @@ export function WorkspaceSidebarShellUI({
 	headerActions?: ReactNode;
 	children: ReactNode;
 }) {
+	const { t } = useTranslation("onboarding");
 	return (
 		<div className="flex h-full min-h-0 w-full flex-col overflow-hidden">
 			<div
@@ -38,7 +40,7 @@ export function WorkspaceSidebarShellUI({
 
 			<div className="flex items-center justify-between px-3">
 				<h2 className="text-body font-medium tracking-[-0.01em] text-muted-foreground">
-					Workspaces
+					{t("mockup.sidebar.title")}
 				</h2>
 				<div className="flex items-center gap-1 text-muted-foreground">
 					{headerActions}

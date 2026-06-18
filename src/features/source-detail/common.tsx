@@ -1,6 +1,7 @@
 import { type UseQueryResult, useQuery } from "@tanstack/react-query";
 import { Check, Clock3, Copy, ExternalLink, RefreshCw } from "lucide-react";
 import { Suspense, useCallback, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { AppendContextButton } from "@/components/append-context-button";
 import { GrexLogoAnimated } from "@/components/grex-logo-animated";
 import { LazyStreamdown } from "@/components/streamdown-loader";
@@ -15,6 +16,7 @@ import { SourceIcon } from "@/features/inbox/source-icon";
 import { STATE_TONE_CLASS } from "@/features/inbox/state-tone";
 import { getInboxItemDetail } from "@/lib/api";
 import type { ComposerInsertTarget } from "@/lib/composer-insert";
+import { i18n } from "@/lib/i18n";
 import { openUrl } from "@/lib/platform-bridge";
 import { grexQueryKeys } from "@/lib/query-client";
 import type {
@@ -99,8 +101,9 @@ export function GitHubDetailPage({
 	kindLabel: string;
 	refresh?: DetailRefreshControl;
 }) {
+	const { t } = useTranslation("sourceDetail");
 	const reference = parseExternalReference(card.externalId);
-	const markdownBody = description?.trim() || "No description provided.";
+	const markdownBody = description?.trim() || t("body.noDescription");
 
 	return (
 		<article className="mx-auto flex h-full w-full max-w-5xl flex-col overflow-y-auto px-4 [contain:content] [scrollbar-gutter:stable]">
@@ -117,7 +120,9 @@ export function GitHubDetailPage({
 						</span>
 						<span className="inline-flex items-center gap-1 font-normal text-muted-foreground/70">
 							<Clock3 className="size-[13px]" strokeWidth={1.8} />
-							Updated {formatRelativeTime(card.lastActivityAt)}
+							{t("meta.updated", {
+								time: formatRelativeTime(card.lastActivityAt),
+							})}
 						</span>
 					</div>
 					<SourceDetailActions
@@ -165,6 +170,7 @@ export function SourceDetailActions({
 	 *  Linear's "Start workspace"). */
 	extraActions?: React.ReactNode;
 }) {
+	const { t } = useTranslation("sourceDetail");
 	const [copied, setCopied] = useState(false);
 	const handleCopy = useCallback(() => {
 		if (copyDisabled || !navigator.clipboard?.writeText) return;
@@ -184,30 +190,32 @@ export function SourceDetailActions({
 						type="button"
 						variant="ghost"
 						size="icon-xs"
-						aria-label="Open externally"
+						aria-label={t("actions.openExternally")}
 						onClick={() => void openUrl(card.externalUrl)}
 						className="size-7 cursor-interactive rounded-md text-muted-foreground hover:bg-foreground/10 hover:text-foreground"
 					>
 						<ExternalLink className="size-[13px]" strokeWidth={1.8} />
 					</Button>
 				</TooltipTrigger>
-				<TooltipContent side="top">Open externally</TooltipContent>
+				<TooltipContent side="top">
+					{t("actions.openExternally")}
+				</TooltipContent>
 			</Tooltip>
 			<Tooltip>
 				<TooltipTrigger asChild>
-					<span className="inline-flex" aria-label="Add to context">
+					<span className="inline-flex" aria-label={t("actions.addToContext")}>
 						<AppendContextButton
 							subjectLabel={card.title}
-							ariaLabel="Add to context"
+							ariaLabel={t("actions.addToContext")}
 							getPayload={() =>
 								buildCardContextPayload(card, appendContextTarget)
 							}
-							errorTitle="Couldn't insert context card"
+							errorTitle={t("actions.addToContextError")}
 							className="size-7 cursor-interactive rounded-md text-muted-foreground hover:bg-foreground/10 hover:text-foreground [&_svg]:size-[13px]"
 						/>
 					</span>
 				</TooltipTrigger>
-				<TooltipContent side="top">Add to context</TooltipContent>
+				<TooltipContent side="top">{t("actions.addToContext")}</TooltipContent>
 			</Tooltip>
 			<Tooltip>
 				<TooltipTrigger asChild>
@@ -215,7 +223,7 @@ export function SourceDetailActions({
 						type="button"
 						variant="ghost"
 						size="icon-xs"
-						aria-label="Copy markdown"
+						aria-label={t("actions.copyMarkdown")}
 						disabled={copyDisabled}
 						onClick={handleCopy}
 						className="size-7 cursor-interactive rounded-md text-muted-foreground hover:bg-foreground/10 hover:text-foreground"
@@ -228,7 +236,7 @@ export function SourceDetailActions({
 					</Button>
 				</TooltipTrigger>
 				<TooltipContent side="top">
-					{copied ? "Copied" : "Copy markdown"}
+					{copied ? t("actions.copied") : t("actions.copyMarkdown")}
 				</TooltipContent>
 			</Tooltip>
 		</div>
@@ -242,6 +250,7 @@ export function SourceDetailActions({
  *  views — both wire a React Query `refetch` + `isFetching` pair into
  *  the `refresh` prop. */
 export function RefreshButton({ refresh }: { refresh: DetailRefreshControl }) {
+	const { t } = useTranslation("sourceDetail");
 	return (
 		<Tooltip>
 			<TooltipTrigger asChild>
@@ -249,7 +258,7 @@ export function RefreshButton({ refresh }: { refresh: DetailRefreshControl }) {
 					type="button"
 					variant="ghost"
 					size="icon-xs"
-					aria-label="Refresh"
+					aria-label={t("actions.refresh")}
 					disabled={refresh.isFetching}
 					onClick={() => refresh.refetch()}
 					className="size-7 cursor-interactive rounded-md text-muted-foreground hover:bg-foreground/10 hover:text-foreground"
@@ -261,7 +270,7 @@ export function RefreshButton({ refresh }: { refresh: DetailRefreshControl }) {
 				</Button>
 			</TooltipTrigger>
 			<TooltipContent side="top">
-				{refresh.isFetching ? "Refreshing…" : "Refresh"}
+				{refresh.isFetching ? t("actions.refreshing") : t("actions.refresh")}
 			</TooltipContent>
 		</Tooltip>
 	);
@@ -334,11 +343,13 @@ export function parseExternalReference(externalId: string) {
 export function formatRelativeTime(timestamp: number) {
 	const deltaMs = Date.now() - timestamp;
 	const minutes = Math.max(1, Math.round(deltaMs / 60_000));
-	if (minutes < 60) return `${minutes}m ago`;
+	if (minutes < 60)
+		return i18n.t("sourceDetail:relativeTime.minutes", { count: minutes });
 
 	const hours = Math.round(minutes / 60);
-	if (hours < 24) return `${hours}h ago`;
+	if (hours < 24)
+		return i18n.t("sourceDetail:relativeTime.hours", { count: hours });
 
 	const days = Math.round(hours / 24);
-	return `${days}d ago`;
+	return i18n.t("sourceDetail:relativeTime.days", { count: days });
 }

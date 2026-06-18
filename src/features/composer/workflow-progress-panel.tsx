@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import type { TFunction } from "i18next";
 import {
 	Check,
 	ChevronLeft,
@@ -15,6 +16,7 @@ import {
 	useRef,
 	useState,
 } from "react";
+import { useTranslation } from "react-i18next";
 import { LazyStreamdown } from "@/components/streamdown-loader";
 import { formatTokens } from "@/features/composer/context-usage-ring/parse";
 import { formatWorkflowDuration } from "@/features/panel/message-components/content-parts";
@@ -46,11 +48,13 @@ function useSessionWorkflows(sessionId: string | null): WorkflowPart[] {
 	}, [data]);
 }
 
-const WORKFLOW_STATUS_LABEL: Record<WorkflowPart["status"], string> = {
-	running: "running",
-	completed: "done",
-	failed: "failed",
-	stopped: "stopped",
+// Status enum → i18n key under `workflow.status`. Enum values stay verbatim;
+// only the displayed label is translated at the call site via `t()`.
+const WORKFLOW_STATUS_KEY: Record<WorkflowPart["status"], string> = {
+	running: "workflow.status.running",
+	completed: "workflow.status.done",
+	failed: "workflow.status.failed",
+	stopped: "workflow.status.stopped",
 };
 
 function statusTone(status: WorkflowPart["status"]): string {
@@ -61,14 +65,14 @@ function statusTone(status: WorkflowPart["status"]): string {
 			: "text-muted-foreground";
 }
 
-function runMeta(part: WorkflowPart): string {
+function runMeta(part: WorkflowPart, t: TFunction): string {
 	const agents = part.agents ?? [];
 	return [
 		agents.length > 0
-			? `${agents.length} agent${agents.length === 1 ? "" : "s"}`
+			? t("workflow.agentCount", { count: agents.length })
 			: null,
 		typeof part.totalTokens === "number"
-			? `${formatTokens(part.totalTokens)} tokens`
+			? t("workflow.tokens", { tokens: formatTokens(part.totalTokens) })
 			: null,
 		typeof part.durationMs === "number"
 			? formatWorkflowDuration(part.durationMs)
@@ -122,14 +126,14 @@ function buildDetailRows(agents: WorkflowAgentRow[]): {
 	return { rows, flat };
 }
 
-function agentMeta(agent: WorkflowAgentRow): string {
+function agentMeta(agent: WorkflowAgentRow, t: TFunction): string {
 	return [
 		agent.model ?? null,
 		typeof agent.tokens === "number"
-			? `${formatTokens(agent.tokens)} tokens`
+			? t("workflow.tokens", { tokens: formatTokens(agent.tokens) })
 			: null,
 		typeof agent.toolCalls === "number"
-			? `${agent.toolCalls} tool${agent.toolCalls === 1 ? "" : "s"}`
+			? t("workflow.toolCount", { count: agent.toolCalls })
 			: null,
 		typeof agent.durationMs === "number"
 			? formatWorkflowDuration(agent.durationMs)
@@ -158,6 +162,7 @@ export function WorkflowProgressPanel({
 	open: boolean;
 	onClose: () => void;
 }) {
+	const { t } = useTranslation("composer");
 	const workflows = useSessionWorkflows(sessionId);
 	const panelRef = useRef<HTMLDivElement>(null);
 	// The natural-height content of the current level's scroll region (the list
@@ -310,11 +315,11 @@ export function WorkflowProgressPanel({
 
 	const headerTitle =
 		level === 0
-			? "Workflows"
+			? t("workflow.title")
 			: level === 1
-				? (run?.name ?? "Workflow")
+				? (run?.name ?? t("workflow.runFallback"))
 				: (flat[Math.min(agentIndex, Math.max(0, flat.length - 1))]?.label ??
-					"Agent");
+					t("workflow.agentFallback"));
 
 	return (
 		<div
@@ -336,7 +341,7 @@ export function WorkflowProgressPanel({
 							strokeWidth={1.8}
 						/>
 						<span className="text-mini font-medium uppercase tracking-[0.06em] text-muted-foreground">
-							Workflows
+							{t("workflow.title")}
 						</span>
 					</>
 				) : (
@@ -359,7 +364,7 @@ export function WorkflowProgressPanel({
 					<button
 						type="button"
 						onClick={onClose}
-						aria-label="Close workflows"
+						aria-label={t("workflow.closeAria")}
 						className="flex size-5 items-center justify-center rounded text-muted-foreground hover:bg-accent hover:text-foreground"
 					>
 						<X className="size-3.5" strokeWidth={1.8} />
@@ -373,8 +378,7 @@ export function WorkflowProgressPanel({
 						<div ref={scrollContentRef}>
 							{workflows.length === 0 ? (
 								<p className="px-1 py-2 text-ui leading-6 text-muted-foreground">
-									No workflows in this conversation yet. They appear here when
-									the agent runs a dynamic workflow.
+									{t("workflow.emptyRuns")}
 								</p>
 							) : (
 								<div className="flex flex-col gap-0.5">
@@ -402,10 +406,10 @@ export function WorkflowProgressPanel({
 											<span
 												className={cn("text-mini", statusTone(part.status))}
 											>
-												{WORKFLOW_STATUS_LABEL[part.status]}
+												{t(WORKFLOW_STATUS_KEY[part.status])}
 											</span>
 											<span className="ml-auto shrink-0 truncate text-mini text-muted-foreground/60">
-												{runMeta(part)}
+												{runMeta(part, t)}
 											</span>
 											<ChevronRight
 												className="size-3.5 shrink-0 text-muted-foreground/40"
@@ -422,7 +426,7 @@ export function WorkflowProgressPanel({
 						<div ref={scrollContentRef} className="flex flex-col gap-0.5">
 							{flat.length === 0 ? (
 								<p className="px-1 py-2 text-ui leading-6 text-muted-foreground">
-									No agents reported yet.
+									{t("workflow.emptyAgents")}
 								</p>
 							) : (
 								rows.map((row) =>
@@ -479,7 +483,7 @@ export function WorkflowProgressPanel({
 							)}
 							{run ? (
 								<div className="mt-1.5 px-2 text-mini text-muted-foreground/60">
-									{runMeta(run)}
+									{runMeta(run, t)}
 								</div>
 							) : null}
 						</div>
@@ -491,12 +495,12 @@ export function WorkflowProgressPanel({
 						if (!agent) {
 							return (
 								<p className="px-1 py-2 text-ui text-muted-foreground">
-									Agent unavailable.
+									{t("workflow.agentUnavailable")}
 								</p>
 							);
 						}
 						const done = agent.status === "done";
-						const meta = agentMeta(agent);
+						const meta = agentMeta(agent, t);
 						return (
 							<div className="flex min-h-0 flex-1 flex-col gap-1.5 px-1 py-0.5">
 								{/* Fixed: agent identity + metrics. The result body below
@@ -518,7 +522,9 @@ export function WorkflowProgressPanel({
 											{agent.label}
 										</span>
 										<span className="ml-auto shrink-0 text-mini text-muted-foreground/60">
-											{done ? "done" : "running"}
+											{done
+												? t("workflow.status.done")
+												: t("workflow.status.running")}
 										</span>
 									</div>
 									{meta ? (
@@ -548,7 +554,7 @@ export function WorkflowProgressPanel({
 									</div>
 								) : (
 									<div className="text-ui text-muted-foreground/60">
-										No result preview.
+										{t("workflow.noResultPreview")}
 									</div>
 								)}
 							</div>

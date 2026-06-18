@@ -11,6 +11,7 @@ import {
 	type UpdateAutomationRequest,
 	updateAutomation,
 } from "@/lib/api";
+import { i18n } from "@/lib/i18n";
 import { grexQueryKeys } from "@/lib/query-client";
 
 function errorMessage(error: unknown): string {
@@ -42,7 +43,7 @@ export function useAutomationMutations() {
 		mutationFn: (request: CreateAutomationRequest) => createAutomation(request),
 		onSuccess: invalidate,
 		onError: (error) =>
-			toast.error("Unable to create automation", {
+			toast.error(i18n.t("automations:toast.createFailed"), {
 				description: errorMessage(error),
 			}),
 	});
@@ -54,7 +55,7 @@ export function useAutomationMutations() {
 			invalidate();
 		},
 		onError: (error) =>
-			toast.error("Unable to update automation", {
+			toast.error(i18n.t("automations:toast.updateFailed"), {
 				description: errorMessage(error),
 			}),
 	});
@@ -63,7 +64,7 @@ export function useAutomationMutations() {
 		mutationFn: (automationId: string) => deleteAutomation(automationId),
 		onSuccess: invalidate,
 		onError: (error) =>
-			toast.error("Unable to delete automation", {
+			toast.error(i18n.t("automations:toast.deleteFailed"), {
 				description: errorMessage(error),
 			}),
 	});
@@ -76,7 +77,7 @@ export function useAutomationMutations() {
 			invalidate();
 		},
 		onError: (error) =>
-			toast.error("Unable to change automation status", {
+			toast.error(i18n.t("automations:toast.statusFailed"), {
 				description: errorMessage(error),
 			}),
 	});
@@ -85,7 +86,7 @@ export function useAutomationMutations() {
 		mutationFn: (automationId: string) => runAutomationNow(automationId),
 		onSuccess: invalidate,
 		onError: (error) =>
-			toast.error("Unable to run automation", {
+			toast.error(i18n.t("automations:toast.runFailed"), {
 				description: errorMessage(error),
 			}),
 	});

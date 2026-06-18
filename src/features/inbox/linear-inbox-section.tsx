@@ -1,4 +1,5 @@
 import { useIsMutating } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import { linearListInboxItems, linearSearchIssues } from "@/lib/api";
 import type { ComposerInsertTarget } from "@/lib/composer-insert";
 import { grexQueryKeys } from "@/lib/query-client";
@@ -23,6 +24,7 @@ export function LinearInboxSection({
 	appendContextTarget?: ComposerInsertTarget;
 	horizontalPaddingClass: string;
 }) {
+	const { t } = useTranslation("inbox");
 	const connectionsQuery = useLinearConnections();
 	const connections = connectionsQuery.data ?? [];
 	const displayNames = new Map(
@@ -44,8 +46,8 @@ export function LinearInboxSection({
 			searchKey={grexQueryKeys.linearSearch}
 			listFn={linearListInboxItems}
 			searchFn={linearSearchIssues}
-			emptyTitle="No assigned issues"
-			emptySubtitle="Issues assigned to you in Linear will appear here."
+			emptyTitle={t("section.linear.emptyTitle")}
+			emptySubtitle={t("section.linear.emptySubtitle")}
 			onOpenCard={onOpenCard}
 			selectedCardId={selectedCardId}
 			appendContextTarget={appendContextTarget}

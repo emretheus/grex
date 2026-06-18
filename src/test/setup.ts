@@ -2,6 +2,11 @@ import "@testing-library/jest-dom/vitest";
 import { configure } from "@testing-library/react";
 import { createElement, type SVGProps } from "react";
 import { vi } from "vitest";
+import { initI18n } from "@/lib/i18n";
+
+// Boot i18n once for the test environment so components rendering `t()` get
+// real translations (production inits this in `main.tsx`, which tests skip).
+initI18n("en");
 
 // Default 1000ms is too tight for GitHub Actions runners where a 55-test
 // file can take ~55s of transform+import time; waitFor checks bump into the
