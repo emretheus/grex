@@ -50,7 +50,10 @@
 			"endsWithLock": "ブランチ名は「.lock」で終わることはできません。",
 			"atBrace": "ブランチ名に「@{」を含めることはできません。",
 			"alreadyExists": "「{{name}}」という名前のブランチはすでに存在します。"
-		}
+		},
+		"searchRepositories": "リポジトリを検索…",
+		"noRepositoriesFound": "リポジトリが見つかりません",
+		"openRepositoryPicker": "リポジトリピッカーを開く"
 	},
 	"updater": {
 		"update": "更新",

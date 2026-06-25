@@ -68,14 +68,6 @@
 		"on": "自动关闭已开启"
 	},
 	"planImplementPrompt": "按这个方案继续。",
-	"triage": {
-		"go": "开始吧。",
-		"prompt": "AI 提议了此任务——开始处理或忽略。",
-		"dismiss": "忽略",
-		"dismissAria": "忽略此分诊提议",
-		"start": "开始",
-		"startAria": "开始处理此分诊提议"
-	},
 	"usageStats": {
 		"title": "用量统计",
 		"aria": "用量统计"

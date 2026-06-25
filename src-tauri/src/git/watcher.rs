@@ -93,11 +93,11 @@ impl WatchableWorkspace {
             WorkspaceMode::Worktree => {
                 crate::data_dir::workspace_dir(&self.repo_name, &self.directory_name)
             }
-            WorkspaceMode::Local => self
+            WorkspaceMode::Local | WorkspaceMode::NonGit => self
                 .root_path
                 .as_deref()
                 .map(std::path::PathBuf::from)
-                .with_context(|| format!("Local workspace {} is missing repo root_path", self.id)),
+                .with_context(|| format!("Workspace {} is missing repo root_path", self.id)),
             // Chat workspaces have no git context; the watcher should
             // skip them before this resolves (see `is_watchable`).
             WorkspaceMode::Chat => anyhow::bail!(
@@ -664,9 +664,9 @@ fn lookup_fetch_target(workspace_id: &str) -> Result<(PathBuf, String, String, S
     let branch = branch.context("No target branch configured")?;
     let workspace_dir = match mode {
         WorkspaceMode::Worktree => crate::data_dir::workspace_dir(&repo_name, &dir_name)?,
-        WorkspaceMode::Local => root_path
+        WorkspaceMode::Local | WorkspaceMode::NonGit => root_path
             .map(PathBuf::from)
-            .context("Local workspace is missing repo root_path")?,
+            .context("Workspace is missing repo root_path")?,
         // Chat workspaces have no remote, no branch — the watcher
         // never registers them, so this branch shouldn't fire.
         WorkspaceMode::Chat => {
@@ -781,16 +781,16 @@ fn update_branch_in_db(
 
 fn load_watchable_workspaces() -> Result<Vec<WatchableWorkspace>> {
     let connection = db::read_conn()?;
-    // Chat-mode workspaces have no git context — exclude them from the
-    // watcher entirely so we never try to fetch, diff, or read HEAD on
-    // a scratch dir that isn't a repo.
+    // Chat and non-git workspaces have no git context — exclude them from
+    // the watcher entirely so we never try to fetch, diff, or read HEAD on
+    // a directory that isn't a repo.
     let mut stmt = connection.prepare(
         "SELECT w.id, r.name, w.directory_name, w.branch, w.state,
                 r.remote, COALESCE(w.intended_target_branch, r.default_branch), r.id,
                 COALESCE(w.mode, 'worktree'), r.root_path
          FROM workspaces w
          JOIN repos r ON r.id = w.repository_id
-         WHERE COALESCE(w.mode, 'worktree') != 'chat'",
+         WHERE COALESCE(w.mode, 'worktree') NOT IN ('chat', 'non_git')",
     )?;
     let rows = stmt.query_map([], |row| {
         Ok(WatchableWorkspace {
@@ -1057,6 +1057,56 @@ mod tests {
             )
             .unwrap();
         assert_eq!(branch, "feature/new");
+    }
+
+    #[test]
+    fn load_watchable_workspaces_excludes_non_git_and_chat() {
+        let env = crate::testkit::TestEnv::new("git-watcher-non-git-exclusion");
+        let conn = env.db_connection();
+
+        // A normal git-backed repo + worktree workspace (watchable).
+        crate::testkit::insert_repo(&conn, "repo-git", "GitRepo", Some("origin"));
+        crate::testkit::insert_workspace(
+            &conn,
+            &crate::testkit::WorkspaceFixture {
+                id: "ws-worktree",
+                repo_id: "repo-git",
+                directory_name: "alpha",
+                state: WorkspaceState::Ready.as_str(),
+                branch: Some("feature/a"),
+                intended_target_branch: Some("main"),
+            },
+        );
+
+        // A non-git repo (NULL default_branch) + its `non_git` workspace.
+        conn.execute(
+            "INSERT INTO repos (id, name, default_branch, remote, root_path)
+             VALUES ('repo-plain', 'Notes', NULL, NULL, '/tmp/notes')",
+            [],
+        )
+        .unwrap();
+        conn.execute(
+            "INSERT INTO workspaces
+                 (id, repository_id, directory_name, state, status, branch, mode, display_order)
+             VALUES ('ws-non-git', 'repo-plain', '', ?1, 'in-progress', 'Files', 'non_git', ?2)",
+            rusqlite::params![
+                WorkspaceState::Ready.as_str(),
+                crate::workspace::sidebar_order::ORDER_STEP,
+            ],
+        )
+        .unwrap();
+        drop(conn);
+
+        let watchable = load_watchable_workspaces().unwrap();
+        let ids: Vec<&str> = watchable.iter().map(|w| w.id.as_str()).collect();
+        assert!(
+            ids.contains(&"ws-worktree"),
+            "git-backed workspace must be watched, got {ids:?}"
+        );
+        assert!(
+            !ids.contains(&"ws-non-git"),
+            "non-git workspace must be excluded from the watcher, got {ids:?}"
+        );
     }
 
     // -- FetchKey identity --

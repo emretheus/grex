@@ -50,7 +50,10 @@
 			"endsWithLock": "El nombre de la rama no puede terminar con «.lock».",
 			"atBrace": "El nombre de la rama no puede contener «@{».",
 			"alreadyExists": "Ya existe una rama llamada «{{name}}»."
-		}
+		},
+		"searchRepositories": "Buscar repositorios…",
+		"noRepositoriesFound": "No se encontraron repositorios",
+		"openRepositoryPicker": "Abrir selector de repositorios"
 	},
 	"updater": {
 		"update": "Actualizar",

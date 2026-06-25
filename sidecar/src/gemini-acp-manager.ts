@@ -24,6 +24,7 @@ import { existsSync } from "node:fs";
 import { readFile, writeFile } from "node:fs/promises";
 import { createRequire } from "node:module";
 import { createInterface, type Interface } from "node:readline";
+import { applyWindowsPathFromRegistry } from "./agent-path-env.js";
 import type { SidecarEmitter } from "./emitter.js";
 import { errorDetails, logger } from "./logger.js";
 import type {
@@ -105,7 +106,7 @@ class AcpConnection {
 	) {
 		this.child = spawn(command, args, {
 			stdio: ["pipe", "pipe", "pipe"],
-			env: process.env,
+			env: applyWindowsPathFromRegistry({ ...process.env }),
 		});
 		this.child.on("error", (err) => this.fail(`spawn failed: ${err.message}`));
 		this.child.on("exit", (code) =>

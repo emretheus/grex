@@ -147,6 +147,78 @@ fn archive_workspace_allows_unborn_head_for_untouched_ai_triage() {
 }
 
 #[test]
+fn archive_unstarted_triage_workspaces_archives_unengaged_ai_triage_rows() {
+    // Smart-Triage removal migration: an `ai_triage` row that was auto-proposed
+    // but never engaged (priming unconsumed, no real message) gets archived.
+    let _guard = TEST_LOCK
+        .lock()
+        .unwrap_or_else(|poisoned| poisoned.into_inner());
+    let harness = ArchiveTestHarness::new();
+
+    let connection = Connection::open(crate::data_dir::db_path().unwrap()).unwrap();
+    connection
+        .execute(
+            "UPDATE workspaces SET kind = 'ai_triage', ai_priming_consumed = 0 WHERE id = ?1",
+            [&harness.workspace_id],
+        )
+        .unwrap();
+    drop(connection);
+
+    let archived = workspaces::archive_unstarted_triage_workspaces().unwrap();
+    assert_eq!(archived, 1);
+
+    let connection = Connection::open(crate::data_dir::db_path().unwrap()).unwrap();
+    let state: String = connection
+        .query_row(
+            "SELECT state FROM workspaces WHERE id = ?1",
+            [&harness.workspace_id],
+            |row| row.get(0),
+        )
+        .unwrap();
+    assert_eq!(state, "archived");
+}
+
+#[test]
+fn archive_unstarted_triage_workspaces_skips_engaged_rows() {
+    // An `ai_triage` row the user actually messaged (a non-priming message
+    // exists) is left alone — only un-engaged proposals are swept.
+    let _guard = TEST_LOCK
+        .lock()
+        .unwrap_or_else(|poisoned| poisoned.into_inner());
+    let harness = ArchiveTestHarness::new();
+
+    let connection = Connection::open(crate::data_dir::db_path().unwrap()).unwrap();
+    connection
+        .execute(
+            "UPDATE workspaces SET kind = 'ai_triage', ai_priming_consumed = 0 WHERE id = ?1",
+            [&harness.workspace_id],
+        )
+        .unwrap();
+    // A genuine (non-priming) user message means the user engaged with it.
+    connection
+        .execute(
+            "INSERT INTO session_messages (id, session_id, role, content, sent_at, is_ai_priming)
+             VALUES ('msg-real', ?1, 'user', 'hello', datetime('now'), 0)",
+            [&harness.session_id],
+        )
+        .unwrap();
+    drop(connection);
+
+    let archived = workspaces::archive_unstarted_triage_workspaces().unwrap();
+    assert_eq!(archived, 0);
+
+    let connection = Connection::open(crate::data_dir::db_path().unwrap()).unwrap();
+    let state: String = connection
+        .query_row(
+            "SELECT state FROM workspaces WHERE id = ?1",
+            [&harness.workspace_id],
+            |row| row.get(0),
+        )
+        .unwrap();
+    assert_ne!(state, "archived");
+}
+
+#[test]
 fn archive_workspace_rejects_unborn_head_for_manual_workspace() {
     let _guard = TEST_LOCK
         .lock()
@@ -553,6 +625,7 @@ fn start_archive_workspace_syncs_git_fetchers_after_success() {
     let app = mock_builder()
         .manage(workspaces::ArchiveJobManager::new())
         .manage(crate::git_watcher::GitWatcherManager::new())
+        .manage(crate::workspace::scripts::ScriptProcessManager::new())
         .build(mock_context(noop_assets()))
         .unwrap();
     let app_handle = app.handle().clone();

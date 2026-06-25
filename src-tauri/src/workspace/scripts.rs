@@ -221,6 +221,33 @@ impl ScriptProcessManager {
         count
     }
 
+    /// Signal every live script and terminal handle owned by `workspace_id`.
+    /// Used by the archive path so a workspace's Run-tab scripts and embedded
+    /// terminals are torn down before its worktree is removed, instead of
+    /// being left as orphan process trees. Returns the number of handles
+    /// signaled.
+    ///
+    /// Same lock discipline as `kill_all` / `kill_others_in_repo`: snapshot
+    /// the matching handles under the map lock, drop the lock, then signal —
+    /// holding the lock across the signal would deadlock against
+    /// `run_script`'s post-wait `unregister`.
+    pub fn kill_workspace(&self, workspace_id: &str) -> usize {
+        let victims: Vec<ProcessHandle> = {
+            let map = self.processes.lock().expect("process map poisoned");
+            map.iter()
+                .filter(|(k, _)| k.2.as_deref() == Some(workspace_id))
+                .map(|(_, h)| h.clone())
+                .collect()
+        };
+        let count = victims.len();
+        for h in victims {
+            h.killed.store(true, Ordering::Release);
+            kill_in_flight_stop_command(&h.stop_pgid);
+            escalating_kill(h.pid, h.pgid);
+        }
+        count
+    }
+
     /// Signal the process group (and leader as a fallback) with SIGTERM,
     /// escalating to SIGKILL after `PROCESS_TERM_TIMEOUT`. Returns true if
     /// there was a live handle to signal.

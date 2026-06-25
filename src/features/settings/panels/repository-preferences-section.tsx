@@ -31,7 +31,17 @@ const PREFERENCE_KEYS: RepoPreferenceKey[] = [
 	"general",
 ];
 
-export function RepositoryPreferencesSection({ repoId }: { repoId: string }) {
+// Non-git repos have no PR / review / branch actions — only the
+// "general" (every-new-chat) custom instructions apply.
+const NON_GIT_PREFERENCE_KEYS: RepoPreferenceKey[] = ["general"];
+
+export function RepositoryPreferencesSection({
+	repoId,
+	nonGit = false,
+}: {
+	repoId: string;
+	nonGit?: boolean;
+}) {
 	const { t } = useTranslation("settings");
 	const queryClient = useQueryClient();
 	const preferencesQuery = useQuery({
@@ -66,7 +76,7 @@ export function RepositoryPreferencesSection({ repoId }: { repoId: string }) {
 					{t("repositoryPreferences.description")}
 				</div>
 				<div className="mt-4 divide-y divide-app-border/20">
-					{PREFERENCE_KEYS.map((key) => {
+					{(nonGit ? NON_GIT_PREFERENCE_KEYS : PREFERENCE_KEYS).map((key) => {
 						const isOpen = openKey === key;
 						const value = drafts[key] ?? "";
 						return (

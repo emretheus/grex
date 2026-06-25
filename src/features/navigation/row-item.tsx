@@ -6,6 +6,7 @@ import {
 	GitBranch,
 	Laptop,
 	LoaderCircle,
+	Pencil,
 	Pin,
 	PinOff,
 	RotateCcw,
@@ -50,13 +51,13 @@ import { cn } from "@/lib/utils";
 import { getWorkspaceBranchTone } from "@/lib/workspace-helpers";
 import { WorkspaceAvatar } from "./avatar";
 import { MoveToWorktreeDialog } from "./move-to-worktree-dialog";
+import { RenameWorkspaceDialog } from "./rename-workspace-dialog";
 import {
 	branchToneClasses,
 	GroupIcon,
 	humanizeBranch,
 	STATUS_OPTIONS,
 } from "./shared";
-import { TriageSourceBadge, triageSourceMeta } from "./triage-source-badge";
 import { WorkspaceHoverCard } from "./workspace-hover-card";
 
 const rowVariants = cva(
@@ -94,6 +95,10 @@ export type WorkspaceRowItemProps = {
 	onArchiveWorkspace?: (workspaceId: string) => void;
 	onMoveLocalToWorktree?: (workspaceId: string) => void;
 	onMarkWorkspaceUnread?: (workspaceId: string) => void;
+	onRenameWorkspace?: (
+		workspaceId: string,
+		name: string,
+	) => void | Promise<void>;
 	onOpenInFinder?: (workspaceId: string) => void;
 	onRestoreWorkspace?: (workspaceId: string) => void;
 	onDeleteWorkspace?: (workspaceId: string) => void;
@@ -157,6 +162,7 @@ export const WorkspaceRowItem = memo(
 		onArchiveWorkspace,
 		onMoveLocalToWorktree,
 		onMarkWorkspaceUnread: _onMarkWorkspaceUnread,
+		onRenameWorkspace,
 		onOpenInFinder,
 		onRestoreWorkspace,
 		onDeleteWorkspace,
@@ -207,6 +213,7 @@ export const WorkspaceRowItem = memo(
 		]);
 		useEffect(() => cancelPendingPrefetch, [cancelPendingPrefetch]);
 		const [moveDialogOpen, setMoveDialogOpen] = useState(false);
+		const [renameDialogOpen, setRenameDialogOpen] = useState(false);
 		const [archiveConfirming, setArchiveConfirming] = useState(false);
 		const resetArchiveConfirm = useCallback(() => {
 			setArchiveConfirming(false);
@@ -277,34 +284,26 @@ export const WorkspaceRowItem = memo(
 		});
 		const statusDotLabel = isInteractionRequired
 			? t("row.interactionRequired")
-			: row.triagePrimingUnconsumed
-				? t("row.aiProposal")
-				: row.hasUnread
-					? t("row.unread")
-					: null;
+			: row.hasUnread
+				? t("row.unread")
+				: null;
 		const statusDotClassName = isInteractionRequired
 			? "bg-yellow-500"
-			: row.triagePrimingUnconsumed
-				? "bg-destructive"
-				: "bg-chart-2";
-		// AI-proposed (triage) rows swap their red proposal dot for the
-		// originating platform's logo — pinned bottom-right and a touch
-		// larger. Falls back to the red dot when the source is unknown.
-		const triageSourceType =
-			row.triagePrimingUnconsumed && !isInteractionRequired
-				? (row.triageSourceType ?? null)
-				: null;
-		const hasSourceBadge = triageSourceMeta(triageSourceType) !== null;
-		const showStatusDot = statusDotLabel !== null && !hasSourceBadge;
+			: "bg-chart-2";
+		const showStatusDot = statusDotLabel !== null;
 		// Local & Chat workspaces don't carry a meaningful per-row branch
 		// label (locals share the repo's HEAD; chats have no branch at
 		// all), so always fall back to the auto-titled session title.
-		const displayTitle =
-			row.mode === "local" || row.mode === "chat"
-				? row.title
-				: row.branch
+		// A user-set name wins over the branch-humanized fallback that
+		// worktree rows would otherwise show.
+		const customName = row.customName?.trim();
+		const displayTitle = customName
+			? customName
+			: row.mode === "worktree"
+				? row.branch
 					? humanizeBranch(row.branch)
-					: row.title;
+					: row.title
+				: row.title;
 
 		const rowBody = (
 			<div
@@ -476,11 +475,6 @@ export const WorkspaceRowItem = memo(
 								title={displayTitle}
 								badgeClassName={showStatusDot ? statusDotClassName : null}
 								badgeAriaLabel={statusDotLabel ?? undefined}
-								sourceBadge={
-									hasSourceBadge ? (
-										<TriageSourceBadge sourceType={triageSourceType} />
-									) : null
-								}
 								isRunning={isRunScriptRunning}
 							/>
 							{/* Fade is on an inner wrapper so the avatar's overflowing badge isn't clipped by mask-image. */}
@@ -636,6 +630,16 @@ export const WorkspaceRowItem = memo(
 							</ContextMenuSubContent>
 						</ContextMenuSub>
 
+						{onRenameWorkspace && !isRestoreAction ? (
+							<ContextMenuItem
+								disabled={isBusy || Boolean(workspaceActionsDisabled)}
+								onClick={() => setRenameDialogOpen(true)}
+							>
+								<Pencil className="size-4 shrink-0" strokeWidth={1.6} />
+								<span>{t("row.contextMenu.rename")}</span>
+							</ContextMenuItem>
+						) : null}
+
 						{_onMarkWorkspaceUnread ? (
 							<ContextMenuItem
 								disabled={
@@ -700,6 +704,14 @@ export const WorkspaceRowItem = memo(
 						onOpenChange={setMoveDialogOpen}
 						workspaceTitle={displayTitle}
 						onConfirm={() => onMoveLocalToWorktree(row.id)}
+					/>
+				) : null}
+				{onRenameWorkspace ? (
+					<RenameWorkspaceDialog
+						open={renameDialogOpen}
+						onOpenChange={setRenameDialogOpen}
+						currentTitle={displayTitle}
+						onConfirm={(name) => onRenameWorkspace(row.id, name)}
 					/>
 				) : null}
 			</>

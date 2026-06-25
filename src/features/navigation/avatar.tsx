@@ -56,10 +56,10 @@ export const WorkspaceAvatar = memo(function WorkspaceAvatar({
 	fallbackIcon?: ReactNode;
 	badgeClassName?: string | null;
 	badgeAriaLabel?: string;
-	/** Optional bottom-right badge node (e.g. a triage source logo). When
-	 *  present it replaces the top-right status dot — used by AI-proposed
-	 *  rows. Rendered as a direct child of the `relative` avatar root so its
-	 *  own absolute positioning resolves against the avatar. */
+	/** Optional bottom-right badge node. When present it replaces the
+	 *  top-right status dot. Rendered as a direct child of the `relative`
+	 *  avatar root so its own absolute positioning resolves against the
+	 *  avatar. */
 	sourceBadge?: ReactNode;
 	isRunning?: boolean;
 }) {

@@ -328,6 +328,10 @@
 			"title": "Créer les branches des nouveaux espaces de travail à partir de",
 			"description": "Chaque espace de travail est une copie isolée de votre base de code."
 		},
+		"nonGit": {
+			"title": "Dépôt non git",
+			"description": "Il s'agit d'un dossier local qui n'est pas un dépôt git — aucun réglage de dépôt distant, de branche ou de compte ne s'applique."
+		},
 		"forge": {
 			"notConnected": "{{provider}} non connecté",
 			"connectCta": "Connectez un compte {{provider}} pour activer le workflow {{provider}} pour ce dépôt.",

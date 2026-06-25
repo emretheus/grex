@@ -50,7 +50,10 @@
 			"endsWithLock": "Branch name cannot end with \".lock\".",
 			"atBrace": "Branch name cannot contain \"@{\".",
 			"alreadyExists": "A branch named \"{{name}}\" already exists."
-		}
+		},
+		"searchRepositories": "Search repositories…",
+		"noRepositoriesFound": "No repositories found",
+		"openRepositoryPicker": "Open repository picker"
 	},
 	"updater": {
 		"update": "Update",

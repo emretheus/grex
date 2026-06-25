@@ -68,14 +68,6 @@
 		"on": "自動クローズ オン"
 	},
 	"planImplementPrompt": "この計画で進めてください。",
-	"triage": {
-		"go": "進めてください。",
-		"prompt": "AI がこのタスクを提案しました。着手するには開始するか、却下してください。",
-		"dismiss": "却下",
-		"dismissAria": "このトリアージ提案を却下",
-		"start": "開始",
-		"startAria": "このトリアージ提案に着手する"
-	},
 	"usageStats": {
 		"title": "使用状況の統計",
 		"aria": "使用状況の統計"

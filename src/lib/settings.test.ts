@@ -63,7 +63,85 @@ describe("settings", () => {
 			branchIntentByRepoId: { "repo-1": "use_branch" },
 			chatModeActive: false,
 			terminalModeActive: false,
+			composerModelByContextKey: {},
+			composerEffortByContextKey: {},
+			composerPermissionModeByContextKey: {},
+			composerFastModeByContextKey: {},
 		});
+	});
+
+	it("hydrates start-surface composer picks and drops malformed values", async () => {
+		invokeMock.mockResolvedValue({
+			"app.start_surface_preferences": JSON.stringify({
+				composerModelByContextKey: {
+					"start:chat": "claude-x",
+					"start:repo:r1": 42,
+					"start:repo:r2": "",
+				},
+				composerEffortByContextKey: { "start:repo:r1": "high" },
+				composerPermissionModeByContextKey: { "start:chat": "plan" },
+				composerFastModeByContextKey: {
+					"start:repo:r1": true,
+					"start:chat": "nope",
+				},
+			}),
+		});
+
+		const settings = await loadSettings();
+		const prefs = settings.startSurfacePreferences;
+		// `42` (non-string) and `""` (empty) are dropped; the valid id survives.
+		expect(prefs.composerModelByContextKey).toEqual({
+			"start:chat": "claude-x",
+		});
+		expect(prefs.composerEffortByContextKey).toEqual({
+			"start:repo:r1": "high",
+		});
+		expect(prefs.composerPermissionModeByContextKey).toEqual({
+			"start:chat": "plan",
+		});
+		// `"nope"` (non-boolean) is dropped; the valid boolean survives.
+		expect(prefs.composerFastModeByContextKey).toEqual({
+			"start:repo:r1": true,
+		});
+	});
+
+	it("round-trips start-surface composer picks through save and load", async () => {
+		invokeMock.mockResolvedValue(undefined);
+
+		const composerPrefs = {
+			...DEFAULT_START_SURFACE_PREFERENCES,
+			composerModelByContextKey: { "start:chat": "claude-x" },
+			composerEffortByContextKey: { "start:chat": "high" },
+			composerPermissionModeByContextKey: { "start:chat": "plan" },
+			composerFastModeByContextKey: { "start:chat": true },
+		};
+
+		await saveSettings({ startSurfacePreferences: composerPrefs });
+
+		const writeCall = invokeMock.mock.calls.find(
+			([command]) => command === "update_app_settings",
+		);
+		const writtenMap = (
+			writeCall?.[1] as { settingsMap: Record<string, string> } | undefined
+		)?.settingsMap;
+		const blob = writtenMap?.["app.start_surface_preferences"];
+		expect(blob).toEqual(expect.any(String));
+
+		invokeMock.mockReset();
+		invokeMock.mockResolvedValue({
+			"app.start_surface_preferences": blob,
+		});
+
+		const settings = await loadSettings();
+		const prefs = settings.startSurfacePreferences;
+		expect(prefs.composerModelByContextKey).toEqual({
+			"start:chat": "claude-x",
+		});
+		expect(prefs.composerEffortByContextKey).toEqual({ "start:chat": "high" });
+		expect(prefs.composerPermissionModeByContextKey).toEqual({
+			"start:chat": "plan",
+		});
+		expect(prefs.composerFastModeByContextKey).toEqual({ "start:chat": true });
 	});
 
 	it("migrates legacy chat entries in modeByRepoId into chatModeActive", async () => {
@@ -163,6 +241,10 @@ describe("settings", () => {
 			branchIntentByRepoId: { "repo-1": "use_branch" },
 			chatModeActive: false,
 			terminalModeActive: false,
+			composerModelByContextKey: {},
+			composerEffortByContextKey: {},
+			composerPermissionModeByContextKey: {},
+			composerFastModeByContextKey: {},
 		});
 
 		const writeCall = invokeMock.mock.calls.find(

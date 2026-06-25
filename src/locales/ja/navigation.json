@@ -26,6 +26,7 @@
 			"unpin": "ピン留めを解除",
 			"setStatus": "ステータスを設定",
 			"markAsUnread": "未読にする",
+			"rename": "名前を変更",
 			"openInFinder": "Finder で開く",
 			"moveIntoNewWorktree": "新しいワークツリーに移動",
 			"restore": "復元",
@@ -70,6 +71,11 @@
 		"cloneError": "リポジトリを複製できませんでした。",
 		"submit": "リポジトリを複製",
 		"cloning": "複製中…"
+	},
+	"renameDialog": {
+		"title": "ワークスペースの名前を変更",
+		"placeholder": "ワークスペース名",
+		"save": "保存"
 	},
 	"moveToWorktreeDialog": {
 		"title": "新しいワークツリーに移動",

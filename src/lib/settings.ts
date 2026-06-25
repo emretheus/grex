@@ -266,6 +266,16 @@ export type StartSurfacePreferences = {
 	chatModeActive: boolean;
 	/** Start-composer Terminal-Mode toggle. */
 	terminalModeActive: boolean;
+	/** Composer picks (model / effort / permission / fast) keyed by the start
+	 *  context key (`start:chat`, `start:repo:<id>`, `start:no-repo`). The start
+	 *  surface has no session row to persist against, so without these the picks
+	 *  reset when the user navigates away and the start subtree unmounts. Model
+	 *  values are plain model ids (Grex stores model selections as strings, not
+	 *  provider+id pairs). */
+	composerModelByContextKey: Record<string, string>;
+	composerEffortByContextKey: Record<string, string>;
+	composerPermissionModeByContextKey: Record<string, string>;
+	composerFastModeByContextKey: Record<string, boolean>;
 };
 
 export type AppSettings = {
@@ -375,6 +385,10 @@ export const DEFAULT_START_SURFACE_PREFERENCES: StartSurfacePreferences = {
 	branchIntentByRepoId: {},
 	chatModeActive: false,
 	terminalModeActive: false,
+	composerModelByContextKey: {},
+	composerEffortByContextKey: {},
+	composerPermissionModeByContextKey: {},
+	composerFastModeByContextKey: {},
 };
 
 /** Fallbacks for repos without a per-repo entry. */
@@ -916,6 +930,17 @@ function parseStringRecord(value: unknown): Record<string, string> {
 	);
 }
 
+function parseBooleanRecord(value: unknown): Record<string, boolean> {
+	if (!value || typeof value !== "object" || Array.isArray(value)) {
+		return {};
+	}
+	return Object.fromEntries(
+		Object.entries(value).filter(
+			([key, entry]) => key.length > 0 && typeof entry === "boolean",
+		),
+	) as Record<string, boolean>;
+}
+
 /** Like `parseStringRecord`, with each value constrained to `allowed`. */
 function parseEnumRecord<V extends string>(
 	value: unknown,
@@ -1001,6 +1026,19 @@ function parseStartSurfacePreferences(
 				typeof o.terminalModeActive === "boolean"
 					? o.terminalModeActive
 					: false,
+			// Model selections are plain id strings in Grex, so `parseStringRecord`
+			// validates them (drops non-string / empty values) just like effort
+			// and permission mode.
+			composerModelByContextKey: parseStringRecord(o.composerModelByContextKey),
+			composerEffortByContextKey: parseStringRecord(
+				o.composerEffortByContextKey,
+			),
+			composerPermissionModeByContextKey: parseStringRecord(
+				o.composerPermissionModeByContextKey,
+			),
+			composerFastModeByContextKey: parseBooleanRecord(
+				o.composerFastModeByContextKey,
+			),
 		};
 	} catch {
 		return DEFAULT_START_SURFACE_PREFERENCES;

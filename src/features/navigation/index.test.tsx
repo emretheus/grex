@@ -395,7 +395,12 @@ describe("WorkspacesSidebar", () => {
 			clientY: 10,
 			pointerId: 1,
 		});
-		fireEvent.pointerMove(window, { clientX: 10, clientY: 30, pointerId: 1 });
+		fireEvent.pointerMove(window, {
+			clientX: 10,
+			clientY: 30,
+			pointerId: 1,
+			buttons: 1,
+		});
 		fireEvent.pointerUp(window, { clientX: 10, clientY: 30, pointerId: 1 });
 
 		expect(onMoveRepositoryInSidebar).toHaveBeenCalledWith("repo-beta", null);

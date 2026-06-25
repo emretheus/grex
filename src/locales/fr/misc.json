@@ -50,7 +50,10 @@
 			"endsWithLock": "Le nom de la branche ne peut pas se terminer par « .lock ».",
 			"atBrace": "Le nom de la branche ne peut pas contenir « @{ ».",
 			"alreadyExists": "Une branche nommée « {{name}} » existe déjà."
-		}
+		},
+		"searchRepositories": "Rechercher des dépôts…",
+		"noRepositoriesFound": "Aucun dépôt trouvé",
+		"openRepositoryPicker": "Ouvrir le sélecteur de dépôt"
 	},
 	"updater": {
 		"update": "Mettre à jour",

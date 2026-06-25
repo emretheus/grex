@@ -11,7 +11,11 @@ import type {
 	WorkspaceDetail,
 	WorkspaceSessionSummary,
 } from "@/lib/api";
-import { createSession, loadRepoScripts } from "@/lib/api";
+import {
+	createSession,
+	loadRepoScripts,
+	workspaceModeHasGitContext,
+} from "@/lib/api";
 import {
 	grexQueryKeys,
 	sessionThreadMessagesQueryOptions,
@@ -549,10 +553,10 @@ export const WorkspacePanelContainer = memo(function WorkspacePanelContainer({
 		sessions.find((session) => session.id === selectedSessionIdForPanel) ??
 		null;
 	const missingScriptTypes = useMemo<WorkspaceScriptType[]>(() => {
-		// Chat workspaces have no setup / run / archive concept — the
-		// empty state should show only the headline, not pitch scripts
-		// the user can never run from this surface.
-		if (workspace?.mode === "chat") {
+		// Chat and non-git workspaces have no setup / run / archive
+		// concept — the empty state should show only the headline, not
+		// pitch scripts the user can never run from this surface.
+		if (!workspaceModeHasGitContext(workspace?.mode)) {
 			return [];
 		}
 		if (!selectedSession) {

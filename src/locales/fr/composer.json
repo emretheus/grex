@@ -68,14 +68,6 @@
 		"on": "Fermeture automatique activée"
 	},
 	"planImplementPrompt": "Vas-y avec le plan.",
-	"triage": {
-		"go": "Vas-y.",
-		"prompt": "L'IA a proposé cette tâche — commencez pour vous en occuper ou ignorez-la.",
-		"dismiss": "Ignorer",
-		"dismissAria": "Ignorer cette proposition de triage",
-		"start": "Commencer",
-		"startAria": "Commencer à travailler sur cette proposition de triage"
-	},
 	"usageStats": {
 		"title": "Statistiques d'utilisation",
 		"aria": "Statistiques d'utilisation"

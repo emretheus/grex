@@ -28,7 +28,7 @@ export function SessionContextInjector({
 			<span className="shrink-0 text-small font-medium leading-none text-foreground/70">
 				Inject sessions:
 			</span>
-			<div className="flex min-w-0 flex-1 flex-nowrap items-center justify-start gap-1 overflow-x-auto overscroll-x-contain">
+			<div className="scrollbar-none flex min-w-0 flex-1 flex-nowrap items-center justify-start gap-1 overflow-x-auto overscroll-x-contain">
 				{candidates.map((session) => {
 					const isSelected = selected.has(session.id);
 					const title = session.title?.trim() || "Untitled";

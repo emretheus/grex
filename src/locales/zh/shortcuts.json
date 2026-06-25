@@ -75,6 +75,7 @@
 		"composer.togglePlanMode": { "title": "切换计划模式" },
 		"composer.toggleTerminalMode": { "title": "切换终端模式" },
 		"startSurface.cycleRepository": { "title": "切换仓库" },
+		"startSurface.openRepositoryPicker": { "title": "打开仓库选择器" },
 		"composer.toggleContextPanel": { "title": "切换上下文面板" },
 		"composer.openModelPicker": { "title": "打开模型选择器" },
 		"composer.toggleFollowUpBehavior": { "title": "以相反的后续行为发送" },

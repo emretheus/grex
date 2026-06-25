@@ -26,6 +26,7 @@
 			"unpin": "Desfijar",
 			"setStatus": "Establecer estado",
 			"markAsUnread": "Marcar como no leído",
+			"rename": "Cambiar nombre",
 			"openInFinder": "Abrir en Finder",
 			"moveIntoNewWorktree": "Mover a un nuevo árbol de trabajo",
 			"restore": "Restaurar",
@@ -74,6 +75,11 @@
 		"cloneError": "No se pudo clonar el repositorio.",
 		"submit": "Clonar repositorio",
 		"cloning": "Clonando…"
+	},
+	"renameDialog": {
+		"title": "Cambiar nombre del espacio de trabajo",
+		"placeholder": "Nombre del espacio de trabajo",
+		"save": "Guardar"
 	},
 	"moveToWorktreeDialog": {
 		"title": "Mover a un nuevo árbol de trabajo",

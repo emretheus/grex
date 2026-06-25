@@ -81,6 +81,9 @@
 		"composer.togglePlanMode": { "title": "Planungsmodus umschalten" },
 		"composer.toggleTerminalMode": { "title": "Terminal-Modus umschalten" },
 		"startSurface.cycleRepository": { "title": "Repository wechseln" },
+		"startSurface.openRepositoryPicker": {
+			"title": "Repository-Auswahl öffnen"
+		},
 		"composer.toggleContextPanel": { "title": "Kontextpanel umschalten" },
 		"composer.openModelPicker": { "title": "Modellauswahl öffnen" },
 		"composer.toggleFollowUpBehavior": {

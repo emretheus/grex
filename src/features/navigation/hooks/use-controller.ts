@@ -17,6 +17,7 @@ import {
 	pinWorkspace,
 	prepareArchiveWorkspace,
 	prepareWorkspaceFromRepo,
+	renameWorkspace,
 	restoreWorkspace,
 	setWorkspaceStatus,
 	startArchiveWorkspace,
@@ -685,6 +686,20 @@ export function useWorkspacesSidebarController({
 				});
 		},
 		[invalidateWorkspaceSummary, pushWorkspaceToast, queryClient],
+	);
+
+	const handleRenameWorkspace = useCallback(
+		async (workspaceId: string, name: string) => {
+			try {
+				// Backend broadcasts WorkspaceChanged → sidebar reconciles.
+				await renameWorkspace(workspaceId, name);
+			} catch (error) {
+				pushWorkspaceToast(
+					describeUnknownError(error, "Unable to rename workspace."),
+				);
+			}
+		},
+		[pushWorkspaceToast],
 	);
 
 	const handleTogglePin = useCallback(
@@ -1764,6 +1779,7 @@ export function useWorkspacesSidebarController({
 		handleCreateWorkspaceFromRepo,
 		handleDeleteWorkspace,
 		handleMarkWorkspaceUnread,
+		handleRenameWorkspace,
 		handleOpenCloneDialog,
 		handleRestoreWorkspace,
 		handleSelectWorkspace,

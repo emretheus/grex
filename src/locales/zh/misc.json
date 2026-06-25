@@ -50,7 +50,10 @@
 			"endsWithLock": "分支名称不能以“.lock”结尾。",
 			"atBrace": "分支名称不能包含“@{”。",
 			"alreadyExists": "名为“{{name}}”的分支已存在。"
-		}
+		},
+		"searchRepositories": "搜索仓库…",
+		"noRepositoriesFound": "未找到仓库",
+		"openRepositoryPicker": "打开仓库选择器"
 	},
 	"updater": {
 		"update": "更新",

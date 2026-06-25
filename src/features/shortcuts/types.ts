@@ -41,6 +41,7 @@ export type ShortcutId =
 	| "composer.openModelPicker"
 	| "composer.toggleFollowUpBehavior"
 	| "startSurface.cycleRepository"
+	| "startSurface.openRepositoryPicker"
 	| "editor.edit"
 	| "editor.new"
 	| "editor.close"

@@ -38,6 +38,13 @@ pub struct WorkspaceSessionSummary {
 
 pub fn list_workspace_sessions(workspace_id: &str) -> Result<Vec<WorkspaceSessionSummary>> {
     let connection = db::read_conn()?;
+    list_workspace_sessions_with_connection(&connection, workspace_id)
+}
+
+fn list_workspace_sessions_with_connection(
+    connection: &rusqlite::Connection,
+    workspace_id: &str,
+) -> Result<Vec<WorkspaceSessionSummary>> {
     let active_session_id: Option<String> = connection.query_row(
         "SELECT active_session_id FROM workspaces WHERE id = ?1",
         [workspace_id],
@@ -65,7 +72,27 @@ pub fn list_workspace_sessions(workspace_id: &str) -> Result<Vec<WorkspaceSessio
               s.action_kind,
               s.session_kind
             FROM sessions s
-            WHERE s.workspace_id = ?1 AND COALESCE(s.is_hidden, 0) = 0
+            WHERE s.workspace_id = ?1
+              AND (
+                COALESCE(s.is_hidden, 0) = 0
+                -- Fallback: when the workspace has NO visible sessions left
+                -- (e.g. all were auto-closed after an in-review transition),
+                -- still surface the single most-recent session — even though
+                -- it is hidden — so the panel shows that conversation instead
+                -- of stranding on the "No session selected" dead-end.
+                OR (
+                  NOT EXISTS (
+                    SELECT 1 FROM sessions v
+                    WHERE v.workspace_id = ?1 AND COALESCE(v.is_hidden, 0) = 0
+                  )
+                  AND s.id = (
+                    SELECT s3.id FROM sessions s3
+                    WHERE s3.workspace_id = ?1
+                    ORDER BY datetime(s3.created_at) DESC, s3.id DESC
+                    LIMIT 1
+                  )
+                )
+              )
             ORDER BY
               datetime(s.created_at) ASC
             "#,
@@ -1159,6 +1186,51 @@ mod tests {
             "INSERT INTO sessions (id, workspace_id, status, title, created_at, updated_at) VALUES ('s3', 'w1', 'idle', 'Third Session', '2026-01-03T00:00:00', '2026-01-03T00:00:00')",
             [],
         ).unwrap();
+    }
+
+    #[test]
+    fn list_workspace_sessions_excludes_hidden_when_a_visible_one_remains() {
+        let (conn, _dir) = test_db();
+        seed_two_sessions(&conn); // s1 (older), s2 (newer)
+        conn.execute("UPDATE sessions SET is_hidden = 1 WHERE id = 's2'", [])
+            .unwrap();
+
+        let sessions = list_workspace_sessions_with_connection(&conn, "w1").unwrap();
+        assert_eq!(
+            sessions.iter().map(|s| s.id.as_str()).collect::<Vec<_>>(),
+            vec!["s1"],
+        );
+    }
+
+    #[test]
+    fn list_workspace_sessions_falls_back_to_latest_hidden_when_all_hidden() {
+        let (conn, _dir) = test_db();
+        seed_two_sessions(&conn); // s1 (older), s2 (newer)
+        conn.execute(
+            "UPDATE sessions SET is_hidden = 1 WHERE workspace_id = 'w1'",
+            [],
+        )
+        .unwrap();
+
+        // No visible sessions remain → surface the single most-recent one (s2)
+        // instead of stranding the panel on "No session selected".
+        let sessions = list_workspace_sessions_with_connection(&conn, "w1").unwrap();
+        assert_eq!(
+            sessions.iter().map(|s| s.id.as_str()).collect::<Vec<_>>(),
+            vec!["s2"],
+        );
+    }
+
+    #[test]
+    fn list_workspace_sessions_returns_all_visible_when_none_hidden() {
+        let (conn, _dir) = test_db();
+        seed_two_sessions(&conn);
+
+        let sessions = list_workspace_sessions_with_connection(&conn, "w1").unwrap();
+        assert_eq!(
+            sessions.iter().map(|s| s.id.as_str()).collect::<Vec<_>>(),
+            vec!["s1", "s2"],
+        );
     }
 
     fn get_active_session_id(conn: &Connection, workspace_id: &str) -> Option<String> {

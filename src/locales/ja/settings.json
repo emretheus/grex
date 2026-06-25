@@ -323,6 +323,10 @@
 			"title": "新しいワークスペースの分岐元",
 			"description": "各ワークスペースはコードベースの独立したコピーです。"
 		},
+		"nonGit": {
+			"title": "非 Git リポジトリ",
+			"description": "これは Git リポジトリではないローカルフォルダーです。リモート・ブランチ・アカウントの設定は適用されません。"
+		},
 		"forge": {
 			"notConnected": "{{provider}} は未接続です",
 			"connectCta": "{{provider}} アカウントを接続して、このリポジトリで {{provider}} ワークフローを有効にします。",

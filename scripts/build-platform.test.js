@@ -96,10 +96,7 @@ describe("build platform boundary", () => {
 		expect(config.build.beforeBuildCommand).toBe(
 			"node scripts/prepare-sidecar.mjs && bun run build",
 		);
-		expect(config.bundle.externalBin).toEqual([
-			"../sidecar/dist/grex-sidecar",
-			"./target/bundled/grex-cli",
-		]);
+		expect(config.bundle.externalBin).toEqual(["../sidecar/dist/grex-sidecar"]);
 		expect(config.bundle.resources).toEqual({
 			"../sidecar/dist/vendor/": "vendor",
 		});

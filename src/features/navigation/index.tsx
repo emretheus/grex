@@ -154,6 +154,7 @@ export const WorkspacesSidebar = memo(function WorkspacesSidebar({
 	onArchiveWorkspace,
 	onMoveLocalToWorktree,
 	onMarkWorkspaceUnread,
+	onRenameWorkspace,
 	onRestoreWorkspace,
 	onDeleteWorkspace,
 	onOpenInFinder,
@@ -200,6 +201,10 @@ export const WorkspacesSidebar = memo(function WorkspacesSidebar({
 	onArchiveWorkspace?: (workspaceId: string) => void;
 	onMoveLocalToWorktree?: (workspaceId: string) => void;
 	onMarkWorkspaceUnread?: (workspaceId: string) => void;
+	onRenameWorkspace?: (
+		workspaceId: string,
+		name: string,
+	) => void | Promise<void>;
 	onRestoreWorkspace?: (workspaceId: string) => void;
 	onDeleteWorkspace?: (workspaceId: string) => void;
 	onOpenInFinder?: (workspaceId: string) => void;
@@ -503,11 +508,8 @@ export const WorkspacesSidebar = memo(function WorkspacesSidebar({
 				continue;
 			}
 
-			// Chats + Triage have no drop-target role — hide when empty.
-			if (
-				(group.id === "chats" || group.id === "ai-tasks") &&
-				group.rows.length === 0
-			) {
+			// Chats have no drop-target role — hide when empty.
+			if (group.id === "chats" && group.rows.length === 0) {
 				continue;
 			}
 
@@ -1075,6 +1077,7 @@ export const WorkspacesSidebar = memo(function WorkspacesSidebar({
 						onArchiveWorkspace={onArchiveWorkspace}
 						onMoveLocalToWorktree={onMoveLocalToWorktree}
 						onMarkWorkspaceUnread={onMarkWorkspaceUnread}
+						onRenameWorkspace={onRenameWorkspace}
 						onOpenInFinder={onOpenInFinder}
 						onTogglePin={onTogglePin}
 						onSetWorkspaceStatus={onSetWorkspaceStatus}
@@ -1120,6 +1123,7 @@ export const WorkspacesSidebar = memo(function WorkspacesSidebar({
 			onArchiveWorkspace,
 			onMoveLocalToWorktree,
 			onMarkWorkspaceUnread,
+			onRenameWorkspace,
 			onRestoreWorkspace,
 			onDeleteWorkspace,
 			onTogglePin,

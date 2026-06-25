@@ -7,7 +7,7 @@
 // via `workspacePane`.
 import type { ComponentProps, KeyboardEvent, PointerEvent } from "react";
 import { FeedbackDialog } from "@/features/feedback";
-import type { WorkspaceDetail } from "@/lib/api";
+import { type WorkspaceDetail, workspaceModeHasGitContext } from "@/lib/api";
 import type { ShellViewMode } from "@/shell/controllers/use-selection-controller";
 import { AppOverlays } from "./app-overlays";
 import { AppShellProviderStack } from "./app-shell-provider-stack";
@@ -112,7 +112,7 @@ export function AppShellLayout({
 					<WorkspacePaneSurface {...workspacePane} />
 
 					{rightSidebarAvailable &&
-						selectedWorkspaceDetail?.mode !== "chat" && (
+						workspaceModeHasGitContext(selectedWorkspaceDetail?.mode) && (
 							<>
 								<ShellResizeSeparator
 									side="inspector"

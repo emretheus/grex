@@ -10,7 +10,12 @@ import { createInterface } from "node:readline";
 import { applyAgentProxyToProcessEnv } from "../agent-proxy.js";
 import type { SidecarEmitter } from "../emitter.js";
 import { CursorCore } from "./cursor-core.js";
-import { isRetryableCursorError } from "./cursor-helpers.js";
+import {
+	fatalReason,
+	isAuthError,
+	isRetryableCursorError,
+} from "./cursor-helpers.js";
+import { sessionContext } from "./fatal-context.js";
 import type { EmitMsg, FromWorker, ToWorker } from "./protocol.js";
 
 // Keep stdout pristine: any stray console.log from the SDK would corrupt the
@@ -60,22 +65,32 @@ const wireEmitter: SidecarEmitter = {
 const core = new CursorCore();
 
 // A stray async network error from the SDK's HTTP/2 client (Cursor's API
-// intermittently resets the TLS handshake) surfaces as an uncaughtException,
-// which would otherwise kill the worker and show the user a bare "worker
-// exited unexpectedly". Catch it: fail in-flight turns with a real error and
-// release the proxy's awaiting send promises. For a transient network error
-// stay alive (sessions are dropped; the next turn reconnects); for anything
-// else exit so the supervisor respawns a clean worker.
+// intermittently resets the TLS handshake) — or a raw `[unauthenticated]`
+// ConnectError from one session's event stream — surfaces as an
+// uncaughtException, which would otherwise kill the worker and show the user a
+// bare "worker exited unexpectedly". Catch it: fail the *originating* session's
+// in-flight turn with a real error (attributed via `sessionContext`) and release
+// the proxy's awaiting send promises. Auth faults scope to just that session so
+// sibling workspaces keep streaming; non-auth (connection-level) faults fall
+// back to failing every turn. For a transient network error stay alive
+// (sessions are dropped; the next turn reconnects); for anything else exit so
+// the supervisor respawns a clean worker.
 let fatalExiting = false;
 function handleFatal(kind: string, err: unknown): void {
 	const message = errMessage(err);
 	console.error(`[cursor-worker] ${kind}: ${message}`);
 	const transient = isRetryableCursorError(err);
 	try {
-		const reason = transient
-			? "Cursor lost its network connection. Please send the message again."
-			: `Cursor worker error: ${message}`;
-		for (const requestId of core.failActiveTurns(reason)) {
+		// Attribute the fault to its originating session (set in
+		// CursorCore.sendMessage). Auth faults are per-session so they scope to
+		// just it; non-auth faults may be connection-level and fall back to
+		// failing every turn — see `failTurnsForFatal` / `fatalScope`.
+		const attributedSessionId = sessionContext.getStore()?.sessionId;
+		for (const requestId of core.failTurnsForFatal(
+			fatalReason(err, message),
+			isAuthError(err),
+			attributedSessionId,
+		)) {
 			out({ t: "sendDone", requestId });
 		}
 	} catch (recoverErr) {

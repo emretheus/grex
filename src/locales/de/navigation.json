@@ -26,6 +26,7 @@
 			"unpin": "Lösen",
 			"setStatus": "Status festlegen",
 			"markAsUnread": "Als ungelesen markieren",
+			"rename": "Umbenennen",
 			"openInFinder": "Im Finder öffnen",
 			"moveIntoNewWorktree": "In neuen Worktree verschieben",
 			"restore": "Wiederherstellen",
@@ -74,6 +75,11 @@
 		"cloneError": "Das Repository konnte nicht geklont werden.",
 		"submit": "Repository klonen",
 		"cloning": "Wird geklont…"
+	},
+	"renameDialog": {
+		"title": "Workspace umbenennen",
+		"placeholder": "Workspace-Name",
+		"save": "Speichern"
 	},
 	"moveToWorktreeDialog": {
 		"title": "In neuen Worktree verschieben",
