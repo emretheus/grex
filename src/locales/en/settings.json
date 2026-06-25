@@ -328,6 +328,10 @@
 			"title": "Branch new workspaces from",
 			"description": "Each workspace is an isolated copy of your codebase."
 		},
+		"nonGit": {
+			"title": "Non-git repository",
+			"description": "This is a local folder that isn't a git repository — no remote, branch, or account settings apply."
+		},
 		"forge": {
 			"notConnected": "{{provider}} not connected",
 			"connectCta": "Connect a {{provider}} account to enable the {{provider}} workflow for this repo.",

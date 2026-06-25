@@ -8,6 +8,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import type { StartSubmitMode } from "@/features/composer/start-submit-mode";
 import type {
 	ComposerCreatePrepareOutcome,
+	ComposerSettingsController,
 	ComposerSubmitPayload,
 	PendingCreatedWorkspaceSubmit,
 } from "@/features/conversation";
@@ -73,6 +74,9 @@ export type StartSurfaceState = {
 		directories: readonly string[];
 		onChange: (next: readonly string[]) => void;
 	};
+	/** Persisted composer picks for the start surface, so model/effort/
+	 *  permission/fast survive the start-subtree unmount on navigation. */
+	startComposerSettingsController: ComposerSettingsController;
 };
 
 export type StartSurfaceActions = {
@@ -167,6 +171,17 @@ export function useStartSurfaceController(
 
 	// Pickers read from settings; writes go through `updateSettings`.
 	const prefs = appSettings.startSurfacePreferences;
+
+	const startRepositoryForMode =
+		repositories.find((repository) => repository.id === startRepositoryId) ??
+		repositories[0] ??
+		null;
+	// A repo attached as a plain folder has no default branch — it only
+	// supports a single in-place mode. The backend resolves the stored
+	// workspace mode to `non_git` by reading the NULL default_branch.
+	const startRepositoryIsPlainDirectory =
+		startRepositoryForMode != null && !startRepositoryForMode.defaultBranch;
+
 	// Chat is a top-level toggle (independent of repo). When off, the start
 	// surface falls back to the selected repo's stored work mode.
 	const repoWorkMode = readRepoPreference(
@@ -176,13 +191,16 @@ export function useStartSurfaceController(
 	);
 	// No repos → lock to chat (worktree/local can't run without one);
 	// the transient override is ignored in this case so `Cmd+N` falls back
-	// to chat cleanly. Otherwise, transient (shortcut-driven) > persisted
+	// to chat cleanly. Non-git folders force `local` (no worktree/branch
+	// modes apply). Otherwise, transient (shortcut-driven) > persisted
 	// prefs > per-repo work mode.
 	const startMode: WorkspaceMode =
 		repositories.length === 0
 			? "chat"
-			: (transientModeOverride ??
-				(prefs.chatModeActive ? "chat" : repoWorkMode));
+			: startRepositoryIsPlainDirectory
+				? "local"
+				: (transientModeOverride ??
+					(prefs.chatModeActive ? "chat" : repoWorkMode));
 	const startBranchIntent = readRepoPreference(
 		prefs.branchIntentByRepoId,
 		startRepositoryId,
@@ -276,10 +294,14 @@ export function useStartSurfaceController(
 		},
 		enabled: Boolean(startRepository?.id),
 	});
+	// Non-git folders have no branch — show the synthetic "Files" label
+	// (must stay identical to the persisted `branch` set by the Rust
+	// lifecycle's `prepare_local_workspace_impl`).
 	// Local: live HEAD wins (the worktree's persisted override must not leak in).
 	// Worktree: pendingNewBranch > per-repo override > default.
-	const startSourceBranch =
-		startMode === "local"
+	const startSourceBranch = startRepositoryIsPlainDirectory
+		? "Files"
+		: startMode === "local"
 			? (startPendingNewBranch ??
 				startLocalBranchSelection ??
 				startLocalCurrentBranchQuery.data ??
@@ -353,6 +375,11 @@ export function useStartSurfaceController(
 			// pendingNewBranch + local branch pick are local-only; clear on flip.
 			setStartPendingNewBranch(null);
 			setStartLocalBranchSelection(null);
+
+			// `non_git` isn't a user-selectable start mode — it's derived
+			// from the repo being a plain directory. The picker never emits
+			// it; guard so `mode` narrows to the persistable work modes.
+			if (mode === "non_git") return;
 
 			// Chat is the top-level toggle — flip just the boolean, don't
 			// touch any repo-bound state. Works even with no repo selected
@@ -760,6 +787,68 @@ export function useStartSurfaceController(
 
 	const startBranches = startBranchesQuery.data ?? EMPTY_BRANCH_LIST;
 
+	// Persisted composer picks for the start surface. Writes merge into
+	// `startSurfacePreferences`; only `start:*` context keys are persisted so a
+	// stray `session:*` key (e.g. from the fast-mode-unavailable subscription on
+	// the start container) can't pollute the blob.
+	const startComposerSettingsController = useMemo<ComposerSettingsController>(
+		() => ({
+			modelSelections: prefs.composerModelByContextKey,
+			effortLevels: prefs.composerEffortByContextKey,
+			permissionModes: prefs.composerPermissionModeByContextKey,
+			fastModes: prefs.composerFastModeByContextKey,
+			onSelectModel: (contextKey, modelId) => {
+				if (!contextKey.startsWith("start:")) return;
+				void updateSettings({
+					startSurfacePreferences: {
+						...prefs,
+						composerModelByContextKey: {
+							...prefs.composerModelByContextKey,
+							[contextKey]: modelId,
+						},
+					},
+				});
+			},
+			onSelectEffort: (contextKey, level) => {
+				if (!contextKey.startsWith("start:")) return;
+				void updateSettings({
+					startSurfacePreferences: {
+						...prefs,
+						composerEffortByContextKey: {
+							...prefs.composerEffortByContextKey,
+							[contextKey]: level,
+						},
+					},
+				});
+			},
+			onChangePermissionMode: (contextKey, mode) => {
+				if (!contextKey.startsWith("start:")) return;
+				void updateSettings({
+					startSurfacePreferences: {
+						...prefs,
+						composerPermissionModeByContextKey: {
+							...prefs.composerPermissionModeByContextKey,
+							[contextKey]: mode,
+						},
+					},
+				});
+			},
+			onChangeFastMode: (contextKey, enabled) => {
+				if (!contextKey.startsWith("start:")) return;
+				void updateSettings({
+					startSurfacePreferences: {
+						...prefs,
+						composerFastModeByContextKey: {
+							...prefs.composerFastModeByContextKey,
+							[contextKey]: enabled,
+						},
+					},
+				});
+			},
+		}),
+		[prefs, updateSettings],
+	);
+
 	const resetScratchOnReentry = useCallback(() => {
 		// Transient only — persisted picker selections survive re-entry.
 		setStartPendingNewBranch(null);
@@ -798,6 +887,7 @@ export function useStartSurfaceController(
 			startComposerContextKey,
 			startComposerInsertTarget,
 			startLinkedDirectoriesController,
+			startComposerSettingsController,
 		}),
 		[
 			startBranchIntent,
@@ -805,6 +895,7 @@ export function useStartSurfaceController(
 			startBranchesQuery.isFetching,
 			startComposerContextKey,
 			startComposerInsertTarget,
+			startComposerSettingsController,
 			startInboxProviderSourceTab,
 			startInboxProviderTab,
 			startInboxStateFilterBySource,

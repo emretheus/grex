@@ -157,6 +157,14 @@ export function useRepoDnd({
 		const handlePointerMove = (event: PointerEvent) => {
 			const active = dragStateRef.current;
 			if (active) {
+				// Trackpad tap-to-click can emit pointermove with no pointerup;
+				// if the primary button is no longer held, abandon the drag.
+				if ((event.buttons & 1) === 0) {
+					dragStateRef.current = null;
+					setDragState(null);
+					clearPendingStart();
+					return;
+				}
 				if (event.pointerId !== pendingStartRef.current?.pointerId) return;
 				event.preventDefault();
 				scheduleDragFrame(event);
@@ -164,6 +172,11 @@ export function useRepoDnd({
 			}
 			const pending = pendingStartRef.current;
 			if (!pending || event.pointerId !== pending.pointerId) return;
+			// A tap (button already released) must not activate a drag.
+			if ((event.buttons & 1) === 0) {
+				clearPendingStart();
+				return;
+			}
 			const dx = event.clientX - pending.clientX;
 			const dy = event.clientY - pending.clientY;
 			if (Math.abs(dx) > DRAG_MOVE_CANCEL_PX && Math.abs(dx) > Math.abs(dy)) {
@@ -181,10 +194,13 @@ export function useRepoDnd({
 				flushDragFrame();
 			}
 			const active = dragStateRef.current;
-			if (active && event.pointerId === pendingStartRef.current?.pointerId) {
-				event.preventDefault();
-				if (active.beforeRepoId !== active.repoId) {
-					onMoveRepo?.(active.repoId, active.beforeRepoId);
+			if (active) {
+				// Any release ends the drag; only commit for the originating pointer.
+				if (event.pointerId === pendingStartRef.current?.pointerId) {
+					event.preventDefault();
+					if (active.beforeRepoId !== active.repoId) {
+						onMoveRepo?.(active.repoId, active.beforeRepoId);
+					}
 				}
 				dragStateRef.current = null;
 				setDragState(null);
@@ -224,6 +240,11 @@ export function useRepoDnd({
 			if (event.button !== 0) return;
 			const target = event.currentTarget;
 			const rect = target.getBoundingClientRect();
+			// Defensively clear any drag stranded by a missed pointerup.
+			if (dragStateRef.current) {
+				dragStateRef.current = null;
+				setDragState(null);
+			}
 			clearPendingStart();
 			pendingStartRef.current = {
 				repoId,

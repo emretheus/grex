@@ -203,8 +203,25 @@ pub fn start_archive_workspace<R: Runtime>(
             "Archive: git unwatch finished"
         );
 
-        let result =
-            tauri::async_runtime::spawn_blocking(move || execute_archive_plan(&plan)).await;
+        let scripts = app_handle
+            .state::<crate::workspace::scripts::ScriptProcessManager>()
+            .inner()
+            .clone();
+        let scripts_workspace_id = workspace_id.clone();
+        let result = tauri::async_runtime::spawn_blocking(move || {
+            // Stop the workspace's run scripts and embedded terminals before
+            // tearing down its worktree, so they don't survive as orphans.
+            let killed = scripts.kill_workspace(&scripts_workspace_id);
+            if killed > 0 {
+                tracing::info!(
+                    workspace_id = %scripts_workspace_id,
+                    killed,
+                    "Archive: stopped workspace scripts/terminals"
+                );
+            }
+            execute_archive_plan(&plan)
+        })
+        .await;
 
         match result {
             Ok(Ok(_)) => {

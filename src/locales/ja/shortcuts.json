@@ -79,6 +79,9 @@
 		"composer.togglePlanMode": { "title": "プランモードを切り替え" },
 		"composer.toggleTerminalMode": { "title": "ターミナルモードを切り替え" },
 		"startSurface.cycleRepository": { "title": "リポジトリを切り替え" },
+		"startSurface.openRepositoryPicker": {
+			"title": "リポジトリピッカーを開く"
+		},
 		"composer.toggleContextPanel": { "title": "コンテキストパネルを切り替え" },
 		"composer.openModelPicker": { "title": "モデルピッカーを開く" },
 		"composer.toggleFollowUpBehavior": {

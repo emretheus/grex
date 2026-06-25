@@ -328,6 +328,10 @@
 			"title": "Crear ramas de los nuevos espacios de trabajo a partir de",
 			"description": "Cada espacio de trabajo es una copia aislada de tu base de código."
 		},
+		"nonGit": {
+			"title": "Repositorio sin git",
+			"description": "Esta es una carpeta local que no es un repositorio git: no se aplican ajustes de remoto, rama ni cuenta."
+		},
 		"forge": {
 			"notConnected": "{{provider}} no conectado",
 			"connectCta": "Conecta una cuenta de {{provider}} para habilitar el flujo de trabajo de {{provider}} en este repositorio.",

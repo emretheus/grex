@@ -14,6 +14,7 @@ import { existsSync } from "node:fs";
 import { dirname, join } from "node:path";
 import readline from "node:readline";
 import { fileURLToPath } from "node:url";
+import { applyWindowsPathFromRegistry } from "./agent-path-env.js";
 import {
 	ACP_PROTOCOL_VERSION,
 	type AcpInitializeResult,
@@ -129,7 +130,7 @@ export class KimiAcpConnection {
 
 	private async spawnAndInitialize(): Promise<LiveChild> {
 		const binaryPath = resolveKimiBinPath();
-		const env = { ...process.env };
+		const env = applyWindowsPathFromRegistry({ ...process.env });
 		// `kimi acp` opens no browser; suppress just in case an auth path tries.
 		env.NO_BROWSER = env.NO_BROWSER ?? "true";
 

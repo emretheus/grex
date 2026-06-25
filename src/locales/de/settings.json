@@ -328,6 +328,10 @@
 			"title": "Neue Arbeitsbereiche verzweigen von",
 			"description": "Jeder Arbeitsbereich ist eine isolierte Kopie deiner Codebasis."
 		},
+		"nonGit": {
+			"title": "Kein Git-Repository",
+			"description": "Dies ist ein lokaler Ordner, der kein Git-Repository ist — Remote-, Branch- und Kontoeinstellungen gelten nicht."
+		},
 		"forge": {
 			"notConnected": "{{provider}} nicht verbunden",
 			"connectCta": "Verbinde ein {{provider}}-Konto, um den {{provider}}-Workflow für dieses Repository zu aktivieren.",

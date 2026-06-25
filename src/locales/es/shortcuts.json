@@ -85,6 +85,9 @@
 		"composer.togglePlanMode": { "title": "Alternar modo de planificación" },
 		"composer.toggleTerminalMode": { "title": "Alternar modo terminal" },
 		"startSurface.cycleRepository": { "title": "Cambiar de repositorio" },
+		"startSurface.openRepositoryPicker": {
+			"title": "Abrir selector de repositorios"
+		},
 		"composer.toggleContextPanel": { "title": "Alternar panel de contexto" },
 		"composer.openModelPicker": { "title": "Abrir el selector de modelo" },
 		"composer.toggleFollowUpBehavior": {

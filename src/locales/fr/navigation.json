@@ -26,6 +26,7 @@
 			"unpin": "Désépingler",
 			"setStatus": "Définir le statut",
 			"markAsUnread": "Marquer comme non lu",
+			"rename": "Renommer",
 			"openInFinder": "Ouvrir dans le Finder",
 			"moveIntoNewWorktree": "Déplacer vers un nouveau worktree",
 			"restore": "Restaurer",
@@ -74,6 +75,11 @@
 		"cloneError": "Impossible de cloner le dépôt.",
 		"submit": "Cloner le dépôt",
 		"cloning": "Clonage…"
+	},
+	"renameDialog": {
+		"title": "Renommer l'espace de travail",
+		"placeholder": "Nom de l'espace de travail",
+		"save": "Enregistrer"
 	},
 	"moveToWorktreeDialog": {
 		"title": "Déplacer vers un nouveau worktree",

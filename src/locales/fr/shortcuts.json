@@ -95,6 +95,9 @@
 			"title": "Activer/désactiver le mode terminal"
 		},
 		"startSurface.cycleRepository": { "title": "Changer de dépôt" },
+		"startSurface.openRepositoryPicker": {
+			"title": "Ouvrir le sélecteur de dépôt"
+		},
 		"composer.toggleContextPanel": {
 			"title": "Afficher/masquer le panneau de contexte"
 		},

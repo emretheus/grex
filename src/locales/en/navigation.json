@@ -26,6 +26,7 @@
 			"unpin": "Unpin",
 			"setStatus": "Set status",
 			"markAsUnread": "Mark as unread",
+			"rename": "Rename",
 			"openInFinder": "Open in Finder",
 			"moveIntoNewWorktree": "Move into a new worktree",
 			"restore": "Restore",
@@ -74,6 +75,11 @@
 		"cloneError": "Unable to clone repository.",
 		"submit": "Clone repository",
 		"cloning": "Cloning…"
+	},
+	"renameDialog": {
+		"title": "Rename workspace",
+		"placeholder": "Workspace name",
+		"save": "Save"
 	},
 	"moveToWorktreeDialog": {
 		"title": "Move into a new worktree",

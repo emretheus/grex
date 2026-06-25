@@ -225,6 +225,61 @@ export function isRetryableCursorError(err: unknown, depth = 0): boolean {
 	return isRetryableCursorError(o.cause, depth + 1);
 }
 
+/// Authentication failures: the SDK's `AuthenticationError` (HTTP 401), or a
+/// raw ConnectError from a detached streaming task that surfaces as
+/// `[unauthenticated] …` and never gets wrapped. We match by the SDK error
+/// class name + `status === 401`, plus the `code`/`message` text so it works
+/// across the wrapped class and the bare ConnectError. Walks `cause` like
+/// `isRetryableCursorError`.
+const AUTH_ERROR_CODES = new Set([
+	"unauthenticated",
+	"unauthorized",
+	"permission_denied",
+]);
+
+export function isAuthError(err: unknown, depth = 0): boolean {
+	if (!err || typeof err !== "object" || depth > 4) return false;
+	const o = err as {
+		name?: unknown;
+		errorName?: unknown;
+		code?: unknown;
+		status?: unknown;
+		message?: unknown;
+		cause?: unknown;
+	};
+	// SDK's `AuthenticationError` (instanceof, via its constructor name).
+	if (o.name === "AuthenticationError" || o.errorName === "AuthenticationError")
+		return true;
+	if (o.status === 401) return true;
+	if (typeof o.code === "string" && AUTH_ERROR_CODES.has(o.code.toLowerCase()))
+		return true;
+	if (typeof o.message === "string") {
+		const m = o.message.toLowerCase();
+		if (
+			m.includes("[unauthenticated]") ||
+			m.includes("[unauthorized]") ||
+			m.includes("unauthenticated") ||
+			m.includes("unauthorized") ||
+			m.includes("401") ||
+			m.includes("invalid api key")
+		)
+			return true;
+	}
+	return isAuthError(o.cause, depth + 1);
+}
+
+/// User-facing copy for a worker-fatal error, selected by cause. Network
+/// faults read as "lost connection, retry"; auth faults point at the API key;
+/// everything else gets the generic worker-error message. Copy only — never
+/// affects the process lifecycle.
+export function fatalReason(err: unknown, message: string): string {
+	if (isRetryableCursorError(err))
+		return "Cursor lost its network connection. Please send the message again.";
+	if (isAuthError(err))
+		return "Cursor authentication failed. Please send the message again; if it keeps failing, re-check your Cursor API key in Settings → Models → Cursor.";
+	return `Cursor worker error: ${message}`;
+}
+
 // Test-only export.
 export const __CURSOR_INTERNAL = {
 	namespaceEvent,
@@ -235,4 +290,6 @@ export const __CURSOR_INTERNAL = {
 	toCursorMode,
 	extractCreatePlanText,
 	isRetryableCursorError,
+	isAuthError,
+	fatalReason,
 };

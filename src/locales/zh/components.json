@@ -45,14 +45,6 @@
 		"connectedAs": "已以 @{{login}} 身份连接到 {{provider}}",
 		"connected": "已连接 {{provider}}"
 	},
-	"larkConnect": {
-		"install": "安装 lark-cli",
-		"signIn": "登录",
-		"connectWithSuffix": "连接飞书 — {{suffix}}",
-		"connect": "连接飞书",
-		"connected": "已连接飞书",
-		"startError": "无法启动 lark-cli。"
-	},
 	"conductor": {
 		"importFailed": "导入失败。请重试。",
 		"welcome": "欢迎使用 Grex",

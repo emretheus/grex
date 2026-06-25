@@ -447,8 +447,7 @@ pub fn users_conversations_dms(creds: &SlackCreds) -> Result<Vec<ConversationRow
 
 /// Generic `users.conversations` listing. `types` is a Slack-side
 /// comma-separated whitelist (`im`, `mpim`, `public_channel`,
-/// `private_channel`). Used by the triage fetcher to enumerate every
-/// conversation the user is a member of for smart-discovery filtering.
+/// `private_channel`).
 pub fn users_conversations(
     creds: &SlackCreds,
     types: &str,

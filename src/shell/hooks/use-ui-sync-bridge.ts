@@ -288,22 +288,6 @@ function handleUiMutation(
 			});
 			return;
 		}
-		case "triageConfigChanged":
-			void queryClient.invalidateQueries({
-				queryKey: grexQueryKeys.triageConfig,
-			});
-			return;
-		case "triageActiveStatusChanged":
-			void queryClient.invalidateQueries({
-				queryKey: grexQueryKeys.triageActiveStatus,
-			});
-			return;
-		case "triageWorkspaceCreated":
-			requestSidebarReconcile(queryClient);
-			void queryClient.invalidateQueries({
-				queryKey: grexQueryKeys.triageActiveStatus,
-			});
-			return;
 		case "pairedDevicesChanged":
 			void queryClient.invalidateQueries({
 				queryKey: grexQueryKeys.pairedDevices,

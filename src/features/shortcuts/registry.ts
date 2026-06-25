@@ -341,6 +341,15 @@ export const SHORTCUT_DEFINITIONS: ShortcutDefinition[] = [
 		editable: true,
 	},
 	{
+		id: "startSurface.openRepositoryPicker",
+		title: "definitions.startSurface.openRepositoryPicker.title",
+		group: "Start surface",
+		defaultHotkey: "Alt+R",
+		// start-composer only: opens the searchable repository picker.
+		scopes: ["start-composer"],
+		editable: true,
+	},
+	{
 		id: "composer.toggleContextPanel",
 		title: "definitions.composer.toggleContextPanel.title",
 		group: "Composer",

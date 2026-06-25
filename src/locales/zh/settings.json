@@ -323,6 +323,10 @@
 			"title": "新工作区的分支来源",
 			"description": "每个工作区都是您代码库的独立副本。"
 		},
+		"nonGit": {
+			"title": "非 Git 仓库",
+			"description": "这是一个非 Git 仓库的本地文件夹——没有远端、分支或账号设置。"
+		},
 		"forge": {
 			"notConnected": "{{provider}} 未连接",
 			"connectCta": "连接一个 {{provider}} 账户，以便为此仓库启用 {{provider}} 工作流程。",

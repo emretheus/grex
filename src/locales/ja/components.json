@@ -45,14 +45,6 @@
 		"connectedAs": "{{provider}} に @{{login}} として接続しました",
 		"connected": "{{provider}} に接続しました"
 	},
-	"larkConnect": {
-		"install": "lark-cli をインストール",
-		"signIn": "サインイン",
-		"connectWithSuffix": "Lark に接続 — {{suffix}}",
-		"connect": "Lark に接続",
-		"connected": "Lark に接続しました",
-		"startError": "lark-cli を開始できませんでした。"
-	},
 	"conductor": {
 		"importFailed": "インポートに失敗しました。もう一度お試しください。",
 		"welcome": "Grex へようこそ",

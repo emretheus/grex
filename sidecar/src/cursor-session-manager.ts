@@ -11,6 +11,7 @@ import { type ChildProcess, spawn } from "node:child_process";
 import { existsSync } from "node:fs";
 import { join } from "node:path";
 import { createInterface } from "node:readline";
+import { applyWindowsPathFromRegistry } from "./agent-path-env.js";
 import type {
 	EmitMsg,
 	FromWorker,
@@ -215,7 +216,7 @@ export class CursorSessionManager implements SessionManager {
 		const node = resolveNodeBin();
 		const child = spawn(node, [workerPath], {
 			stdio: ["pipe", "pipe", "pipe"],
-			env: process.env,
+			env: applyWindowsPathFromRegistry({ ...process.env }),
 		});
 		this.worker = child;
 		logger.info("Cursor worker spawned", { node, workerPath, pid: child.pid });

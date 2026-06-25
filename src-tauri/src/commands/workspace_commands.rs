@@ -49,8 +49,11 @@ pub async fn prepare_workspace_from_repo(
                     seed_session_id.as_deref(),
                 )
             }
-            crate::workspace_state::WorkspaceMode::Local => {
-                // Local mode ignores `branch_intent` (no separate worktree).
+            crate::workspace_state::WorkspaceMode::Local
+            | crate::workspace_state::WorkspaceMode::NonGit => {
+                // Local/non-git modes ignore `branch_intent` (no separate
+                // worktree). `prepare_local_workspace_impl` reads the repo
+                // to decide whether the stored mode is Local or NonGit.
                 workspaces::prepare_local_workspace_impl(
                     &repo_id,
                     source_branch.as_deref(),
@@ -361,6 +364,17 @@ pub async fn list_remote_branches(
         workspaces::list_remote_branches(workspace_id.as_deref(), repo_id.as_deref())
     })
     .await
+}
+
+#[tauri::command]
+pub async fn rename_workspace(app: AppHandle, workspace_id: String, name: String) -> CmdResult<()> {
+    let ws_id = workspace_id.clone();
+    run_blocking(move || workspaces::rename_workspace(&ws_id, &name)).await?;
+    crate::ui_sync::publish(
+        &app,
+        crate::ui_sync::UiMutationEvent::WorkspaceChanged { workspace_id },
+    );
+    Ok(())
 }
 
 #[tauri::command]

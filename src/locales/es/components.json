@@ -47,14 +47,6 @@
 		"connectedAs": "{{provider}} conectado como @{{login}}",
 		"connected": "{{provider}} conectado"
 	},
-	"larkConnect": {
-		"install": "Instalar lark-cli",
-		"signIn": "Iniciar sesión",
-		"connectWithSuffix": "Conectar Lark — {{suffix}}",
-		"connect": "Conectar Lark",
-		"connected": "Lark conectado",
-		"startError": "No se pudo iniciar lark-cli."
-	},
 	"conductor": {
 		"importFailed": "La importación falló. Inténtalo de nuevo.",
 		"welcome": "Te damos la bienvenida a Grex",

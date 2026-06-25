@@ -55,10 +55,7 @@
 		"active": true,
 		"createUpdaterArtifacts": true,
 		"targets": "all",
-		"externalBin": [
-			"../sidecar/dist/grex-sidecar",
-			"./target/bundled/grex-cli"
-		],
+		"externalBin": ["../sidecar/dist/grex-sidecar"],
 		"resources": {
 			"../sidecar/dist/vendor/": "vendor"
 		},

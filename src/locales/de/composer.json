@@ -68,14 +68,6 @@
 		"on": "Automatisches Schließen an"
 	},
 	"planImplementPrompt": "Setze den Plan um.",
-	"triage": {
-		"go": "Leg los.",
-		"prompt": "Die KI hat diese Aufgabe vorgeschlagen – starte, um sie anzugehen, oder verwirf sie.",
-		"dismiss": "Verwerfen",
-		"dismissAria": "Diesen Triage-Vorschlag verwerfen",
-		"start": "Starten",
-		"startAria": "Mit der Arbeit an diesem Triage-Vorschlag beginnen"
-	},
 	"usageStats": {
 		"title": "Nutzungsstatistik",
 		"aria": "Nutzungsstatistik"

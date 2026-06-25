@@ -68,14 +68,6 @@
 		"on": "Cierre automático activado"
 	},
 	"planImplementPrompt": "Adelante con el plan.",
-	"triage": {
-		"go": "Adelante.",
-		"prompt": "La IA propuso esta tarea: empieza para abordarla o descártala.",
-		"dismiss": "Descartar",
-		"dismissAria": "Descartar esta propuesta de triaje",
-		"start": "Empezar",
-		"startAria": "Empezar a trabajar en esta propuesta de triaje"
-	},
 	"usageStats": {
 		"title": "Estadísticas de uso",
 		"aria": "Estadísticas de uso"

@@ -68,14 +68,6 @@
 		"on": "Auto Close On"
 	},
 	"planImplementPrompt": "Go ahead with the plan.",
-	"triage": {
-		"go": "Go ahead.",
-		"prompt": "AI proposed this task — start to engage or dismiss.",
-		"dismiss": "Dismiss",
-		"dismissAria": "Dismiss this triage proposal",
-		"start": "Start",
-		"startAria": "Start working on this triage proposal"
-	},
 	"usageStats": {
 		"title": "Usage Stats",
 		"aria": "Usage Stats"

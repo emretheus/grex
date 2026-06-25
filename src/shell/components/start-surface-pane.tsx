@@ -36,6 +36,7 @@ type Props = {
 	startComposerContextKey: string;
 	startCreateContext: ComposerCreateContext | null;
 	startLinkedDirectoriesController: ConversationProps["composerLinkedDirectoriesController"];
+	startComposerSettingsController: ConversationProps["composerSettingsController"];
 	sidebarCollapsed: boolean;
 	contextPanelOpen: boolean;
 	startSurfaceActions: StartSurfaceActions;
@@ -71,6 +72,7 @@ export function StartSurfacePane({
 	startComposerContextKey,
 	startCreateContext,
 	startLinkedDirectoriesController,
+	startComposerSettingsController,
 	sidebarCollapsed,
 	contextPanelOpen,
 	startSurfaceActions,
@@ -180,6 +182,7 @@ export function StartSurfacePane({
 				onToggleContextPanel={contextPanelActions.toggleContextPanel}
 				composerStartSubmitMenu
 				composerLinkedDirectoriesController={startLinkedDirectoriesController}
+				composerSettingsController={startComposerSettingsController}
 			/>
 		</WorkspaceStartPage>
 	);

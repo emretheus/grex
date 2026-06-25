@@ -209,8 +209,6 @@ export const grexQueryKeys = {
 	plainSearch: (query: string) => ["plainSearch", query] as const,
 	plainIssueDetail: (connectionId: string, issueId: string) =>
 		["plainIssueDetail", connectionId, issueId] as const,
-	triageConfig: ["triage", "config"] as const,
-	triageActiveStatus: ["triage", "activeStatus"] as const,
 	pairedDevices: ["pairedDevices"] as const,
 	automations: ["automations"] as const,
 	libraryPrompts: ["libraryPrompts"] as const,

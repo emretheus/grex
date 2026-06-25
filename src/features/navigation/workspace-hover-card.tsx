@@ -28,11 +28,12 @@ import {
 	HoverCard as HoverCardRoot,
 	HoverCardTrigger,
 } from "@/components/ui/hover-card";
-import type {
-	ExtendedMessagePart,
-	ThreadMessageLike,
-	WorkspaceRow,
-	WorkspaceSessionSummary,
+import {
+	type ExtendedMessagePart,
+	type ThreadMessageLike,
+	type WorkspaceRow,
+	type WorkspaceSessionSummary,
+	workspaceModeHasGitContext,
 } from "@/lib/api";
 import {
 	workspaceGitActionStatusQueryOptions,
@@ -664,10 +665,10 @@ export function WorkspaceHoverCard({
 								</span>
 							) : null}
 						</div>
-						{/* Chat workspaces have no git context and no workspace
-						 *  status — the entire right-side cluster (branch +
-						 *  diff chips + status dot) is meaningless for them. */}
-						{row.mode !== "chat" ? (
+						{/* Chat and non-git workspaces have no git context and no
+						 *  workspace status — the entire right-side cluster (branch
+						 *  + diff chips + status dot) is meaningless for them. */}
+						{workspaceModeHasGitContext(row.mode) ? (
 							<div className="mt-0.5 flex shrink-0 items-center gap-2">
 								<GitStats workspaceId={row.id} />
 								<span

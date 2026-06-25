@@ -26,6 +26,7 @@
 			"unpin": "取消置顶",
 			"setStatus": "设置状态",
 			"markAsUnread": "标记为未读",
+			"rename": "重命名",
 			"openInFinder": "在访达中打开",
 			"moveIntoNewWorktree": "迁移到新工作树",
 			"restore": "恢复",
@@ -70,6 +71,11 @@
 		"cloneError": "无法克隆仓库。",
 		"submit": "克隆仓库",
 		"cloning": "克隆中…"
+	},
+	"renameDialog": {
+		"title": "重命名工作区",
+		"placeholder": "工作区名称",
+		"save": "保存"
 	},
 	"moveToWorktreeDialog": {
 		"title": "迁移到新工作树",

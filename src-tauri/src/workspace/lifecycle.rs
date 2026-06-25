@@ -313,14 +313,34 @@ pub fn prepare_local_workspace_impl(
     let repository = repos::load_repository_by_id(repo_id)?
         .with_context(|| format!("Repository not found: {repo_id}"))?;
     let repo_root = PathBuf::from(repository.root_path.trim());
-    git_ops::ensure_git_repository(&repo_root)?;
+    // A repo added as a plain (non-git) directory has no default branch.
+    // This is the ONE place we read repo state to pick the workspace
+    // mode; every runtime path keys off the stored `mode` afterwards.
+    let mode = if repository.default_branch.is_some() {
+        WorkspaceMode::Local
+    } else {
+        WorkspaceMode::NonGit
+    };
+    let has_git_context = mode.has_git_context();
+    if has_git_context {
+        git_ops::ensure_git_repository(&repo_root)?;
+    } else if !repo_root.is_dir() {
+        bail!(
+            "Local directory does not exist or is not a directory: {}",
+            repo_root.display()
+        );
+    }
 
     // Detached HEAD: surface a specific error.
-    let current_branch = git_ops::current_branch_name(&repo_root).map_err(|_| {
-        anyhow::anyhow!(
-            "Repository is in detached HEAD state. Check out a branch first, then try again."
-        )
-    })?;
+    let current_branch = if has_git_context {
+        git_ops::current_branch_name(&repo_root).map_err(|_| {
+            anyhow::anyhow!(
+                "Repository is in detached HEAD state. Check out a branch first, then try again."
+            )
+        })?
+    } else {
+        "Files".to_string()
+    };
     let target_branch = source_branch
         .map(str::trim)
         .filter(|value| !value.is_empty())
@@ -335,7 +355,8 @@ pub fn prepare_local_workspace_impl(
         .unwrap_or_else(|| "main".to_string());
 
     // Tracked-only check — `git checkout` is fine with untracked files.
-    if target_branch != current_branch
+    if has_git_context
+        && target_branch != current_branch
         && !git_ops::tracked_changes_clean(&repo_root)
             .with_context(|| format!("Failed to read working tree status for {repo_id}"))?
     {
@@ -359,13 +380,13 @@ pub fn prepare_local_workspace_impl(
         &directory_name,
         &target_branch,
         &base_branch,
-        crate::workspace_state::WorkspaceMode::Local,
+        mode,
         WorkspaceBranchIntent::UseBranch,
         initial_status,
         &timestamp,
     )?;
 
-    if target_branch != current_branch {
+    if has_git_context && target_branch != current_branch {
         if let Err(error) = git_ops::checkout_branch(&repo_root, &target_branch) {
             let _ = workspace_models::delete_workspace_and_session_rows(&workspace_id);
             return Err(error);
@@ -377,7 +398,7 @@ pub fn prepare_local_workspace_impl(
     {
         // Clean DB + restore HEAD if we moved it.
         let _ = workspace_models::delete_workspace_and_session_rows(&workspace_id);
-        if target_branch != current_branch {
+        if has_git_context && target_branch != current_branch {
             let _ = git_ops::checkout_branch(&repo_root, &current_branch);
         }
         return Err(error);
